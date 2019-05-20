@@ -40,5 +40,10 @@
     "pg": "^7.11.0",
     "pino-colada": "^1.4.4"
   },
-  "proxy": "http://localhost:3001"
+  "proxy": "http://localhost:3001",
+  "prettier": {
+    "trailingComma": "es5",
+    "semi": true,
+    "singleQuote": false
+  }
 }
