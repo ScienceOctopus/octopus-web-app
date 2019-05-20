@@ -1,10 +1,10 @@
 const Pool = require('pg').Pool;
 const pool = new Pool({
-	user: 'ml5717',
-	host: '146.169.46.233',
-	database: 'api',
-	password: 'password',
-	port: 5432,
+	user: process.env.DB_USER,
+	host: process.env.DB_HOST,
+	database: process.env.DB_NAME,
+	password: process.env.DB_PASSWORD,
+	port: process.env.DB_PORT,
 });
 
 const getUsers = (request, response) => {
@@ -16,10 +16,10 @@ const getUsers = (request, response) => {
 	});
 };
 
-const getUserById = (request, response) => {
-	const id = parseInt(request.params.id)
+const getUserByName = (request, response) => {
+	const name = request.query.name;
 
-	pool.query('SELECT * FROM users WHERE id = $1', [id], (error, result) => {
+	pool.query('SELECT * FROM users WHERE name = $1', [name], (error, result) => {
 		if (error) {
 			throw error;
 		}
@@ -67,7 +67,7 @@ const deleteUser = (request, response) => {
 
 module.exports = {
   getUsers,
-  getUserById,
+  getUserByName,
   createUser,
   updateUser,
   deleteUser,

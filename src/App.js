@@ -20,9 +20,11 @@ class App extends Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    fetch(`/api/greeting?name=${encodeURIComponent(this.state.name)}`)
+    fetch(`/api/users?name=${encodeURIComponent(this.state.name)}`)
       .then(response => response.json())
-      .then(state => this.setState(state));
+      .then(state => {
+        state.length > 0 && this.setState({greeting: state[0].email});
+      });
   }
 
   render() {
