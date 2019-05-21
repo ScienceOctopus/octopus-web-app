@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "node-pg-migrate": "^3.20.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-scripts": "3.0.1"
@@ -13,7 +14,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "server": "node-env-run server --exec nodemon | pino-colada",
-    "dev": "run-p server start"
+    "dev": "run-p server start",
+    "migrate": "node-pg-migrate"
   },
   "eslintConfig": {
     "extends": "react-app"
