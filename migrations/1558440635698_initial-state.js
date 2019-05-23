@@ -68,26 +68,6 @@ exports.up = pgm => {
     },
   });
 
-  /* pgm.createTable("problemCollaborators", {
-    id: "id",
-    problem: {
-      type: "integer",
-      notNull: true,
-      references: "problems",
-      onDelete: "cascade",
-    },
-    user: {
-      type: "integer",
-      notNull: true,
-      references: '"users"',
-      onDelete: "cascade",
-    },
-    role: {
-      type: "text",
-      notNull: true,
-    },
-}); */
-
   pgm.createTable("stages", {
     id: "id",
     name: {
