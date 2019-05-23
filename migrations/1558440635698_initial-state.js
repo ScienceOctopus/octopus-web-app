@@ -50,6 +50,12 @@ exports.up = pgm => {
     description: {
       type: "text",
     },
+    creator: {
+      type: "integer",
+      notNull: true,
+      references: '"users"',
+      onDelete: "cascade",
+    },
     createdAt: {
       type: "timestamp",
       notNull: true,
@@ -62,7 +68,7 @@ exports.up = pgm => {
     },
   });
 
-  pgm.createTable("problemCollaborators", {
+  /* pgm.createTable("problemCollaborators", {
     id: "id",
     problem: {
       type: "integer",
@@ -80,7 +86,7 @@ exports.up = pgm => {
       type: "text",
       notNull: true,
     },
-  });
+}); */
 
   pgm.createTable("stages", {
     id: "id",
@@ -205,6 +211,4 @@ exports.up = pgm => {
       default: pgm.func("current_timestamp"),
     },
   });
-
-  pgm.createIndex("posts", "userId");
 };
