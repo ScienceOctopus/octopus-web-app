@@ -129,6 +129,21 @@ exports.up = pgm => {
     },
   });
 
+  pgm.createTable("publicationReferences", {
+    id: "id",
+    publicationID: {
+      type: "integer",
+      notNull: true,
+      references: '"publication"',
+      onDelete: "cascade",
+    },
+    referencedPublicationID: {
+      type: "integer",
+      notNull: true,
+      references: '"publication"',
+    },
+  });
+
   pgm.createTable("publicationCollaborators", {
     id: "id",
     publication: {
