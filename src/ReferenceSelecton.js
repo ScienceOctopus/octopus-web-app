@@ -4,13 +4,15 @@ const TEST_PDF_PATH = "resources/test/pdfs/test_pdf_1.pdf";
 
 const styles = {
   container: {
-    width: "50vw",
+    width: "49vw",
     float: "left",
     backgroundColor: "red",
-    // padding: 5,
+    padding: 5,
     height: "100vh",
     overflowX: "scroll",
     overflowY: "scroll",
+
+    position: "relative",
   },
   iframe: {
     width: "100%",
@@ -26,9 +28,9 @@ class ReferenceSelection extends Component {
 
     this.handleConvert();
 
-    // document.onmouseup = () => {
-    //   console.log(window.getSelection().toString());
-    // };
+    document.onmouseup = () => {
+      console.log(window.getSelection().toString());
+    };
   }
 
   handleConvert = () => {
@@ -49,9 +51,6 @@ class ReferenceSelection extends Component {
         fetch(htmlPath)
           .then(page => {
             this.setState({ url: page.url });
-            this.iframe.current.contentWindow.document.onmouseup = () => {
-              console.log(window.getSelection().toString());
-            };
             return page;
           })
           .then(page => page.text())
@@ -68,13 +67,7 @@ class ReferenceSelection extends Component {
     }
     return (
       <div style={styles.container}>
-        <iframe
-          title={Math.random()}
-          ref={this.iframe}
-          style={styles.iframe}
-          src={this.state.url}
-        />
-        {/* <div {...props} /> */}
+        <div {...props} />
       </div>
     );
   }
