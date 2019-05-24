@@ -23,7 +23,7 @@ const styles = {
 class ReferenceSelection extends Component {
   constructor(props) {
     super(props);
-    this.state = { innerHtml: undefined };
+    this.state = { innerHtml: undefined, selectingStart: true };
     this.iframe = React.createRef();
 
     this.handleConvert();
@@ -48,16 +48,32 @@ class ReferenceSelection extends Component {
     })
       .then(response => response.json())
       .then(htmlPath => {
+        console.log("resp");
+        console.log(htmlPath);
         fetch(htmlPath)
-          .then(page => {
-            this.setState({ url: page.url });
-            return page;
-          })
           .then(page => page.text())
           .then(html => {
             this.setState({ innerHtml: { __html: html } });
           });
       });
+  };
+
+  handleClick = e => {
+    console.log(e.target);
+
+    let newState = { selectingStart: !this.state.selectingStart };
+    if (this.state.selectingStart) {
+      newState.selectingBeginning = e.target;
+    } else {
+      newState.selectionEnd = e.target;
+
+      let between = allBetween(this.state.selectingBeginning, e.target);
+      between.forEach(x => {
+        x.style.backgroundColor = "red";
+      });
+    }
+
+    this.setState(newState);
   };
 
   render() {
@@ -67,10 +83,22 @@ class ReferenceSelection extends Component {
     }
     return (
       <div style={styles.container}>
-        <div {...props} />
+        <div onClick={this.handleClick} {...props} />
       </div>
     );
   }
 }
+
+const allBetween = (elem, target) => {
+  var siblings = [];
+
+  while (elem !== target) {
+    console.log(elem);
+    siblings.push(elem);
+    elem = elem.nextElementSibling;
+  }
+
+  return siblings;
+};
 
 export default ReferenceSelection;

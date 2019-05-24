@@ -13,7 +13,10 @@ const pdfToHtml = (request, response) => {
     .convert("default")
     .then(() => {
       console.log("Successfully converted to " + pathToHtml);
-      rewriteOutputHtml(pathToHtml);
+      rewriteOutputHtml(pathToHtml).then(() => {
+        console.log("HTML Responding");
+        response.status(200).json(TEST_HTML_PATH);
+      });
     })
     .catch(err => {
       console.error("Conversion error: " + err);
@@ -22,21 +25,27 @@ const pdfToHtml = (request, response) => {
   converter.progress(function(ret) {
     console.log(ret.current * 100.0 / ret.total + " %");
   });
-
-  response.status(200).json(TEST_HTML_PATH);
 };
 
-const rewriteOutputHtml = pathToHtml => {
+const rewriteOutputHtml = async pathToHtml => {
   const fs = require("fs");
-  fs.readFile(pathToHtml, "utf8", function(err, data) {
-    if (err) {
-      return console.log(err);
-    }
-    let result = rewriteHtmlData(data);
-    fs.writeFile(pathToHtml, result, "utf8", function(err) {
-      if (err) return console.log(err);
-    });
-  });
+
+  let content = null;
+  try {
+    content = fs.readFileSync(pathToHtml, "utf8");
+  } catch (err) {
+    console.error(err);
+    return;
+  }
+
+  let result = rewriteHtmlData(content);
+  console.log("HTML Writing");
+
+  try {
+    fs.writeFileSync(pathToHtml, result, "utf8");
+  } catch (err) {
+    console.error(err);
+  }
 };
 
 const rewriteHtmlData = data => {
