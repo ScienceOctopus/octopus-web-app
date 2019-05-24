@@ -1,20 +1,32 @@
 const query = require("./postgresQueries").queries;
 
-const getAllProblems = (req, res) => {
+const getProblems = (req, res) => {
   query
-    .allProblems()
+    .selectAllProblems()
     .then(console.log)
     .catch(console.error);
-
-  //     response.status(200).json(result.rows);
-
-  //   pool.query("SELECT * FROM problems ORDER BY id ASC", (error, result) => {
-  //     if (error) {
-  //       throw error;
-  //     }
-  //   });
 };
 
+const getProblemByID = (req, res) => {
+  query
+    .selectProblemsByID(req.params.id)
+    .then(res.status(200).json)
+    .catch(console.error);
+};
+
+const getPublicationByID = (req, res) => {
+  query
+    .selectPublicationsByID(req.params.id)
+    .then(res.status(200).json)
+    .catch(console.error);
+};
+
+const getPublicationsByProblem = (req, res) => {
+  query
+    .selectPublicationsByProblem(req.params.id)
+    .then(res.status(200).json)
+    .catch(console.error);
+};
 // const getUsers = (request, response) => {
 //   pool.query("SELECT * FROM users ORDER BY id ASC", (error, result) => {
 //     if (error) {
@@ -78,5 +90,8 @@ const getAllProblems = (req, res) => {
 // };
 
 module.exports = {
-  getAllProblems,
+  getProblems,
+  getProblemByID,
+  getPublicationByID,
+  getPublicationsByProblem,
 };

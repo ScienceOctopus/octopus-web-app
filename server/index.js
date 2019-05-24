@@ -21,16 +21,16 @@ app.get("/api", (request, response) => {
   response.json({ info: "Node.js, Express, and Postgres API" });
 });
 
-app.get("/api/users", db.getUserByName);
-app.post("/api/users", db.createUser);
-app.put("/api/users/:id", db.updateUser);
-app.delete("/api/users/:id", db.deleteUser);
+app.get("/api/problems", db.getProblems);
+app.get("/api/problems/:id", db.getProblemByID);
+app.put("/api/problems/:id/publications", db.getPublicationsByProblem);
+app.get("/api/publications/:id", db.getPublicationByID);
 
-app.post("/api/pdf2html", pdfToHtml);
+//app.post("/api/pdf2html", pdfToHtml);
 
 app.listen(port, () => {
   console.log(`App running on port ${port}.`);
-  db.getAllProblems();
+  // db.getProblems();
 });
 
 //const pino = require('express-pino-logger')();

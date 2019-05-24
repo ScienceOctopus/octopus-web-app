@@ -11,12 +11,33 @@ const knex = require("knex")({
   connection: connectionOptions,
 });
 
-const PROBLEMS_TABLE = "problems";
-const USERS_TABLE = "users";
-const ID = "id";
-
 const queries = {
-  allProblems: () => knex(PROBLEMS_TABLE).orderBy(ID),
+  selectAllProblems: () => knex("problems").orderBy("id"),
+  selectProblemsByID: id =>
+    knex("problems")
+      .select()
+      .where("id", id),
+  insertProblem: (title, description, creator) =>
+    knex("problems").insert({
+      title: title,
+      description: description,
+      creator: creator,
+    }),
+  selectPublicationsByID: id =>
+    knex("publications")
+      .select()
+      .where("id", id),
+  selectPublicationsByProblem: id =>
+    knex("publications")
+      .select()
+      .where("problem", id),
+  insertPublication: (problem, stage, title, description) =>
+    knex("publications").insert({
+      problem: problem,
+      stage: stage,
+      title: title,
+      description: description,
+    }),
 };
 
 module.exports = {
