@@ -2,7 +2,7 @@ const { pdfToHtml } = require("./pdfConversion");
 
 const express = require("express");
 const bodyParser = require("body-parser");
-const db = require("./queries");
+const db = require("./dbRequests");
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -30,6 +30,7 @@ app.post("/api/pdf2html", pdfToHtml);
 
 app.listen(port, () => {
   console.log(`App running on port ${port}.`);
+  db.getAllProblems();
 });
 
 //const pino = require('express-pino-logger')();

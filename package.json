@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "axios": "^0.18.0",
+    "knex": "^0.16.5",
     "node-pg-migrate": "^3.20.0",
     "pdftohtmljs": "^0.5.2",
     "react": "^16.8.6",
