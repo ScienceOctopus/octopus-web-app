@@ -1,5 +1,5 @@
 exports.up = pgm => {
-  pgm.createTable("userGroups", {
+  pgm.createTable("user_groups", {
     id: "id",
     name: {
       type: "text",
@@ -10,33 +10,33 @@ exports.up = pgm => {
   pgm.createTable("users", {
     id: "id",
     email: { type: "text", notNull: true },
-    loginType: {
+    login_type: {
       type: "text",
     },
     password: {
       type: "text",
     },
-    orcidKey: {
+    orcid_key: {
       type: "text",
     },
-    displayName: {
+    display_name: {
       type: "text",
       notNull: true,
     },
-    createdAt: {
+    created_at: {
       type: "timestamp",
       notNull: true,
       default: pgm.func("current_timestamp"),
     },
-    updatedAt: {
+    updated_at: {
       type: "timestamp",
       notNull: true,
       default: pgm.func("current_timestamp"),
     },
-    userGroup: {
+    user_group: {
       type: "integer",
       notNull: true,
-      references: '"userGroups"',
+      references: "user_groups",
       onDelete: "cascade",
     },
   });
@@ -53,15 +53,15 @@ exports.up = pgm => {
     creator: {
       type: "integer",
       notNull: true,
-      references: '"users"',
+      references: "users",
       onDelete: "cascade",
     },
-    createdAt: {
+    created_at: {
       type: "timestamp",
       notNull: true,
       default: pgm.func("current_timestamp"),
     },
-    updatedAt: {
+    updated_at: {
       type: "timestamp",
       notNull: true,
       default: pgm.func("current_timestamp"),
@@ -78,10 +78,10 @@ exports.up = pgm => {
 
   pgm.createTable("publications", {
     id: "id",
-    problemID: {
+    problem: {
       type: "integer",
       notNull: true,
-      references: '"problems"',
+      references: "problems",
       onDelete: "cascade",
     },
     stage: {
@@ -97,34 +97,34 @@ exports.up = pgm => {
     description: {
       type: "text",
     },
-    createdAt: {
+    created_at: {
       type: "timestamp",
       notNull: true,
       default: pgm.func("current_timestamp"),
     },
-    updatedAt: {
+    updated_at: {
       type: "timestamp",
       notNull: true,
       default: pgm.func("current_timestamp"),
     },
   });
 
-  pgm.createTable("publicationReferences", {
+  pgm.createTable("publication_references", {
     id: "id",
-    publicationID: {
+    publication: {
       type: "integer",
       notNull: true,
-      references: '"publications"',
+      references: "publications",
       onDelete: "cascade",
     },
-    referencedPublicationID: {
+    referenced_publication: {
       type: "integer",
       notNull: true,
-      references: '"publications"',
+      references: "publications",
     },
   });
 
-  pgm.createTable("publicationCollaborators", {
+  pgm.createTable("publication_collaborators", {
     id: "id",
     publication: {
       type: "integer",
@@ -135,7 +135,7 @@ exports.up = pgm => {
     user: {
       type: "integer",
       notNull: true,
-      references: '"users"',
+      references: "users",
       onDelete: "cascade",
     },
     role: {
@@ -144,21 +144,21 @@ exports.up = pgm => {
     },
   });
 
-  pgm.createTable("publicationLinks", {
+  pgm.createTable("publication_links", {
     id: "id",
-    publicationBefore: {
+    publication_before: {
       type: "integer",
       notNull: true,
       references: "publications",
       onDelete: "cascade",
     },
-    publicationAfter: {
+    publication_after: {
       type: "integer",
       notNull: true,
       references: "publications",
       onDelete: "cascade",
     },
-    createdAt: {
+    created_at: {
       type: "timestamp",
       notNull: true,
       default: pgm.func("current_timestamp"),
@@ -167,7 +167,7 @@ exports.up = pgm => {
 
   pgm.createTable("resources", {
     id: "id",
-    resourceType: {
+    resource_type: {
       type: "text",
       notNull: true,
     },
@@ -175,14 +175,14 @@ exports.up = pgm => {
       type: "text",
       notNull: true,
     },
-    createdAt: {
+    created_at: {
       type: "timestamp",
       notNull: true,
       default: pgm.func("current_timestamp"),
     },
   });
 
-  pgm.createTable("publicationResources", {
+  pgm.createTable("publication_resources", {
     id: "id",
     publication: {
       type: "integer",
@@ -196,11 +196,11 @@ exports.up = pgm => {
       references: "resources",
       onDelete: "cascade",
     },
-    behaviourType: {
+    behaviour_type: {
       type: "text",
       notNull: true,
     },
-    createdAt: {
+    created_at: {
       type: "timestamp",
       notNull: true,
       default: pgm.func("current_timestamp"),
