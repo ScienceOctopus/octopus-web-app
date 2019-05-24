@@ -49,9 +49,8 @@ const rewriteOutputHtml = async pathToHtml => {
 };
 
 const rewriteHtmlData = data => {
-  return data
-    .replace(/(::selection{.*})|(::-moz-selection{.*})/g, "")
-    .replace(/#page-container{position:absolute/g, "#page-container{");
+  return data.replace(/(::selection{.*})|(::-moz-selection{.*})/g, "");
+  // .replace(/#page-container{position:absolute/g, "#page-container{");
 };
 
 module.exports = {
