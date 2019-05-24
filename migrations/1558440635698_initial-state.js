@@ -76,7 +76,7 @@ exports.up = pgm => {
     },
   });
 
-  pgm.createTable("publication", {
+  pgm.createTable("publications", {
     id: "id",
     problemID: {
       type: "integer",
@@ -114,13 +114,13 @@ exports.up = pgm => {
     publicationID: {
       type: "integer",
       notNull: true,
-      references: '"publication"',
+      references: '"publications"',
       onDelete: "cascade",
     },
     referencedPublicationID: {
       type: "integer",
       notNull: true,
-      references: '"publication"',
+      references: '"publications"',
     },
   });
 
