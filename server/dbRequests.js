@@ -3,28 +3,28 @@ const query = require("./postgresQueries").queries;
 const getProblems = (req, res) => {
   query
     .selectAllProblems()
-    .then(console.log)
+    .then(rows => res.status(200).json(rows))
     .catch(console.error);
 };
 
 const getProblemByID = (req, res) => {
   query
     .selectProblemsByID(req.params.id)
-    .then(res.status(200).json)
+    .then(rows => res.status(200).json(rows))
     .catch(console.error);
 };
 
 const getPublicationByID = (req, res) => {
   query
     .selectPublicationsByID(req.params.id)
-    .then(res.status(200).json)
+    .then(rows => res.status(200).json(rows))
     .catch(console.error);
 };
 
 const getPublicationsByProblem = (req, res) => {
   query
     .selectPublicationsByProblem(req.params.id)
-    .then(res.status(200).json)
+    .then(rows => res.status(200).json(rows))
     .catch(console.error);
 };
 // const getUsers = (request, response) => {
