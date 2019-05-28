@@ -7,9 +7,6 @@ import { default as OctopusTheme } from "./octopus-theme";
 import axios from "axios";
 
 function sendToServer(payload, success, error) {
-
-  console.log(JSON.stringify(payload));
-
   return axios.post('/api/feedback', payload)
     .then(success)
     .catch(error);
