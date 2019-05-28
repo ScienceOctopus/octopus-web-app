@@ -3,6 +3,7 @@ const { pdfToHtml } = require("./pdfConversion");
 const express = require("express");
 const bodyParser = require("body-parser");
 const db = require("./dbRequests");
+const fb = require("./feedback");
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -25,6 +26,9 @@ app.get("/api/problems", db.getProblems);
 app.get("/api/problems/:id", db.getProblemByID);
 app.put("/api/problems/:id/publications", db.getPublicationsByProblem);
 app.get("/api/publications/:id", db.getPublicationByID);
+
+app.post("api/slack", fb.postFeedback);
+app.post("api/image", fb.postImage);
 
 //app.post("/api/pdf2html", pdfToHtml);
 
