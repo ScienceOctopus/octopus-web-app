@@ -1,4 +1,3 @@
-const port = process.env.PORT || 3001;
 const VALID_MIMETYPES = ["image/jpg", "image/jpeg", "image/png", "image/gif"];
 
 const postFeedback = (req, res) => {
