@@ -6,8 +6,20 @@
 trigger:
 - master
 
+variables:
+  CI: '1'
+
+strategy:
+  matrix:
+    Linux:
+      ImageName: 'ubuntu-latest'
+    Macintosh:
+      ImageName: 'macos-latest'
+    Windows:
+      ImageName: 'windows-latest'
+
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: $(ImageName)
 
 steps:
 - task: NodeTool@0
@@ -18,4 +30,7 @@ steps:
 - script: |
     npm install
     npm run build
-  displayName: 'npm install and build'
+  displayName: 'Install NPM and build'
+
+- script: npm test
+  displayName: 'Run tests'
