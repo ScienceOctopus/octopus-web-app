@@ -27,8 +27,8 @@ app.get("/api/problems/:id", rh.getProblemByID);
 app.put("/api/problems/:id/publications", rh.getPublicationsByProblem);
 app.get("/api/publications/:id", rh.getPublicationByID);
 
-app.post("api/slack", fb.postFeedback);
-app.post("api/image", fb.postImage);
+app.post("/api/slack", fb.postFeedback);
+app.post("/api/image", fb.postImage);
 
 //app.post("/api/pdf2html", pdfToHtml);
 

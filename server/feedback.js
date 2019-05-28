@@ -1,7 +1,7 @@
 const VALID_MIMETYPES = ['image/jpg', 'image/jpeg', 'image/png', 'image/gif'];
 
 const postFeedback = (req, res) => {
-  console.log(req.body);
+  console.log(JSON.stringify(req.body));
   return res.status(200).send({
     status: 200,
     statusText: "Hello World!",

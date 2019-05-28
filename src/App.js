@@ -6,6 +6,9 @@ import OctopusIcon from "./octopus-icon";
 import { default as OctopusTheme } from "./octopus-theme";
 
 function sendToServer(payload, success, error) {
+
+  console.log(JSON.stringify(payload));
+
   return fetch('/api/slack', {
     method: 'POST',
     body: JSON.stringify(payload)
