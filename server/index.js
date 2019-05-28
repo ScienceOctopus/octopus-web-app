@@ -2,7 +2,8 @@ const express = require("express");
 const bodyParser = require("body-parser");
 
 const db = require("./postgresQueries").queries;
-const rh = require("./dbRequests")(db);
+
+const problemsHandlers = require("./routes/problems");
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -21,10 +22,7 @@ app.get("/api", (request, response) => {
   response.json({ info: "Node.js, Express, and Postgres API" });
 });
 
-app.get("/api/problems", rh.getProblems);
-app.get("/api/problems/:id", rh.getProblemByID);
-app.put("/api/problems/:id/publications", rh.getPublicationsByProblem);
-app.get("/api/publications/:id", rh.getPublicationByID);
+app.use("/api/", problemsHandlers.router);
 
 //app.post("/api/pdf2html", pdfToHtml);
 

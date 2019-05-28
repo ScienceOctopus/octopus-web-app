@@ -14,11 +14,13 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test-node": "jest server/",
+    "test-react": "react-scripts test",
     "eject": "react-scripts eject",
     "server": "node-env-run server --exec nodemon | pino-colada",
     "dev": "run-p server start",
-    "migrate": "node-pg-migrate"
+    "migrate": "node-pg-migrate",
+    "test": "run-p test-node test-react"
   },
   "eslintConfig": {
     "extends": "react-app"
