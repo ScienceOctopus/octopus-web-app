@@ -3,10 +3,6 @@ import "./App.css";
 import DefaultAppView from "./DefaultAppView";
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     return (
       <div className="App">
