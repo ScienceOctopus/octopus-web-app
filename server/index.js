@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const db = require("./postgresQueries").queries;
 
 const problemsHandlers = require("./routes/problems");
+const fb = require("./feedback");
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -23,6 +24,9 @@ app.get("/api", (request, response) => {
 });
 
 app.use("/api/", problemsHandlers.router);
+
+app.post("/api/slack", fb.postFeedback);
+app.post("/api/image", fb.postImage);
 
 //app.post("/api/pdf2html", pdfToHtml);
 
