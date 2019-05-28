@@ -11,15 +11,15 @@ variables:
 
 strategy:
   matrix:
-    linux:
-      imageName: 'ubuntu-latest'
-    mac:
-      imageName: 'macos-latest'
-    windows:
-      imageName: 'windows-latest'
+    Linux:
+      ImageName: 'ubuntu-latest'
+    Macintosh:
+      ImageName: 'macos-latest'
+    Windows:
+      ImageName: 'windows-latest'
 
 pool:
-  vmImage: $(imageName)
+  vmImage: $(ImageName)
 
 steps:
 - task: NodeTool@0
