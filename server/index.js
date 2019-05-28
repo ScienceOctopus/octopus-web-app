@@ -1,8 +1,8 @@
-const { pdfToHtml } = require("./pdfConversion");
-
 const express = require("express");
 const bodyParser = require("body-parser");
-const db = require("./dbRequests");
+
+const db = require("./postgresQueries").queries;
+const rh = require("./dbRequests")(db);
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -21,10 +21,10 @@ app.get("/api", (request, response) => {
   response.json({ info: "Node.js, Express, and Postgres API" });
 });
 
-app.get("/api/problems", db.getProblems);
-app.get("/api/problems/:id", db.getProblemByID);
-app.put("/api/problems/:id/publications", db.getPublicationsByProblem);
-app.get("/api/publications/:id", db.getPublicationByID);
+app.get("/api/problems", rh.getProblems);
+app.get("/api/problems/:id", rh.getProblemByID);
+app.put("/api/problems/:id/publications", rh.getPublicationsByProblem);
+app.get("/api/publications/:id", rh.getPublicationByID);
 
 //app.post("/api/pdf2html", pdfToHtml);
 

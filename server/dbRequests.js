@@ -1,97 +1,39 @@
-const query = require("./postgresQueries").queries;
+const autoBind = require("auto-bind");
 
-const getProblems = (req, res) => {
-  query
-    .selectAllProblems()
-    .then(rows => res.status(200).json(rows))
-    .catch(console.error);
-};
+class RequestHandlers {
+  constructor(db) {
+    this.query = db;
 
-const getProblemByID = (req, res) => {
-  query
-    .selectProblemsByID(req.params.id)
-    .then(rows => res.status(200).json(rows))
-    .catch(console.error);
-};
+    autoBind(this);
+  }
 
-const getPublicationByID = (req, res) => {
-  query
-    .selectPublicationsByID(req.params.id)
-    .then(rows => res.status(200).json(rows))
-    .catch(console.error);
-};
+  getProblems(req, res) {
+    this.query
+      .selectAllProblems()
+      .then(rows => res.status(200).json(rows))
+      .catch(console.error);
+  }
 
-const getPublicationsByProblem = (req, res) => {
-  query
-    .selectPublicationsByProblem(req.params.id)
-    .then(rows => res.status(200).json(rows))
-    .catch(console.error);
-};
-// const getUsers = (request, response) => {
-//   pool.query("SELECT * FROM users ORDER BY id ASC", (error, result) => {
-//     if (error) {
-//       throw error;
-//     }
-//     response.status(200).json(result.rows);
-//   });
-// };
+  getProblemByID(req, res) {
+    this.query
+      .selectProblemsByID(req.params.id)
+      .then(rows => res.status(200).json(rows))
+      .catch(console.error);
+  }
 
-// const getUserByName = (request, response) => {
-//   const name = request.query.name;
+  getPublicationByID(req, res) {
+    this.query
+      .selectPublicationsByID(req.params.id)
+      .then(rows => res.status(200).json(rows))
+      .catch(console.error);
+  }
 
-//   pool.query("SELECT * FROM users WHERE name = $1", [name], (error, result) => {
-//     if (error) {
-//       throw error;
-//     }
-//     response.status(200).json(result.rows);
-//   });
-// };
+  getPublicationsByProblem(req, res) {
+    this.query
+      .selectPublicationsByProblem(req.params.id)
+      .then(rows => res.status(200).json(rows))
+      .catch(console.error);
+  }
+}
 
-// const createUser = (request, response) => {
-//   const { name, email } = request.body;
-
-//   pool.query(
-//     "INSERT INTO users (name, email) VALUES ($1, $2) RETURNING id",
-//     [name, email],
-//     (error, result) => {
-//       if (error) {
-//         throw error;
-//       }
-//       response.status(201).send(`User added with ID: ${result.rows[0].id}`);
-//     }
-//   );
-// };
-
-// const updateUser = (request, response) => {
-//   const id = parseInt(request.params.id);
-//   const { name, email } = request.body;
-
-//   pool.query(
-//     "UPDATE users SET name = $1, email = $2 WHERE id = $3",
-//     [name, email, id],
-//     (error, result) => {
-//       if (error) {
-//         throw error;
-//       }
-//       response.status(200).send(`User modified with ID: ${id}`);
-//     }
-//   );
-// };
-
-// const deleteUser = (request, response) => {
-//   const id = parseInt(request.params.id);
-
-//   pool.query("DELETE FROM users WHERE id = $1", [id], (error, result) => {
-//     if (error) {
-//       throw error;
-//     }
-//     response.status(200).send(`User deleted with ID: ${id}`);
-//   });
-// };
-
-module.exports = {
-  getProblems,
-  getProblemByID,
-  getPublicationByID,
-  getPublicationsByProblem,
-};
+module.exports = db => new RequestHandlers(db);
