@@ -1,7 +1,8 @@
-const VALID_MIMETYPES = ['image/jpg', 'image/jpeg', 'image/png', 'image/gif'];
+const port = process.env.PORT || 3001;
+const VALID_MIMETYPES = ["image/jpg", "image/jpeg", "image/png", "image/gif"];
 
 const postFeedback = (req, res) => {
-  console.log(JSON.stringify(req.body));
+  console.log(req.body);
   return res.status(200).send({
     status: 200,
     statusText: "Hello World!",
@@ -9,22 +10,23 @@ const postFeedback = (req, res) => {
 };
 
 const postImage = (req, res) => {
-  const ext = req.file.originalname.split('.').pop();
+  // Currently file extension not used
+  const ext = req.file.originalname.split(".").pop();
 
   if (!VALID_MIMETYPES.includes(req.file.mimetype)) {
     return res.status(400).json({
-      message: 'Invalid mimetype'
+      message: "Invalid mimetype",
     });
   }
 
   setTimeout(() => {
     res.status(200).json({
-      url: `http://localhost:${PORT}/${req.file.path}.${ext}`
+      url: `/${req.file.filename}`,
     });
-  }, 2000);
+  }, 500);
 };
 
 module.exports = {
   postFeedback,
-  postImage
+  postImage,
 };
