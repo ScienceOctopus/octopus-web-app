@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const db = require("./postgresQueries").queries;
 
 const problemsHandlers = require("./routes/problems");
+const publicationsHandlers = require("./routes/publications");
 
 const fb = require("./feedback");
 const multer = require("multer");
@@ -30,7 +31,8 @@ app.get("/api", (request, response) => {
   response.json({ info: "Node.js, Express, and Postgres API" });
 });
 
-app.use("/api/", problemsHandlers.router);
+app.use("/api/problems", problemsHandlers.router);
+app.use("/api/publications", publicationsHandlers.router);
 
 const upload = multer({
   storage: new MulterAzureStorage({

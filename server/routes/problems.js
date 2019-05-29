@@ -14,13 +14,6 @@ const getProblemByID = (req, res) => {
     .catch(console.error);
 };
 
-const getPublicationByID = (req, res) => {
-  this.query
-    .selectPublicationsByID(req.params.id)
-    .then(rows => res.status(200).json(rows))
-    .catch(console.error);
-};
-
 const getPublicationsByProblem = (req, res) => {
   this.query
     .selectPublicationsByProblem(req.params.id)
@@ -30,10 +23,9 @@ const getPublicationsByProblem = (req, res) => {
 
 var router = express.Router();
 
-router.get("/api/problems", getProblems);
-router.get("/api/problems/:id", getProblemByID);
-router.put("/api/problems/:id/publications", getPublicationsByProblem);
-router.get("/api/publications/:id", getPublicationByID);
+router.get("/", getProblems);
+router.get("/:id", getProblemByID);
+router.put("/:id/publications", getPublicationsByProblem);
 
 module.exports = {
   router,
