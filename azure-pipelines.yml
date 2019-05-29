@@ -39,7 +39,10 @@ steps:
   displayName: 'Delete unnecessary files'
   inputs:
     SourceFolder: '$(System.DefaultWorkingDirectory)'
-    Contents: 'node_modules .gitignore README.md'
+    Contents: |
+      'node_modules'
+      '.gitignore'
+      'README.md'
   
 - task: PublishBuildArtifacts@1
   displayName: 'Publish application files'
