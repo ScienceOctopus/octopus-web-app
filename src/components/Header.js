@@ -10,32 +10,32 @@ const SHOW_SIMPLE_NAV = false;
 class Header extends Component {
   render() {
     return (
-      <header class="ui teal inverted menu" style={{ borderRadius: 0 }}>
-        <div class="ui container">
-          <Link to={WebURI.Home} class="header item">
+      <header className="ui teal inverted menu" style={{ borderRadius: 0 }}>
+        <div className="ui container">
+          <Link to={WebURI.Home} className="header item">
             <img
-              class="logo"
+              className="logo"
               src="/images/octopus.png"
               alt="Octopus Logo"
               style={{ marginRight: 1.5 + "em" }}
             />
             Octopus
           </Link>
-          <Link to={WebURI.UploadPublication} class="item">
-            <i class="ui pencil alternate icon" />
+          <Link to={WebURI.UploadPublication} className="item">
+            <i className="ui pencil alternate icon" />
             Draft a new publication
           </Link>
 
-          <div class="right item">
+          <div className="right item">
             <img
               src="/images/avatar.jpg"
-              class="ui avatar image"
+              className="ui avatar image"
               alt="Avatar of Steve"
             />
             <strong>Steve</strong>
             <div
               style={{ marginLeft: 1 + "em" }}
-              class="ui button"
+              className="ui button"
               /*href="/login?logout=1"*/
             >
               Logout
@@ -43,7 +43,7 @@ class Header extends Component {
             {/*<a href="/login?redirect">
               <img
                 src="/images/avatar.jpg"
-                class="ui avatar image"
+                className="ui avatar image"
                 alt="Generic avatar"
                 title="Log in"
               />

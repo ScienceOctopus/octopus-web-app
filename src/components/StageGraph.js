@@ -2,7 +2,25 @@ import React, { Component } from "react";
 import "../App.css";
 import Stage from "./Stage";
 
-const numbers = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen"];
+const numbers = [
+  "zero",
+  "one",
+  "two",
+  "three",
+  "four",
+  "five",
+  "six",
+  "seven",
+  "eight",
+  "nine",
+  "ten",
+  "eleven",
+  "twelve",
+  "thirteen",
+  "fourteen",
+  "fifteen",
+  "sixteen",
+];
 
 class StageGraph extends Component {
   constructor(props) {
@@ -40,9 +58,11 @@ class StageGraph extends Component {
             backgroundColor: "#dcf8ec",
           }}
         >
-        <div class="ui container" style={{ marginTop: 1 + "em" }}>
-          <h3 class="ui block header">Problem: {this.state.content.title}</h3>
-        </div>
+          <div className="ui container" style={{ marginTop: 1 + "em" }}>
+            <h3 className="ui block header">
+              Problem: {this.state.content.title}
+            </h3>
+          </div>
         </div>
         <div
           style={{
@@ -53,7 +73,9 @@ class StageGraph extends Component {
           }}
         >
           <nav
-            class={"ui " + numbers[this.state.stages.length] + " column grid"}
+            className={
+              "ui " + numbers[this.state.stages.length] + " column grid"
+            }
             style={{ minWidth: 80 + "em", margin: 0 }}
           >
             {this.state.stages.map(stage => (
