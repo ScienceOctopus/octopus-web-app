@@ -8,33 +8,37 @@ const getProblems = (req, res) => {
 };
 
 const getProblemByID = (req, res) => {
-  this.query
-    .selectProblemsByID(req.params.id)
+  db.selectProblemsByID(req.params.id)
     .then(rows => res.status(200).json(rows))
     .catch(console.error);
 };
 
 const getStagesByProblem = (req, res) => {
-  this.query
-    .selectStages()
+  db.selectStages()
     .then(rows => res.status(200).json(rows))
     .catch(console.error);
 };
 
 const getPublicationsByProblemAndStage = (req, res) => {
-  this.query
-    .selectPublicationsByProblemAndStage(req.params.id, req.params.stage)
+  db.selectPublicationsByProblemAndStage(req.params.id, req.params.stage)
     .then(rows => res.status(200).json(rows))
     .catch(console.error);
 };
 
 const postPublicationToProblemAndStage = (req, res) => {
-  this.query.insertPublication(
+  // TODO: validate existence of problem and stage
+  db.insertPublication(
     req.params.problem,
     req.params.stage,
     req.query.title,
     req.query.description
-  );
+  ).then(rows => {
+    console.log(rows);
+
+    this.query.insertResource("azureBlob", "lolcats");
+
+    this.query.insertPublicationResource("0", "0", "main");
+  });
 };
 
 var router = express.Router();
@@ -51,8 +55,4 @@ router.post(
 
 module.exports = {
   router,
-  getProblems,
-  getProblemByID,
-  getPublicationByID,
-  getPublicationsByProblem,
 };
