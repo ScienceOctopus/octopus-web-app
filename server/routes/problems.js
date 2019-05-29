@@ -11,7 +11,13 @@ const getProblems = (req, res) => {
 
 const getProblemByID = (req, res) => {
   db.selectProblemsByID(req.params.id)
-    .then(rows => res.status(200).json(rows))
+    .then(rows => {
+       if (!rows.length) {
+         return res.status(404);
+       }
+
+       return res.status(200).json(rows[0]);
+    })
     .catch(console.error);
 };
 

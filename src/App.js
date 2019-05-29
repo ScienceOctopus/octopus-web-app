@@ -30,7 +30,9 @@ class App extends Component {
       <div className="App">
         <Header />
 
-        <StageGraph />
+        <StageGraph
+          problemId={1}
+        />
 
         <SlackFeedback
           theme={OctopusTheme}

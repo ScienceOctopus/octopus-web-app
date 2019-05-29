@@ -1,61 +1,55 @@
 import React, { Component } from "react";
-import "./App.css";
-import logo from "./logo.svg";
+import Stage from "./Stage";
 
-class DefaultAppView extends Component {
+class StageGraph extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: "",
-      greeting: "",
+      problem: props.problemId,
+      content: {},
+      stages: [],
     };
 
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  handleChange(event) {
-    this.setState({ name: event.target.value });
-  }
-
-  handleSubmit(event) {
-    event.preventDefault();
-    fetch(`/api/users?name=${encodeURIComponent(this.state.name)}`)
+    fetch(`/api/problems/${this.state.problem}`)
       .then(response => response.json())
-      .then(state => {
-        state.length > 0 && this.setState({ greeting: state[0].email });
+      .then(content => {console.log(content); this.setState({ content: content })});
+
+    fetch(`/api/problems/${this.state.problem}/stages`)
+      .then(response => response.json())
+      .then(stages => {
+        stages.sort((a, b) => a.id - b.id);
+        this.setState({ stages: stages });
       });
   }
 
   render() {
     return (
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <form onSubmit={this.handleSubmit}>
-          <label htmlFor="name">Enter your name: </label>
-          <input
-            id="name"
-            type="text"
-            value={this.state.name}
-            onChange={this.handleChange}
-          />
-          <button type="submit">Submit</button>
-        </form>
-        <p>{this.state.greeting}</p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+      <div>
+        <div class="ui container" style={{ marginTop: 1 + "em" }}>
+          <h3 class="ui block header">Problem: {this.state.content.title}</h3>
+          <div class="ui divider" />
+        </div>
+        <div
+          style={{
+            overflowX: "auto",
+            overflowY: "hidden",
+            marginTop: -1 + "rem",
+            backgroundColor: "#dcf8ec",
+          }}
         >
-          Learn React
-        </a>
-      </header>
+          {/* TODO: Dynamic number of columns */}
+          <nav
+            class="ui six column grid"
+            style={{ minWidth: 80 + "em", margin: 0 }}
+          >
+            {this.state.stages.map(stage => (
+              <Stage problemId={this.state.problem} stage={stage} />
+            ))}
+          </nav>
+        </div>
+      </div>
     );
   }
 }
 
-export default DefaultAppView;
+export default StageGraph;
