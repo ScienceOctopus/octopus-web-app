@@ -52,9 +52,15 @@ steps:
   inputs:
     SourceFolder: '$(System.DefaultWorkingDirectory)'
     Contents: '.gitignore'
+
+- task: DeleteFiles@1
+  displayName: 'Delete .git'
+  inputs:
+    SourceFolder: '$(System.DefaultWorkingDirectory)'
+    Contents: '.git'
   
 - task: PublishBuildArtifacts@1
   displayName: 'Publish application files'
   inputs:
     PathtoPublish: '$(System.DefaultWorkingDirectory)'
-    ArtifactName: 'Application files'
+    ArtifactName: 'Application Files'
