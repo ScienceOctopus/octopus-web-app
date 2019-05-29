@@ -19,7 +19,7 @@ class Publication extends Component {
   render() {
     if (this.state.content) {
       return (
-        <a /*href="/hypotheses/show/$id"*/ style={{ marginBottom: 0.5 + "em" }}>
+        <a href={"/publications/" + this.state.publication} style={{ marginBottom: 0.5 + "em" }}>
           <div class="ui segment" style={{ fontSize: 0.75 + "rem" }}>
             <h5
               style={{

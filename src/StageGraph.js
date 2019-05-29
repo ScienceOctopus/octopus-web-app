@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import Stage from "./Stage";
 
+const numbers = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen"];
+
 class StageGraph extends Component {
   constructor(props) {
     super(props);
@@ -25,9 +27,18 @@ class StageGraph extends Component {
   render() {
     return (
       <div>
+        <div
+          style={{
+            overflowX: "auto",
+            overflowY: "hidden",
+            marginTop: -1 + "rem",
+            paddingBottom: 1.5 + "rem",
+            backgroundColor: "#dcf8ec",
+          }}
+        >
         <div class="ui container" style={{ marginTop: 1 + "em" }}>
           <h3 class="ui block header">Problem: {this.state.content.title}</h3>
-          <div class="ui divider" />
+        </div>
         </div>
         <div
           style={{
@@ -37,9 +48,8 @@ class StageGraph extends Component {
             backgroundColor: "#dcf8ec",
           }}
         >
-          {/* TODO: Dynamic number of columns */}
           <nav
-            class="ui six column grid"
+            class={"ui " + numbers[this.state.stages.length] + " column grid"}
             style={{ minWidth: 80 + "em", margin: 0 }}
           >
             {this.state.stages.map(stage => (
