@@ -34,8 +34,3 @@ steps:
 
 - script: npm test
   displayName: 'Run tests'
-
-- task: ArchiveFiles@2
-  inputs:
-    rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
-    includeRootFolder: false
