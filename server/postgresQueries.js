@@ -38,6 +38,25 @@ const queries = {
       title: title,
       description: description,
     }),
+  selectResource: id =>
+    knex("resources")
+      .select()
+      .where("id", id),
+  insertResource: (type, uri) =>
+    knex("resources").insert({
+      resource_type: type,
+      uri: uri,
+    }),
+  selectPublicationResource: id =>
+    knex("publication_resources")
+      .select()
+      .where("id", id),
+  insertPublicationResource: (publication, resource, behaviour_type) =>
+    knex("publication_resources").insert({
+      publication: publication,
+      resource: resource,
+      behaviour_type: behaviour_type,
+    }),
 };
 
 module.exports = {
