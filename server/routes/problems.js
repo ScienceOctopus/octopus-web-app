@@ -39,24 +39,20 @@ const getPublicationsByProblemAndStage = (req, res) => {
 
 const postPublicationToProblemAndStage = (req, res) => {
   // TODO: validate existence of problem and stage
-  console.warn(req.params);
-  console.warn(req.body);
-  console.log(req.file.url);
-  res.status(200).json({});
-  //   db
-  //     .insertPublication(
-  //       req.params.id,
-  //       req.params.stage,
-  //       req.body.title,
-  //       req.body.description
-  //     )
-  //     .then(publications => {
-  //       db.insertResource("azureBlob", "lolcats").then(resources => {
-  //         db
-  //           .insertPublicationResource(publications[0], resources[0], "main")
-  //           .then(id => res.status(200).json(id[0]));
-  //       });
-  //     });
+  db
+    .insertPublication(
+      req.params.id,
+      req.params.stage,
+      req.body.title,
+      req.body.description
+    )
+    .then(publications => {
+      db.insertResource("azureBlob", req.file.url).then(resources => {
+        db
+          .insertPublicationResource(publications[0], resources[0], "main")
+          .then(id => res.status(200).json(id[0]));
+      });
+    });
 };
 
 var router = express.Router();
