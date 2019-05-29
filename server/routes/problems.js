@@ -1,5 +1,7 @@
-const db = require("../postgresQueries.js").queries;
 const express = require("express");
+const bodyParser = require("body-parser");
+
+const db = require("../postgresQueries.js").queries;
 
 const getProblems = (req, res) => {
   db.selectAllProblems()
@@ -28,10 +30,10 @@ const getPublicationsByProblemAndStage = (req, res) => {
 const postPublicationToProblemAndStage = (req, res) => {
   // TODO: validate existence of problem and stage
   db.insertPublication(
-    req.params.problem,
+    req.params.id,
     req.params.stage,
-    req.query.title,
-    req.query.description
+    req.body.title,
+    req.body.description
   ).then(rows => {
     console.log(rows);
 
@@ -49,6 +51,7 @@ router.get("/:id/stages", getStagesByProblem);
 router.get("/:id/stages/:stage/publications", getPublicationsByProblemAndStage);
 router.post(
   "/:id/stages/:stage/publications",
+  bodyParser.urlencoded({ extended: false }),
   postPublicationToProblemAndStage
 );
 //router.get("/:id/publications", getPublicationsByProblem);
