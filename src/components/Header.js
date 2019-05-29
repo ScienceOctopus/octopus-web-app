@@ -12,22 +12,18 @@ class Header extends Component {
     return (
       <header class="ui teal inverted menu" style={{ borderRadius: 0 }}>
         <div class="ui container">
-          <Link to={WebURI.Home}>
-            <a class="header item" /*href="/"*/>
-              <img
-                class="logo"
-                src="/images/octopus.png"
-                alt="Octopus Logo"
-                style={{ marginRight: 1.5 + "em" }}
-              />
-              Octopus
-            </a>
+          <Link to={WebURI.Home} class="header item">
+            <img
+              class="logo"
+              src="/images/octopus.png"
+              alt="Octopus Logo"
+              style={{ marginRight: 1.5 + "em" }}
+            />
+            Octopus
           </Link>
-          <Link to={WebURI.UploadPublication}>
-            <a class="item">
-              <i class="ui pencil alternate icon" />
-              Draft a new publication
-            </a>
+          <Link to={WebURI.UploadPublication} class="item">
+            <i class="ui pencil alternate icon" />
+            Draft a new publication
           </Link>
 
           <div class="right item">
@@ -37,13 +33,13 @@ class Header extends Component {
               alt="Avatar of Steve"
             />
             <strong>Steve</strong>
-            <a
+            <div
               style={{ marginLeft: 1 + "em" }}
               class="ui button"
               /*href="/login?logout=1"*/
             >
               Logout
-            </a>
+            </div>
             {/*<a href="/login?redirect">
               <img
                 src="/images/avatar.jpg"
