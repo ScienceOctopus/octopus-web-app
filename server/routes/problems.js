@@ -4,49 +4,59 @@ const bodyParser = require("body-parser");
 const db = require("../postgresQueries.js").queries;
 
 const getProblems = (req, res) => {
-  db.selectAllProblems()
+  db
+    .selectAllProblems()
     .then(rows => res.status(200).json(rows))
     .catch(console.error);
 };
 
 const getProblemByID = (req, res) => {
-  db.selectProblemsByID(req.params.id)
+  db
+    .selectProblemsByID(req.params.id)
     .then(rows => {
-       if (!rows.length) {
-         return res.status(404);
-       }
+      if (!rows.length) {
+        return res.status(404);
+      }
 
-       return res.status(200).json(rows[0]);
+      return res.status(200).json(rows[0]);
     })
     .catch(console.error);
 };
 
 const getStagesByProblem = (req, res) => {
-  db.selectStages()
+  db
+    .selectStages()
     .then(rows => res.status(200).json(rows))
     .catch(console.error);
 };
 
 const getPublicationsByProblemAndStage = (req, res) => {
-  db.selectPublicationsByProblemAndStage(req.params.id, req.params.stage)
+  db
+    .selectPublicationsByProblemAndStage(req.params.id, req.params.stage)
     .then(rows => res.status(200).json(rows))
     .catch(console.error);
 };
 
 const postPublicationToProblemAndStage = (req, res) => {
   // TODO: validate existence of problem and stage
-  db.insertPublication(
-    req.params.id,
-    req.params.stage,
-    req.body.title,
-    req.body.description
-  ).then(publications => {
-    db.insertResource("azureBlob", "lolcats").then(resources => {
-      db.insertPublicationResource(publications[0], resources[0], "main").then(
-        id => res.status(200).json(id[0])
-      );
-    });
-  });
+  console.warn(req.params);
+  console.warn(req.body);
+  console.log(req.file.url);
+  res.status(200).json({});
+  //   db
+  //     .insertPublication(
+  //       req.params.id,
+  //       req.params.stage,
+  //       req.body.title,
+  //       req.body.description
+  //     )
+  //     .then(publications => {
+  //       db.insertResource("azureBlob", "lolcats").then(resources => {
+  //         db
+  //           .insertPublicationResource(publications[0], resources[0], "main")
+  //           .then(id => res.status(200).json(id[0]));
+  //       });
+  //     });
 };
 
 var router = express.Router();
@@ -55,9 +65,23 @@ router.get("/", getProblems);
 router.get("/:id", getProblemByID);
 router.get("/:id/stages", getStagesByProblem);
 router.get("/:id/stages/:stage/publications", getPublicationsByProblemAndStage);
+
+const multer = require("multer");
+const blobService = require("../blobService");
+
+const MulterAzureStorage = require("multer-azure-storage");
+
+const upload = multer({
+  storage: new MulterAzureStorage({
+    azureStorageConnectionString: process.env.AZURE_STORAGE_CONNECTION_STRING,
+    containerName: blobService.AZURE_PUBLICATION_CONTAINER,
+    containerSecurity: "blob",
+  }),
+});
+
 router.post(
   "/:id/stages/:stage/publications",
-  bodyParser.urlencoded({ extended: false }),
+  upload.single("file"),
   postPublicationToProblemAndStage
 );
 //router.get("/:id/publications", getPublicationsByProblem);

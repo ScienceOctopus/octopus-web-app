@@ -41,6 +41,7 @@ class StageGraph extends Component {
     fetch(`/api/problems/${this.state.problem}/stages`)
       .then(response => response.json())
       .then(stages => {
+        console.log(stages);
         stages.sort((a, b) => a.id - b.id);
         this.setState({ stages: stages });
       });
