@@ -34,3 +34,8 @@ steps:
 
 - script: npm test
   displayName: 'Run tests'
+  
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish application files'
+  inputs:
+    PathtoPublish: '$(System.DefaultWorkingDirectory)'
