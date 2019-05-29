@@ -33,7 +33,7 @@ const queries = {
   selectPublicationsByProblemAndStage: (problem, stage) =>
     knex("publications")
       .select()
-      .where("problem", problem)
+      .where("problemID", problem)
       .where("stage", stage),
   insertPublication: (problem, stage, title, description) =>
     knex("publications")
