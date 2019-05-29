@@ -6,8 +6,11 @@ const db = require("./postgresQueries").queries;
 const problemsHandlers = require("./routes/problems");
 
 const fb = require("./feedback");
-const multer = require('multer');
-const rimraf = require('rimraf');
+const multer = require("multer");
+const rimraf = require("rimraf");
+
+const blobService = require("./blobService.js");
+blobService.initialise();
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -32,7 +35,7 @@ app.use("/api/", problemsHandlers.router);
 const upload = multer({ dest: "feedback" });
 
 app.post("/api/feedback", fb.postFeedback);
-app.post("/api/image", upload.single('image'), fb.postImage);
+app.post("/api/image", upload.single("image"), fb.postImage);
 
 //app.post("/api/pdf2html", pdfToHtml);
 
@@ -41,8 +44,8 @@ app.listen(port, () => {
   // db.getProblems();
 });
 
-process.on('SIGINT', () => {
-  console.log('Closing server. Removing uploads folder...');
+process.on("SIGINT", () => {
+  console.log("Closing server. Removing uploads folder...");
   rimraf.sync("feedback");
 });
 
