@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import "./App.css";
-import logo from "./logo.svg";
+import "../App.css";
+import logo from "../logo.svg";
 
 class DefaultAppView extends Component {
   constructor(props) {

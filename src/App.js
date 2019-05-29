@@ -1,47 +1,16 @@
 import React, { Component } from "react";
 import "./App.css";
-
-import Header from "./Header";
-import StageGraph from "./StageGraph";
-
-import SlackFeedback from "react-slack-feedback";
-import OctopusIcon from "./octopus-icon";
-import { default as OctopusTheme } from "./octopus-theme";
-import axios from "axios";
-
-function sendToServer(payload, success, error) {
-  return axios.post('/api/feedback', payload)
-    .then(success)
-    .catch(error);
-}
-
-function uploadImage(image, success, error) {
-  var form = new FormData();
-  form.append('image', image);
-
-  return axios.post('/api/image', form)
-    .then(({ data }) => success(data.url))
-    .catch(err => error(err));
-}
+import Header from "./components/Header";
+import OctopusSlackFeedback from "./components/SlackFeedback/OctopusSlackFeedback";
+import StageGraph from "./components/StageGraph";
 
 class App extends Component {
   render() {
     return (
       <div className="App">
         <Header />
-
         <StageGraph />
-
-        <SlackFeedback
-          theme={OctopusTheme}
-          showChannel="false"
-          icon={() =>
-            <OctopusIcon />
-          }
-          user="Slim"
-          onImageUpload={uploadImage}
-          onSubmit={sendToServer}
-        />
+        <OctopusSlackFeedback />
       </div>
     );
   }
