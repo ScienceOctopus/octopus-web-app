@@ -9,7 +9,6 @@ const postFeedback = (req, res) => {
 
   message.title =
     message.title.charAt(0).toUpperCase() + message.title.slice(1);
-  delete message.title_link;
 
   message.footer = "Octopus Slack Feedback";
 
