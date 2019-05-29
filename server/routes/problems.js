@@ -14,18 +14,40 @@ const getProblemByID = (req, res) => {
     .catch(console.error);
 };
 
-const getPublicationsByProblem = (req, res) => {
+const getStagesByProblem = (req, res) => {
   this.query
-    .selectPublicationsByProblem(req.params.id)
+    .selectStages()
     .then(rows => res.status(200).json(rows))
     .catch(console.error);
+};
+
+const getPublicationsByProblemAndStage = (req, res) => {
+  this.query
+    .selectPublicationsByProblemAndStage(req.params.id, req.params.stage)
+    .then(rows => res.status(200).json(rows))
+    .catch(console.error);
+};
+
+const postPublicationToProblemAndStage = (req, res) => {
+  this.query.insertPublication(
+    req.params.problem,
+    req.params.stage,
+    req.query.title,
+    req.query.description
+  );
 };
 
 var router = express.Router();
 
 router.get("/", getProblems);
 router.get("/:id", getProblemByID);
-router.put("/:id/publications", getPublicationsByProblem);
+router.get("/:id/stages", getStagesByProblem);
+router.get("/:id/stages/:stage/publications", getPublicationsByProblemAndStage);
+router.post(
+  "/:id/stages/:stage/publications",
+  postPublicationToProblemAndStage
+);
+//router.get("/:id/publications", getPublicationsByProblem);
 
 module.exports = {
   router,

@@ -23,14 +23,16 @@ const queries = {
       description: description,
       creator: creator,
     }),
+  selectStages: () => knex("stages").select(),
   selectPublicationsByID: id =>
     knex("publications")
       .select()
       .where("id", id),
-  selectPublicationsByProblem: id =>
+  selectPublicationsByProblemAndStage: (problem, stage) =>
     knex("publications")
       .select()
-      .where("problem", id),
+      .where("problem", problem)
+      .where("stage", stage),
   insertPublication: (problem, stage, title, description) =>
     knex("publications").insert({
       problem: problem,
