@@ -11,7 +11,7 @@ class Publication extends Component {
     fetch(`/api/publications/${this.state.publication}`)
       .then(response => response.json())
       .then(content => {
-        content.created_at = new Date(content.created_at).toDateString();
+        content.created_at = new Date(content.created_at).toLocaleDateString();
         this.setState({ content: content });
       });
   }
@@ -20,7 +20,7 @@ class Publication extends Component {
     if (this.state.content) {
       return (
         <a href={"/publications/" + this.state.publication} style={{ marginBottom: 0.5 + "em" }}>
-          <div class="ui segment" style={{ fontSize: 0.75 + "rem" }}>
+          <div class="ui segment" style={{ fontSize: 0.75 + "rem", paddingBottom: 0 }}>
             <h5
               style={{
                 whiteSpace: "nowrap",
@@ -32,7 +32,7 @@ class Publication extends Component {
               {this.state.content.title}
             </h5>
             <div class="meta">{this.state.content.created_at}</div>
-            <div class="description">{this.state.content.description}</div>
+            <div class="description fade">{this.state.content.description}</div>
           </div>
         </a>
       );
