@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import "../App.css";
 import Stage from "./Stage";
 
 class StageGraph extends Component {
@@ -12,7 +13,10 @@ class StageGraph extends Component {
 
     fetch(`/api/problems/${this.state.problem}`)
       .then(response => response.json())
-      .then(content => {console.log(content); this.setState({ content: content })});
+      .then(content => {
+        console.log(content);
+        this.setState({ content: content });
+      });
 
     fetch(`/api/problems/${this.state.problem}/stages`)
       .then(response => response.json())

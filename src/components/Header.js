@@ -1,11 +1,18 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
+
+import "../App.css";
+import WebURI from "../urls/WebsiteURIs";
+import SimpleNav from "./SimpleNav";
+
+const SHOW_SIMPLE_NAV = false;
 
 class Header extends Component {
   render() {
     return (
       <header class="ui teal inverted menu" style={{ borderRadius: 0 }}>
         <div class="ui container">
-          <a class="header item" /*href="/"*/>
+          <Link to={WebURI.Home} class="header item">
             <img
               class="logo"
               src="/images/octopus.png"
@@ -13,12 +20,11 @@ class Header extends Component {
               style={{ marginRight: 1.5 + "em" }}
             />
             Octopus
-          </a>
-
-          <a class="item">
+          </Link>
+          <Link to={WebURI.UploadPublication} class="item">
             <i class="ui pencil alternate icon" />
             Draft a new publication
-          </a>
+          </Link>
 
           <div class="right item">
             <img
@@ -27,13 +33,13 @@ class Header extends Component {
               alt="Avatar of Steve"
             />
             <strong>Steve</strong>
-            <a
+            <div
               style={{ marginLeft: 1 + "em" }}
               class="ui button"
               /*href="/login?logout=1"*/
             >
               Logout
-            </a>
+            </div>
             {/*<a href="/login?redirect">
               <img
                 src="/images/avatar.jpg"
@@ -45,6 +51,8 @@ class Header extends Component {
             <span>Log in via ORCiD</span>*/}
           </div>
         </div>
+
+        {SHOW_SIMPLE_NAV && <SimpleNav />}
       </header>
     );
   }
