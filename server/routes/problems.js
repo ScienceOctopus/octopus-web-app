@@ -57,5 +57,10 @@ router.post(
 //router.get("/:id/publications", getPublicationsByProblem);
 
 module.exports = {
+  getProblems,
+  getProblemByID,
+  getStagesByProblem,
+  getPublicationsByProblemAndStage,
+  postPublicationToProblemAndStage,
   router,
 };
