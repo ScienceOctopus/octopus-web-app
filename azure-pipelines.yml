@@ -34,6 +34,11 @@ steps:
 
 - script: npm test
   displayName: 'Run tests'
+
+- task: DeleteFiles@1
+  inputs:
+    SourceFolder: '$(System.DefaultWorkingDirectory)'
+    Contents: 'node_modules'
   
 - task: PublishBuildArtifacts@1
   displayName: 'Publish application files'
