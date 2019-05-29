@@ -1,6 +1,9 @@
 import React, { Component } from "react";
 import "./App.css";
-import DefaultAppView from "./DefaultAppView";
+
+import Header from "./Header";
+import StageGraph from "./StageGraph";
+
 import SlackFeedback from "react-slack-feedback";
 import OctopusIcon from "./octopus-icon";
 import { default as OctopusTheme } from "./octopus-theme";
@@ -25,9 +28,9 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <DefaultAppView />
-        {/* <ReferenceSelection />
-        <ReferenceSelection /> */}
+        <Header />
+
+        <StageGraph />
 
         <SlackFeedback
           theme={OctopusTheme}
