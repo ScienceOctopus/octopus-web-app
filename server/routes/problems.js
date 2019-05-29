@@ -34,12 +34,12 @@ const postPublicationToProblemAndStage = (req, res) => {
     req.params.stage,
     req.body.title,
     req.body.description
-  ).then(rows => {
-    console.log(rows);
-
-    this.query.insertResource("azureBlob", "lolcats");
-
-    this.query.insertPublicationResource("0", "0", "main");
+  ).then(publications => {
+    db.insertResource("azureBlob", "lolcats").then(resources => {
+      db.insertPublicationResource(publications[0], resources[0], "main").then(
+        id => res.status(200).json(id[0])
+      );
+    });
   });
 };
 
