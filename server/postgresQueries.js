@@ -18,45 +18,55 @@ const queries = {
       .select()
       .where("id", id),
   insertProblem: (title, description, creator) =>
-    knex("problems").insert({
-      title: title,
-      description: description,
-      creator: creator,
-    }),
+    knex("problems")
+      .insert({
+        title: title,
+        description: description,
+        creator: creator,
+      })
+      .returning("id"),
+  selectStages: () => knex("stages").select(),
   selectPublicationsByID: id =>
     knex("publications")
       .select()
       .where("id", id),
-  selectPublicationsByProblem: id =>
+  selectPublicationsByProblemAndStage: (problem, stage) =>
     knex("publications")
       .select()
-      .where("problem", id),
+      .where("problem", problem)
+      .where("stage", stage),
   insertPublication: (problem, stage, title, description) =>
-    knex("publications").insert({
-      problem: problem,
-      stage: stage,
-      title: title,
-      description: description,
-    }),
+    knex("publications")
+      .insert({
+        problem: problem,
+        stage: stage,
+        title: title,
+        description: description,
+      })
+      .returning("id"),
   selectResource: id =>
     knex("resources")
       .select()
       .where("id", id),
   insertResource: (type, uri) =>
-    knex("resources").insert({
-      resource_type: type,
-      uri: uri,
-    }),
+    knex("resources")
+      .insert({
+        resource_type: type,
+        uri: uri,
+      })
+      .returning("id"),
   selectPublicationResource: id =>
     knex("publication_resources")
       .select()
       .where("id", id),
   insertPublicationResource: (publication, resource, behaviour_type) =>
-    knex("publication_resources").insert({
-      publication: publication,
-      resource: resource,
-      behaviour_type: behaviour_type,
-    }),
+    knex("publication_resources")
+      .insert({
+        publication: publication,
+        resource: resource,
+        behaviour_type: behaviour_type,
+      })
+      .returning("id"),
 };
 
 module.exports = {

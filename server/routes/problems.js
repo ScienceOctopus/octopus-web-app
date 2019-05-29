@@ -1,5 +1,7 @@
-const db = require("../postgresQueries.js").queries;
 const express = require("express");
+const bodyParser = require("body-parser");
+
+const db = require("../postgresQueries.js").queries;
 
 const getProblems = (req, res) => {
   db.selectAllProblems()
@@ -8,37 +10,57 @@ const getProblems = (req, res) => {
 };
 
 const getProblemByID = (req, res) => {
-  this.query
-    .selectProblemsByID(req.params.id)
+  db.selectProblemsByID(req.params.id)
     .then(rows => res.status(200).json(rows))
     .catch(console.error);
 };
 
-const getPublicationByID = (req, res) => {
-  this.query
-    .selectPublicationsByID(req.params.id)
+const getStagesByProblem = (req, res) => {
+  db.selectStages()
     .then(rows => res.status(200).json(rows))
     .catch(console.error);
 };
 
-const getPublicationsByProblem = (req, res) => {
-  this.query
-    .selectPublicationsByProblem(req.params.id)
+const getPublicationsByProblemAndStage = (req, res) => {
+  db.selectPublicationsByProblemAndStage(req.params.id, req.params.stage)
     .then(rows => res.status(200).json(rows))
     .catch(console.error);
+};
+
+const postPublicationToProblemAndStage = (req, res) => {
+  // TODO: validate existence of problem and stage
+  db.insertPublication(
+    req.params.id,
+    req.params.stage,
+    req.body.title,
+    req.body.description
+  ).then(publications => {
+    db.insertResource("azureBlob", "lolcats").then(resources => {
+      db.insertPublicationResource(publications[0], resources[0], "main").then(
+        id => res.status(200).json(id[0])
+      );
+    });
+  });
 };
 
 var router = express.Router();
 
-router.get("/api/problems", getProblems);
-router.get("/api/problems/:id", getProblemByID);
-router.put("/api/problems/:id/publications", getPublicationsByProblem);
-router.get("/api/publications/:id", getPublicationByID);
+router.get("/", getProblems);
+router.get("/:id", getProblemByID);
+router.get("/:id/stages", getStagesByProblem);
+router.get("/:id/stages/:stage/publications", getPublicationsByProblemAndStage);
+router.post(
+  "/:id/stages/:stage/publications",
+  bodyParser.urlencoded({ extended: false }),
+  postPublicationToProblemAndStage
+);
+//router.get("/:id/publications", getPublicationsByProblem);
 
 module.exports = {
-  router,
   getProblems,
   getProblemByID,
-  getPublicationByID,
-  getPublicationsByProblem,
+  getStagesByProblem,
+  getPublicationsByProblemAndStage,
+  postPublicationToProblemAndStage,
+  router,
 };
