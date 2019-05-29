@@ -11,10 +11,10 @@ variables:
 
 strategy:
   matrix:
-    Linux:
-      ImageName: 'ubuntu-latest'
-    Macintosh:
-      ImageName: 'macos-latest'
+    # Linux:
+    #   ImageName: 'ubuntu-latest'
+    # Macintosh:
+    #   ImageName: 'macos-latest'
     Windows:
       ImageName: 'windows-latest'
 
@@ -44,3 +44,4 @@ steps:
   displayName: 'Publish application files'
   inputs:
     PathtoPublish: '$(System.DefaultWorkingDirectory)'
+    ArtifactName: 'Application files'
