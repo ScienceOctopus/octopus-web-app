@@ -36,10 +36,22 @@ steps:
   displayName: 'Run tests'
 
 - task: DeleteFiles@1
-  displayName: 'Delete unnecessary files'
+  displayName: 'Delete node_modules'
   inputs:
     SourceFolder: '$(System.DefaultWorkingDirectory)'
     Contents: 'node_modules'
+
+- task: DeleteFiles@1
+  displayName: 'Delete README.md'
+  inputs:
+    SourceFolder: '$(System.DefaultWorkingDirectory)'
+    Contents: 'README.md'
+
+- task: DeleteFiles@1
+  displayName: 'Delete .gitignore'
+  inputs:
+    SourceFolder: '$(System.DefaultWorkingDirectory)'
+    Contents: '.gitignore'
   
 - task: PublishBuildArtifacts@1
   displayName: 'Publish application files'
