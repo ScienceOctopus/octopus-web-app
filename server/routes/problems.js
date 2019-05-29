@@ -12,11 +12,11 @@ const getProblems = (req, res) => {
 const getProblemByID = (req, res) => {
   db.selectProblemsByID(req.params.id)
     .then(rows => {
-       if (!rows.length) {
-         return res.status(404);
-       }
+      if (!rows.length) {
+        return res.status(404);
+      }
 
-       return res.status(200).json(rows[0]);
+      return res.status(200).json(rows[0]);
     })
     .catch(console.error);
 };
@@ -28,7 +28,10 @@ const getStagesByProblem = (req, res) => {
 };
 
 const getPublicationsByProblemAndStage = (req, res) => {
-  db.selectPublicationsByProblemAndStage(req.params.id, req.params.stage)
+  db.selectOriginalPublicationsByProblemAndStage(
+    req.params.id,
+    req.params.stage
+  )
     .then(rows => res.status(200).json(rows))
     .catch(console.error);
 };
@@ -39,7 +42,9 @@ const postPublicationToProblemAndStage = (req, res) => {
     req.params.id,
     req.params.stage,
     req.body.title,
-    req.body.description
+    req.body.description,
+    req.body.summary,
+    req.body.review
   ).then(publications => {
     db.insertResource("azureBlob", "lolcats").then(resources => {
       db.insertPublicationResource(publications[0], resources[0], "main").then(
@@ -60,7 +65,6 @@ router.post(
   bodyParser.urlencoded({ extended: false }),
   postPublicationToProblemAndStage
 );
-//router.get("/:id/publications", getPublicationsByProblem);
 
 module.exports = {
   getProblems,
