@@ -1,15 +1,15 @@
 import React, { Component } from "react";
 import "./App.css";
+import AppRouter from "./AppRouter";
 import Header from "./components/Header";
 import OctopusSlackFeedback from "./components/SlackFeedback/OctopusSlackFeedback";
-import StageGraph from "./components/StageGraph";
 
 class App extends Component {
   render() {
     return (
       <div className="App">
         <Header />
-        <StageGraph />
+        <AppRouter />
         <OctopusSlackFeedback />
       </div>
     );
