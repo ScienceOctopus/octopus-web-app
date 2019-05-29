@@ -7,7 +7,7 @@ const problemsHandlers = require("./routes/problems");
 
 const fb = require("./feedback");
 const multer = require("multer");
-const rimraf = require("rimraf");
+const MulterAzureStorage = require("multer-azure-storage");
 
 const blobService = require("./blobService.js");
 blobService.initialise();
@@ -32,7 +32,13 @@ app.get("/api", (request, response) => {
 
 app.use("/api/", problemsHandlers.router);
 
-const upload = multer({ dest: "feedback" });
+const upload = multer({
+  storage: new MulterAzureStorage({
+    azureStorageConnectionString: process.env.AZURE_STORAGE_CONNECTION_STRING,
+    containerName: blobService.AZURE_FEEDBACK_IMAGE_CONTAINER,
+    containerSecurity: "blob",
+  }),
+});
 
 app.post("/api/feedback", fb.postFeedback);
 app.post("/api/image", upload.single("image"), fb.postImage);
@@ -42,11 +48,6 @@ app.post("/api/image", upload.single("image"), fb.postImage);
 app.listen(port, () => {
   console.log(`App running on port ${port}.`);
   // db.getProblems();
-});
-
-process.on("SIGINT", () => {
-  console.log("Closing server. Removing uploads folder...");
-  rimraf.sync("feedback");
 });
 
 //const pino = require('express-pino-logger')();

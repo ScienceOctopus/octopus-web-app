@@ -11,11 +11,6 @@ const postFeedback = (req, res) => {
     message.title.charAt(0).toUpperCase() + message.title.slice(1);
   delete message.title_link;
 
-  if (message.image_url) {
-    message.image_url =
-      "http://octopus-publishing.azurewebsites.net" + message.image_url;
-  }
-
   message.footer = "Octopus Slack Feedback";
 
   axios.post(process.env.FEEDBACK_WEBHOOK, req.body).then(response => {
@@ -27,9 +22,6 @@ const postFeedback = (req, res) => {
 };
 
 const postImage = (req, res) => {
-  // Currently file extension not used
-  const ext = req.file.originalname.split(".").pop();
-
   if (!VALID_MIMETYPES.includes(req.file.mimetype)) {
     return res.status(400).json({
       message: "Invalid mimetype",
@@ -38,7 +30,7 @@ const postImage = (req, res) => {
 
   setTimeout(() => {
     res.status(200).json({
-      url: `/${req.file.filename}`,
+      url: req.file.url,
     });
   }, 500);
 };
