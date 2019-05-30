@@ -11,6 +11,7 @@ const multer = require("multer");
 const MulterAzureStorage = require("multer-azure-storage");
 
 const blobService = require("./blobService.js");
+const upload = blobService.upload;
 blobService.initialise();
 
 const app = express();
@@ -33,16 +34,20 @@ app.get("/api", (request, response) => {
 app.use("/api/problems", problemsHandlers.router);
 app.use("/api/publications", publicationsHandlers.router);
 
-const upload = multer({
-  storage: new MulterAzureStorage({
-    azureStorageConnectionString: process.env.AZURE_STORAGE_CONNECTION_STRING,
-    containerName: blobService.AZURE_FEEDBACK_IMAGE_CONTAINER,
-    containerSecurity: "blob",
-  }),
-});
+// const upload = multer({
+//   storage: new MulterAzureStorage({
+//     azureStorageConnectionString: process.env.AZURE_STORAGE_CONNECTION_STRING,
+//     containerName: blobService.AZURE_FEEDBACK_IMAGE_CONTAINER,
+//     containerSecurity: "blob",
+//   }),
+// });
 
 app.post("/api/feedback", fb.postFeedback);
-app.post("/api/image", upload.single("image"), fb.postImage);
+app.post(
+  "/api/image",
+  upload(blobService.AZURE_FEEDBACK_IMAGE_CONTAINER).single("image"),
+  fb.postImage
+);
 
 //app.post("/api/pdf2html", pdfToHtml);
 

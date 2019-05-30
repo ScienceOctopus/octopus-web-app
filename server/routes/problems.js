@@ -2,6 +2,8 @@ const express = require("express");
 const bodyParser = require("body-parser");
 
 const db = require("../postgresQueries.js").queries;
+const blobService = require("../blobService.js");
+const upload = blobService.upload;
 
 const getProblems = (req, res) => {
   db.selectAllProblems()
@@ -30,7 +32,7 @@ const getStagesByProblem = (req, res) => {
 const getPublicationsByProblemAndStage = (req, res) => {
   db.selectOriginalPublicationsByProblemAndStage(
     req.params.id,
-    req.params.stage,
+    req.params.stage
   )
     .then(rows => res.status(200).json(rows))
     .catch(console.error);
@@ -44,14 +46,14 @@ const postPublicationToProblemAndStage = (req, res) => {
     req.body.title,
     req.body.summary,
     req.body.description,
-    req.body.review,
+    req.body.review
   )
     .then(publications => {
       db.insertResource("azureBlob", req.file.url).then(resources => {
         db.insertPublicationResource(
           publications[0],
           resources[0],
-          "main",
+          "main"
         ).then(id => res.status(200).json(id[0]));
       });
     })
@@ -65,23 +67,23 @@ router.get("/:id", getProblemByID);
 router.get("/:id/stages", getStagesByProblem);
 router.get("/:id/stages/:stage/publications", getPublicationsByProblemAndStage);
 
-const multer = require("multer");
-const blobService = require("../blobService");
-
-const MulterAzureStorage = require("multer-azure-storage");
-
-const upload = multer({
-  storage: new MulterAzureStorage({
-    azureStorageConnectionString: process.env.AZURE_STORAGE_CONNECTION_STRING,
-    containerName: blobService.AZURE_PUBLICATION_CONTAINER,
-    containerSecurity: "blob",
-  }),
-});
+// const multer = require("multer");
+// const blobService = require("../blobService");
+//
+// const MulterAzureStorage = require("multer-azure-storage");
+//
+// const upload = multer({
+//   storage: new MulterAzureStorage({
+//     azureStorageConnectionString: process.env.AZURE_STORAGE_CONNECTION_STRING,
+//     containerName: blobService.AZURE_PUBLICATION_CONTAINER,
+//     containerSecurity: "blob",
+//   }),
+// });
 
 router.post(
   "/:id/stages/:stage/publications",
-  upload.single("file"),
-  postPublicationToProblemAndStage,
+  upload(blobService.AZURE_PUBLICATION_CONTAINER).single("file"),
+  postPublicationToProblemAndStage
 );
 
 module.exports = {
