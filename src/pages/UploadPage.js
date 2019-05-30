@@ -26,7 +26,7 @@ export default class UploadPage extends Component {
       this.state.description = "test";
       this.state.selectedFile = "bad file";
       this.state.selectedProblemId = "1";
-      this.state.selectedStageId = "2";
+      this.state.selectedStageId = "3";
     }
 
     this.pubSelector = React.createRef();
@@ -169,16 +169,14 @@ export default class UploadPage extends Component {
 
   renderLinkingSelector() {
     return (
-      <div>
-        <PublicationSelector
-          ref={this.pubSelector}
-          problemId={this.state.selectedProblemId}
-          stageId={this.state.selectedStageId - 1}
-          selectedPublications={this.state.publicationsToLink}
-          onSelect={this.handleLinkedProblemSelected(true)}
-          onNoSelection={this.handleLinkedProblemSelected(false)}
-        />
-      </div>
+      <PublicationSelector
+        ref={this.pubSelector}
+        problemId={this.state.selectedProblemId}
+        stageId={this.state.selectedStageId - 1}
+        selectedPublications={this.state.publicationsToLink}
+        onSelect={this.handleLinkedProblemSelected(true)}
+        onNoSelection={this.handleLinkedProblemSelected(false)}
+      />
     );
   }
 }

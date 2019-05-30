@@ -11,7 +11,7 @@ class Publication extends Component {
 
     let publicationView = (
       <div
-        class="ui segment"
+        className="ui segment"
         style={backgroundStyle}
         onClick={this.props.onClick}
       >
@@ -25,8 +25,10 @@ class Publication extends Component {
         >
           {this.props.publication.title}
         </h5>
-        <div class="meta">{this.props.publication.created_at}</div>
-        <div class="description fade">{this.props.publication.description}</div>
+        <div className="meta">{this.props.publication.created_at}</div>
+        <div className="description fade">
+          {this.props.publication.description}
+        </div>
       </div>
     );
 

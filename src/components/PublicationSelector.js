@@ -9,6 +9,9 @@ class PublicationSelector extends Component {
   constructor(props) {
     super(props);
     this.state = { publications: [] };
+
+    this.pubsContainer = React.createRef();
+
     this.fetchPublications();
   }
 
@@ -33,7 +36,8 @@ class PublicationSelector extends Component {
 
     Axios.get(apiRquest)
       .then(res => {
-        // console.log(res);
+        this.pubsContainer.current.scrollLeft = 0;
+
         this.setState({
           publications: res.data,
           selected: Array(res.data.length).fill(false),
@@ -64,14 +68,15 @@ class PublicationSelector extends Component {
 
   render() {
     return (
-      <div>
+      <div style={styles.container}>
         <h4>Select basis of your publication</h4>
-        <div style={styles.container}>
+        <div style={styles.pubsContainer} ref={this.pubsContainer}>
           {this.state.publications.map((x, i) => (
             <Publication
               publication={x}
               highlight={this.state.selected[i]}
               onClick={this.handleProblemClick(i)}
+              key={i}
             />
           ))}
         </div>
@@ -81,7 +86,7 @@ class PublicationSelector extends Component {
 }
 
 PublicationSelector.propTypes = {
-  publicationId: PropTypes.number.isRequired,
+  problemId: PropTypes.string.isRequired,
   stageId: PropTypes.number.isRequired,
   onNoSelection: PropTypes.func,
   onSelect: PropTypes.func,
@@ -90,9 +95,21 @@ PublicationSelector.propTypes = {
 const styles = {
   container: {
     display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    maxWidth: "80%",
+    minWidth: "80%",
+    // marginBottom: 10,
+    // background: "red",
+  },
+  pubsContainer: {
+    width: "100%",
+    display: "flex",
     flexDirection: "row",
-    overflowY: "auto",
-    justifyContent: "space-around",
+    overflowX: "auto",
+    overflowY: "hidden",
+    justifyContent: "space-between",
   },
 };
 
