@@ -42,6 +42,7 @@ const queries = {
         stage: stage,
         title: title,
         description: description,
+        review: false, // TODO: May be a review (must be linked)
       })
       .returning("id"),
   selectResource: id =>
