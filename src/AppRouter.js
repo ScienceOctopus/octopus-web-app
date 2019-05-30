@@ -10,10 +10,18 @@ import WebURI from "./urls/WebsiteURIs";
 function AppRouter() {
   return (
     <Switch>
-      <Route path={WebURI.Home} exact component={IndexPage} />
-      <Route path={WebURI.Problem} component={ProblemPage} />
-      <Route path={WebURI.Publication} component={PublicationPage} />
-      <Route path={WebURI.UploadPublication} component={UploadPage} />
+      <Route name="home" path={WebURI.Home} exact component={IndexPage} />
+      <Route name="problem" path={WebURI.Problem} component={ProblemPage} />
+      <Route
+        name="publication"
+        path={WebURI.Publication}
+        component={PublicationPage}
+      />
+      <Route
+        name="uploadPublication"
+        path={WebURI.UploadPublication}
+        component={UploadPage}
+      />
     </Switch>
   );
 }

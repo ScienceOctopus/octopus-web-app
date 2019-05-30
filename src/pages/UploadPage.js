@@ -129,8 +129,10 @@ export default class UploadPage extends Component {
         {this.state.uploading && <h4>Uploading...</h4>}
         {this.state.uploadSuccessful && (
           <h4>
-            {"Upload Successfull!"}
-            <Link to={WebURI.Problem}>Go back to problem</Link>
+            {"Upload Successful!"}
+            <Link to={`/problems/${this.state.selectedProblemId}`}>
+              Go back to problem
+            </Link>
           </h4>
         )}
         <button onClick={this.handleSubmit} disabled={!this.submitEnabled()}>
