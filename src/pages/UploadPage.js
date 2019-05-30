@@ -55,7 +55,7 @@ export default class UploadPage extends Component {
       ApiURI.PublicationUpload +
         `/${this.state.selectedProblemId}/stages/\
           ${this.state.selectedStageId}/publications`,
-      data,
+      data
     )
       .then(() => {
         this.setState({ uploadSuccessful: true });
