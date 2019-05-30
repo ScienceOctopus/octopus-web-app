@@ -62,7 +62,9 @@ const postPublicationToProblemAndStage = (req, res) => {
         ).then(id => res.status(200).json(id[0]));
       });
     })
-    .catch(res.status(500).send("Bad request"));
+    .catch(thingy => {
+      res.status(500).send("Bad request");
+    });
 };
 
 var router = express.Router();

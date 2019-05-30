@@ -106,3 +106,29 @@ test("getProblemByID errors on multiple results", async () => {
   expect(res.status).toHaveBeenCalledWith(500);
   expect(res.json).not.toHaveBeenCalled();
 });
+
+test("getStagesByProblem returns results", async () => {
+  const testStages = [{ id: 1 }, { id: 2 }];
+  queries.selectStages.mockResolvedValue(testStages);
+
+  const mockRequest = () => {
+    return {
+      params: { id: 1 },
+    };
+  };
+
+  const mockResponse = () => {
+    const res = {};
+    res.status = jest.fn().mockReturnValue(res);
+    res.json = jest.fn().mockReturnValue(res);
+    return res;
+  };
+
+  req = mockRequest();
+  res = mockResponse();
+
+  await problems.getStagesByProblem(req, res);
+
+  expect(res.status).toHaveBeenCalledWith(200);
+  expect(res.json).toHaveBeenCalledWith(testStages);
+});
