@@ -47,7 +47,7 @@ const queries = {
         "publications",
         "publications.id",
         "=",
-        "publication_links.publication_after"
+        "publication_links.publication_after",
       )
       .select(),
   selectOriginalPublicationsByReferencedPublication: publication =>
@@ -66,7 +66,7 @@ const queries = {
         "publications",
         "publications.id",
         "=",
-        "publication_links.publication_before"
+        "publication_links.publication_before",
       )
       .select(),
   selectOriginalPublicationsByReferencedorPublication: publication =>
