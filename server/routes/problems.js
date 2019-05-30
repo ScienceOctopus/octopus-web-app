@@ -4,15 +4,13 @@ const bodyParser = require("body-parser");
 const db = require("../postgresQueries.js").queries;
 
 const getProblems = (req, res) => {
-  db
-    .selectAllProblems()
+  db.selectAllProblems()
     .then(rows => res.status(200).json(rows))
     .catch(console.error);
 };
 
 const getProblemByID = (req, res) => {
-  db
-    .selectProblemsByID(req.params.id)
+  db.selectProblemsByID(req.params.id)
     .then(rows => {
       if (!rows.length) {
         return res.status(404);
@@ -24,35 +22,36 @@ const getProblemByID = (req, res) => {
 };
 
 const getStagesByProblem = (req, res) => {
-  db
-    .selectStages()
+  db.selectStages()
     .then(rows => res.status(200).json(rows))
     .catch(console.error);
 };
 
 const getPublicationsByProblemAndStage = (req, res) => {
-  db
-    .selectPublicationsByProblemAndStage(req.params.id, req.params.stage)
+  db.selectOriginalPublicationsByProblemAndStage(
+    req.params.id,
+    req.params.stage,
+  )
     .then(rows => res.status(200).json(rows))
     .catch(console.error);
 };
 
 const postPublicationToProblemAndStage = (req, res) => {
   // TODO: validate existence of problem and stage
-  db
-    .insertPublication(
-      req.params.id,
-      req.params.stage,
-      req.body.title,
-      req.body.description
-    )
-    .then(publications => {
-      db.insertResource("azureBlob", req.file.url).then(resources => {
-        db
-          .insertPublicationResource(publications[0], resources[0], "main")
-          .then(id => res.status(200).json(id[0]));
-      });
+  db.insertPublication(
+    req.params.id,
+    req.params.stage,
+    req.body.title,
+    req.body.summary,
+    req.body.description,
+    req.body.review,
+  ).then(publications => {
+    db.insertResource("azureBlob", req.file.url).then(resources => {
+      db.insertPublicationResource(publications[0], resources[0], "main").then(
+        id => res.status(200).json(id[0]),
+      );
     });
+  });
 };
 
 var router = express.Router();
@@ -78,9 +77,8 @@ const upload = multer({
 router.post(
   "/:id/stages/:stage/publications",
   upload.single("file"),
-  postPublicationToProblemAndStage
+  postPublicationToProblemAndStage,
 );
-//router.get("/:id/publications", getPublicationsByProblem);
 
 module.exports = {
   getProblems,

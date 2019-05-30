@@ -18,7 +18,6 @@ const port = process.env.PORT || 3001;
 
 // Can access anything in this folder
 app.use(express.static("public"));
-app.use(express.static("feedback"));
 
 app.use(bodyParser.json());
 app.use(

@@ -1,6 +1,8 @@
-import React from "react";
-import StageGraph from "../components/StageGraph";
+import React, { Component } from "react";
+import ProblemPage from "./ProblemPage";
 
-export default function IndexPage() {
-  return <StageGraph problemId={1} />;
+export default class IndexPage extends Component {
+  render() {
+    return <ProblemPage params={{ id: 1 }} />;
+  }
 }

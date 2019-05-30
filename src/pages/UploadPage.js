@@ -29,6 +29,8 @@ export default class UploadPage extends Component {
     const data = new FormData();
     data.set("title", this.state.title);
     data.set("description", this.state.description);
+    data.set("summary", "");
+    data.set("review", false);
     data.append("file", this.state.selectedFile);
 
     await this.setState({ uploading: true });
@@ -37,7 +39,7 @@ export default class UploadPage extends Component {
       ApiURI.PublicationUpload +
         `/${this.state.selectedProblemId}/stages/\
           ${this.state.selectedStageId}/publications`,
-      data
+      data,
     )
       .then(res => {
         this.setState({ uploading: false });

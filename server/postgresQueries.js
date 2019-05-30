@@ -35,13 +35,57 @@ const queries = {
       .select()
       .where("problem", problem)
       .where("stage", stage),
-  insertPublication: (problem, stage, title, description) =>
+  selectOriginalPublicationsByProblemAndStage: (problem, stage) =>
+    queries
+      .selectPublicationsByProblemAndStage(problem, stage)
+      .where("review", false),
+  selectPublicationsByReferencedPublication: publication =>
+    knex("publication_links")
+      .select()
+      .where("publication_before", publication)
+      .join(
+        "publications",
+        "publications.id",
+        "=",
+        "publication_links.publication_after"
+      )
+      .select(),
+  selectOriginalPublicationsByReferencedPublication: publication =>
+    queries
+      .selectPublicationsByReferencedPublication(publication)
+      .where("review", false),
+  selectReviewPublicationsByPublication: publication =>
+    queries
+      .selectPublicationsByReferencedPublication(publication)
+      .where("review", true),
+  selectPublicationsByReferenceorPublication: publication =>
+    knex("publication_links")
+      .select()
+      .where("publication_after", publication)
+      .join(
+        "publications",
+        "publications.id",
+        "=",
+        "publication_links.publication_before"
+      )
+      .select(),
+  selectOriginalPublicationsByReferencedorPublication: publication =>
+    queries
+      .selectPublicationsByReferencedByPublication(publication)
+      .where("review", false),
+  selectReviewedPublicationsByReviewPublication: publication =>
+    queries
+      .selectPublicationsByReferencedPublication(publication)
+      .where("review", true),
+  insertPublication: (problem, stage, title, summary, description, review) =>
     knex("publications")
       .insert({
         problem: problem,
         stage: stage,
         title: title,
         description: description,
+        summary: summary,
+        review: review,
       })
       .returning("id"),
   selectResource: id =>
