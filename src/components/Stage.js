@@ -6,6 +6,8 @@ class Stage extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      activePublication: props.activePublicationId,
+      activeStage: props.activeStageId,
       problem: props.problemId,
       stage: props.stage,
       publications: [],
@@ -23,17 +25,18 @@ class Stage extends Component {
   }
 
   render() {
+    var active = (this.state.activeStage === this.state.stage.id);
     return (
       <div class="column">
-        <div class="ui segment">
+        <div className={"ui " + (active ? "raised " : "") + "segment"}>
           <h4>
             {this.state.stage.name}
-            <div class="floating ui label">
+            <div className={"floating ui " + (active ? "teal " : "") + "label"}>
               {this.state.publications.length}
             </div>
           </h4>
           {
-            this.state.publications.map(publication => <Publication publicationId={publication.id} />)
+            this.state.publications.map(publication => <Publication activePublicationId={this.state.activePublication} publicationId={publication.id} />)
           }
         </div>
       </div>

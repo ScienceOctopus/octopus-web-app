@@ -4,6 +4,7 @@ class Publication extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      activePublication: props.activePublicationId,
       publication: props.publicationId,
       content: undefined,
     };
@@ -18,9 +19,10 @@ class Publication extends Component {
 
   render() {
     if (this.state.content) {
+      var active = (this.state.activePublication === this.state.publication);
       return (
         <a href={"/publications/" + this.state.publication} style={{ marginBottom: 0.5 + "em" }}>
-          <div class="ui segment" style={{ fontSize: 0.75 + "rem", paddingBottom: 0 }}>
+          <div className={"ui " + (active ? "teal inverted " : "") + "segment"} style={{ fontSize: 0.75 + "rem", paddingBottom: 0 }}>
             <h5
               style={{
                 whiteSpace: "nowrap",

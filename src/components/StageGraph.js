@@ -26,6 +26,7 @@ class StageGraph extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      activeStage: props.activeStageId,
       problem: props.problemId,
       content: {},
       stages: [],
@@ -79,7 +80,7 @@ class StageGraph extends Component {
             style={{ minWidth: 80 + "em", margin: 0 }}
           >
             {this.state.stages.map(stage => (
-              <Stage problemId={this.state.problem} stage={stage} />
+              <Stage activePublicationId={10} activeStageId={this.state.activeStage} problemId={this.state.problem} stage={stage} />
             ))}
           </nav>
         </div>
