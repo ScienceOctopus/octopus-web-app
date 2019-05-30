@@ -55,8 +55,8 @@ class StageGraph extends Component {
             }
             style={{ minWidth: 80 + "em", margin: 0 }}
           >
-            {this.props.stages.map((stage, stageId) => (
-              <Stage stage={stage} content={this.props.content} />
+            {this.props.stages.map(stage => (
+              <Stage key={stage.id} stage={stage} content={this.props.content} />
             ))}
           </nav>
         </div>

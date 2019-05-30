@@ -31,12 +31,19 @@ const getReviewsByPublication = (req, res) => {
   );
 };
 
+const getLinksByPublicationAfter = (req, res) => {
+  db.selectOriginalPublicationsByReferenceorPublication(req.params.id).then(rows =>
+    res.status(200).json(rows)
+  );
+};
+
 var router = express.Router();
 
 router.get("/:id", getPublicationByID);
 router.get("/:id/references", getReferencesByPublication);
 router.get("/:id/referencedBy", getReferencedByByPublication);
 router.get("/:id/reviews", getReviewsByPublication);
+router.get("/:id/linkedBy", getLinksByPublicationAfter);
 
 module.exports = {
   router,

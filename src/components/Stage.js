@@ -28,7 +28,7 @@ class Stage extends Component {
       let height = pubBB.bottom - pubBB.top;
       let margin = pubBB.top - cntBB.top;
 
-      let paths = this.props.stage.links.map(([prev, next]) => {
+      let paths = this.props.stage.links.map(([prev, next], i) => {
         let beg =
           (prev * 100) / this.props.stage.linkSize +
           50 / this.props.stage.linkSize;
@@ -37,7 +37,7 @@ class Stage extends Component {
           50 / this.props.stage.linkSize;
 
         return (
-          <path
+          <path key={i}
             d={"M 0 " + beg + " C 50 " + beg + ", 50 " + end + ", 100 " + end}
             style={{ stroke: "#00726c", strokeWidth: 2, fill: "transparent" }}
             vectorEffect="non-scaling-stroke"
@@ -78,7 +78,7 @@ class Stage extends Component {
     }
 
     return (
-      <div class="column" ref={ref => this.callback(this, ref)}>
+      <div className="column" ref={ref => this.callback(this, ref)}>
         <div className={"ui " + (active ? "raised " : "") + "segment"}>
           <h4>
             {this.props.stage.name}
@@ -87,7 +87,7 @@ class Stage extends Component {
             </div>
           </h4>
           {this.props.stage.publications.map(publication => (
-            <Publication publication={publication} content={this.props.content} />
+            <Publication key={publication.id} publication={publication} content={this.props.content} />
           ))}
         </div>
         {links}

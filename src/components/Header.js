@@ -30,9 +30,9 @@ class Header extends Component {
             <img
               src="/images/avatar.jpg"
               className="ui avatar image"
-              alt="Avatar of Steve"
+              alt="Avatar of Alex"
             />
-            <strong>Steve</strong>
+            <strong>Alex</strong>
             <div
               style={{ marginLeft: 1 + "em" }}
               className="ui button"

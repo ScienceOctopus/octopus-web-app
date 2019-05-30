@@ -9,40 +9,57 @@ export default class ProblemPage extends React.Component {
     if (!this.props.location || !this.props.location.state) {
       this.state = {
         problem: undefined,
+        publication: undefined,
         content: {
           problem: {},
           stages: [],
+          publications: new Map(),
         }
       };
     } else {
       this.state = this.props.location.state;
     }
 
+    this.initCheck(this.props, true);
+  }
+
+  initCheck(props, sync) {
     let id = props.match ? props.match.params.id : props.params.id;
 
-    if (this.props.publication) {
-      fetch(`/api/publications/${id}`)
-        .then(response => response.json())
-        .then(publication => this.initProblem(publication.problem, false));
+    if (props.publication) {
+      let publication = this.state.content.publications.get(Number(id));
+
+      if (!publication) {
+        fetch(`/api/publications/${id}`)
+          .then(response => response.json())
+          .then(publication => this.initProblem(publication.problem, id, false));
+      } else {
+        this.initProblem(publication.problem, id, sync);
+      }
     } else {
-      this.initProblem(id, true);
+      this.initProblem(id, undefined, sync);
     }
   }
 
-  initProblem(problem, sync) {
+  initProblem(problem, publication, sync) {
     if (problem !== this.state.problem) {
       if (sync) {
         this.state.problem = problem;
+        this.state.publication = publication;
         this.fetchProblem();
       } else {
-        this.setState({ problem: problem }, this.fetchProblem);
+        this.setState({ problem: problem, publication: publication }, this.fetchProblem);
+      }
+    } else if (publication !== this.state.publication) {
+      if (sync) {
+        this.state.publication = publication;
+      } else {
+        this.setState({ publication: publication });
       }
     }
   }
 
   fetchProblem() {
-    console.log("fetch", this.state.problem);
-
     fetch(`/api/problems/${this.state.problem}`)
       .then(response => response.json())
       .then(problem => {
@@ -77,13 +94,14 @@ export default class ProblemPage extends React.Component {
     fetch(`/api/problems/${this.state.problem}/stages/${stage.id}/publications`)
       .then(response => response.json())
       .then(publications => {
-        publications.forEach(
-          publication =>
-            (publication.created_at = new Date(
-              publication.created_at,
-            ).toDateString()),
-        );
         let content = { ...this.state.content };
+        publications.forEach(
+          publication => {
+            content.publications.set(publication.id, publication);
+            publication.created_at = new Date(
+              publication.created_at,
+            ).toDateString();
+        });
         content.stages[stageId].publications = publications;
 
         this.setState({ content: content }, () => this.fetchStage(stageId + 1));
@@ -102,14 +120,13 @@ export default class ProblemPage extends React.Component {
     let nextStagePubs = this.state.content.stages[stageId].publications;
 
     nextStagePubs.forEach(nextPub => {
-      fetch(`/api/publications/${nextPub.id}/references`)
+      fetch(`/api/publications/${nextPub.id}/linkedBy`)
         .then(response => response.json())
-        .then(references => {
-          // TODO: actually use references test data
+        .then(links => {
+          let next = nextStagePubs.findIndex(x => x === nextPub);
 
-          prevStagePubs.forEach(prevPub => {
-            let prev = prevStagePubs.findIndex(x => x === prevPub);
-            let next = nextStagePubs.findIndex(x => x === nextPub);
+          links.forEach(link => {
+            let prev = prevStagePubs.findIndex(x => x === link.publication_before);
 
             if (prev !== -1 && next !== -1) {
               links.push([prev, next]);
@@ -131,9 +148,11 @@ export default class ProblemPage extends React.Component {
     });
   }
 
-  render() {
-    console.log("render id", this.props.match ? this.props.match.params.id : this.props.params.id);
+  componentWillReceiveProps(nextProps) {
+    this.initCheck(nextProps, false);
+  }
 
+  render() {
     return (
       <StageGraph
         problem={this.state.content.problem}
