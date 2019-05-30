@@ -74,9 +74,19 @@ export default class UploadPage extends Component {
     // e.g. Scrape data
   };
 
+  submitEnabled = () => {
+    return (
+      this.state.selectedFile &&
+      this.state.selectedProblemId &&
+      this.state.selectedStageId &&
+      this.state.title &&
+      this.state.description
+    );
+  };
+
   render() {
     return (
-      <div>
+      <div style={styles.container}>
         <h2>Upload</h2>
         <ProblemSelector onSelect={this.handleProblemSelect} />
         {this.state.selectedProblemId !== undefined && (
@@ -97,13 +107,25 @@ export default class UploadPage extends Component {
         />
         <FileUploadSelector onSelect={this.handleFileSelect} />
         {this.state.uploading && <h4>Uploading...</h4>}
-        <button
-          onClick={this.handleSubmit}
-          disabled={this.state.selectedFile === undefined}
-        >
+        <button onClick={this.handleSubmit} disabled={!this.submitEnabled()}>
           Submit
         </button>
       </div>
     );
   }
 }
+
+const styles = {
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: "1em 1em",
+    background: "#f9fafb",
+    border: "1px solid lightgrey",
+    borderRadius: "0.3rem",
+    boxShadow: "0 0 0 0 transparent inset",
+    margin: "2em 10em",
+  },
+};
