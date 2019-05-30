@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
+
 import "../App.css";
 import Stage from "./Stage";
 
@@ -35,11 +37,18 @@ class StageGraph extends Component {
             backgroundColor: "#dcf8ec",
           }}
         >
-          <div className="ui container" style={{ marginTop: 1 + "em" }}>
-            <h3 className="ui block header">
-              Problem: {this.props.problem.title}
-            </h3>
-          </div>
+          <Link
+            to={{
+              pathname: `/problems/${this.props.problem.id}`,
+              state: this.props.content,
+            }}
+          >
+            <div className="ui container" style={{ marginTop: 1 + "em" }}>
+              <h3 className="ui block header">
+                Problem: {this.props.problem.title}
+              </h3>
+            </div>
+          </Link>
         </div>
         <div
           style={{
@@ -56,7 +65,11 @@ class StageGraph extends Component {
             style={{ minWidth: 80 + "em", margin: 0 }}
           >
             {this.props.stages.map(stage => (
-              <Stage key={stage.id} stage={stage} content={this.props.content} />
+              <Stage
+                key={stage.id}
+                stage={stage}
+                content={this.props.content}
+              />
             ))}
           </nav>
         </div>

@@ -1,6 +1,7 @@
 import React from "react";
 
 import StageGraph from "../components/StageGraph";
+import SummaryView from "../components/SummaryView";
 
 export default class ProblemPage extends React.Component {
   constructor(props) {
@@ -14,7 +15,7 @@ export default class ProblemPage extends React.Component {
           problem: {},
           stages: [],
           publications: new Map(),
-        }
+        },
       };
     } else {
       this.state = this.props.location.state;
@@ -24,15 +25,17 @@ export default class ProblemPage extends React.Component {
   }
 
   initCheck(props, sync) {
-    let id = props.match ? props.match.params.id : props.params.id;
+    let id = Number(props.match ? props.match.params.id : props.params.id);
 
     if (props.publication) {
-      let publication = this.state.content.publications.get(Number(id));
+      let publication = this.state.content.publications.get(id);
 
       if (!publication) {
         fetch(`/api/publications/${id}`)
           .then(response => response.json())
-          .then(publication => this.initProblem(publication.problem, id, false));
+          .then(publication =>
+            this.initProblem(publication.problem, id, false),
+          );
       } else {
         this.initProblem(publication.problem, id, sync);
       }
@@ -48,7 +51,10 @@ export default class ProblemPage extends React.Component {
         this.state.publication = publication;
         this.fetchProblem();
       } else {
-        this.setState({ problem: problem, publication: publication }, this.fetchProblem);
+        this.setState(
+          { problem: problem, publication: publication },
+          this.fetchProblem,
+        );
       }
     } else if (publication !== this.state.publication) {
       if (sync) {
@@ -95,12 +101,11 @@ export default class ProblemPage extends React.Component {
       .then(response => response.json())
       .then(publications => {
         let content = { ...this.state.content };
-        publications.forEach(
-          publication => {
-            content.publications.set(publication.id, publication);
-            publication.created_at = new Date(
-              publication.created_at,
-            ).toDateString();
+        publications.forEach(publication => {
+          content.publications.set(publication.id, publication);
+          publication.created_at = new Date(
+            publication.created_at,
+          ).toDateString();
         });
         content.stages[stageId].publications = publications;
 
@@ -126,7 +131,9 @@ export default class ProblemPage extends React.Component {
           let next = nextStagePubs.findIndex(x => x === nextPub);
 
           links.forEach(link => {
-            let prev = prevStagePubs.findIndex(x => x === link.publication_before);
+            let prev = prevStagePubs.findIndex(
+              x => x === link.publication_before,
+            );
 
             if (prev !== -1 && next !== -1) {
               links.push([prev, next]);
@@ -153,12 +160,21 @@ export default class ProblemPage extends React.Component {
   }
 
   render() {
+    let publication = null;
+
+    if (this.state.publication !== undefined) {
+      publication = <SummaryView publicationId={this.state.publication} />;
+    }
+
     return (
-      <StageGraph
-        problem={this.state.content.problem}
-        stages={this.state.content.stages}
-        content={this.state}
-      />
+      <div>
+        <StageGraph
+          problem={this.state.content.problem}
+          stages={this.state.content.stages}
+          content={this.state}
+        />
+        {publication}
+      </div>
     );
   }
 }

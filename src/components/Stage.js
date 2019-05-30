@@ -17,64 +17,77 @@ class Stage extends Component {
   }
 
   render() {
-    var active = false; //this.state.activeStage === this.state.stage.id;
+    var active =
+      this.props.stage.publications.find(
+        x => x.id === this.props.content.publication,
+      ) !== undefined;
 
     let links = null;
 
-    if (this.props.stage.links.length && this.state.ref) {
-      let cntBB = this.state.ref.getBoundingClientRect();
-      let pubBB = this.state.ref.firstChild.children[1].getBoundingClientRect();
+    let height = undefined;
 
-      let height = pubBB.bottom - pubBB.top;
-      let margin = pubBB.top - cntBB.top;
+    if (this.props.stage.publications.length && this.state.ref) {
+      let pubBB = this.state.ref.firstChild.children[1].firstChild.getBoundingClientRect();
+      height = pubBB.bottom - pubBB.top;
 
-      let paths = this.props.stage.links.map(([prev, next], i) => {
-        let beg =
-          (prev * 100) / this.props.stage.linkSize +
-          50 / this.props.stage.linkSize;
-        let end =
-          (next * 100) / this.props.stage.linkSize +
-          50 / this.props.stage.linkSize;
+      if (this.props.stage.links.length) {
+        let cntBB = this.state.ref.getBoundingClientRect();
+        let margin = pubBB.top - cntBB.top;
 
-        return (
-          <path key={i}
-            d={"M 0 " + beg + " C 50 " + beg + ", 50 " + end + ", 100 " + end}
-            style={{ stroke: "#00726c", strokeWidth: 2, fill: "transparent" }}
-            vectorEffect="non-scaling-stroke"
-          />
-        );
-      });
+        let paths = this.props.stage.links.map(([prev, next], i) => {
+          let beg =
+            (prev * 100) / this.props.stage.linkSize +
+            50 / this.props.stage.linkSize;
+          let end =
+            (next * 100) / this.props.stage.linkSize +
+            50 / this.props.stage.linkSize;
 
-      links = (
-        <div
-          style={{
-            width: 0,
-            padding: 0,
-            zIndex: 999,
-            position: "absolute",
-            top: 0,
-            right: 0,
-          }}
-        >
+          return (
+            <path
+              key={i}
+              d={"M 0 " + beg + " C 50 " + beg + ", 50 " + end + ", 100 " + end}
+              style={{ stroke: "#00726c", strokeWidth: 2, fill: "transparent" }}
+              vectorEffect="non-scaling-stroke"
+            />
+          );
+        });
+
+        links = (
           <div
             style={{
-              width: 60 + "px",
-              height: height * this.props.stage.linkSize + "px",
-              marginLeft: -30 + "px",
-              marginTop: margin + "px",
+              width: 0,
+              padding: 0,
+              zIndex: 999,
+              position: "absolute",
+              top: 0,
+              right: 0,
             }}
           >
-            <svg
-              width="100%"
-              height="100%"
-              viewBox="0 0 100 100"
-              preserveAspectRatio="none"
+            <div
+              style={{
+                width: 60 + "px",
+                height: height * this.props.stage.linkSize + "px",
+                marginLeft: -30 + "px",
+                marginTop: margin + "px",
+              }}
             >
-              {paths}
-            </svg>
+              <svg
+                width="100%"
+                height="100%"
+                viewBox="0 0 100 100"
+                preserveAspectRatio="none"
+              >
+                {paths}
+              </svg>
+            </div>
           </div>
-        </div>
-      );
+        );
+      }
+    }
+
+    let style = { overflowY: "auto" };
+    if (height) {
+      style.maxHeight = height * 3 + "px";
     }
 
     return (
@@ -86,9 +99,15 @@ class Stage extends Component {
               {this.props.stage.publications.length}
             </div>
           </h4>
-          {this.props.stage.publications.map(publication => (
-            <Publication key={publication.id} publication={publication} content={this.props.content} />
-          ))}
+          <div style={style}>
+            {this.props.stage.publications.map(publication => (
+              <Publication
+                key={publication.id}
+                publication={publication}
+                content={this.props.content}
+              />
+            ))}
+          </div>
         </div>
         {links}
       </div>

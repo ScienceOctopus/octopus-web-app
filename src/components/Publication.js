@@ -1,15 +1,18 @@
 import React, { Component } from "react";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 
 class Publication extends Component {
   render() {
     // Highlighted if: this.props.publication.id === this.props.content.publication
 
     return (
-        <Link to={{
+      <Link
+        to={{
           pathname: `/publications/${this.props.publication.id}`,
           state: this.props.content,
-        }} style={{ marginBottom: 0.5 + "em" }}>
+        }}
+        style={{ marginBottom: 0.5 + "em" }}
+      >
         <div
           className="ui segment"
           style={{ fontSize: 0.75 + "rem", paddingBottom: 0 }}

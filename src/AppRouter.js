@@ -3,7 +3,6 @@ import { Switch, Route } from "react-router-dom";
 
 import IndexPage from "./pages/IndexPage";
 import ProblemPage from "./pages/ProblemPage";
-import PublicationPage from "./pages/PublicationPage";
 import UploadPage from "./pages/UploadPage";
 import WebURI from "./urls/WebsiteURIs";
 
@@ -14,12 +13,12 @@ function AppRouter() {
       <Route
         name="problem"
         path={WebURI.Problem}
-        render={(props) => (<ProblemPage {...props} publication={false} />)}
+        render={props => <ProblemPage {...props} publication={false} />}
       />
       <Route
         name="publication"
         path={WebURI.Publication}
-        render={(props) => (<ProblemPage {...props} publication={true} />)}
+        render={props => <ProblemPage {...props} publication={true} />}
       />
       <Route
         name="uploadPublication"
