@@ -27,7 +27,7 @@ class SummaryView extends Component {
       <div class="ui sub header">{ this.state.publication.summary }</div>
       </h1>
       <p>
-      <strong>Date added: </strong>{ new Date(this.state.publication.createdAt).toLocaleDateString() }
+      <strong>Date added: </strong>{ new Date(this.state.publication.created_at).toLocaleDateString() }
       </p>
       <section class="ui segment"><h3>Summary</h3>
       <div class="ui divider"></div>
