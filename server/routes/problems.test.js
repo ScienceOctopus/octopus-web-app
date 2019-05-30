@@ -81,7 +81,7 @@ test("getProblemByID returns single result", async () => {
   expect(res.json).toHaveBeenCalledWith(testProblems[0]);
 });
 
-/*test("getProblemByID errors on multiple results", async () => {
+test("getProblemByID errors on multiple results", async () => {
   const testProblems = [{ id: 1 }, { id: 2 }, { id: 3 }];
   queries.selectProblemsByID.mockResolvedValue(testProblems);
 
@@ -105,4 +105,4 @@ test("getProblemByID returns single result", async () => {
 
   expect(res.status).toHaveBeenCalledWith(500);
   expect(res.json).not.toHaveBeenCalled();
-});*/
+});

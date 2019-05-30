@@ -18,6 +18,11 @@ const getProblemByID = (req, res) => {
         return res.status(404);
       }
 
+      if (rows.length > 1) {
+        console.log("Found multiple problems with same ID!");
+        return res.status(500);
+      }
+
       return res.status(200).json(rows[0]);
     })
     .catch(console.error);
