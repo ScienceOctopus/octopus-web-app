@@ -67,19 +67,6 @@ router.get("/:id", getProblemByID);
 router.get("/:id/stages", getStagesByProblem);
 router.get("/:id/stages/:stage/publications", getPublicationsByProblemAndStage);
 
-// const multer = require("multer");
-// const blobService = require("../blobService");
-//
-// const MulterAzureStorage = require("multer-azure-storage");
-//
-// const upload = multer({
-//   storage: new MulterAzureStorage({
-//     azureStorageConnectionString: process.env.AZURE_STORAGE_CONNECTION_STRING,
-//     containerName: blobService.AZURE_PUBLICATION_CONTAINER,
-//     containerSecurity: "blob",
-//   }),
-// });
-
 router.post(
   "/:id/stages/:stage/publications",
   upload(blobService.AZURE_PUBLICATION_CONTAINER).single("file"),

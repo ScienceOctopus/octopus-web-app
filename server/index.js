@@ -34,14 +34,6 @@ app.get("/api", (request, response) => {
 app.use("/api/problems", problemsHandlers.router);
 app.use("/api/publications", publicationsHandlers.router);
 
-// const upload = multer({
-//   storage: new MulterAzureStorage({
-//     azureStorageConnectionString: process.env.AZURE_STORAGE_CONNECTION_STRING,
-//     containerName: blobService.AZURE_FEEDBACK_IMAGE_CONTAINER,
-//     containerSecurity: "blob",
-//   }),
-// });
-
 app.post("/api/feedback", fb.postFeedback);
 app.post(
   "/api/image",
