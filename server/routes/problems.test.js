@@ -166,3 +166,38 @@ test("getPublicationsByProblemAndStage returns results", async () => {
   expect(res.status).toHaveBeenCalledWith(200);
   expect(res.json).toHaveBeenCalledWith(testPublications);
 });
+
+test("postPublicationToProblemAndStage does something", async () => {
+  const testPublications = [{ id: 1 }];
+  queries.insertPublication.mockResolvedValue(testPublications);
+
+  const mockRequest = () => {
+    return {
+      params: { id: 1, stage: 1 },
+      body: { title: " ", summary: " ", description: " ", review: false },
+    };
+  };
+
+  const mockResponse = () => {
+    const res = {};
+    res.status = jest.fn().mockReturnValue(res);
+    res.json = jest.fn().mockReturnValue(res);
+    return res;
+  };
+
+  req = mockRequest();
+  res = mockResponse();
+
+  await problems.postPublicationToProblemAndStage(req, res);
+
+  expect(queries.insertPublication).toHaveBeenCalledWith(
+    req.params.id,
+    req.params.stage,
+    req.body.title,
+    req.body.summary,
+    req.body.description,
+    req.body.review
+  );
+  //expect(res.status).toHaveBeenCalledWith(200);
+  //expect(res.json).toHaveBeenCalledWith(testPublications);
+});
