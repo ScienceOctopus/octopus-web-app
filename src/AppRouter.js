@@ -11,11 +11,15 @@ function AppRouter() {
   return (
     <Switch>
       <Route name="home" path={WebURI.Home} exact component={IndexPage} />
-      <Route name="problem" path={WebURI.Problem} component={ProblemPage} />
+      <Route
+        name="problem"
+        path={WebURI.Problem}
+        render={(props) => (<ProblemPage {...props} publication={false} />)}
+      />
       <Route
         name="publication"
         path={WebURI.Publication}
-        component={PublicationPage}
+        render={(props) => (<ProblemPage {...props} publication={true} />)}
       />
       <Route
         name="uploadPublication"

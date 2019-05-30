@@ -1,12 +1,13 @@
 import React, { Component } from "react";
+import {Link} from "react-router-dom";
 
 class Publication extends Component {
   render() {
     return (
-      <a
-        href={"/publications/" + this.props.publication.id}
-        style={{ marginBottom: 0.5 + "em" }}
-      >
+        <Link to={{
+          pathname: `/publications/${this.props.publication.id}`,
+          state: this.props.content,
+        }} style={{ marginBottom: 0.5 + "em" }}>
         <div
           class="ui segment"
           style={{ fontSize: 0.75 + "rem", paddingBottom: 0 }}
@@ -26,7 +27,7 @@ class Publication extends Component {
             {this.props.publication.description}
           </div>
         </div>
-      </a>
+      </Link>
     );
   }
 }

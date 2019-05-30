@@ -36,8 +36,6 @@ class Stage extends Component {
           (next * 100) / this.props.stage.linkSize +
           50 / this.props.stage.linkSize;
 
-        console.log(prev, next, beg, end);
-
         return (
           <path
             d={"M 0 " + beg + " C 50 " + beg + ", 50 " + end + ", 100 " + end}
@@ -89,7 +87,7 @@ class Stage extends Component {
             </div>
           </h4>
           {this.props.stage.publications.map(publication => (
-            <Publication publication={publication} />
+            <Publication publication={publication} content={this.props.content} />
           ))}
         </div>
         {links}

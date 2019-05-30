@@ -7,7 +7,7 @@ export default class PublicationPage extends React.Component {
     const publicationId = this.props.match
       ? this.props.match.params.id
       : this.props.params.id;
-      
+
     return (
       <div>
       <StageGraph activeStageId={2} problemId={4} />

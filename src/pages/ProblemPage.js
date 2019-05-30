@@ -1,21 +1,48 @@
 import React from "react";
+
 import StageGraph from "../components/StageGraph";
 
 export default class ProblemPage extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      problem: props.match ? props.match.params.id : props.params.id,
-      content: {
-        problem: {},
-        stages: [],
-      },
-    };
 
-    this.fetchProblem();
+    if (!this.props.location || !this.props.location.state) {
+      this.state = {
+        problem: undefined,
+        content: {
+          problem: {},
+          stages: [],
+        }
+      };
+    } else {
+      this.state = this.props.location.state;
+    }
+
+    let id = props.match ? props.match.params.id : props.params.id;
+
+    if (this.props.publication) {
+      fetch(`/api/publications/${id}`)
+        .then(response => response.json())
+        .then(publication => this.initProblem(publication.problem, false));
+    } else {
+      this.initProblem(id, true);
+    }
+  }
+
+  initProblem(problem, sync) {
+    if (problem !== this.state.problem) {
+      if (sync) {
+        this.state.problem = problem;
+        this.fetchProblem();
+      } else {
+        this.setState({ problem: problem }, this.fetchProblem);
+      }
+    }
   }
 
   fetchProblem() {
+    console.log("fetch", this.state.problem);
+
     fetch(`/api/problems/${this.state.problem}`)
       .then(response => response.json())
       .then(problem => {
@@ -105,10 +132,13 @@ export default class ProblemPage extends React.Component {
   }
 
   render() {
+    console.log("render id", this.props.match ? this.props.match.params.id : this.props.params.id);
+
     return (
       <StageGraph
         problem={this.state.content.problem}
         stages={this.state.content.stages}
+        content={this.state}
       />
     );
   }
