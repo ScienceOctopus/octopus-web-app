@@ -51,6 +51,7 @@ test("getProblemsByID 404s on no results", async () => {
 
   await problems.getProblemByID(req, res);
 
+  expect(queries.selectProblemsByID).toHaveBeenCalledWith(req.params.id);
   expect(res.status).toHaveBeenCalledWith(404);
   expect(res.json).not.toHaveBeenCalled();
 });
@@ -77,6 +78,7 @@ test("getProblemByID returns single result", async () => {
 
   await problems.getProblemByID(req, res);
 
+  expect(queries.selectProblemsByID).toHaveBeenCalledWith(req.params.id);
   expect(res.status).toHaveBeenCalledWith(200);
   expect(res.json).toHaveBeenCalledWith(testProblems[0]);
 });
@@ -103,6 +105,7 @@ test("getProblemByID errors on multiple results", async () => {
 
   await problems.getProblemByID(req, res);
 
+  expect(queries.selectProblemsByID).toHaveBeenCalledWith(req.params.id);
   expect(res.status).toHaveBeenCalledWith(500);
   expect(res.json).not.toHaveBeenCalled();
 });
@@ -131,4 +134,35 @@ test("getStagesByProblem returns results", async () => {
 
   expect(res.status).toHaveBeenCalledWith(200);
   expect(res.json).toHaveBeenCalledWith(testStages);
+});
+
+test("getPublicationsByProblemAndStage returns results", async () => {
+  const testPublications = [{ id: 1 }, { id: 2 }];
+  queries.selectOriginalPublicationsByProblemAndStage.mockResolvedValue(
+    testPublications
+  );
+
+  const mockRequest = () => {
+    return {
+      params: { id: 1, stage: 1 },
+    };
+  };
+
+  const mockResponse = () => {
+    const res = {};
+    res.status = jest.fn().mockReturnValue(res);
+    res.json = jest.fn().mockReturnValue(res);
+    return res;
+  };
+
+  req = mockRequest();
+  res = mockResponse();
+
+  await problems.getPublicationsByProblemAndStage(req, res);
+
+  expect(
+    queries.selectOriginalPublicationsByProblemAndStage
+  ).toHaveBeenCalledWith(req.params.id, req.params.stage);
+  expect(res.status).toHaveBeenCalledWith(200);
+  expect(res.json).toHaveBeenCalledWith(testPublications);
 });
