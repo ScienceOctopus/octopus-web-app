@@ -120,11 +120,12 @@ export default class ProblemPage extends React.Component {
           problem={this.state.content.problem}
           stages={this.state.content.stages}
         />
-
-        <Route
-          path={`${this.props.match.url}/publications/:pubId`}
-          component={SummaryView}
-        />
+        {this.props.match && (
+          <Route
+            path={`${this.props.match.url}/publications/:pubId`}
+            component={SummaryView}
+          />
+        )}
       </div>
     );
   }

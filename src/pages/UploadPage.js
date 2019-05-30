@@ -6,11 +6,8 @@ import StageSelector from "../components/StageSelector";
 import TitledForm from "../components/TitledForm";
 import ApiURI from "../urls/ApiURIs";
 import { Link } from "react-router-dom";
-import WebURI from "../urls/WebsiteURIs";
 
-import { Switch, Route } from "react-router-dom";
-import ProblemPage from "./ProblemPage";
-const DEBUG_VIEW = true;
+const DEBUG_VIEW = false;
 
 export default class UploadPage extends Component {
   state = {
