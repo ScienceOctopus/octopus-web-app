@@ -36,7 +36,7 @@ class Stage extends Component {
           (next * 100) / this.props.stage.linkSize +
           50 / this.props.stage.linkSize;
 
-        console.log(prev, next, beg, end);
+        // console.log(prev, next, beg, end);
 
         return (
           <path

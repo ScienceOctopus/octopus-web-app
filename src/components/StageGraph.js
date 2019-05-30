@@ -25,7 +25,7 @@ const numbers = [
 class StageGraph extends Component {
   render() {
     return (
-      <div>
+      <div style={styles.container}>
         <div
           style={{
             overflowX: "auto",
@@ -64,5 +64,12 @@ class StageGraph extends Component {
     );
   }
 }
+
+const styles = {
+  container: {
+    maxHeight: "32rem",
+    overflowY: "auto",
+  },
+};
 
 export default StageGraph;

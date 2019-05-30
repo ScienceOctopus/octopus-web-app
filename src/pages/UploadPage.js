@@ -8,6 +8,8 @@ import ApiURI from "../urls/ApiURIs";
 import { Link } from "react-router-dom";
 import WebURI from "../urls/WebsiteURIs";
 
+import { Switch, Route } from "react-router-dom";
+import ProblemPage from "./ProblemPage";
 const DEBUG_VIEW = true;
 
 export default class UploadPage extends Component {
@@ -55,7 +57,7 @@ export default class UploadPage extends Component {
       ApiURI.PublicationUpload +
         `/${this.state.selectedProblemId}/stages/\
           ${this.state.selectedStageId}/publications`,
-      data
+      data,
     )
       .then(() => {
         this.setState({ uploadSuccessful: true });
@@ -104,6 +106,7 @@ export default class UploadPage extends Component {
   };
 
   render() {
+    console.log(this.props.match.url);
     return (
       <div style={styles.container}>
         <h2>Upload</h2>

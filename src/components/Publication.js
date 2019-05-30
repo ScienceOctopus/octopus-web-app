@@ -1,10 +1,12 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
+import { withRouter } from "react-router";
 
 class Publication extends Component {
   render() {
     return (
-      <a
-        href={"/publications/" + this.props.publication.id}
+      <Link
+        to={this.props.match.url + "/publications/" + this.props.publication.id}
         style={{ marginBottom: 0.5 + "em" }}
       >
         <div
@@ -26,9 +28,9 @@ class Publication extends Component {
             {this.props.publication.description}
           </div>
         </div>
-      </a>
+      </Link>
     );
   }
 }
 
-export default Publication;
+export default withRouter(Publication);

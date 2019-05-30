@@ -1,6 +1,11 @@
 import React from "react";
 import StageGraph from "../components/StageGraph";
 
+import { Route } from "react-router-dom";
+
+import SummaryView from "../components/SummaryView";
+import UploadPage from "./UploadPage";
+
 export default class ProblemPage extends React.Component {
   constructor(props) {
     super(props);
@@ -11,6 +16,10 @@ export default class ProblemPage extends React.Component {
         stages: [],
       },
     };
+
+    if (props.selectedPublication) {
+      // get problem id
+    }
 
     this.fetchProblem();
   }
@@ -106,10 +115,17 @@ export default class ProblemPage extends React.Component {
 
   render() {
     return (
-      <StageGraph
-        problem={this.state.content.problem}
-        stages={this.state.content.stages}
-      />
+      <div>
+        <StageGraph
+          problem={this.state.content.problem}
+          stages={this.state.content.stages}
+        />
+
+        <Route
+          path={`${this.props.match.url}/publications/:pubId`}
+          component={SummaryView}
+        />
+      </div>
     );
   }
 }

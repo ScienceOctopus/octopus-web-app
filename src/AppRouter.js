@@ -15,7 +15,8 @@ function AppRouter() {
       <Route
         name="publication"
         path={WebURI.Publication}
-        component={PublicationPage}
+        component={ProblemPage}
+        render={() => <ProblemPage selectedPublication />}
       />
       <Route
         name="uploadPublication"
