@@ -22,6 +22,16 @@ class PublicationSelector extends Component {
     ) {
       this.fetchPublications();
     }
+
+    if (this.props.singleSelection !== prev.singleSelection) {
+      this.numSelected = 0;
+      this.setState({ selection: this.emptySelection() });
+      if (this.props.onNoSelection) this.props.onNoSelection();
+    }
+  }
+
+  emptySelection() {
+    return Array(this.state.publications).fill(false);
   }
 
   fetchPublications() {
@@ -47,16 +57,20 @@ class PublicationSelector extends Component {
   }
 
   handleProblemClick = index => () => {
-    let selected = this.state.selected;
+    let selected = this.props.singleSelection
+      ? this.emptySelection()
+      : this.state.selected;
+
     selected[index] = !selected[index];
 
     this.setState({ selected });
 
     if (selected[index]) {
-      this.numSelected++;
+      if (!this.props.singleSelection || this.numSelected === 0)
+        this.numSelected++;
       if (this.numSelected === 1 && this.props.onSelect) this.props.onSelect();
     } else {
-      this.numSelected--;
+      if (!this.props.singleSelection) this.numSelected--;
       if (this.numSelected < 1 && this.props.onNoSelection)
         this.props.onNoSelection();
     }

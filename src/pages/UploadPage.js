@@ -8,7 +8,7 @@ import ApiURI from "../urls/ApiURIs";
 import { Link } from "react-router-dom";
 import PublicationSelector from "../components/PublicationSelector";
 
-const DEBUG_VIEW = true;
+const DEBUG_VIEW = false;
 const NONLINKING_STAGE = "1";
 
 export default class UploadPage extends Component {
@@ -19,6 +19,7 @@ export default class UploadPage extends Component {
       title: "",
       description: "",
       linkedProblemsSelected: false,
+      isReview: false,
     };
 
     if (DEBUG_VIEW) {
@@ -52,7 +53,7 @@ export default class UploadPage extends Component {
     data.set("title", this.state.title);
     data.set("description", this.state.description);
     data.set("summary", "");
-    data.set("review", false);
+    data.set("review", this.state.isReview);
     data.set("basedOn", JSON.stringify(linkedPublications.map(x => x.id)));
     data.append("file", this.state.selectedFile);
 
@@ -72,11 +73,14 @@ export default class UploadPage extends Component {
   };
 
   handleProblemSelect = problemId => {
-    this.setState({ selectedProblemId: problemId });
+    this.setState({
+      selectedProblemId: problemId,
+      linkedProblemsSelected: false,
+    });
   };
 
   handleStageSelect = id => {
-    this.setState({ selectedStageId: id });
+    this.setState({ selectedStageId: id, linkedProblemsSelected: false });
   };
 
   handleTitleChange = e => {
@@ -111,7 +115,7 @@ export default class UploadPage extends Component {
       this.state.selectedFile &&
       this.state.selectedProblemId &&
       this.state.selectedStageId &&
-      (this.state.selectedStageId === NONLINKING_STAGE ||
+      (!this.shouldRenderLinkingSelector() ||
         this.state.linkedProblemsSelected) &&
       this.state.title &&
       this.state.description
@@ -121,9 +125,15 @@ export default class UploadPage extends Component {
   shouldRenderLinkingSelector() {
     return (
       this.state.selectedStageId !== undefined &&
-      this.state.selectedStageId !== NONLINKING_STAGE
+      (this.state.isReview || this.state.selectedStageId !== NONLINKING_STAGE)
     );
   }
+
+  handleReviewChange = e => {
+    this.setState({
+      isReview: e.target.checked,
+    });
+  };
 
   render() {
     return (
@@ -151,6 +161,15 @@ export default class UploadPage extends Component {
           onChange={this.handleDescriptionChange}
         />
         <FileUploadSelector onSelect={this.handleFileSelect} />
+        <h4>
+          Is a review{" "}
+          <input
+            type="checkbox"
+            onChange={this.handleReviewChange}
+            checked={this.state.isReview}
+          />
+        </h4>
+
         {this.state.uploading && <h4>Uploading...</h4>}
         {this.state.uploadSuccessful && (
           <h4>
@@ -171,8 +190,9 @@ export default class UploadPage extends Component {
     return (
       <PublicationSelector
         ref={this.pubSelector}
+        singleSelection={this.state.isReview}
         problemId={this.state.selectedProblemId}
-        stageId={this.state.selectedStageId - 1}
+        stageId={this.state.selectedStageId - (this.state.isReview ? 0 : 1)}
         selectedPublications={this.state.publicationsToLink}
         onSelect={this.handleLinkedProblemSelected(true)}
         onNoSelection={this.handleLinkedProblemSelected(false)}
