@@ -69,10 +69,12 @@ const queries = {
         "publication_links.publication_before",
       )
       .select(),
+
   selectOriginalPublicationsByReferencedorPublication: publication =>
     queries
       .selectPublicationsByReferencedByPublication(publication)
       .where("review", false),
+
   selectReviewedPublicationsByReviewPublication: publication =>
     queries
       .selectPublicationsByReferencedPublication(publication)
@@ -88,6 +90,70 @@ const queries = {
         review: review,
       })
       .returning("id"),
+
+  //TODO: actually use transactions
+  insertPublicationLinkedToTransaction: (
+    problem,
+    stage,
+    title,
+    summary,
+    description,
+    review,
+    basedOn,
+    fileUrl,
+  ) => {
+    return knex
+      .transaction(t => {
+        return knex("publications")
+          .transacting(t)
+          .insert({
+            problem: problem,
+            stage: stage,
+            title: title,
+            description: description,
+            summary: summary,
+            review: review,
+          })
+          .returning("id")
+          .then(id => {
+            return knex("publication_links")
+              .transacting(t)
+              .insert({
+                publication_before: basedOn,
+                publication_after: id[0],
+              })
+              .returning("publication_after")
+              .then(() =>
+                db.insertResource("azureBlob", fileUrl).then(resources => {
+                  db.insertPublicationResource(
+                    id[0],
+                    resources[0],
+                    "main",
+                  ).then(/* ... */);
+                }),
+              );
+          })
+          .then(t.commit)
+          .catch(t.rollback);
+      })
+      .return.then(result => {
+        console.log("SUCCESS");
+        // transaction suceeded, data written
+      })
+      .catch(err => {
+        console.log(err);
+        // transaction failed, data rolled back
+      });
+  },
+
+  insertLink: (publication, basedOn) =>
+    knex("publication_links").insert(
+      basedOn.map(base => ({
+        publication_before: base,
+        publication_after: publication,
+      })),
+    ),
+
   selectResource: id =>
     knex("resources")
       .select()

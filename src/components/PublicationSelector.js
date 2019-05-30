@@ -9,10 +9,19 @@ class PublicationSelector extends Component {
   constructor(props) {
     super(props);
     this.state = { publications: [] };
-    this.fetchProblems();
+    this.fetchPublications();
   }
 
-  fetchProblems() {
+  componentDidUpdate(prev) {
+    if (
+      this.props.problemId !== prev.problemId ||
+      this.props.stageId !== prev.stageId
+    ) {
+      this.fetchPublications();
+    }
+  }
+
+  fetchPublications() {
     const apiRquest =
       "/api/problems/" +
       this.props.problemId +
@@ -24,7 +33,7 @@ class PublicationSelector extends Component {
 
     Axios.get(apiRquest)
       .then(res => {
-        console.log(res);
+        // console.log(res);
         this.setState({
           publications: res.data,
           selected: Array(res.data.length).fill(false),

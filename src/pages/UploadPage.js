@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 import PublicationSelector from "../components/PublicationSelector";
 
 const DEBUG_VIEW = true;
-const NONLINKING_STAGE = 1;
+const NONLINKING_STAGE = "1";
 
 export default class UploadPage extends Component {
   constructor() {
@@ -28,6 +28,8 @@ export default class UploadPage extends Component {
       this.state.selectedProblemId = "1";
       this.state.selectedStageId = "2";
     }
+
+    this.pubSelector = React.createRef();
   }
 
   handleFileSelect = event => {
@@ -44,11 +46,14 @@ export default class UploadPage extends Component {
   handleSubmit = async () => {
     if (this.state.selectedFile === undefined) return;
 
+    let linkedPublications = this.pubSelector.current.getSelectedPublications();
+
     const data = new FormData();
     data.set("title", this.state.title);
     data.set("description", this.state.description);
     data.set("summary", "");
     data.set("review", false);
+    data.set("basedOn", JSON.stringify(linkedPublications.map(x => x.id)));
     data.append("file", this.state.selectedFile);
 
     await this.setState({ uploading: true });
@@ -166,8 +171,9 @@ export default class UploadPage extends Component {
     return (
       <div>
         <PublicationSelector
+          ref={this.pubSelector}
           problemId={this.state.selectedProblemId}
-          stageId={this.state.selectedStageId}
+          stageId={this.state.selectedStageId - 1}
           selectedPublications={this.state.publicationsToLink}
           onSelect={this.handleLinkedProblemSelected(true)}
           onNoSelection={this.handleLinkedProblemSelected(false)}

@@ -45,6 +45,37 @@ const getPublicationsByProblemAndStage = (req, res) => {
 
 const postPublicationToProblemAndStage = (req, res) => {
   // TODO: validate existence of problem and stage
+
+  if (req.body.basedOn !== undefined) {
+    // TODO: refactor similarities
+    db.insertPublication(
+      req.params.id,
+      req.params.stage,
+      req.body.title,
+      req.body.summary,
+      req.body.description,
+      req.body.review,
+    )
+      .then(publications => {
+        let basedArray = JSON.parse(req.body.basedOn);
+
+        db.insertLink(publications[0], basedArray).then(() =>
+          db.insertResource("azureBlob", req.file.url).then(resources => {
+            db.insertPublicationResource(
+              publications[0],
+              resources[0],
+              "main",
+            ).then(id => res.status(200).json(id[0]));
+          }),
+        );
+      })
+      .catch(err => {
+        console.error(err);
+        res.status(500).send("Bad request");
+      });
+    return;
+  }
+
   db.insertPublication(
     req.params.id,
     req.params.stage,
