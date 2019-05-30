@@ -56,7 +56,7 @@
   },
   "proxy": "http://localhost:3001",
   "prettier": {
-    "trailingComma": "es5",
+    "trailingComma": "all",
     "semi": true,
     "singleQuote": false
   }

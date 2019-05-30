@@ -26,4 +26,5 @@ module.exports = {
   blobService,
   initialise,
   AZURE_FEEDBACK_IMAGE_CONTAINER,
+  AZURE_PUBLICATION_CONTAINER,
 };

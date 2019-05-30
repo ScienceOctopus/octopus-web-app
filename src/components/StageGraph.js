@@ -31,20 +31,28 @@ class StageGraph extends Component {
       content: {},
       stages: [],
     };
+    this._children = [];
 
     fetch(`/api/problems/${this.state.problem}`)
       .then(response => response.json())
-      .then(content => {
-        console.log(content);
-        this.setState({ content: content });
-      });
+      .then(content => this.setState({ content: content }));
 
     fetch(`/api/problems/${this.state.problem}/stages`)
       .then(response => response.json())
       .then(stages => {
+        console.log(stages);
         stages.sort((a, b) => a.id - b.id);
+        this.componentDidUpdate = this.stagesDidLoad;
         this.setState({ stages: stages });
       });
+  }
+
+  stagesDidLoad() {
+    this.componentDidUpdate = undefined;
+
+    for (let i = 0; i < this._children.length; i++) {
+      this._children[i].setNext(this._children[i + 1]);
+    }
   }
 
   render() {
@@ -80,7 +88,12 @@ class StageGraph extends Component {
             style={{ minWidth: 80 + "em", margin: 0 }}
           >
             {this.state.stages.map(stage => (
-              <Stage activePublicationId={10} activeStageId={this.state.activeStage} problemId={this.state.problem} stage={stage} />
+              <Stage
+                activePublicationId={10}
+                activeStageId={this.state.activeStage}
+                problemId={this.state.problem}
+                stage={stage}
+              />
             ))}
           </nav>
         </div>
