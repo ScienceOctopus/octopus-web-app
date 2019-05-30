@@ -1,29 +1,10 @@
 import React, { Component } from "react";
 
 class Publication extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      publication: props.publicationId,
-      content: {
-        title: <wbr />,
-        created_at: <wbr />,
-        description: <wbr />,
-      },
-    };
-
-    fetch(`/api/publications/${this.state.publication}`)
-      .then(response => response.json())
-      .then(content => {
-        content.created_at = new Date(content.created_at).toDateString();
-        this.setState({ content: content });
-      });
-  }
-
   render() {
     return (
       <a
-        href={"/publications/" + this.state.publication}
+        href={"/publications/" + this.props.publication.id}
         style={{ marginBottom: 0.5 + "em" }}
       >
         <div class="ui segment" style={{ fontSize: 0.75 + "rem" }}>
@@ -35,10 +16,10 @@ class Publication extends Component {
               width: "100%",
             }}
           >
-            {this.state.content.title}
+            {this.props.publication.title}
           </h5>
-          <div class="meta">{this.state.content.created_at}</div>
-          <div class="description">{this.state.content.description}</div>
+          <div class="meta">{this.props.publication.created_at}</div>
+          <div class="description">{this.props.publication.description}</div>
         </div>
       </a>
     );

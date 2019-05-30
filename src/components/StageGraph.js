@@ -23,37 +23,6 @@ const numbers = [
 ];
 
 class StageGraph extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      problem: props.problemId,
-      content: {},
-      stages: [],
-    };
-    this._children = [];
-
-    fetch(`/api/problems/${this.state.problem}`)
-      .then(response => response.json())
-      .then(content => this.setState({ content: content }));
-
-    fetch(`/api/problems/${this.state.problem}/stages`)
-      .then(response => response.json())
-      .then(stages => {
-        console.log(stages);
-        stages.sort((a, b) => a.id - b.id);
-        this.componentDidUpdate = this.stagesDidLoad;
-        this.setState({ stages: stages });
-      });
-  }
-
-  stagesDidLoad() {
-    this.componentDidUpdate = undefined;
-
-    for (let i = 0; i < this._children.length; i++) {
-      this._children[i].setNext(this._children[i + 1]);
-    }
-  }
-
   render() {
     return (
       <div>
@@ -68,7 +37,7 @@ class StageGraph extends Component {
         >
           <div className="ui container" style={{ marginTop: 1 + "em" }}>
             <h3 className="ui block header">
-              Problem: {this.state.content.title}
+              Problem: {this.props.problem.title}
             </h3>
           </div>
         </div>
@@ -82,25 +51,13 @@ class StageGraph extends Component {
         >
           <nav
             className={
-              "ui " + numbers[this.state.stages.length] + " column grid"
+              "ui " + numbers[this.props.stages.length] + " column grid"
             }
             style={{ minWidth: 80 + "em", margin: 0 }}
           >
-            {
-              this.state.stages.reduce(
-                ([acc, i], stage) => {
-                  acc.push(
-                    <Stage
-                      problemId={this.state.problem}
-                      stage={stage}
-                      ref={child => (this._children[i] = child)}
-                    />
-                  );
-                  return [acc, i + 1];
-                },
-                [[], 0]
-              )[0]
-            }
+            {this.props.stages.map((stage, stageId) => (
+              <Stage stage={stage} />
+            ))}
           </nav>
         </div>
       </div>
