@@ -6,24 +6,27 @@ import StageSelector from "../components/StageSelector";
 import TitledForm from "../components/TitledForm";
 import ApiURI from "../urls/ApiURIs";
 import { Link } from "react-router-dom";
+import PublicationSelector from "../components/PublicationSelector";
 
-const DEBUG_VIEW = false;
+const DEBUG_VIEW = true;
+const NONLINKING_STAGE = 1;
 
 export default class UploadPage extends Component {
-  state = {
-    title: "",
-    description: "",
-  };
-
   constructor() {
     super();
-    this.state = {};
+
+    this.state = {
+      title: "",
+      description: "",
+      linkedProblemsSelected: false,
+    };
+
     if (DEBUG_VIEW) {
       this.state.title = "test";
       this.state.description = "test";
       this.state.selectedFile = "bad file";
       this.state.selectedProblemId = "1";
-      this.state.selectedStageId = "4";
+      this.state.selectedStageId = "2";
     }
   }
 
@@ -83,6 +86,12 @@ export default class UploadPage extends Component {
     });
   };
 
+  handleLinkedProblemSelected = selected => () => {
+    this.setState({
+      linkedProblemsSelected: selected,
+    });
+  };
+
   checkCorrectFile = file => {
     //TODO check file format
     return true;
@@ -97,13 +106,21 @@ export default class UploadPage extends Component {
       this.state.selectedFile &&
       this.state.selectedProblemId &&
       this.state.selectedStageId &&
+      (this.state.selectedStageId === NONLINKING_STAGE ||
+        this.state.linkedProblemsSelected) &&
       this.state.title &&
       this.state.description
     );
   };
 
+  shouldRenderLinkingSelector() {
+    return (
+      this.state.selectedStageId !== undefined &&
+      this.state.selectedStageId !== NONLINKING_STAGE
+    );
+  }
+
   render() {
-    console.log(this.props.match.url);
     return (
       <div style={styles.container}>
         <h2>Upload</h2>
@@ -115,6 +132,9 @@ export default class UploadPage extends Component {
             onSelect={this.handleStageSelect}
           />
         )}
+
+        {this.shouldRenderLinkingSelector() && this.renderLinkingSelector()}
+
         <TitledForm
           title="Document Title"
           value={this.state.title}
@@ -138,6 +158,20 @@ export default class UploadPage extends Component {
         <button onClick={this.handleSubmit} disabled={!this.submitEnabled()}>
           Submit
         </button>
+      </div>
+    );
+  }
+
+  renderLinkingSelector() {
+    return (
+      <div>
+        <PublicationSelector
+          problemId={this.state.selectedProblemId}
+          stageId={this.state.selectedStageId}
+          selectedPublications={this.state.publicationsToLink}
+          onSelect={this.handleLinkedProblemSelected(true)}
+          onNoSelection={this.handleLinkedProblemSelected(false)}
+        />
       </div>
     );
   }

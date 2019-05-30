@@ -37,7 +37,7 @@ const getStagesByProblem = (req, res) => {
 const getPublicationsByProblemAndStage = (req, res) => {
   db.selectOriginalPublicationsByProblemAndStage(
     req.params.id,
-    req.params.stage
+    req.params.stage,
   )
     .then(rows => res.status(200).json(rows))
     .catch(console.error);
@@ -51,14 +51,14 @@ const postPublicationToProblemAndStage = (req, res) => {
     req.body.title,
     req.body.summary,
     req.body.description,
-    req.body.review
+    req.body.review,
   )
     .then(publications => {
       db.insertResource("azureBlob", req.file.url).then(resources => {
         db.insertPublicationResource(
           publications[0],
           resources[0],
-          "main"
+          "main",
         ).then(id => res.status(200).json(id[0]));
       });
     })
@@ -77,7 +77,7 @@ router.get("/:id/stages/:stage/publications", getPublicationsByProblemAndStage);
 router.post(
   "/:id/stages/:stage/publications",
   upload(blobService.AZURE_PUBLICATION_CONTAINER).single("file"),
-  postPublicationToProblemAndStage
+  postPublicationToProblemAndStage,
 );
 
 module.exports = {
