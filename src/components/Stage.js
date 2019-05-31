@@ -3,6 +3,8 @@ import React, { Component } from "react";
 import Publication from "./Publication";
 
 class Stage extends Component {
+  static height = undefined;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -24,9 +26,13 @@ class Stage extends Component {
 
     let links = null;
 
-    let height = undefined;
+    let height = Stage.height;
 
-    if (this.props.stage.publications.length && this.state.ref) {
+    if (
+      this.props.stage.publications.length &&
+      this.state.ref &&
+      this.state.ref.firstChild.children[1].firstChild
+    ) {
       let pubBB = this.state.ref.firstChild.children[1].firstChild.getBoundingClientRect();
       height = pubBB.bottom - pubBB.top;
 
@@ -34,13 +40,19 @@ class Stage extends Component {
         let cntBB = this.state.ref.getBoundingClientRect();
         let margin = pubBB.top - cntBB.top;
 
-        let paths = this.props.stage.links.map(([prev, next], i) => {
+        let oinks = this.props.stage.links;
+
+        if (this.props.content.publication !== undefined) {
+          oinks = this.props.stage.selection.links;
+        }
+
+        let paths = oinks.map(([prev, next], i) => {
           let beg =
-            (prev * 100) / this.props.stage.linkSize +
-            50 / this.props.stage.linkSize;
+            (prev * 100) / 3 +
+            50 / 3;
           let end =
-            (next * 100) / this.props.stage.linkSize +
-            50 / this.props.stage.linkSize;
+            (next * 100) / 3 +
+            50 / 3;
 
           return (
             <path
@@ -85,9 +97,75 @@ class Stage extends Component {
       }
     }
 
+    if (height !== undefined && Stage.height === undefined) {
+      Stage.height = height;
+    }
+
     let style = { overflowY: "auto" };
     if (height) {
       style.maxHeight = height * 3 + "px";
+    }
+
+    let dots = null;
+
+    if (this.props.content.publication !== undefined && this.props.stage.publications.length > 3) {
+      dots = (
+        <div>
+          <i
+            className="ui circle icon"
+            style={{
+              color: "#9a9a9a",
+              position: "absolute",
+              left: "35%",
+              marginRight: 0,
+              paddingBottom: 0,
+              paddingTop: 0.5 + "em",
+            }}
+          />
+          <i
+            className="ui circle icon"
+            style={{
+              color: "#9a9a9a",
+              width: "100%",
+              marginRight: 0,
+              paddingTop: 0.5 + "em",
+            }}
+          />
+          <i
+            className="ui circle icon"
+            style={{
+              color: "#9a9a9a",
+              position: "absolute",
+              right: "35%",
+              marginRight: 0,
+              paddingBottom: 0,
+              paddingTop: 0.5 + "em",
+            }}
+          />
+        </div>
+      );
+    }
+
+    let publications;
+
+    if (this.props.content.publication !== undefined) {
+      publications = this.props.stage.selection.publications.map(publicationId => {
+        let publication = this.props.stage.publications[publicationId];
+
+        return (<Publication
+          key={publication.id}
+          publication={publication}
+          content={this.props.content}
+        />);
+      });
+    } else {
+      publications = this.props.stage.publications.map(publication => (
+              <Publication
+                key={publication.id}
+                publication={publication}
+                content={this.props.content}
+              />
+            ));
     }
 
     return (
@@ -100,14 +178,9 @@ class Stage extends Component {
             </div>
           </h4>
           <div style={style}>
-            {this.props.stage.publications.map(publication => (
-              <Publication
-                key={publication.id}
-                publication={publication}
-                content={this.props.content}
-              />
-            ))}
+            {publications}
           </div>
+          {dots}
         </div>
         {links}
       </div>

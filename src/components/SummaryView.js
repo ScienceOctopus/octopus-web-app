@@ -19,21 +19,21 @@ class SummaryView extends Component {
   render() {
     return (
       <div>
-      <div class="ui divider"></div>
-      <main class="ui main container">
+      <div className="ui divider"></div>
+      <main className="ui main container">
       <article>
-      <h1 class="ui header"><span style={{color: "#00b5ad"}}>Hypothesis: </span>
+      <h1 className="ui header"><span style={{color: "#00b5ad"}}>Hypothesis: </span>
       {this.state.publication.title}
-      <div class="ui sub header">{ this.state.publication.summary }</div>
+      <div className="ui sub header">{ this.state.publication.summary }</div>
       </h1>
       <p>
       <strong>Date added: </strong>{ new Date(this.state.publication.created_at).toLocaleDateString() }
       </p>
-      <section class="ui segment"><h3>Summary</h3>
-      <div class="ui divider"></div>
+      <section className="ui segment"><h3>Summary</h3>
+      <div className="ui divider"></div>
       { this.state.publication.description }
       </section>
-      <section class="ui segment"><h3>Document</h3>
+      <section className="ui segment"><h3>Document</h3>
       <object width="500" height="500" type="application/pdf" data="https://arxiv.org/ftp/arxiv/papers/1905/1905.12599.pdf">
           <p>Embedding failure</p>
       </object>

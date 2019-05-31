@@ -21,10 +21,10 @@ export default class ProblemPage extends React.Component {
       this.state = this.props.location.state;
     }
 
-    this.initCheck(this.props, true);
+    this.initCheck(this.props, true, false);
   }
 
-  initCheck(props, sync) {
+  initCheck(props, sync, selection) {
     let id = Number(props.match ? props.match.params.id : props.params.id);
 
     if (props.publication) {
@@ -34,17 +34,19 @@ export default class ProblemPage extends React.Component {
         fetch(`/api/publications/${id}`)
           .then(response => response.json())
           .then(publication =>
-            this.initProblem(publication.problem, id, false),
+            this.initProblem(publication.problem, id, false, selection),
           );
       } else {
-        this.initProblem(publication.problem, id, sync);
+        this.initProblem(publication.problem, id, sync, selection);
       }
     } else {
-      this.initProblem(id, undefined, sync);
+      this.initProblem(id, undefined, sync, selection);
     }
   }
 
-  initProblem(problem, publication, sync) {
+  initProblem(problem, publication, sync, selection) {
+    let publicationChanged = publication !== this.state.publication;
+
     if (problem !== this.state.problem) {
       if (sync) {
         this.state.problem = problem;
@@ -56,11 +58,13 @@ export default class ProblemPage extends React.Component {
           this.fetchProblem,
         );
       }
-    } else if (publication !== this.state.publication) {
+    } else if (publicationChanged) {
       if (sync) {
         this.state.publication = publication;
+
+        this.generateSelection();
       } else {
-        this.setState({ publication: publication });
+        this.setState({ publication: publication }, this.generateSelection);
       }
     }
   }
@@ -83,8 +87,13 @@ export default class ProblemPage extends React.Component {
         stages.forEach(stage => {
           stage.publications = [];
           stage.links = [];
+          stage.selection = {
+            publications: [],
+            links: [],
+          };
         });
         let content = { ...this.state.content };
+        content.publications = new Map();
         content.stages = stages;
         this.setState({ content: content }, () => this.fetchStage(0));
       });
@@ -115,7 +124,7 @@ export default class ProblemPage extends React.Component {
 
   fetchLinks(stageId) {
     if (stageId >= this.state.content.stages.length) {
-      return;
+      return this.generateSelection();
     }
 
     let links = [];
@@ -124,13 +133,15 @@ export default class ProblemPage extends React.Component {
     let prevStagePubs = this.state.content.stages[stageId - 1].publications;
     let nextStagePubs = this.state.content.stages[stageId].publications;
 
+    console.log(prevStagePubs, nextStagePubs);
+
     nextStagePubs.forEach(nextPub => {
       fetch(`/api/publications/${nextPub.id}/linkedBy`)
         .then(response => response.json())
-        .then(links => {
+        .then(slinks => {console.log(nextPub.id, slinks);
           let next = nextStagePubs.findIndex(x => x === nextPub);
 
-          links.forEach(link => {
+          slinks.forEach(link => {
             let prev = prevStagePubs.findIndex(
               x => x === link.publication_before,
             );
@@ -142,10 +153,11 @@ export default class ProblemPage extends React.Component {
 
           if (++counter >= nextStagePubs.length) {
             let content = { ...this.state.content };
-            content.stages[stageId - 1].linkSize = Math.max(
+            /*content.stages[stageId - 1].linkSize = Math.max(
               prevStagePubs.length,
               nextStagePubs.length,
-            );
+            );*/
+            console.log(links);
             content.stages[stageId - 1].links = links;
             this.setState({ content: content }, () =>
               this.fetchLinks(stageId + 1),
@@ -155,8 +167,72 @@ export default class ProblemPage extends React.Component {
     });
   }
 
+  generateSelection() {
+    if (this.state.publication === undefined) {
+      return;
+    }
+
+    let stageId = this.state.content.publications.get(this.state.publication).stage;
+    stageId = this.state.content.stages.findIndex(x => x.id === stageId);
+
+    let stage = this.state.content.stages[stageId];
+
+    let publicationId = stage.publications.findIndex(x => x.id === this.state.publication);
+
+    let reachable = [];
+    reachable[stageId] = new Set([publicationId]);
+
+    let content = {...this.state.content};
+
+    for (let prev = stageId - 1; prev >= 0; prev--) {
+      let next_reachable = reachable[prev + 1];
+      let prev_reachable = new Set();
+
+      content.stages[prev].links.forEach(([prev, next]) => {
+        if (next_reachable.has(next)) {
+          prev_reachable.add(prev);
+        }
+      });
+
+      reachable[prev] = new Set([...prev_reachable].slice(0, 3));
+    }
+
+    for (let next = stageId + 1; next < content.stages.length; next++) {
+      let prev_reachable = reachable[next - 1];
+      let next_reachable = new Set();
+
+      content.stages[next - 1].links.forEach(([prev, next]) => {
+        if (prev_reachable.has(prev)) {
+          next_reachable.add(next);
+        }
+      });
+
+      reachable[next] = new Set([...next_reachable].slice(0, 3));
+    }
+
+    let links = [];
+
+    for (let i = 1; i < this.state.content.stages.length; i++) {
+      links.push(content.stages[i - 1].links.filter(([prev, next]) => {
+        return reachable[i - 1].has(prev) && reachable[i].has(next);
+      }));
+    }
+
+    reachable = reachable.map(set => [...set]);
+    links = links.map(([prev, next], i) => [reachable[i].findIndex(x => x === prev), reachable[i + 1].findIndex(x => x === next)]);
+
+    content.stages.forEach((stage, stageId) => {
+      stage.selection = {
+        publications: reachable[stageId],
+        links: links[stageId] || [],
+      };
+    });
+
+    this.setState({ content: content });
+  }
+
   componentWillReceiveProps(nextProps) {
-    this.initCheck(nextProps, false);
+    this.initCheck(nextProps, false, true);
   }
 
   render() {
