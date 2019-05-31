@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 
 import Publication from "./Publication";
+import styled from "styled-components";
 
 class Stage extends Component {
   static height = undefined;
@@ -51,34 +52,17 @@ class Stage extends Component {
         let end = (next * 100) / 3 + 50 / 3;
 
         return (
-          <path
+          <StyledPath
             key={i}
             d={"M 0 " + beg + " C 50 " + beg + ", 50 " + end + ", 100 " + end}
-            style={{ stroke: "#00726c", strokeWidth: 2, fill: "transparent" }}
             vectorEffect="non-scaling-stroke"
           />
         );
       });
 
       links = (
-        <div
-          style={{
-            width: 0,
-            padding: 0,
-            zIndex: 999,
-            position: "absolute",
-            top: 0,
-            right: 0,
-          }}
-        >
-          <div
-            style={{
-              width: 60 + "px",
-              height: height * 3 + "px",
-              marginLeft: -30 + "px",
-              marginTop: margin + "px",
-            }}
-          >
+        <LinksContainer>
+          <SingleLink height={height} margin={margin}>
             <svg
               width="100%"
               height="100%"
@@ -87,8 +71,8 @@ class Stage extends Component {
             >
               {paths}
             </svg>
-          </div>
-        </div>
+          </SingleLink>
+        </LinksContainer>
       );
     }
 
@@ -99,52 +83,13 @@ class Stage extends Component {
       Stage.margin = margin;
     }
 
-    let style = { overflowY: "auto" };
-    if (height) {
-      style.maxHeight = height * 3 + "px";
-    }
-
     let dots = null;
 
     if (
       this.props.content.publication !== undefined &&
       this.props.stage.publications.length > 3
     ) {
-      dots = (
-        <div>
-          <i
-            className="ui circle icon"
-            style={{
-              color: "#9a9a9a",
-              position: "absolute",
-              left: "35%",
-              marginRight: 0,
-              paddingBottom: 0,
-              paddingTop: 0.5 + "em",
-            }}
-          />
-          <i
-            className="ui circle icon"
-            style={{
-              color: "#9a9a9a",
-              width: "100%",
-              marginRight: 0,
-              paddingTop: 0.5 + "em",
-            }}
-          />
-          <i
-            className="ui circle icon"
-            style={{
-              color: "#9a9a9a",
-              position: "absolute",
-              right: "35%",
-              marginRight: 0,
-              paddingBottom: 0,
-              paddingTop: 0.5 + "em",
-            }}
-          />
-        </div>
-      );
+      dots = <DotContainer>{Array(3).fill(<Dot />)}</DotContainer>;
     }
 
     let publications;
@@ -186,7 +131,7 @@ class Stage extends Component {
               {this.props.stage.publications.length}
             </div>
           </h4>
-          <div style={style}>{publications}</div>
+          <PublicationContainer>{publications}</PublicationContainer>
           {dots}
         </div>
         {links}
@@ -194,5 +139,47 @@ class Stage extends Component {
     );
   }
 }
+
+const LinksContainer = styled.div`
+  width: 0;
+  padding: 0;
+  z-index: 999;
+  position: absolute;
+  top: 0;
+  right: 0;
+`;
+
+const SingleLink = styled.div`
+  width: 60px;
+  margin-left: -30px;
+  margin-top: ${p => p.margin + "px"};
+  height: ${p => p.height * 3 + "px"};
+`;
+
+const StyledPath = styled.path`
+  stroke: #00726c;
+  stroke-width: 2;
+  fill: transparent;
+`;
+
+const Dot = styled.div`
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  display: inline-block;
+  background-color: #9a9a9a;
+  margin: 0.2em;
+`;
+
+const DotContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 0.4em;
+`;
+
+const PublicationContainer = styled.div`
+  overflow-y: auto;
+  max-height: ${p => (p.height ? p.height * 3 + "px" : "")};
+`;
 
 export default Stage;
