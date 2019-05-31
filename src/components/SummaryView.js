@@ -6,10 +6,6 @@ class SummaryView extends Component {
   };
   constructor(props) {
     super(props);
-    // this.state = {
-    //   publication: props.publicationId || props.match.params.pubId,
-    // };
-    //console.log("Constructor");
 
     this.fetchProblemData();
   }
@@ -23,7 +19,6 @@ class SummaryView extends Component {
   }
 
   componentDidUpdate(oldProps) {
-    //console.log("UPD");
     if (oldProps.publicationId !== this.props.publicationId) {
       this.fetchProblemData();
     }

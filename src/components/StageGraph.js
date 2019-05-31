@@ -76,11 +76,4 @@ class StageGraph extends Component {
   }
 }
 
-/*const styles = {
-  container: {
-    maxHeight: "32rem",
-    overflowY: "auto",
-  },
-};*/
-
 export default StageGraph;
