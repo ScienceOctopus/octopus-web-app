@@ -158,7 +158,9 @@ class Stage extends Component {
             <Publication
               key={publication.id}
               publication={publication}
+              highlight={publication.id === this.props.content.publication}
               content={this.props.content}
+              isHyperlink
             />
           );
         },
@@ -169,6 +171,8 @@ class Stage extends Component {
           key={publication.id}
           publication={publication}
           content={this.props.content}
+          highlight={publication.id === this.props.content.publication}
+          isHyperlink
         />
       ));
     }
