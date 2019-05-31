@@ -71,7 +71,7 @@ const queries = {
       .select(),
   selectOriginalPublicationsByReferenceorPublication: publication =>
     queries
-      .selectPublicationsByReferencedPublication(publication)
+      .selectPublicationsByReferenceorPublication(publication)
       .where("review", false),
   selectReviewedPublicationsByReviewPublication: publication =>
     queries

@@ -15,25 +15,25 @@ const getPublicationByID = (req, res) => {
 
 const getReferencesByPublication = (req, res) => {
   db.selectPublicationsByReferenceorPublication(req.params.id).then(rows =>
-    res.status(200).json(rows)
+    res.status(200).json(rows),
   );
 };
 
 const getReferencedByByPublication = (req, res) => {
   db.selectPublicationsByReferencedPublication(req.params.id).then(rows =>
-    res.status(200).json(rows)
+    res.status(200).json(rows),
   );
 };
 
 const getReviewsByPublication = (req, res) => {
   db.selectReviewPublicationsByPublication(req.params.id).then(rows =>
-    res.status(200).json(rows)
+    res.status(200).json(rows),
   );
 };
 
 const getLinksByPublicationAfter = (req, res) => {
-  db.selectOriginalPublicationsByReferenceorPublication(req.params.id).then(rows =>
-    res.status(200).json(rows)
+  db.selectOriginalPublicationsByReferenceorPublication(req.params.id).then(
+    rows => res.status(200).json(rows),
   );
 };
 
@@ -43,7 +43,7 @@ router.get("/:id", getPublicationByID);
 router.get("/:id/references", getReferencesByPublication);
 router.get("/:id/referencedBy", getReferencedByByPublication);
 router.get("/:id/reviews", getReviewsByPublication);
-router.get("/:id/linkedBy", getLinksByPublicationAfter);
+router.get("/:id/linksTo", getLinksByPublicationAfter);
 
 module.exports = {
   router,

@@ -133,17 +133,15 @@ export default class ProblemPage extends React.Component {
     let prevStagePubs = this.state.content.stages[stageId - 1].publications;
     let nextStagePubs = this.state.content.stages[stageId].publications;
 
-    console.log(prevStagePubs, nextStagePubs);
-
     nextStagePubs.forEach(nextPub => {
-      fetch(`/api/publications/${nextPub.id}/linkedBy`)
+      fetch(`/api/publications/${nextPub.id}/linksTo`)
         .then(response => response.json())
-        .then(slinks => {console.log(nextPub.id, slinks);
+        .then(slinks => {
           let next = nextStagePubs.findIndex(x => x === nextPub);
 
           slinks.forEach(link => {
             let prev = prevStagePubs.findIndex(
-              x => x === link.publication_before,
+              x => x.id === link.publication_before,
             );
 
             if (prev !== -1 && next !== -1) {
@@ -157,7 +155,6 @@ export default class ProblemPage extends React.Component {
               prevStagePubs.length,
               nextStagePubs.length,
             );*/
-            console.log(links);
             content.stages[stageId - 1].links = links;
             this.setState({ content: content }, () =>
               this.fetchLinks(stageId + 1),
@@ -172,17 +169,20 @@ export default class ProblemPage extends React.Component {
       return;
     }
 
-    let stageId = this.state.content.publications.get(this.state.publication).stage;
+    let stageId = this.state.content.publications.get(this.state.publication)
+      .stage;
     stageId = this.state.content.stages.findIndex(x => x.id === stageId);
 
     let stage = this.state.content.stages[stageId];
 
-    let publicationId = stage.publications.findIndex(x => x.id === this.state.publication);
+    let publicationId = stage.publications.findIndex(
+      x => x.id === this.state.publication,
+    );
 
     let reachable = [];
     reachable[stageId] = new Set([publicationId]);
 
-    let content = {...this.state.content};
+    let content = { ...this.state.content };
 
     for (let prev = stageId - 1; prev >= 0; prev--) {
       let next_reachable = reachable[prev + 1];
@@ -213,13 +213,20 @@ export default class ProblemPage extends React.Component {
     let links = [];
 
     for (let i = 1; i < this.state.content.stages.length; i++) {
-      links.push(content.stages[i - 1].links.filter(([prev, next]) => {
-        return reachable[i - 1].has(prev) && reachable[i].has(next);
-      }));
+      links.push(
+        content.stages[i - 1].links.filter(([prev, next]) => {
+          return reachable[i - 1].has(prev) && reachable[i].has(next);
+        }),
+      );
     }
 
     reachable = reachable.map(set => [...set]);
-    links = links.map(([prev, next], i) => [reachable[i].findIndex(x => x === prev), reachable[i + 1].findIndex(x => x === next)]);
+    links = links.map((links, stageId) =>
+      links.map(([prev, next]) => [
+        reachable[stageId].findIndex(x => x === prev),
+        reachable[stageId + 1].findIndex(x => x === next),
+      ]),
+    );
 
     content.stages.forEach((stage, stageId) => {
       stage.selection = {
