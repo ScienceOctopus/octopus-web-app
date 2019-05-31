@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
+
 import "../App.css";
 import Stage from "./Stage";
 
@@ -25,7 +27,12 @@ const numbers = [
 class StageGraph extends Component {
   render() {
     return (
-      <div style={styles.container}>
+      <Link
+        to={{
+          pathname: `/problems/${this.props.problem.id}`,
+          state: this.props.content,
+        }}
+      >
         <div
           style={{
             overflowX: "auto",
@@ -55,21 +62,25 @@ class StageGraph extends Component {
             }
             style={{ minWidth: 80 + "em", margin: 0 }}
           >
-            {this.props.stages.map((stage, stageId) => (
-              <Stage stage={stage} />
+            {this.props.stages.map(stage => (
+              <Stage
+                key={stage.id}
+                stage={stage}
+                content={this.props.content}
+              />
             ))}
           </nav>
         </div>
-      </div>
+      </Link>
     );
   }
 }
 
-const styles = {
+/*const styles = {
   container: {
     maxHeight: "32rem",
     overflowY: "auto",
   },
-};
+};*/
 
 export default StageGraph;

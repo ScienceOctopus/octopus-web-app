@@ -3,6 +3,9 @@ import React, { Component } from "react";
 import Publication from "./Publication";
 
 class Stage extends Component {
+  static height = undefined;
+  static margin = undefined;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -10,36 +13,46 @@ class Stage extends Component {
     };
   }
 
-  callback(me, ref) {
+  refCallback(me, ref) {
     if (ref && ref !== me.state.ref) {
       me.setState({ ref: ref });
     }
   }
 
   render() {
-    var active = false; //this.state.activeStage === this.state.stage.id;
+    var active =
+      this.props.stage.publications.find(
+        x => x.id === this.props.content.publication,
+      ) !== undefined;
 
     let links = null;
 
-    if (this.props.stage.links.length && this.state.ref) {
+    let height = Stage.height;
+    let margin = Stage.margin;
+
+    if (
+      this.props.stage.publications.length &&
+      this.state.ref &&
+      this.state.ref.firstChild.children[1].firstChild
+    ) {
       let cntBB = this.state.ref.getBoundingClientRect();
-      let pubBB = this.state.ref.firstChild.children[1].getBoundingClientRect();
+      let pubBB = this.state.ref.firstChild.children[1].firstChild.getBoundingClientRect();
 
-      let height = pubBB.bottom - pubBB.top;
-      let margin = pubBB.top - cntBB.top;
+      height = pubBB.bottom - pubBB.top;
+      margin = pubBB.top - cntBB.top;
+    }
 
-      let paths = this.props.stage.links.map(([prev, next]) => {
-        let beg =
-          (prev * 100) / this.props.stage.linkSize +
-          50 / this.props.stage.linkSize;
-        let end =
-          (next * 100) / this.props.stage.linkSize +
-          50 / this.props.stage.linkSize;
-
-        // console.log(prev, next, beg, end);
+    if (
+      this.props.stage.links.length &&
+      this.props.content.publication !== undefined
+    ) {
+      let paths = this.props.stage.selection.links.map(([prev, next], i) => {
+        let beg = (prev * 100) / 3 + 50 / 3;
+        let end = (next * 100) / 3 + 50 / 3;
 
         return (
           <path
+            key={i}
             d={"M 0 " + beg + " C 50 " + beg + ", 50 " + end + ", 100 " + end}
             style={{ stroke: "#00726c", strokeWidth: 2, fill: "transparent" }}
             vectorEffect="non-scaling-stroke"
@@ -61,7 +74,7 @@ class Stage extends Component {
           <div
             style={{
               width: 60 + "px",
-              height: height * this.props.stage.linkSize + "px",
+              height: height * 3 + "px",
               marginLeft: -30 + "px",
               marginTop: margin + "px",
             }}
@@ -79,8 +92,89 @@ class Stage extends Component {
       );
     }
 
+    if (height !== undefined && Stage.height === undefined) {
+      Stage.height = height;
+    }
+    if (margin !== undefined && Stage.margin === undefined) {
+      Stage.margin = margin;
+    }
+
+    let style = { overflowY: "auto" };
+    if (height) {
+      style.maxHeight = height * 3 + "px";
+    }
+
+    let dots = null;
+
+    if (
+      this.props.content.publication !== undefined &&
+      this.props.stage.publications.length > 3
+    ) {
+      dots = (
+        <div>
+          <i
+            className="ui circle icon"
+            style={{
+              color: "#9a9a9a",
+              position: "absolute",
+              left: "35%",
+              marginRight: 0,
+              paddingBottom: 0,
+              paddingTop: 0.5 + "em",
+            }}
+          />
+          <i
+            className="ui circle icon"
+            style={{
+              color: "#9a9a9a",
+              width: "100%",
+              marginRight: 0,
+              paddingTop: 0.5 + "em",
+            }}
+          />
+          <i
+            className="ui circle icon"
+            style={{
+              color: "#9a9a9a",
+              position: "absolute",
+              right: "35%",
+              marginRight: 0,
+              paddingBottom: 0,
+              paddingTop: 0.5 + "em",
+            }}
+          />
+        </div>
+      );
+    }
+
+    let publications;
+
+    if (this.props.content.publication !== undefined) {
+      publications = this.props.stage.selection.publications.map(
+        publicationId => {
+          let publication = this.props.stage.publications[publicationId];
+
+          return (
+            <Publication
+              key={publication.id}
+              publication={publication}
+              content={this.props.content}
+            />
+          );
+        },
+      );
+    } else {
+      publications = this.props.stage.publications.map(publication => (
+        <Publication
+          key={publication.id}
+          publication={publication}
+          content={this.props.content}
+        />
+      ));
+    }
+
     return (
-      <div class="column" ref={ref => this.callback(this, ref)}>
+      <div className="column" ref={ref => this.refCallback(this, ref)}>
         <div className={"ui " + (active ? "raised " : "") + "segment"}>
           <h4>
             {this.props.stage.name}
@@ -88,9 +182,8 @@ class Stage extends Component {
               {this.props.stage.publications.length}
             </div>
           </h4>
-          {this.props.stage.publications.map(publication => (
-            <Publication publication={publication} />
-          ))}
+          <div style={style}>{publications}</div>
+          {dots}
         </div>
         {links}
       </div>

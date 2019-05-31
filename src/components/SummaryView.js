@@ -9,13 +9,13 @@ class SummaryView extends Component {
     // this.state = {
     //   publication: props.publicationId || props.match.params.pubId,
     // };
-    console.log("Constructor");
+    //console.log("Constructor");
 
     this.fetchProblemData();
   }
 
   fetchProblemData() {
-    fetch(`/api/publications/${this.props.match.params.pubId}/`)
+    fetch(`/api/publications/${this.props.publicationId}/`)
       .then(response => response.json())
       .then(publication => {
         this.setState({ publication: publication });
@@ -23,8 +23,8 @@ class SummaryView extends Component {
   }
 
   componentDidUpdate(oldProps) {
-    console.log("UPD");
-    if (oldProps.match.params.pubId !== this.props.match.params.pubId) {
+    //console.log("UPD");
+    if (oldProps.publicationId !== this.props.publicationId) {
       this.fetchProblemData();
     }
   }

@@ -69,10 +69,9 @@ const queries = {
         "publication_links.publication_before",
       )
       .select(),
-
-  selectOriginalPublicationsByReferencedorPublication: publication =>
+  selectOriginalPublicationsByReferenceorPublication: publication =>
     queries
-      .selectPublicationsByReferencedByPublication(publication)
+      .selectPublicationsByReferenceorPublication(publication)
       .where("review", false),
 
   selectReviewedPublicationsByReviewPublication: publication =>
