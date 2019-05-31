@@ -1,64 +1,61 @@
-import React from "react";
-import { Button, Form, Nav, Navbar, NavItem } from "react-bootstrap";
-import { LinkContainer } from "react-router-bootstrap";
+import React, { Component } from "react";
+import { Link } from "react-router-dom";
+
 import "../App.css";
 import WebURI from "../urls/WebsiteURIs";
-import { Link, withRouter } from "react-router-dom";
-import styled from "styled-components";
+import SimpleNav from "./SimpleNav";
 
-const StyledNavbar = styled(Navbar)`
-  background: teal;
-  padding: 2px 10em;
-  vertical-align: middle;
-`;
+const SHOW_SIMPLE_NAV = false;
 
-const Header = ({ location }) => {
-  return (
-    <StyledNavbar variant="dark">
-      <LinkContainer to={WebURI.Home}>
-        <Navbar.Brand>
-          <img
-            className="logo mx-3"
-            src="/images/octopus.png"
-            alt="Octopus Logo"
-            width="40"
-            height="40"
-          />
-          {"Octopus"}
-        </Navbar.Brand>
-      </LinkContainer>
-      <Nav>
-        <LinkContainer to={WebURI.UploadPublication}>
-          <Nav.Link active={location.pathname === WebURI.UploadPublication}>
-            Upload
-          </Nav.Link>
-        </LinkContainer>
-      </Nav>
+class Header extends Component {
+  render() {
+    return (
+      <header className="ui teal inverted menu" style={{ borderRadius: 0 }}>
+        <div className="ui container">
+          <Link to={WebURI.Home} className="header item">
+            <img
+              className="logo"
+              src="/images/octopus.png"
+              alt="Octopus Logo"
+              style={{ marginRight: 1.5 + "em" }}
+            />
+            Octopus
+          </Link>
+          <Link to={WebURI.UploadPublication} className="item">
+            <i className="ui pencil alternate icon" />
+            Draft a new publication
+          </Link>
 
-      <Navbar.Toggle />
-      <Navbar.Collapse className="justify-content-end">
-        <Nav>
-          <NavItem>
+          <div className="right item">
             <img
               src="/images/avatar.jpg"
-              width="50"
-              className="rounded-circle px-2"
+              className="ui avatar image"
               alt="Avatar of Alex"
             />
-            <Navbar.Text>Alex</Navbar.Text>
-          </NavItem>
+            <strong>Alex</strong>
+            <div
+              style={{ marginLeft: 1 + "em" }}
+              className="ui button"
+              /*href="/login?logout=1"*/
+            >
+              Logout
+            </div>
+            {/*<a href="/login?redirect">
+              <img
+                src="/images/avatar.jpg"
+                className="ui avatar image"
+                alt="Generic avatar"
+                title="Log in"
+              />
+            </a>
+            <span>Log in via ORCiD</span>*/}
+          </div>
+        </div>
 
-          <NavItem>
-            <Form inline>
-              <Button className="mx-2" variant="outline-light">
-                Logout
-              </Button>
-            </Form>
-          </NavItem>
-        </Nav>
-      </Navbar.Collapse>
-    </StyledNavbar>
-  );
-};
+        {SHOW_SIMPLE_NAV && <SimpleNav />}
+      </header>
+    );
+  }
+}
 
-export default withRouter(Header);
+export default Header;

@@ -1,24 +1,22 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import styled from "styled-components";
-
-const BgDiv = styled.div`
-  background-color: ${props => (props.highlight ? "green" : "white")};
-  cursor: ${p => (p.onClick !== undefined ? "pointer" : "-")};
-
-  padding: 1em 1em;
-  border-radius: 0.25rem;
-  border: 1px solid rgba(34, 36, 38, 0.15);
-  font-size: 0.75 + "rem";
-  padding-bottom: 0;
-  margin-bottom: 0.5 + "em";
-`;
 
 class Publication extends Component {
   render() {
-    console.log(this.props.highlight);
+    let backgroundStyle = { ...style };
+    if (this.props.highlight) {
+      Object.assign(backgroundStyle, highlightedStyle);
+    }
+    if (this.props.onClick !== undefined) {
+      Object.assign(backgroundStyle, selectableStyle);
+    }
+
     let publicationView = (
-      <BgDiv onClick={this.props.onClick} {...this.props}>
+      <div
+        className="ui segment"
+        style={backgroundStyle}
+        onClick={this.props.onClick}
+      >
         <h5
           style={{
             whiteSpace: "nowrap",
@@ -33,7 +31,7 @@ class Publication extends Component {
         <div className="description fade">
           {this.props.publication.description}
         </div>
-      </BgDiv>
+      </div>
     );
 
     return this.props.isHyperlink
@@ -54,5 +52,20 @@ class Publication extends Component {
     );
   };
 }
+
+const style = {
+  fontSize: 0.75 + "rem",
+  paddingBottom: 0,
+
+  marginBottom: 0.5 + "em",
+};
+
+const highlightedStyle = {
+  background: "lightgreen",
+};
+
+const selectableStyle = {
+  cursor: "pointer",
+};
 
 export default Publication;

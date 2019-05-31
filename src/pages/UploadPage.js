@@ -8,7 +8,7 @@ import ApiURI from "../urls/ApiURIs";
 import { Link } from "react-router-dom";
 import PublicationSelector from "../components/PublicationSelector";
 
-const DEBUG_VIEW = true;
+const DEBUG_VIEW = false;
 const NONLINKING_STAGE = "1";
 
 export default class UploadPage extends Component {
