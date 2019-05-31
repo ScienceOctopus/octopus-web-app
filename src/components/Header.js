@@ -6,9 +6,15 @@ import WebURI from "../urls/WebsiteURIs";
 import { Link, withRouter } from "react-router-dom";
 import styled from "styled-components";
 
+const StyledNavbar = styled(Navbar)`
+  background: teal;
+  padding: 2px 10em;
+  vertical-align: middle;
+`;
+
 const Header = ({ location }) => {
   return (
-    <Navbar variant="dark" style={styles.bar}>
+    <StyledNavbar variant="dark">
       <LinkContainer to={WebURI.Home}>
         <Navbar.Brand>
           <img
@@ -51,16 +57,8 @@ const Header = ({ location }) => {
           </NavItem>
         </Nav>
       </Navbar.Collapse>
-    </Navbar>
+    </StyledNavbar>
   );
-};
-
-const styles = {
-  bar: {
-    backgroundColor: "teal",
-    padding: "2px 10em",
-    verticalAlign: "middle",
-  },
 };
 
 export default withRouter(Header);
