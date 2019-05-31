@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import styled from "styled-components";
 
 class SummaryView extends Component {
   state = {
@@ -31,7 +32,7 @@ class SummaryView extends Component {
         <main class="ui main container">
           <article>
             <h1 class="ui header">
-              <span style={{ color: "#00b5ad" }}>Hypothesis: </span>
+              <HypothesisTitle>Hypothesis: </HypothesisTitle>
               {this.state.publication.title}
               <div class="ui sub header">{this.state.publication.summary}</div>
             </h1>
@@ -61,5 +62,9 @@ class SummaryView extends Component {
     );
   }
 }
+
+const HypothesisTitle = styled.span`
+  color: #00b5ad;
+`;
 
 export default SummaryView;

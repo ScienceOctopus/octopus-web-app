@@ -10,14 +10,14 @@ const SHOW_SIMPLE_NAV = false;
 class Header extends Component {
   render() {
     return (
-      <header className="ui teal inverted menu" style={{ borderRadius: 0 }}>
+      <header className="ui teal inverted menu" style={styles.header}>
         <div className="ui container">
           <Link to={WebURI.Home} className="header item">
             <img
               className="logo"
               src="/images/octopus.png"
               alt="Octopus Logo"
-              style={{ marginRight: 1.5 + "em" }}
+              style={styles.logo}
             />
             Octopus
           </Link>
@@ -34,7 +34,7 @@ class Header extends Component {
             />
             <strong>Alex</strong>
             <div
-              style={{ marginLeft: 1 + "em" }}
+              style={styles.logout}
               className="ui button"
               /*href="/login?logout=1"*/
             >
@@ -57,5 +57,17 @@ class Header extends Component {
     );
   }
 }
+
+const styles = {
+  header: {
+    borderRadius: 0,
+  },
+  logo: {
+    marginRight: 1.5 + "em",
+  },
+  logout: {
+    marginLeft: 1 + "em",
+  },
+};
 
 export default Header;

@@ -131,7 +131,9 @@ class Stage extends Component {
               {this.props.stage.publications.length}
             </div>
           </h4>
-          <PublicationContainer>{publications}</PublicationContainer>
+          <PublicationContainer height={height}>
+            {publications}
+          </PublicationContainer>
           {dots}
         </div>
         {links}

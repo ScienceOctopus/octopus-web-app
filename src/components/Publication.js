@@ -2,20 +2,6 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 
-const BgDiv = styled.div`
-  &&&&.segment {
-    background-color: ${props => (props.highlight ? "green" : "white")};
-  }
-  cursor: ${p => (p.onClick !== undefined ? "pointer" : "-")};
-
-  padding: 1em 1em;
-  border-radius: 0.25rem;
-  border: 1px solid rgba(34, 36, 38, 0.15);
-  font-size: 0.75 + "rem";
-  padding-bottom: 0;
-  margin-bottom: 0.5 + "em";
-`;
-
 class Publication extends Component {
   render() {
     let publicationView = (
@@ -24,16 +10,7 @@ class Publication extends Component {
         onClick={this.props.onClick}
         {...this.props}
       >
-        <h5
-          style={{
-            whiteSpace: "nowrap",
-            textOverflow: "ellipsis",
-            overflow: "hidden",
-            width: "100%",
-          }}
-        >
-          {this.props.publication.title}
-        </h5>
+        <Title>{this.props.publication.title}</Title>
         <div className="meta">{this.props.publication.created_at}</div>
         <div className="description fade">
           {this.props.publication.description}
@@ -59,5 +36,26 @@ class Publication extends Component {
     );
   };
 }
+
+const BgDiv = styled.div`
+  &&&&.segment {
+    background-color: ${props => (props.highlight ? "green" : "white")};
+  }
+  cursor: ${p => (p.onClick !== undefined ? "pointer" : "-")};
+
+  padding: 1em 1em;
+  border-radius: 0.25rem;
+  border: 1px solid rgba(34, 36, 38, 0.15);
+  font-size: 0.75 + "rem";
+  padding-bottom: 0;
+  margin-bottom: 0.5 + "em";
+`;
+
+const Title = styled.h5`
+  white-space: nowrap;
+  text-overflow: hidden;
+  overflow: hidden;
+  width: 100%;
+`;
 
 export default Publication;

@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import styled, { css } from "styled-components";
 
 import "../App.css";
 import Stage from "./Stage";
@@ -33,34 +34,19 @@ class StageGraph extends Component {
           state: this.props.content,
         }}
       >
-        <div
-          style={{
-            overflowX: "auto",
-            overflowY: "hidden",
-            marginTop: -1 + "rem",
-            paddingBottom: 1.5 + "rem",
-            backgroundColor: "#dcf8ec",
-          }}
-        >
-          <div className="ui container" style={{ marginTop: 1 + "em" }}>
+        <ProblemTitleContainer>
+          <div className="ui container">
             <h3 className="ui block header">
               Problem: {this.props.problem.title}
             </h3>
           </div>
-        </div>
-        <div
-          style={{
-            overflowX: "auto",
-            overflowY: "hidden",
-            marginTop: -1 + "rem",
-            backgroundColor: "#dcf8ec",
-          }}
-        >
+        </ProblemTitleContainer>
+
+        <GraphContainer>
           <nav
             className={
               "ui " + numbers[this.props.stages.length] + " column grid"
             }
-            style={{ minWidth: 80 + "em", margin: 0 }}
           >
             {this.props.stages.map(stage => (
               <Stage
@@ -70,10 +56,27 @@ class StageGraph extends Component {
               />
             ))}
           </nav>
-        </div>
+        </GraphContainer>
       </Link>
     );
   }
 }
+
+const commonStyle = css`
+  overflow-x: auto;
+  overflow-y: hidden;
+  margin-top: -1rem;
+  background-color: #dcf8ec;
+`;
+
+const GraphContainer = styled.div`
+  ${commonStyle}
+  padding-top: 1em;
+`;
+
+const ProblemTitleContainer = styled.div`
+  ${commonStyle}
+  padding-bottom: 1.5rem;
+`;
 
 export default StageGraph;
