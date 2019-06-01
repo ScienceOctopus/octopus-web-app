@@ -177,39 +177,84 @@ export default class ProblemPage extends React.Component {
     );
 
     let reachable = [];
-    reachable[stageId] = new Set([publicationId]);
+    reachable[stageId] = new Map([[publicationId, 0]]);
 
     let content = { ...this.state.content };
 
+    // Generate graph of pubs linked to selected one and accumulate their degrees
     for (let prev = stageId - 1; prev >= 0; prev--) {
       let next_reachable = reachable[prev + 1];
-      let prev_reachable = new Set();
+      let prev_reachable = new Map();
 
       content.stages[prev].links.forEach(([prev, next]) => {
         if (next_reachable.has(next)) {
-          prev_reachable.add(prev);
+          prev_reachable.set(prev, (prev_reachable.get(prev) || 0) + 1);
+          next_reachable.set(next, (next_reachable.get(next) || 0) + 1);
         }
       });
 
-      reachable[prev] = new Set([...prev_reachable].slice(0, 3));
+      reachable[prev] = prev_reachable;
     }
 
     for (let next = stageId + 1; next < content.stages.length; next++) {
       let prev_reachable = reachable[next - 1];
-      let next_reachable = new Set();
+      let next_reachable = new Map();
 
       content.stages[next - 1].links.forEach(([prev, next]) => {
         if (prev_reachable.has(prev)) {
-          next_reachable.add(next);
+          prev_reachable.set(prev, (prev_reachable.get(prev) || 0) + 1);
+          next_reachable.set(next, (next_reachable.get(next) || 0) + 1);
         }
       });
 
-      reachable[next] = new Set([...next_reachable].slice(0, 3));
+      reachable[next] = next_reachable;
+    }
+
+    let sizes = reachable.map(stage => stage.size);
+
+    // Start from first stage and select the three pubs with the highest degree
+    if (content.stages.length) {
+      reachable[0] = new Map(
+        [...reachable[0].entries()].sort((a, b) => b[1] - a[1]).slice(0, 3),
+      );
+    }
+
+    for (let i = 1; i < content.stages.length; i++) {
+      let ok_reachable = [];
+      let no_reachable = [];
+
+      // Partition next stage's pubs into still reachable ones and now unreachable ones
+      reachable[i].forEach((degree, pub) => {
+        if (
+          /* Allows pubs without prior links (i === stageId && pub === publicationId) ||*/ content.stages[
+            i - 1
+          ].links.find(
+            ([prev, next]) => next === pub && reachable[i - 1].has(prev),
+          ) !== undefined
+        ) {
+          ok_reachable.push([pub, degree]);
+        } else {
+          no_reachable.push([pub, degree]);
+        }
+      });
+
+      // Select the three pubs with the highest degree from the reachable ones, fill up with now unreachable ones
+      ok_reachable = ok_reachable.sort((a, b) => b[1] - a[1]).slice(0, 3);
+
+      if (ok_reachable.length < 3) {
+        ok_reachable.concat(
+          no_reachable
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 3 - ok_reachable.length),
+        );
+      }
+
+      reachable[i] = new Map(ok_reachable);
     }
 
     let links = [];
 
-    for (let i = 1; i < this.state.content.stages.length; i++) {
+    for (let i = 1; i < content.stages.length; i++) {
       links.push(
         content.stages[i - 1].links.filter(([prev, next]) => {
           return reachable[i - 1].has(prev) && reachable[i].has(next);
@@ -217,7 +262,9 @@ export default class ProblemPage extends React.Component {
       );
     }
 
-    reachable = reachable.map(set => [...set]);
+    reachable = reachable.map(map =>
+      [...map].sort((a, b) => b[1] - a[1]).map(pub => pub[0]),
+    );
     links = links.map((links, stageId) =>
       links.map(([prev, next]) => [
         reachable[stageId].findIndex(x => x === prev),
@@ -229,6 +276,7 @@ export default class ProblemPage extends React.Component {
       stage.selection = {
         publications: reachable[stageId],
         links: links[stageId] || [],
+        size: sizes[stageId],
       };
     });
 

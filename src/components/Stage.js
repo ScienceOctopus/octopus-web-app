@@ -98,7 +98,7 @@ class Stage extends Component {
 
     if (
       this.props.content.publication !== undefined &&
-      this.props.stage.publications.length > 3
+      this.props.stage.selection.size > 3
     ) {
       dots = (
         <DotContainer>
