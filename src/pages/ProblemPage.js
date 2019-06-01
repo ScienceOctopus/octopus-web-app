@@ -3,10 +3,6 @@ import React from "react";
 import StageGraph from "../components/StageGraph";
 import SummaryView from "../components/SummaryView";
 
-//import { Route } from "react-router-dom";
-
-//import UploadPage from "./UploadPage";
-
 export default class ProblemPage extends React.Component {
   constructor(props) {
     super(props);
@@ -20,6 +16,7 @@ export default class ProblemPage extends React.Component {
           stages: [],
           publications: new Map(),
         },
+        open: true,
       };
     } else {
       this.state = this.props.location.state;
@@ -254,6 +251,8 @@ export default class ProblemPage extends React.Component {
         <StageGraph
           problem={this.state.content.problem}
           stages={this.state.content.stages}
+          open={this.state.open}
+          toggleOpen={() => this.setState({ open: !this.state.open })}
           content={this.state}
         />
         {publication}

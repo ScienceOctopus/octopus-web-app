@@ -6,6 +6,7 @@ import styled from "styled-components";
 class Stage extends Component {
   static height = undefined;
   static margin = undefined;
+  static between = undefined;
 
   constructor(props) {
     super(props);
@@ -30,17 +31,24 @@ class Stage extends Component {
 
     let height = Stage.height;
     let margin = Stage.margin;
+    let between = Stage.between;
 
     if (
       this.props.stage.publications.length &&
       this.state.ref &&
-      this.state.ref.firstChild.children[1].firstChild
+      this.state.ref.firstChild.children[1].firstChild.firstChild
     ) {
       let cntBB = this.state.ref.getBoundingClientRect();
-      let pubBB = this.state.ref.firstChild.children[1].firstChild.getBoundingClientRect();
+      let pubBB = this.state.ref.firstChild.children[1].firstChild.firstChild.getBoundingClientRect();
 
       height = pubBB.bottom - pubBB.top;
       margin = pubBB.top - cntBB.top;
+
+      if (this.state.ref.firstChild.children[1].firstChild.children[1]) {
+        let sndBB = this.state.ref.firstChild.children[1].firstChild.children[1].getBoundingClientRect();
+
+        between = sndBB.top - pubBB.bottom;
+      }
     }
 
     if (
@@ -82,6 +90,9 @@ class Stage extends Component {
     if (margin !== undefined && Stage.margin === undefined) {
       Stage.margin = margin;
     }
+    if (between !== undefined && Stage.between === undefined) {
+      Stage.between = between;
+    }
 
     let dots = null;
 
@@ -89,7 +100,15 @@ class Stage extends Component {
       this.props.content.publication !== undefined &&
       this.props.stage.publications.length > 3
     ) {
-      dots = <DotContainer>{Array(3).fill(<Dot />)}</DotContainer>;
+      dots = (
+        <DotContainer>
+          {Array(3)
+            .fill(null)
+            .map((_, i) => (
+              <Dot key={i} />
+            ))}
+        </DotContainer>
+      );
     }
 
     let publications;
@@ -123,18 +142,32 @@ class Stage extends Component {
     }
 
     return (
-      <div className="column" ref={ref => this.refCallback(this, ref)}>
+      <div
+        className="column"
+        ref={ref => this.refCallback(this, ref)}
+        style={{ backgroundColor: "#dcf8ec" }}
+      >
         <div className={"ui " + (active ? "raised " : "") + "segment"}>
-          <h4>
+          <h4 style={{ marginBottom: 0 }}>
             {this.props.stage.name}
             <div className={"floating ui " + (active ? "teal " : "") + "label"}>
               {this.props.stage.publications.length}
             </div>
           </h4>
-          <PublicationContainer height={height}>
-            {publications}
-          </PublicationContainer>
-          {dots}
+          <div
+            className={"stage " + (this.props.open ? "opened" : "collapsed")}
+            style={{
+              overflow: "hidden",
+              transition:
+                "margin-top 0.3s ease-in-out, margin-bottom 0.3s ease-in-out, max-height 0.3s ease-in-out, opacity 0.3s ease-in-out",
+              height: "auto",
+            }}
+          >
+            <PublicationContainer height={height} margin={between}>
+              {publications}
+            </PublicationContainer>
+            {dots}
+          </div>
         </div>
         {links}
       </div>
@@ -174,14 +207,20 @@ const Dot = styled.div`
 `;
 
 const DotContainer = styled.div`
+  position: absolute;
   display: flex;
   justify-content: center;
-  margin-top: 0.4em;
+  margin-top: calc(-0.5rem - 0.2em);
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
 `;
 
 const PublicationContainer = styled.div`
   overflow-y: auto;
-  max-height: ${p => (p.height ? p.height * 3 + "px" : "")};
+  max-height: ${p =>
+    p.height ? p.height * 3 + (p.margin ? p.margin * 3 : 0) + "px" : ""};
 `;
 
 export default Stage;

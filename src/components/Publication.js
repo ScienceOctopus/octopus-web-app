@@ -8,13 +8,14 @@ class Publication extends Component {
       <BgDiv
         className="ui segment"
         onClick={this.props.onClick}
+        style={{ marginBottom: "1em" }}
         {...this.props}
       >
         <Title>{this.props.publication.title}</Title>
         <div className="meta">{this.props.publication.created_at}</div>
-        <div className="description fade">
+        <Description className="description" {...this.props}>
           {this.props.publication.description}
-        </div>
+        </Description>
       </BgDiv>
     );
 
@@ -38,17 +39,16 @@ class Publication extends Component {
 }
 
 const BgDiv = styled.div`
-  &&&&.segment {
-    background-color: ${props => (props.highlight ? "green" : "white")};
-  }
-  cursor: ${p => (p.onClick !== undefined ? "pointer" : "-")};
+  &.segment {
+    background-color: ${props => (props.highlight ? "#9fffd6" : "white")};
 
-  padding: 1em 1em;
-  border-radius: 0.25rem;
-  border: 1px solid rgba(34, 36, 38, 0.15);
-  font-size: 0.75 + "rem";
-  padding-bottom: 0;
-  margin-bottom: 0.5 + "em";
+    padding: 1em 1em;
+    border-radius: 0.25rem;
+    border: 1px solid rgba(34, 36, 38, 0.15);
+    font-size: 0.75rem;
+    padding-bottom: 0;
+    margin-bottom: 0.5em;
+  }
 `;
 
 const Title = styled.h5`
@@ -56,6 +56,33 @@ const Title = styled.h5`
   text-overflow: hidden;
   overflow: hidden;
   width: 100%;
+`;
+
+const Description = styled.div`
+  &.description {
+    position: relative;
+    height: 3rem;
+    line-height: 1.2rem;
+    overflow: hidden;
+  }
+
+  &:after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 0.6rem;
+    background: linear-gradient(
+      to bottom,
+      ${props =>
+          props.highlight ? "rgba(159, 255, 214, 0)" : "rgba(255, 255, 255, 0)"}
+        0%,
+      ${props =>
+          props.highlight ? "rgba(159, 255, 214, 1)" : "rgba(255, 255, 255, 1)"}
+        100%
+    );
+  }
 `;
 
 export default Publication;

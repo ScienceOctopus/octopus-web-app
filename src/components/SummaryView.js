@@ -28,24 +28,26 @@ class SummaryView extends Component {
   render() {
     return (
       <div>
-        <div class="ui divider" />
-        <main class="ui main container">
+        <div className="ui divider" />
+        <main className="ui main container">
           <article>
-            <h1 class="ui header">
+            <h1 className="ui header">
               <HypothesisTitle>Hypothesis: </HypothesisTitle>
               {this.state.publication.title}
-              <div class="ui sub header">{this.state.publication.summary}</div>
+              <div className="ui sub header">
+                {this.state.publication.summary}
+              </div>
             </h1>
             <p>
               <strong>Date added: </strong>
               {new Date(this.state.publication.created_at).toLocaleDateString()}
             </p>
-            <section class="ui segment">
+            <section className="ui segment">
               <h3>Summary</h3>
-              <div class="ui divider" />
+              <div className="ui divider" />
               {this.state.publication.description}
             </section>
-            <section class="ui segment">
+            <section className="ui segment">
               <h3>Document</h3>
               <object
                 width="500"
