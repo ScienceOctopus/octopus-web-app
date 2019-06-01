@@ -6,6 +6,7 @@ import styled from "styled-components";
 class Stage extends Component {
   static height = undefined;
   static margin = undefined;
+  static side = undefined;
   static between = undefined;
 
   constructor(props) {
@@ -31,6 +32,7 @@ class Stage extends Component {
 
     let height = Stage.height;
     let margin = Stage.margin;
+    let side = Stage.side;
     let between = Stage.between;
 
     if (
@@ -43,6 +45,8 @@ class Stage extends Component {
 
       height = pubBB.bottom - pubBB.top;
       margin = pubBB.top - cntBB.top;
+      side =
+        pubBB.left - this.state.ref.firstChild.getBoundingClientRect().left;
 
       if (this.state.ref.firstChild.children[1].firstChild.children[1]) {
         let sndBB = this.state.ref.firstChild.children[1].firstChild.children[1].getBoundingClientRect();
@@ -61,6 +65,9 @@ class Stage extends Component {
         Stage.margin = margin = Math.max(Stage.margin, margin);
       }
     }
+    if (side !== undefined && Stage.side === undefined) {
+      Stage.side = side;
+    }
     if (between !== undefined && Stage.between === undefined) {
       Stage.between = between;
     }
@@ -70,12 +77,11 @@ class Stage extends Component {
       this.props.content.publication !== undefined &&
       height !== undefined &&
       margin !== undefined &&
+      side !== undefined &&
       (between !== undefined || this.props.selection.publications.length < 2)
     ) {
       let between = Stage.between || 0;
       let total = height * 3 + between * 2;
-
-      console.log(height, between, total);
 
       let paths = this.props.stage.selection.links.map(([prev, next], i) => {
         let beg = (100 * ((height + between) * prev + height / 2)) / total;
@@ -92,10 +98,34 @@ class Stage extends Component {
 
       links = (
         <LinksColumn>
+          <StageLinkContainer
+            className={this.props.open ? "opened" : "collapsed"}
+            margin={margin}
+            side={side}
+          >
+            <svg
+              width="100%"
+              height="100%"
+              viewBox="0 0 100 100"
+              preserveAspectRatio="none"
+            >
+              <line
+                x1="0"
+                y1={(100 * (margin + between)) / (margin * 2)}
+                x2="100"
+                y2={(100 * (margin + between)) / (margin * 2)}
+                style={{
+                  stroke: "#00726c",
+                  strokeWidth: 4,
+                  fill: "transparent",
+                }}
+                vectorEffect="non-scaling-stroke"
+              />
+            </svg>
+          </StageLinkContainer>
           <LinksContainer
             className={this.props.open ? "opened" : "collapsed"}
             height={height}
-            margin={margin}
             between={between}
           >
             <svg
@@ -171,20 +201,16 @@ class Stage extends Component {
               {this.props.stage.publications.length}
             </div>
           </h4>
-          <div
-            className={"stage " + (this.props.open ? "opened" : "collapsed")}
-            style={{
-              overflow: "hidden",
-              transition:
-                "margin-top 0.3s ease-in-out, margin-bottom 0.3s ease-in-out, max-height 0.3s ease-in-out, opacity 0.3s ease-in-out",
-              height: "auto",
-            }}
+          <PublicationCollapser
+            className={this.props.open ? "opened" : "collapsed"}
+            height={height}
+            between={between}
           >
             <PublicationContainer height={height} between={between}>
               {publications}
             </PublicationContainer>
             {dots}
-          </div>
+          </PublicationCollapser>
         </div>
         {links}
       </div>
@@ -208,12 +234,12 @@ const LinksContainer = styled.div`
   transition: margin-top 0.3s ease-in-out, opacity 0.3s ease-in-out;
 
   &.opened {
-    margin-top: ${p => (p.margin ? p.margin + "px" : "")};
+    margin-top: 0;
     opacity: 1;
   }
 
   &.collapsed {
-    margin-top: calc(${p => (p.margin ? p.margin + "px" : "")} - 1rem);
+    margin-top: -1rem;
     opacity: 0;
   }
 `;
@@ -244,6 +270,27 @@ const DotContainer = styled.div`
   right: 0;
 `;
 
+const PublicationCollapser = styled.div`
+  overflow: hidden;
+  transition: margin-top 0.3s ease-in-out, margin-bottom 0.3s ease-in-out,
+    max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  height: auto;
+
+  &.opened {
+    margin-top: 1rem;
+    margin-bottom: -1rem;
+    max-height: ${p => (p.height + p.between) * 3 + "px"};
+    opacity: 1;
+  }
+
+  &.collapsed {
+    margin-top: 0;
+    margin-bottom: 0;
+    max-height: 0;
+    opacity: 0;
+  }
+`;
+
 const PublicationContainer = styled.div`
   overflow-y: auto;
   max-height: ${p =>
@@ -252,6 +299,21 @@ const PublicationContainer = styled.div`
         (p.height * 3 + (p.between ? p.between * 2 : 0) + "px") +
         " + 1rem)"
       : ""};
+`;
+
+const StageLinkContainer = styled.div`
+  width: calc(60px - ${p => p.side * 2 + "px"});
+  margin-left: calc(-30px + ${p => p.side + "px"});
+  height: ${p => p.margin + "px"};
+  transition: opacity 0.3s ease-in-out;
+
+  &.opened {
+    opacity: 0;
+  }
+
+  &.collapsed {
+    opacity: 1;
+  }
 `;
 
 export default Stage;

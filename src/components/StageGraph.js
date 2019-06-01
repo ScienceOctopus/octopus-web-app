@@ -56,15 +56,8 @@ class StageGraph extends Component {
             onClick={() => this.props.toggleOpen()}
             style={{ float: "left", margin: "1em 30px 0 30px" }}
           >
-            <i
-              className={
-                "chevron down icon heider " + (open ? "opened" : "collapsed")
-              }
-              style={{
-                fontSize: 1.07142857 + "rem",
-                color: "#4b72ab",
-                transition: "transform 0.3s ease-in-out",
-              }}
+            <GraphHider
+              className={"chevron down icon " + (open ? "opened" : "collapsed")}
             />
           </div>
 
@@ -108,6 +101,20 @@ const ProblemTitleContainer = styled.div`
   ${commonStyle}
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;
+`;
+
+const GraphHider = styled.i`
+  fontsize: 1.07142857rem;
+  color: #4b72ab;
+  transition: transform 0.3s ease-in-out;
+
+  &.opened {
+    transform: rotate(180deg) translateY(-5px);
+  }
+
+  &.collapsed {
+    transform: rotate(0deg) translateY(-5px);
+  }
 `;
 
 export default withRouter(StageGraph);
