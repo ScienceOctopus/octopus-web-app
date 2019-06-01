@@ -51,13 +51,35 @@ class Stage extends Component {
       }
     }
 
+    if (height !== undefined && Stage.height === undefined) {
+      Stage.height = height;
+    }
+    if (margin !== undefined) {
+      if (Stage.margin === undefined) {
+        Stage.margin = margin;
+      } else {
+        Stage.margin = margin = Math.max(Stage.margin, margin);
+      }
+    }
+    if (between !== undefined && Stage.between === undefined) {
+      Stage.between = between;
+    }
+
     if (
       this.props.stage.links.length &&
-      this.props.content.publication !== undefined
+      this.props.content.publication !== undefined &&
+      height !== undefined &&
+      margin !== undefined &&
+      (between !== undefined || this.props.selection.publications.length < 2)
     ) {
+      let between = Stage.between || 0;
+      let total = height * 3 + between * 2;
+
+      console.log(height, between, total);
+
       let paths = this.props.stage.selection.links.map(([prev, next], i) => {
-        let beg = (prev * 100) / 3 + 50 / 3;
-        let end = (next * 100) / 3 + 50 / 3;
+        let beg = (100 * ((height + between) * prev + height / 2)) / total;
+        let end = (100 * ((height + between) * next + height / 2)) / total;
 
         return (
           <StyledPath
@@ -69,8 +91,13 @@ class Stage extends Component {
       });
 
       links = (
-        <LinksContainer>
-          <SingleLink height={height} margin={margin}>
+        <LinksColumn>
+          <LinksContainer
+            className={this.props.open ? "opened" : "collapsed"}
+            height={height}
+            margin={margin}
+            between={between}
+          >
             <svg
               width="100%"
               height="100%"
@@ -79,19 +106,9 @@ class Stage extends Component {
             >
               {paths}
             </svg>
-          </SingleLink>
-        </LinksContainer>
+          </LinksContainer>
+        </LinksColumn>
       );
-    }
-
-    if (height !== undefined && Stage.height === undefined) {
-      Stage.height = height;
-    }
-    if (margin !== undefined && Stage.margin === undefined) {
-      Stage.margin = margin;
-    }
-    if (between !== undefined && Stage.between === undefined) {
-      Stage.between = between;
     }
 
     let dots = null;
@@ -163,7 +180,7 @@ class Stage extends Component {
               height: "auto",
             }}
           >
-            <PublicationContainer height={height} margin={between}>
+            <PublicationContainer height={height} between={between}>
               {publications}
             </PublicationContainer>
             {dots}
@@ -175,7 +192,7 @@ class Stage extends Component {
   }
 }
 
-const LinksContainer = styled.div`
+const LinksColumn = styled.div`
   width: 0;
   padding: 0;
   z-index: 999;
@@ -184,11 +201,21 @@ const LinksContainer = styled.div`
   right: 0;
 `;
 
-const SingleLink = styled.div`
+const LinksContainer = styled.div`
   width: 60px;
   margin-left: -30px;
-  margin-top: ${p => p.margin + "px"};
-  height: ${p => p.height * 3 + "px"};
+  height: ${p => p.height * 3 + p.between * 2 + "px"};
+  transition: margin-top 0.3s ease-in-out, opacity 0.3s ease-in-out;
+
+  &.opened {
+    margin-top: ${p => (p.margin ? p.margin + "px" : "")};
+    opacity: 1;
+  }
+
+  &.collapsed {
+    margin-top: calc(${p => (p.margin ? p.margin + "px" : "")} - 1rem);
+    opacity: 0;
+  }
 `;
 
 const StyledPath = styled.path`
@@ -220,7 +247,11 @@ const DotContainer = styled.div`
 const PublicationContainer = styled.div`
   overflow-y: auto;
   max-height: ${p =>
-    p.height ? p.height * 3 + (p.margin ? p.margin * 3 : 0) + "px" : ""};
+    p.height
+      ? "calc(" +
+        (p.height * 3 + (p.between ? p.between * 2 : 0) + "px") +
+        " + 1rem)"
+      : ""};
 `;
 
 export default Stage;

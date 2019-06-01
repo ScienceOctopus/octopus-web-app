@@ -8,7 +8,7 @@ class Publication extends Component {
       <BgDiv
         className="ui segment"
         onClick={this.props.onClick}
-        style={{ marginBottom: "1em" }}
+        style={{ marginBottom: "1rem" }}
         {...this.props}
       >
         <Title>{this.props.publication.title}</Title>
