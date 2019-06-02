@@ -153,6 +153,17 @@ const queries = {
       })),
     ),
 
+  selectResourcesByPublication: publication =>
+    knex("publication_resources")
+      .select()
+      .where("publication", publication)
+      .join(
+        "resources",
+        "resources.id",
+        "=",
+        "publication_resources.resource",
+      )
+      .select(),
   selectResource: id =>
     knex("resources")
       .select()

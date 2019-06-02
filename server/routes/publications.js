@@ -37,6 +37,12 @@ const getLinksByPublicationAfter = (req, res) => {
   );
 };
 
+const getResourcesByPublication = (req, res) => {
+  db.selectResourcesByPublication(req.params.id).then(
+    rows => res.status(200).json(rows),
+  );
+};
+
 var router = express.Router();
 
 router.get("/:id(\\d+)", getPublicationByID);
@@ -47,6 +53,8 @@ router.get("/:id(\\d+)/linksTo", getLinksByPublicationAfter);
 router.get("/doom", (req, res) => {
   db.doom().then(result => res.status(200).json(result));
 });
+router.get("/:id(\\d+)/resources", getResourcesByPublication);
+
 module.exports = {
   router,
   getPublicationByID,
