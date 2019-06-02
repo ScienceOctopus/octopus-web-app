@@ -156,6 +156,15 @@ export default class UploadPage extends Component {
           />
         )}
 
+        <h4>
+          Is a review{" "}
+          <input
+            type="checkbox"
+            onChange={this.handleReviewChange}
+            checked={this.state.isReview}
+          />
+        </h4>
+
         {this.shouldRenderLinkingSelector() && this.renderLinkingSelector()}
 
         <TitledForm
@@ -169,14 +178,6 @@ export default class UploadPage extends Component {
           onChange={this.handleDescriptionChange}
         />
         <FileUploadSelector onSelect={this.handleFileSelect} />
-        <h4>
-          Is a review{" "}
-          <input
-            type="checkbox"
-            onChange={this.handleReviewChange}
-            checked={this.state.isReview}
-          />
-        </h4>
 
         {this.state.uploading && <h4>Uploading...</h4>}
         {this.state.uploadSuccessful && (
