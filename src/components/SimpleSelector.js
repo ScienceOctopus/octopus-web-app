@@ -10,14 +10,14 @@ class SimpleSelector extends Component {
   componentDidMount() {
     Axios.get(this.props.url)
       .then(res =>
-        this.setState({ data: res.data, loaded: res.data.length > 0 })
+        this.setState({ data: res.data, loaded: res.data.length > 0 }),
       )
       .catch(console.error);
   }
 
   renderOptions() {
     let options = this.state.data.map((x, i) => (
-      <option value={x.id} key={i}>
+      <option value={x.id} key={i} first={(i === 0).toString()}>
         {x.title || x.name}
       </option>
     ));
@@ -33,7 +33,14 @@ class SimpleSelector extends Component {
           style={style.input}
           defaultValue={""}
           onChange={e =>
-            this.props.onSelect && this.props.onSelect(e.target.value)}
+            this.props.onSelect &&
+            this.props.onSelect(
+              e.target.value,
+              [...e.target.children]
+                .find(x => x.value === e.target.value)
+                .getAttribute("first") === "true",
+            )
+          }
         >
           {this.state.loaded ? this.renderOptions() : "Not loaded yet"}
         </select>

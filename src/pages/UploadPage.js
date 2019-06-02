@@ -19,6 +19,7 @@ export default class UploadPage extends Component {
       description: "",
       linkedProblemsSelected: false,
       isReview: false,
+      originalStage: false,
     };
 
     if (process.DEBUG_MODE) {
@@ -46,7 +47,9 @@ export default class UploadPage extends Component {
   handleSubmit = async () => {
     if (this.state.selectedFile === undefined) return;
 
-    let linkedPublications = this.pubSelector.current.getSelectedPublications();
+    let linkedPublications = this.state.originalStage
+      ? []
+      : this.pubSelector.current.getSelectedPublications();
 
     const data = new FormData();
     data.set("title", this.state.title);
@@ -79,8 +82,12 @@ export default class UploadPage extends Component {
     });
   };
 
-  handleStageSelect = id => {
-    this.setState({ selectedStageId: id, linkedProblemsSelected: false });
+  handleStageSelect = (id, original) => {
+    this.setState({
+      selectedStageId: id,
+      linkedProblemsSelected: false,
+      originalStage: original,
+    });
   };
 
   handleTitleChange = e => {
