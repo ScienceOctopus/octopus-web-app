@@ -47,9 +47,10 @@ export default class UploadPage extends Component {
   handleSubmit = async () => {
     if (this.state.selectedFile === undefined) return;
 
-    let linkedPublications = this.state.originalStage
-      ? []
-      : this.pubSelector.current.getSelectedPublications();
+    let linkedPublications =
+      this.state.originalStage && !this.state.isReview
+        ? []
+        : this.pubSelector.current.getSelectedPublications();
 
     const data = new FormData();
     data.set("title", this.state.title);
