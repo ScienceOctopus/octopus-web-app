@@ -9,7 +9,7 @@ class Review extends Component {
         className="ui segment"
         {...this.props}
         onClick={event => {
-          this.props.history.replace(
+          this.props.history.push(
             `/publications/${this.props.review.id}`,
             this.props.content,
           );

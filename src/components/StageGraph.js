@@ -31,7 +31,7 @@ class StageGraph extends Component {
     return (
       <div
         onClick={event => {
-          this.props.history.replace(
+          this.props.history.push(
             `/problems/${this.props.problem.id}`,
             this.props.content,
           );

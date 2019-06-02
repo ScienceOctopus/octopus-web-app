@@ -1,9 +1,11 @@
 import React from "react";
 
+import { withRouter } from "react-router-dom";
+
 import StageGraph from "../components/StageGraph";
 import SummaryView from "../components/SummaryView";
 
-export default class ProblemPage extends React.Component {
+class ProblemPage extends React.Component {
   constructor(props) {
     super(props);
 
@@ -51,13 +53,17 @@ export default class ProblemPage extends React.Component {
       task();
     } else if (this._setStateTask === undefined) {
       this._setStateTask = task;
-    } else {
+    } else if (callback !== undefined) {
       alert("Fatal Error in ProblemPage.js");
     }
   }
 
   initCheck(props, selection, review, boot) {
-    let id = Number(props.match ? props.match.params.id : props.params.id);
+    // id should be in params as soon as proper start page exists
+    let id = Number(
+      (props.match ? props.match.params.id : props.params.id) ||
+        props.params.id,
+    );
 
     if (props.publication) {
       let publication = this.state.content.publications.get(id);
@@ -211,6 +217,10 @@ export default class ProblemPage extends React.Component {
     let prevStagePubs = this.state.content.stages[stageId - 1].publications;
     let nextStagePubs = this.state.content.stages[stageId].publications;
 
+    if (nextStagePubs.length <= 0) {
+      return this.fetchLinks(stageId + 1, boot);
+    }
+
     nextStagePubs.forEach(nextPub => {
       fetch(`/api/publications/${nextPub.id}/linksTo`)
         .then(response => response.json())
@@ -240,6 +250,10 @@ export default class ProblemPage extends React.Component {
 
   generateSelection(boot) {
     if (this.state.publication === undefined) {
+      if (boot) {
+        this.props.history.replace(this.props.location.pathname, this.state);
+      }
+
       return;
     }
 
@@ -401,7 +415,16 @@ export default class ProblemPage extends React.Component {
             pub => pub.id === publication.id,
           ).reviews = reviews;
 
-        this.setState({ content: content });
+        this.setState(
+          { content: content },
+          boot
+            ? () =>
+                this.props.history.replace(
+                  this.props.location.pathname,
+                  this.state,
+                )
+            : undefined,
+        );
       });
   }
 
@@ -551,3 +574,5 @@ export default class ProblemPage extends React.Component {
     );
   }
 }
+
+export default withRouter(ProblemPage);

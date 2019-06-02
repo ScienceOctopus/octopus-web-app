@@ -9,7 +9,7 @@ class Publication extends Component {
     let onClick =
       this.props.onClick ||
       (event => {
-        this.props.history.replace(
+        this.props.history.push(
           `/publications/${this.props.publication.id}`,
           this.props.content,
         );
