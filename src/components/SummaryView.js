@@ -22,7 +22,11 @@ class SummaryView extends Component {
     fetch(`/api/publications/${this.props.publicationId}/resources`)
       .then(response => response.json())
       .then(resources => {
-        this.setState({ publication: { images: resources } });
+        this.setState((state) => {
+		var augmented = state;
+		augmented.publication.images = resources;
+		return augmented;
+	});
       });
   }
 
