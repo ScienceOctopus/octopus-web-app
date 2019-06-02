@@ -102,11 +102,14 @@ var router = express.Router();
 
 router.get("/", getProblems);
 router.get("/:id", getProblemByID);
-router.get("/:id/stages", getStagesByProblem);
-router.get("/:id/stages/:stage/publications", getPublicationsByProblemAndStage);
+router.get("/:id(\\d+)/stages", getStagesByProblem);
+router.get(
+  "/:id(\\d+)/stages/:stage(\\d+)/publications",
+  getPublicationsByProblemAndStage,
+);
 
 router.post(
-  "/:id/stages/:stage/publications",
+  "/:id(\\d+)/stages/:stage(\\d+)/publications",
   upload(blobService.AZURE_PUBLICATION_CONTAINER).single("file"),
   postPublicationToProblemAndStage,
 );

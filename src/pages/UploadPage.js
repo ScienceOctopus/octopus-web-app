@@ -60,8 +60,9 @@ export default class UploadPage extends Component {
 
     Axios.post(
       ApiURI.PublicationUpload +
-        `/${this.state.selectedProblemId}/stages/\
-          ${this.state.selectedStageId}/publications`,
+        `/${this.state.selectedProblemId}/stages/${
+          this.state.selectedStageId
+        }/publications`,
       data,
     )
       .then(() => {

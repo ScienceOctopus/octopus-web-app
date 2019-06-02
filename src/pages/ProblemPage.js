@@ -7,6 +7,9 @@ export default class ProblemPage extends React.Component {
   constructor(props) {
     super(props);
 
+    this._isMounted = false;
+    this._setStateTask = undefined;
+
     if (!this.props.location || !this.props.location.state) {
       this.state = {
         problem: undefined,
@@ -17,15 +20,43 @@ export default class ProblemPage extends React.Component {
           publications: new Map(),
         },
         open: true,
+        measurements: undefined,
       };
     } else {
       this.state = this.props.location.state;
-    }
 
-    this.initCheck(this.props, true, false);
+      this.initCheck(this.props, false);
+    }
   }
 
-  initCheck(props, sync, selection) {
+  componentDidMount() {
+    this._isMounted = true;
+
+    if (this._setStateTask !== undefined) {
+      let task = this._setStateTask;
+      this._setStateTask = undefined;
+
+      task();
+    }
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
+  setState(newState, callback) {
+    let task = () => super.setState(newState, callback);
+
+    if (this._isMounted) {
+      task();
+    } else if (this._setStateTask === undefined) {
+      this._setStateTask = task;
+    } else {
+      alert("Fatal Error in ProblemPage.js");
+    }
+  }
+
+  initCheck(props, selection) {
     let id = Number(props.match ? props.match.params.id : props.params.id);
 
     if (props.publication) {
@@ -35,38 +66,26 @@ export default class ProblemPage extends React.Component {
         fetch(`/api/publications/${id}`)
           .then(response => response.json())
           .then(publication =>
-            this.initProblem(publication.problem, id, false, selection),
+            this.initProblem(publication.problem, id, selection),
           );
       } else {
-        this.initProblem(publication.problem, id, sync, selection);
+        this.initProblem(publication.problem, id, selection);
       }
     } else {
-      this.initProblem(id, undefined, sync, selection);
+      this.initProblem(id, undefined, selection);
     }
   }
 
-  initProblem(problem, publication, sync, selection) {
+  initProblem(problem, publication, selection) {
     let publicationChanged = publication !== this.state.publication;
 
     if (problem !== this.state.problem) {
-      if (sync) {
-        this.state.problem = problem;
-        this.state.publication = publication;
-        this.fetchProblem();
-      } else {
-        this.setState(
-          { problem: problem, publication: publication },
-          this.fetchProblem,
-        );
-      }
+      this.setState(
+        { problem: problem, publication: publication },
+        this.fetchProblem,
+      );
     } else if (publicationChanged) {
-      if (sync) {
-        this.state.publication = publication;
-
-        this.generateSelection();
-      } else {
-        this.setState({ publication: publication }, this.generateSelection);
-      }
+      this.setState({ publication: publication }, this.generateSelection);
     }
   }
 
@@ -115,7 +134,8 @@ export default class ProblemPage extends React.Component {
           content.publications.set(publication.id, publication);
           publication.created_at = new Date(
             publication.created_at,
-          ).toDateString();
+          ).toLocaleDateString();
+          publication.reviews = undefined;
         });
         content.stages[stageId].publications = publications;
 
@@ -219,24 +239,28 @@ export default class ProblemPage extends React.Component {
       );
     }
 
+    const linkFromPrevStageExistsToPub = (pub, stageId) =>
+      content.stages[stageId - 1].links.find(
+        ([prev, next]) => next === pub && reachable[stageId - 1].has(prev),
+      ) !== undefined;
+
     for (let i = 1; i < content.stages.length; i++) {
       let ok_reachable = [];
       let no_reachable = [];
 
       // Partition next stage's pubs into still reachable ones and now unreachable ones
-      reachable[i].forEach((degree, pub) => {
+      for (let [pub, degree] of reachable[i]) {
         if (
-          /* Allows pubs without prior links (i === stageId && pub === publicationId) ||*/ content.stages[
-            i - 1
-          ].links.find(
-            ([prev, next]) => next === pub && reachable[i - 1].has(prev),
-          ) !== undefined
+          /* Allows pubs without prior links (i === stageId && pub === publicationId) ||*/ linkFromPrevStageExistsToPub(
+            pub,
+            i,
+          )
         ) {
           ok_reachable.push([pub, degree]);
         } else {
           no_reachable.push([pub, degree]);
         }
-      });
+      }
 
       // Select the three pubs with the highest degree from the reachable ones, fill up with now unreachable ones
       ok_reachable = ok_reachable.sort((a, b) => b[1] - a[1]).slice(0, 3);
@@ -254,11 +278,14 @@ export default class ProblemPage extends React.Component {
 
     let links = [];
 
+    const retainLinksWhichConnectReachablePubs = (links, stageId) =>
+      links.filter(([prev, next]) => {
+        return reachable[stageId - 1].has(prev) && reachable[stageId].has(next);
+      });
+
     for (let i = 1; i < content.stages.length; i++) {
       links.push(
-        content.stages[i - 1].links.filter(([prev, next]) => {
-          return reachable[i - 1].has(prev) && reachable[i].has(next);
-        }),
+        retainLinksWhichConnectReachablePubs(content.stages[i - 1].links, i),
       );
     }
 
@@ -280,14 +307,52 @@ export default class ProblemPage extends React.Component {
       };
     });
 
-    this.setState({ content: content });
+    this.setState({ content: content }, () => this.fetchReviews());
+  }
+
+  fetchReviews() {
+    if (this.state.publication === undefined) {
+      return;
+    }
+
+    let publication = this.state.content.publications.get(
+      this.state.publication,
+    );
+
+    if (publication.reviews !== undefined) {
+      return;
+    }
+
+    fetch(`/api/publications/${this.state.publication}/reviews`)
+      .then(response => response.json())
+      .then(reviews => {
+        reviews.forEach(review => {
+          review.created_at = new Date(review.created_at).toLocaleDateString();
+        });
+
+        let content = { ...this.state.content };
+
+        content.stages
+          .find(stage => stage.id === publication.stage)
+          .publications.find(
+            pub => pub.id === publication.id,
+          ).reviews = reviews;
+
+        this.setState({ content: content });
+      });
   }
 
   componentWillReceiveProps(nextProps) {
-    this.initCheck(nextProps, false, true);
+    this.initCheck(nextProps, true);
   }
 
   render() {
+    let helper = this.ensureMeasurements();
+
+    if (helper !== false) {
+      return helper;
+    }
+
     let publication = null;
 
     if (this.state.publication !== undefined) {
@@ -305,6 +370,125 @@ export default class ProblemPage extends React.Component {
         />
         {publication}
       </div>
+    );
+  }
+
+  ensureMeasurements() {
+    if (this.state.measurements !== undefined) {
+      return false;
+    }
+
+    return (
+      <nav
+        className="ui one column grid"
+        style={{ overflow: "hidden", maxHeight: 0, margin: 0 }}
+        ref={ref => {
+          if (!ref) {
+            return;
+          }
+
+          let container = ref.firstChild.getBoundingClientRect();
+          let publications = [
+            ...ref.children[0].children[0].children[1].children,
+          ].map(child => child.getBoundingClientRect());
+          let derheider = ref.children[0].children[0].children[1].getBoundingClientRect();
+
+          let offset = publications[0].top - container.top;
+          let height = publications[0].bottom - publications[0].top;
+          let margin = publications[1].top - publications[0].bottom;
+          let siding = publications[0].left - container.left;
+          let heider = derheider.bottom - derheider.top;
+
+          this.setState(
+            {
+              measurements: {
+                offset: offset,
+                height: height,
+                margin: margin,
+                siding: siding,
+                heider: heider,
+              },
+            },
+            () => this.initCheck(this.props, false),
+          );
+        }}
+      >
+        <div className="column" style={{ paddingLeft: 0, paddingRight: 0 }}>
+          <div className="ui segment">
+            <h4 style={{ marginBottom: 0 }}>
+              <wbr />
+              <div className="floating ui label">
+                <wbr />
+              </div>
+            </h4>
+            <div style={{ marginTop: "1rem", marginBottom: "-1rem" }}>
+              <div
+                style={{
+                  padding: "1em 1em",
+                  borderRadius: "0.25rem",
+                  border: "1px solid",
+                  fontSize: "0.75rem",
+                  paddingBottom: 0,
+                  marginBottom: "1rem",
+                }}
+                className="ui segment"
+              >
+                <h5>
+                  <wbr />
+                </h5>
+                <div className="meta">
+                  <wbr />
+                </div>
+                <div className="description" style={{ height: "3rem" }}>
+                  <wbr />
+                </div>
+              </div>
+              <div
+                style={{
+                  padding: "1em 1em",
+                  borderRadius: "0.25rem",
+                  border: "1px solid",
+                  fontSize: "0.75rem",
+                  paddingBottom: 0,
+                  marginBottom: "1rem",
+                }}
+                className="ui segment"
+              >
+                <h5>
+                  <wbr />
+                </h5>
+                <div className="meta">
+                  <wbr />
+                </div>
+                <div className="description" style={{ height: "3rem" }}>
+                  <wbr />
+                </div>
+              </div>
+              <div
+                style={{
+                  padding: "1em 1em",
+                  borderRadius: "0.25rem",
+                  border: "1px solid",
+                  fontSize: "0.75rem",
+                  paddingBottom: 0,
+                  marginBottom: "1rem",
+                }}
+                className="ui segment"
+              >
+                <h5>
+                  <wbr />
+                </h5>
+                <div className="meta">
+                  <wbr />
+                </div>
+                <div className="description" style={{ height: "3rem" }}>
+                  <wbr />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
     );
   }
 }

@@ -1,8 +1,8 @@
 const WebURI = {
   Home: "/",
   UploadPublication: "/upload/",
-  Problem: "/problems/:id",
-  Publication: "/publications/:id",
+  Problem: "/problems/:id(\\d+)",
+  Publication: "/publications/:id(\\d+)",
 };
 
 export default WebURI;
