@@ -379,7 +379,7 @@ export default class ProblemPage extends React.Component {
     }
 
     return (
-      <nav
+      <div
         className="ui one column grid"
         style={{ overflow: "hidden", maxHeight: 0, margin: 0 }}
         ref={ref => {
@@ -420,10 +420,8 @@ export default class ProblemPage extends React.Component {
         <div className="column" style={{ paddingLeft: 0, paddingRight: 0 }}>
           <div className="ui segment">
             <h4 style={{ marginBottom: 0 }}>
-              <wbr />
-              <div className="floating ui label">
-                <wbr />
-              </div>
+              &#x200b;
+              <div className="floating ui label">&#x200b;</div>
             </h4>
             <div style={{ marginTop: "1rem", marginBottom: "-1rem" }}>
               <div
@@ -437,14 +435,10 @@ export default class ProblemPage extends React.Component {
                 }}
                 className="ui segment"
               >
-                <h5>
-                  <wbr />
-                </h5>
-                <div className="meta">
-                  <wbr />
-                </div>
+                <h5>&#x200b;</h5>
+                <div className="meta">&#x200b;</div>
                 <div className="description" style={{ height: "3rem" }}>
-                  <wbr />
+                  &#x200b;
                 </div>
               </div>
               <div
@@ -458,14 +452,10 @@ export default class ProblemPage extends React.Component {
                 }}
                 className="ui segment"
               >
-                <h5>
-                  <wbr />
-                </h5>
-                <div className="meta">
-                  <wbr />
-                </div>
+                <h5>&#x200b;</h5>
+                <div className="meta">&#x200b;</div>
                 <div className="description" style={{ height: "3rem" }}>
-                  <wbr />
+                  &#x200b;
                 </div>
               </div>
               <div
@@ -479,20 +469,16 @@ export default class ProblemPage extends React.Component {
                 }}
                 className="ui segment"
               >
-                <h5>
-                  <wbr />
-                </h5>
-                <div className="meta">
-                  <wbr />
-                </div>
+                <h5>&#x200b;</h5>
+                <div className="meta">&#x200b;</div>
                 <div className="description" style={{ height: "3rem" }}>
-                  <wbr />
+                  &#x200b;
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </nav>
+      </div>
     );
   }
 }
