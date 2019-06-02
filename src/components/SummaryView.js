@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PDFImagePreviewRenderer from './PDFImagePreviewRenderer';
 import styled from "styled-components";
 
 class SummaryView extends Component {
@@ -18,6 +19,11 @@ class SummaryView extends Component {
       .then(publication => {
         this.setState({ publication: publication });
       });
+    fetch(`/api/publications/${this.props.publicationId}/resources`)
+      .then(response => response.json())
+      .then(resources => {
+        this.setState({ publication: { images: resources } });
+      });
   }
 
   componentDidUpdate(oldProps) {
@@ -27,10 +33,12 @@ class SummaryView extends Component {
   }
 
   render() {
+    const imagesPresent = (this.state.publication.images !== undefined);
+
     return (
       <div>
         <div className="ui divider" />
-        <main className="ui main container">
+        <main className="ui main text container">
           <article>
             <h1 className="ui header">
               <StageTitle>
@@ -49,22 +57,26 @@ class SummaryView extends Component {
               <strong>Date added: </strong>
               {new Date(this.state.publication.created_at).toLocaleDateString()}
             </p>
+	    { imagesPresent && <a className="ui button" href={this.state.publication.images[0].uri}>
+		<i className="ui download icon"></i>Download document
+	    </a> }
             <section className="ui segment">
               <h3>Summary</h3>
               <div className="ui divider" />
               {this.state.publication.description}
             </section>
-            <section className="ui segment">
-              <h3>Document</h3>
-              <object
-                width="500"
-                height="500"
-                type="application/pdf"
-                data="https://arxiv.org/ftp/arxiv/papers/1905/1905.12599.pdf"
-              >
-                <p>Embedding failure</p>
-              </object>
-            </section>
+            { imagesPresent ?
+	      <section className="ui segment">
+                <PDFImagePreviewRenderer state={ this.state } />
+              </section>
+	    :
+              <section className="ui placeholder segment">
+                <div className="ui icon header">
+		  <i className="pencil icon"></i>
+		  No images were uploaded for this publication.
+		</div>
+	      </section>
+            }
           </article>
         </main>
       </div>
