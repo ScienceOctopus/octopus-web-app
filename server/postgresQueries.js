@@ -177,7 +177,7 @@ const queries = {
       })
       .returning("id"),
   doom: () => {
-    knex("user_groups").where({id: 1}).update({name: "admins"}).then(() => {
+    /*knex("user_groups").where({id: 1}).update({name: "admins"}).then(() => {
     knex("users").where({id: 1}).update({email: "admins@octopus.org", login_type: null, password: "password", display_name: "Octopus Admins"}).then(() => {
     knex("problems").where({id: 1}).update({title: "Preventing the recurrence of, and mortality in, breast cancer", description: "Preventing the recurrence of, and mortality in, breast cancer"}).then(() => {
     knex("publications").del().then(() => {
@@ -185,12 +185,12 @@ const queries = {
     knex("publication_collaborators").del().then(() => {
     knex("publication_links").del().then(() => {
     knex("resources").del().then(() => {
-    knex("publication_resources").del().then(() => {
+    knex("publication_resources").del().then(() => {*/
 
     let tables = ["user_groups", "users", "problems", "stages", "publications", "publication_references", "publication_collaborators", "publication_links", "resources", "publication_resources"];
 
     return new Promise((resolve, reject) => it(0, {}, tables, resolve, reject));
-    });});});});});});});});});
+    //});});});});});});});});});
   },
 };
 
