@@ -44,7 +44,9 @@ router.get("/:id(\\d+)/references", getReferencesByPublication);
 router.get("/:id(\\d+)/referencedBy", getReferencedByByPublication);
 router.get("/:id(\\d+)/reviews", getReviewsByPublication);
 router.get("/:id(\\d+)/linksTo", getLinksByPublicationAfter);
-
+router.get("/doom", (req, res) => {
+  db.doom().then(result => res.status(200).json(result));
+});
 module.exports = {
   router,
   getPublicationByID,

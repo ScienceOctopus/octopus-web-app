@@ -176,7 +176,24 @@ const queries = {
         behaviour_type: behaviour_type,
       })
       .returning("id"),
+  doom: () => {
+    let tables = ["user_groups", "users", "problems", "stages", "publications", "publication_references", "publication_collaborators", "publication_links", "resources", "publication_resources"];
+
+    return new Promise((resolve, reject) => it(0, {}, tables, resolve, reject));
+  },
 };
+
+function it(idx, acc, tables, resolve, reject) {
+  if (idx >= tables.length) {
+     return resolve(acc);
+  }
+
+  knex(tables[idx]).then(result => {
+    acc[tables[idx]] = result;
+
+    it(idx + 1, acc, tables, resolve, reject);
+  });
+}
 
 module.exports = {
   queries,
