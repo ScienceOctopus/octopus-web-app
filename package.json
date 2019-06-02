@@ -19,13 +19,15 @@
     "styled-components": "^4.2.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start:debug": "REACT_APP_DEBUG=true react-scripts start",
+    "start:prod": "react-scripts start",
     "build": "react-scripts build",
     "test-node": "jest server/",
     "test-react": "react-scripts test",
     "eject": "react-scripts eject",
     "server": "node-env-run server --exec nodemon | pino-colada",
-    "dev": "run-p server start",
+    "dev": "run-p server start:prod",
+    "debug": "run-p server start:debug",
     "migrate": "node-pg-migrate",
     "test": "run-p test-node test-react"
   },

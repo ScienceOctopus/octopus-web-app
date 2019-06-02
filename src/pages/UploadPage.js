@@ -8,7 +8,6 @@ import ApiURI from "../urls/ApiURIs";
 import { Link } from "react-router-dom";
 import PublicationSelector from "../components/PublicationSelector";
 
-const DEBUG_VIEW = true;
 const NONLINKING_STAGE = "1";
 
 export default class UploadPage extends Component {
@@ -22,7 +21,7 @@ export default class UploadPage extends Component {
       isReview: false,
     };
 
-    if (DEBUG_VIEW) {
+    if (process.DEBUG_MODE) {
       this.state.title = "test";
       this.state.description = "test";
       this.state.selectedFile = "bad file";
