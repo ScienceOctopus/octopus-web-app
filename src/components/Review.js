@@ -52,7 +52,7 @@ const BgDiv = styled.div`
 
 const Title = styled.h5`
   white-space: nowrap;
-  text-overflow: hidden;
+  text-overflow: ellipsis;
   overflow: hidden;
   width: 100%;
 `;

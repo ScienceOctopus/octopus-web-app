@@ -121,7 +121,10 @@ class Stage extends Component {
     }
 
     return (
-      <div className="column" style={{ backgroundColor: "#dcf8ec" }}>
+      <div
+        className="column"
+        style={{ backgroundColor: "#dcf8ec", minWidth: "200px" }}
+      >
         <div className={"ui " + (active ? "raised " : "") + "segment"}>
           <h4 style={{ marginBottom: 0 }}>
             {this.props.stage.name}

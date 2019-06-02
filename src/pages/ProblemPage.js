@@ -399,6 +399,10 @@ export default class ProblemPage extends React.Component {
           let siding = publications[0].left - container.left;
           let heider = derheider.bottom - derheider.top;
 
+          if (process.DEBUG_MODE) {
+            console.log(offset, height, margin, siding, heider);
+          }
+
           this.setState(
             {
               measurements: {

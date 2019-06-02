@@ -62,10 +62,11 @@ class StageGraph extends Component {
           </div>
 
           <GraphContainer>
-            <nav
+            <div
               className={
                 "ui " + numbers[this.props.stages.length] + " column grid"
               }
+              style={{ overflowX: "auto", flexWrap: "nowrap" }}
             >
               {this.props.stages.map(stage => (
                 <Stage
@@ -75,7 +76,7 @@ class StageGraph extends Component {
                   open={open}
                 />
               ))}
-            </nav>
+            </div>
           </GraphContainer>
         </div>
       </div>
