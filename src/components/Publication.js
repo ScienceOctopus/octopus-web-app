@@ -8,11 +8,13 @@ class Publication extends Component {
   render() {
     let onClick =
       this.props.onClick ||
-      (() =>
+      (event => {
         this.props.history.replace(
           `/publications/${this.props.publication.id}`,
           this.props.content,
-        ));
+        );
+        event.stopPropagation();
+      });
 
     let publicationView;
 
@@ -23,12 +25,13 @@ class Publication extends Component {
       this.props.publication.reviews.length > 0
     ) {
       let { height, margin, heider } = this.props.content.measurements;
+
       let reviews = this.props.publication.reviews.map(review => (
         <Review
           key={review.id}
           review={review}
           content={this.props.content}
-          highlight={false}
+          highlight={review.id === this.props.content.review}
           isHyperlink
         />
       ));
@@ -54,7 +57,12 @@ class Publication extends Component {
       );
 
       publicationView = (
-        <BgDiv className="ui segment" onClick={onClick} {...this.props}>
+        <BgDiv
+          className="ui segment"
+          onClick={onClick}
+          review={this.props.content.review !== undefined}
+          {...this.props}
+        >
           <Title>{this.props.publication.title}</Title>
           <div className="meta">{this.props.publication.created_at}</div>
           {reviews}
@@ -78,7 +86,9 @@ class Publication extends Component {
 
 const BgDiv = styled.div`
   &.segment {
-    background-color: ${props => (props.highlight ? "#9fffd6" : "white")};
+    background-color: ${props => (props.highlight ? "#99ffd3" : "white")};
+    cursor: ${props =>
+      props.highlight && !props.review ? "default" : "pointer"};
 
     padding: 1em 1em;
     border-radius: 0.25rem;

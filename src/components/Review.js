@@ -1,11 +1,21 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import styled from "styled-components";
 
 class Review extends Component {
   render() {
-    let reviewView = (
-      <BgDiv className="ui segment" {...this.props}>
+    return (
+      <BgDiv
+        className="ui segment"
+        {...this.props}
+        onClick={event => {
+          this.props.history.replace(
+            `/publications/${this.props.review.id}`,
+            this.props.content,
+          );
+          event.stopPropagation();
+        }}
+      >
         <Title>{this.props.review.title}</Title>
         <div className="meta">{this.props.review.created_at}</div>
         <Description className="description" {...this.props}>
@@ -13,29 +23,13 @@ class Review extends Component {
         </Description>
       </BgDiv>
     );
-
-    return reviewView; /*this.props.isHyperlink
-      ? this.linkToPublication(publicationView)
-      :*/
   }
-
-  /*linkToPublication = Child => {
-    return (
-      <Link
-        to={{
-          pathname: `/publications/${this.props.publication.id}`,
-          state: this.props.content,
-        }}
-      >
-        {Child}
-      </Link>
-    );
-  };*/
 }
 
 const BgDiv = styled.div`
   &.segment {
-    background-color: ${props => (props.highlight ? "#9fffd6" : "white")};
+    background-color: ${props => (props.highlight ? "#ffe499" : "white")};
+    cursor: ${props => (props.highlight ? "default" : "pointer")};
 
     padding: 1em 1em;
     border-radius: 0.25rem;
@@ -75,13 +69,13 @@ const Description = styled.div`
     background: linear-gradient(
       to bottom,
       ${props =>
-          props.highlight ? "rgba(159, 255, 214, 0)" : "rgba(255, 255, 255, 0)"}
+          props.highlight ? "rgba(255, 228, 153, 0)" : "rgba(255, 255, 255, 0)"}
         0%,
       ${props =>
-          props.highlight ? "rgba(159, 255, 214, 1)" : "rgba(255, 255, 255, 1)"}
+          props.highlight ? "rgba(255, 228, 153, 1)" : "rgba(255, 255, 255, 1)"}
         100%
     );
   }
 `;
 
-export default Review;
+export default withRouter(Review);

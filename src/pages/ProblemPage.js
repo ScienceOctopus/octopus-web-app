@@ -25,7 +25,7 @@ export default class ProblemPage extends React.Component {
     } else {
       this.state = this.props.location.state;
 
-      this.initCheck(this.props, false);
+      this.initCheck(this.props, false, undefined, false);
     }
   }
 
@@ -56,7 +56,7 @@ export default class ProblemPage extends React.Component {
     }
   }
 
-  initCheck(props, selection) {
+  initCheck(props, selection, review, boot) {
     let id = Number(props.match ? props.match.params.id : props.params.id);
 
     if (props.publication) {
@@ -65,41 +65,93 @@ export default class ProblemPage extends React.Component {
       if (!publication) {
         fetch(`/api/publications/${id}`)
           .then(response => response.json())
-          .then(publication =>
-            this.initProblem(publication.problem, id, selection),
-          );
+          .then(publication => {
+            let content = { ...this.state.content };
+
+            content.publications.set(id, publication);
+
+            this.setState({ content: content }, () =>
+              this.initProblem(
+                publication.problem,
+                id,
+                selection,
+                review,
+                boot,
+              ),
+            );
+          });
       } else {
-        this.initProblem(publication.problem, id, selection);
+        this.initProblem(publication.problem, id, selection, review, boot);
       }
     } else {
-      this.initProblem(id, undefined, selection);
+      this.initProblem(id, undefined, selection, review, boot);
     }
   }
 
-  initProblem(problem, publication, selection) {
-    let publicationChanged = publication !== this.state.publication;
+  initProblem(problem, publication, selection, review, boot) {
+    if (publication !== undefined) {
+      let review = this.state.content.publications.get(publication);
+
+      if (review.review) {
+        if (review.publication_before !== undefined) {
+          return this.initCheck(
+            { publication: true, params: { id: review.publication_before } },
+            selection,
+            review.id,
+            boot,
+          );
+        } else {
+          return fetch(`/api/publications/${review.id}/linksTo`)
+            .then(response => response.json())
+            .then(links => {
+              let content = { ...this.state.content };
+
+              review = content.publications.get(publication);
+              review.publication_before = links[0].publication_before;
+              review.publication_after = links[0].publication_after;
+
+              this.setState(
+                { content: content },
+                this.initCheck(
+                  {
+                    publication: true,
+                    params: { id: review.publication_before },
+                  },
+                  selection,
+                  review.id,
+                  boot,
+                ),
+              );
+            });
+        }
+      }
+    }
 
     if (problem !== this.state.problem) {
       this.setState(
-        { problem: problem, publication: publication },
-        this.fetchProblem,
+        { problem: problem, publication: publication, review: review },
+        () => this.fetchProblem(boot),
       );
-    } else if (publicationChanged) {
-      this.setState({ publication: publication }, this.generateSelection);
+    } else if (publication !== this.state.publication) {
+      this.setState({ publication: publication, review: review }, () =>
+        this.generateSelection(boot),
+      );
+    } else if (review !== this.state.review) {
+      this.setState({ review: review });
     }
   }
 
-  fetchProblem() {
+  fetchProblem(boot) {
     fetch(`/api/problems/${this.state.problem}`)
       .then(response => response.json())
       .then(problem => {
         let content = { ...this.state.content };
         content.problem = problem;
-        this.setState({ content: content }, this.fetchStages);
+        this.setState({ content: content }, () => this.fetchStages(boot));
       });
   }
 
-  fetchStages() {
+  fetchStages(boot) {
     fetch(`/api/problems/${this.state.problem}/stages`)
       .then(response => response.json())
       .then(stages => {
@@ -112,16 +164,19 @@ export default class ProblemPage extends React.Component {
             links: [],
           };
         });
+
         let content = { ...this.state.content };
+
         content.publications = new Map();
         content.stages = stages;
-        this.setState({ content: content }, () => this.fetchStage(0));
+
+        this.setState({ content: content }, () => this.fetchStage(0, boot));
       });
   }
 
-  fetchStage(stageId) {
+  fetchStage(stageId, boot) {
     if (stageId >= this.state.content.stages.length) {
-      return this.fetchLinks(1);
+      return this.fetchLinks(1, boot);
     }
 
     let stage = this.state.content.stages[stageId];
@@ -139,13 +194,15 @@ export default class ProblemPage extends React.Component {
         });
         content.stages[stageId].publications = publications;
 
-        this.setState({ content: content }, () => this.fetchStage(stageId + 1));
+        this.setState({ content: content }, () =>
+          this.fetchStage(stageId + 1, boot),
+        );
       });
   }
 
-  fetchLinks(stageId) {
+  fetchLinks(stageId, boot) {
     if (stageId >= this.state.content.stages.length) {
-      return this.generateSelection();
+      return this.generateSelection(boot);
     }
 
     let links = [];
@@ -174,14 +231,14 @@ export default class ProblemPage extends React.Component {
             let content = { ...this.state.content };
             content.stages[stageId - 1].links = links;
             this.setState({ content: content }, () =>
-              this.fetchLinks(stageId + 1),
+              this.fetchLinks(stageId + 1, boot),
             );
           }
         });
     });
   }
 
-  generateSelection() {
+  generateSelection(boot) {
     if (this.state.publication === undefined) {
       return;
     }
@@ -250,12 +307,7 @@ export default class ProblemPage extends React.Component {
 
       // Partition next stage's pubs into still reachable ones and now unreachable ones
       for (let [pub, degree] of reachable[i]) {
-        if (
-          /* Allows pubs without prior links (i === stageId && pub === publicationId) ||*/ linkFromPrevStageExistsToPub(
-            pub,
-            i,
-          )
-        ) {
+        if (linkFromPrevStageExistsToPub(pub, i)) {
           ok_reachable.push([pub, degree]);
         } else {
           no_reachable.push([pub, degree]);
@@ -307,10 +359,10 @@ export default class ProblemPage extends React.Component {
       };
     });
 
-    this.setState({ content: content }, () => this.fetchReviews());
+    this.setState({ content: content }, () => this.fetchReviews(boot));
   }
 
-  fetchReviews() {
+  fetchReviews(boot) {
     if (this.state.publication === undefined) {
       return;
     }
@@ -326,11 +378,22 @@ export default class ProblemPage extends React.Component {
     fetch(`/api/publications/${this.state.publication}/reviews`)
       .then(response => response.json())
       .then(reviews => {
+        let content = { ...this.state.content };
+
         reviews.forEach(review => {
           review.created_at = new Date(review.created_at).toLocaleDateString();
+
+          content.publications.set(review.id, review);
         });
 
-        let content = { ...this.state.content };
+        if (boot && this.state.review !== undefined) {
+          let review = reviews.splice(
+            reviews.findIndex(x => x.id === this.state.review),
+            1,
+          )[0];
+
+          reviews.unshift(review);
+        }
 
         content.stages
           .find(stage => stage.id === publication.stage)
@@ -343,7 +406,7 @@ export default class ProblemPage extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.initCheck(nextProps, true);
+    this.initCheck(nextProps, true, undefined, false);
   }
 
   render() {
@@ -356,7 +419,15 @@ export default class ProblemPage extends React.Component {
     let publication = null;
 
     if (this.state.publication !== undefined) {
-      publication = <SummaryView publicationId={this.state.publication} />;
+      publication = (
+        <SummaryView
+          publicationId={
+            this.state.review !== undefined
+              ? this.state.review
+              : this.state.publication
+          }
+        />
+      );
     }
 
     return (
@@ -400,10 +471,6 @@ export default class ProblemPage extends React.Component {
           let heider = derheider.bottom - derheider.top;
           let tainer = container.bottom - container.top;
 
-          if (process.DEBUG_MODE) {
-            console.log(offset, height, margin, siding, heider, tainer);
-          }
-
           this.setState(
             {
               measurements: {
@@ -415,7 +482,7 @@ export default class ProblemPage extends React.Component {
                 tainer: tainer,
               },
             },
-            () => this.initCheck(this.props, false),
+            () => this.initCheck(this.props, false, undefined, true),
           );
         }}
       >

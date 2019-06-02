@@ -31,20 +31,24 @@ class StageGraph extends Component {
     return (
       <div
         onClick={event => {
-          if (
-            window.getComputedStyle(event.target).backgroundColor ===
-            "rgb(220, 248, 236)"
-          ) {
-            this.props.history.replace(
-              `/problems/${this.props.problem.id}`,
-              this.props.content,
-            );
-          }
+          this.props.history.replace(
+            `/problems/${this.props.problem.id}`,
+            this.props.content,
+          );
+          event.stopPropagation();
         }}
       >
         <ProblemTitleContainer>
           <div className="ui container">
-            <h3 className="ui block header">
+            <h3
+              className="ui block header"
+              style={{
+                cursor:
+                  this.props.content.publication !== undefined
+                    ? "pointer"
+                    : "default",
+              }}
+            >
               Problem: {this.props.problem.title}
             </h3>
           </div>
@@ -53,8 +57,15 @@ class StageGraph extends Component {
         <div style={{ backgroundColor: "#dcf8ec" }}>
           <div
             className="ui segment"
-            onClick={() => this.props.toggleOpen()}
-            style={{ float: "left", margin: "1em 30px 0 30px" }}
+            onClick={event => {
+              this.props.toggleOpen();
+              event.stopPropagation();
+            }}
+            style={{
+              float: "left",
+              margin: "1em 30px 0 30px",
+              cursor: "pointer",
+            }}
           >
             <GraphHider
               className={"chevron down icon " + (open ? "opened" : "collapsed")}
@@ -89,7 +100,6 @@ class StageGraph extends Component {
 }
 
 const commonStyle = css`
-  background-color: #dcf8ec;
   overflow-x: auto;
   overflow-y: hidden;
   margin-top: -1rem;
@@ -104,6 +114,7 @@ const GraphContainer = styled.div`
 
 const ProblemTitleContainer = styled.div`
   ${commonStyle}
+  background-color: #dcf8ec;
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;
 `;

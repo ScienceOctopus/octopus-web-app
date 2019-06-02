@@ -142,6 +142,7 @@ class Stage extends Component {
           margin={margin}
           heider={heider}
           tainer={tainer}
+          onClick={event => event.stopPropagation()}
         >
           <h4 style={{ marginBottom: 0 }}>
             {this.props.stage.name}

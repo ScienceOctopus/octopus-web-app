@@ -2,17 +2,18 @@ import React, { Component } from "react";
 import styled from "styled-components";
 
 class SummaryView extends Component {
-  state = {
-    publication: {},
-  };
   constructor(props) {
     super(props);
+
+    this.state = {
+      publication: {},
+    };
 
     this.fetchProblemData();
   }
 
   fetchProblemData() {
-    fetch(`/api/publications/${this.props.publicationId}/`)
+    fetch(`/api/publications/${this.props.publicationId}`)
       .then(response => response.json())
       .then(publication => {
         this.setState({ publication: publication });
@@ -32,7 +33,13 @@ class SummaryView extends Component {
         <main className="ui main container">
           <article>
             <h1 className="ui header">
-              <HypothesisTitle>Hypothesis: </HypothesisTitle>
+              <StageTitle>
+                Hypothesis
+                <ReviewTitle>
+                  {this.state.publication.review ? " Review" : ""}
+                </ReviewTitle>
+                :{" "}
+              </StageTitle>
               {this.state.publication.title}
               <div className="ui sub header">
                 {this.state.publication.summary}
@@ -65,8 +72,12 @@ class SummaryView extends Component {
   }
 }
 
-const HypothesisTitle = styled.span`
+const StageTitle = styled.span`
   color: #00b5ad;
+`;
+
+const ReviewTitle = styled.span`
+  color: #9eb300;
 `;
 
 export default SummaryView;
