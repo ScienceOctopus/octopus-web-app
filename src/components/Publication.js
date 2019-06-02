@@ -6,8 +6,6 @@ import Review from "./Review";
 
 class Publication extends Component {
   render() {
-    let { height, margin, heider } = this.props.content.measurements;
-
     let publicationView;
 
     if (
@@ -16,6 +14,7 @@ class Publication extends Component {
       this.props.publication.reviews !== undefined &&
       this.props.publication.reviews.length > 0
     ) {
+      let { height, margin, heider } = this.props.content.measurements;
       let reviews = this.props.publication.reviews.map(review => (
         <Review
           key={review.id}
