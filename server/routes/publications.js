@@ -39,11 +39,11 @@ const getLinksByPublicationAfter = (req, res) => {
 
 var router = express.Router();
 
-router.get("/:id", getPublicationByID);
-router.get("/:id/references", getReferencesByPublication);
-router.get("/:id/referencedBy", getReferencedByByPublication);
-router.get("/:id/reviews", getReviewsByPublication);
-router.get("/:id/linksTo", getLinksByPublicationAfter);
+router.get("/:id(\\d+)", getPublicationByID);
+router.get("/:id(\\d+)/references", getReferencesByPublication);
+router.get("/:id(\\d+)/referencedBy", getReferencedByByPublication);
+router.get("/:id(\\d+)/reviews", getReviewsByPublication);
+router.get("/:id(\\d+)/linksTo", getLinksByPublicationAfter);
 
 module.exports = {
   router,

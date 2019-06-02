@@ -2,22 +2,77 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 
+import Review from "./Review";
+
 class Publication extends Component {
   render() {
-    let publicationView = (
-      <BgDiv
-        className="ui segment"
-        onClick={this.props.onClick}
-        style={{ marginBottom: "1rem" }}
-        {...this.props}
-      >
-        <Title>{this.props.publication.title}</Title>
-        <div className="meta">{this.props.publication.created_at}</div>
-        <Description className="description" {...this.props}>
-          {this.props.publication.description}
-        </Description>
-      </BgDiv>
-    );
+    let { height, margin, heider } = this.props.content.measurements;
+
+    let publicationView;
+
+    if (
+      this.props.highlight &&
+      this.props.showReviews &&
+      this.props.publication.reviews !== undefined &&
+      this.props.publication.reviews.length > 0
+    ) {
+      let reviews = this.props.publication.reviews.map(review => (
+        <Review
+          key={review.id}
+          review={review}
+          content={this.props.content}
+          highlight={false}
+          isHyperlink
+        />
+      ));
+
+      reviews = (
+        <div>
+          <div style={{ height: "3rem", position: "relative" }}>
+            <h4 style={{ fontSize: "1rem", position: "absolute", bottom: 0 }}>
+              Reviews
+            </h4>
+          </div>
+          <div
+            style={{
+              overflowY: "auto",
+              maxHeight: heider - height - margin + "px",
+              marginTop: "1rem",
+            }}
+          >
+            {reviews}
+          </div>
+        </div>
+      );
+
+      publicationView = (
+        <BgDiv
+          className="ui segment"
+          onClick={this.props.onClick}
+          style={{ marginBottom: "1rem" }}
+          {...this.props}
+        >
+          <Title>{this.props.publication.title}</Title>
+          <div className="meta">{this.props.publication.created_at}</div>
+          {reviews}
+        </BgDiv>
+      );
+    } else {
+      publicationView = (
+        <BgDiv
+          className="ui segment"
+          onClick={this.props.onClick}
+          style={{ marginBottom: "1rem" }}
+          {...this.props}
+        >
+          <Title>{this.props.publication.title}</Title>
+          <div className="meta">{this.props.publication.created_at}</div>
+          <Description className="description" {...this.props}>
+            {this.props.publication.description}
+          </Description>
+        </BgDiv>
+      );
+    }
 
     return this.props.isHyperlink
       ? this.linkToPublication(publicationView)
