@@ -5,7 +5,14 @@ import styled from "styled-components";
 
 class Stage extends Component {
   render() {
-    let { offset, height, margin, siding } = this.props.content.measurements;
+    let {
+      offset,
+      height,
+      margin,
+      siding,
+      heider,
+      tainer,
+    } = this.props.content.measurements;
 
     var active =
       this.props.stage.publications.find(
@@ -15,7 +22,7 @@ class Stage extends Component {
     let links = null;
 
     if (
-      this.props.stage.links.length &&
+      this.props.stage.selection.links.length &&
       this.props.content.publication !== undefined
     ) {
       let total = height * 3 + margin * 2;
@@ -125,7 +132,17 @@ class Stage extends Component {
         className="column"
         style={{ backgroundColor: "#dcf8ec", minWidth: "200px" }}
       >
-        <div className={"ui " + (active ? "raised " : "") + "segment"}>
+        <PublicationSegment
+          className={
+            "ui " +
+            (active ? "raised " : "") +
+            "segment" +
+            (publications.length <= 0 ? " empty" : "")
+          }
+          margin={margin}
+          heider={heider}
+          tainer={tainer}
+        >
           <h4 style={{ marginBottom: 0 }}>
             {this.props.stage.name}
             <div className={"floating ui " + (active ? "teal " : "") + "label"}>
@@ -142,7 +159,7 @@ class Stage extends Component {
             </PublicationContainer>
             {dots}
           </PublicationCollapser>
-        </div>
+        </PublicationSegment>
         {links}
       </div>
     );
@@ -201,22 +218,26 @@ const DotContainer = styled.div`
   right: 0;
 `;
 
+const PublicationSegment = styled.div`
+  &.empty {
+    height: ${p => p.tainer - p.heider - p.margin * 3 + "px"};
+  }
+`;
+
 const PublicationCollapser = styled.div`
   overflow: hidden;
-  transition: margin-top 0.3s ease-in-out, margin-bottom 0.3s ease-in-out,
-    max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  transition: margin-top 0.3s ease-in-out, max-height 0.3s ease-in-out,
+    opacity 0.3s ease-in-out;
   height: auto;
 
   &.opened {
     margin-top: 1rem;
-    margin-bottom: -1rem;
     max-height: ${p => (p.height + p.margin) * 3 + "px"};
     opacity: 1;
   }
 
   &.collapsed {
     margin-top: 0;
-    margin-bottom: 0;
     max-height: 0;
     opacity: 0;
   }
@@ -224,7 +245,7 @@ const PublicationCollapser = styled.div`
 
 const PublicationContainer = styled.div`
   overflow-y: auto;
-  max-height: calc(${p => p.height * 3 + p.margin * 2 + "px"} + 1rem);
+  max-height: ${p => p.height * 3 + p.margin * 2 + "px"};
 `;
 
 const StageLinkContainer = styled.div`

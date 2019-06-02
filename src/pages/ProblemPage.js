@@ -398,9 +398,10 @@ export default class ProblemPage extends React.Component {
           let margin = publications[1].top - publications[0].bottom;
           let siding = publications[0].left - container.left;
           let heider = derheider.bottom - derheider.top;
+          let tainer = container.bottom - container.top;
 
           if (process.DEBUG_MODE) {
-            console.log(offset, height, margin, siding, heider);
+            console.log(offset, height, margin, siding, heider, tainer);
           }
 
           this.setState(
@@ -411,6 +412,7 @@ export default class ProblemPage extends React.Component {
                 margin: margin,
                 siding: siding,
                 heider: heider,
+                tainer: tainer,
               },
             },
             () => this.initCheck(this.props, false),

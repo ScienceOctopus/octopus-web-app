@@ -1,11 +1,19 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import styled from "styled-components";
 
 import Review from "./Review";
 
 class Publication extends Component {
   render() {
+    let onClick =
+      this.props.onClick ||
+      (() =>
+        this.props.history.replace(
+          `/publications/${this.props.publication.id}`,
+          this.props.content,
+        ));
+
     let publicationView;
 
     if (
@@ -35,8 +43,9 @@ class Publication extends Component {
           <div
             style={{
               overflowY: "auto",
-              maxHeight: heider - height - margin + "px",
+              maxHeight: "calc(" + (heider - height - margin) + "px - 1em)",
               marginTop: "1rem",
+              marginBottom: "1em",
             }}
           >
             {reviews}
@@ -45,12 +54,7 @@ class Publication extends Component {
       );
 
       publicationView = (
-        <BgDiv
-          className="ui segment"
-          onClick={this.props.onClick}
-          style={{ marginBottom: "1rem" }}
-          {...this.props}
-        >
+        <BgDiv className="ui segment" onClick={onClick} {...this.props}>
           <Title>{this.props.publication.title}</Title>
           <div className="meta">{this.props.publication.created_at}</div>
           {reviews}
@@ -58,12 +62,7 @@ class Publication extends Component {
       );
     } else {
       publicationView = (
-        <BgDiv
-          className="ui segment"
-          onClick={this.props.onClick}
-          style={{ marginBottom: "1rem" }}
-          {...this.props}
-        >
+        <BgDiv className="ui segment" onClick={onClick} {...this.props}>
           <Title>{this.props.publication.title}</Title>
           <div className="meta">{this.props.publication.created_at}</div>
           <Description className="description" {...this.props}>
@@ -73,23 +72,8 @@ class Publication extends Component {
       );
     }
 
-    return this.props.isHyperlink
-      ? this.linkToPublication(publicationView)
-      : publicationView;
+    return publicationView;
   }
-
-  linkToPublication = Child => {
-    return (
-      <Link
-        to={{
-          pathname: `/publications/${this.props.publication.id}`,
-          state: this.props.content,
-        }}
-      >
-        {Child}
-      </Link>
-    );
-  };
 }
 
 const BgDiv = styled.div`
@@ -101,7 +85,10 @@ const BgDiv = styled.div`
     border: 1px solid rgba(34, 36, 38, 0.15);
     font-size: 0.75rem;
     padding-bottom: 0;
-    margin-bottom: 0.5em;
+  }
+
+  &:last-child {
+    margin-bottom: 0;
   }
 `;
 
@@ -139,4 +126,4 @@ const Description = styled.div`
   }
 `;
 
-export default Publication;
+export default withRouter(Publication);

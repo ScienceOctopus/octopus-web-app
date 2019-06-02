@@ -66,7 +66,11 @@ class StageGraph extends Component {
               className={
                 "ui " + numbers[this.props.stages.length] + " column grid"
               }
-              style={{ overflowX: "auto", flexWrap: "nowrap" }}
+              style={{
+                overflowX: "auto",
+                overflowY: "hidden",
+                flexWrap: "nowrap",
+              }}
             >
               {this.props.stages.map(stage => (
                 <Stage

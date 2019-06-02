@@ -5,11 +5,7 @@ import styled from "styled-components";
 class Review extends Component {
   render() {
     let reviewView = (
-      <BgDiv
-        className="ui segment"
-        style={{ marginBottom: "1rem" }}
-        {...this.props}
-      >
+      <BgDiv className="ui segment" {...this.props}>
         <Title>{this.props.review.title}</Title>
         <div className="meta">{this.props.review.created_at}</div>
         <Description className="description" {...this.props}>
@@ -46,7 +42,11 @@ const BgDiv = styled.div`
     border: 1px solid rgba(34, 36, 38, 0.15);
     font-size: 0.75rem;
     padding-bottom: 0;
-    margin-bottom: 0.5em;
+    margin-bottom: 1rem;
+  }
+
+  &:last-child {
+    margin-bottom: 0;
   }
 `;
 
