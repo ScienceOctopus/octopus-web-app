@@ -22,28 +22,24 @@ class Publication extends Component {
     if (
       this.props.highlight &&
       this.props.showReviews &&
-      this.props.publication.reviews !== undefined &&
-      this.props.publication.reviews.length > 0
+      this.props.publication.reviews !== undefined
     ) {
       let { height, margin, heider } = this.props.content.measurements;
 
-      let reviews = this.props.publication.reviews.map(review => (
-        <Review
-          key={review.id}
-          review={review}
-          content={this.props.content}
-          highlight={review.id === this.props.content.review}
-          isHyperlink
-        />
-      ));
+      let reviews = null;
 
-      reviews = (
-        <div>
-          <div style={{ height: "3rem", position: "relative" }}>
-            <h4 style={{ fontSize: "1rem", position: "absolute", bottom: 0 }}>
-              Reviews
-            </h4>
-          </div>
+      if (this.props.publication.reviews.length > 0) {
+        reviews = this.props.publication.reviews.map(review => (
+          <Review
+            key={review.id}
+            review={review}
+            content={this.props.content}
+            highlight={review.id === this.props.content.review}
+            isHyperlink
+          />
+        ));
+
+        reviews = (
           <div
             style={{
               overflowY: "auto",
@@ -54,6 +50,34 @@ class Publication extends Component {
           >
             {reviews}
           </div>
+        );
+      }
+
+      reviews = (
+        <div>
+          <div style={{ height: "3rem", position: "relative" }}>
+            <h4 style={{ fontSize: "1rem", position: "absolute", bottom: 0 }}>
+              <i
+                onClick={event => {
+                  this.props.history.push(
+                    `/upload/problems/${
+                      this.props.publication.problem
+                    }/stages/${this.props.publication.stage}`,
+                    this.props.content,
+                  );
+                  event.stopPropagation();
+                }}
+                className="ui plus square icon"
+                style={{
+                  marginRight: "0.5em",
+                  color: "gray",
+                  cursor: "pointer",
+                }}
+              />
+              {reviews === null ? "No " : ""}Reviews
+            </h4>
+          </div>
+          {reviews}
         </div>
       );
 
