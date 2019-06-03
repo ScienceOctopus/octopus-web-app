@@ -8,7 +8,7 @@ class SummaryView extends Component {
 
     this.state = {
       publication: {},
-      stageName: undefined,
+      stage: undefined,
     };
 
     this.fetchProblemData();
@@ -20,8 +20,7 @@ class SummaryView extends Component {
       .then(publication => {
         this.setState({
           publication: publication,
-          stageName: this.props.stages.find(x => x.id === publication.stage)
-            .singular,
+          stage: this.props.stages.find(x => x.id === publication.stage)
         });
       });
     fetch(`/api/publications/${this.props.publicationId}/resources`)
@@ -39,10 +38,24 @@ class SummaryView extends Component {
     if (oldProps.publicationId !== this.props.publicationId) {
       this.fetchProblemData();
     }
+
+    // Make sure to update stage when our props.stages gets populated upstream
+    // even if the publication id didn't change (e.g. direct navigation to page)
+    // Note about duplication: the stage update in fetchProblemData is for publication state updating
+    //  and the stage update here is for props updating. props.stages is never undefined, only an empty
+    //  array (I hope...) so we won't need to worry about that crashing.
+    // Memory reference compare; but I guess it's okay to prevent recursive updates
+    if ((oldProps.stages !== this.props.stages) && (this.state.publication.stage !== undefined)) {
+	this.setState({ stage: this.props.stages.find(x => x.id === this.state.publication.stage) });
+    }
   }
 
   render() {
+    // TODO: handle cases where publication may not have loaded?
+
     const imagesPresent = this.state.publication.images !== undefined;
+    const stagePresent = this.state.stage !== undefined;
+    const reviewPresent = this.state.publication.review;
 
     return (
       <div>
@@ -51,11 +64,11 @@ class SummaryView extends Component {
           <article>
             <h1 className="ui header">
               <StageTitle>
-                {this.state.stageName !== undefined && this.state.stageName}
+                {stagePresent && this.state.stage.singular}
                 <ReviewTitle>
-                  {this.state.publication.review ? " Review" : ""}
+                  {reviewPresent ? " Review" : ""}
                 </ReviewTitle>
-                :{" "}
+                {(stagePresent || reviewPresent) && ": "}
               </StageTitle>
               {this.state.publication.title}
               <div className="ui sub header">
