@@ -26,7 +26,7 @@ function AppRouter() {
         name="uploadPublication"
         path={WebURI.UploadPublication}
         exact
-        component={UploadPage}
+        render={props => <UploadPage {...props} review={false} />}
       />
       <Route
         name="uploadPublicationToStage"

@@ -33,8 +33,8 @@ class UploadPage extends Component {
       description: "",
       linkedProblemsSelected: false,
       isReview: selection.length > 0,
-      selectedProblemId: problem.toString(),
-      selectedStageId: stage,
+      selectedProblemId: (problem && problem.toString()) || undefined,
+      selectedStageId: (stage && stage.toString()) || undefined,
       publicationsToLink: selection,
     };
 
