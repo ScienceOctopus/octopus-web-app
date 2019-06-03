@@ -18,7 +18,11 @@ class SummaryView extends Component {
     fetch(`/api/publications/${this.props.publicationId}`)
       .then(response => response.json())
       .then(publication => {
-        this.setState({ publication: publication, stageName: this.props.stages.find(x => x.id === publication.stage).name });
+        this.setState({
+          publication: publication,
+          stageName: this.props.stages.find(x => x.id === publication.stage)
+            .singular,
+        });
       });
     fetch(`/api/publications/${this.props.publicationId}/resources`)
       .then(response => response.json())
@@ -47,7 +51,7 @@ class SummaryView extends Component {
           <article>
             <h1 className="ui header">
               <StageTitle>
-		{ (this.state.stageName !== undefined) && this.state.stageName }
+                {this.state.stageName !== undefined && this.state.stageName}
                 <ReviewTitle>
                   {this.state.publication.review ? " Review" : ""}
                 </ReviewTitle>
