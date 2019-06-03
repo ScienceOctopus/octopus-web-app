@@ -32,7 +32,13 @@ function AppRouter() {
         name="uploadPublicationToStage"
         path={WebURI.UploadPublicationToStage}
         exact
-        component={UploadPage}
+        render={props => <UploadPage {...props} review={false} />}
+      />
+      <Route
+        name="uploadReview"
+        path={WebURI.UploadReview}
+        exact
+        render={props => <UploadPage {...props} review={true} />}
       />
     </Switch>
   );

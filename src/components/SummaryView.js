@@ -20,7 +20,7 @@ class SummaryView extends Component {
       .then(publication => {
         this.setState({
           publication: publication,
-          stage: this.props.stages.find(x => x.id === publication.stage)
+          stage: this.props.stages.find(x => x.id === publication.stage),
         });
       });
     fetch(`/api/publications/${this.props.publicationId}/resources`)
@@ -45,8 +45,15 @@ class SummaryView extends Component {
     //  and the stage update here is for props updating. props.stages is never undefined, only an empty
     //  array (I hope...) so we won't need to worry about that crashing.
     // Memory reference compare; but I guess it's okay to prevent recursive updates
-    if ((oldProps.stages !== this.props.stages) && (this.state.publication.stage !== undefined)) {
-	this.setState({ stage: this.props.stages.find(x => x.id === this.state.publication.stage) });
+    if (
+      oldProps.stages !== this.props.stages &&
+      this.state.publication.stage !== undefined
+    ) {
+      this.setState({
+        stage: this.props.stages.find(
+          x => x.id === this.state.publication.stage,
+        ),
+      });
     }
   }
 
@@ -65,9 +72,7 @@ class SummaryView extends Component {
             <h1 className="ui header">
               <StageTitle>
                 {stagePresent && this.state.stage.singular}
-                <ReviewTitle>
-                  {reviewPresent ? " Review" : ""}
-                </ReviewTitle>
+                <ReviewTitle>{reviewPresent ? " Review" : ""}</ReviewTitle>
                 {(stagePresent || reviewPresent) && ": "}
               </StageTitle>
               {this.state.publication.title}

@@ -15,6 +15,7 @@ class ProblemPage extends React.Component {
     if (!this.props.location || !this.props.location.state) {
       this.state = {
         problem: undefined,
+        stage: undefined,
         publication: undefined,
         content: {
           problem: {},
@@ -95,8 +96,12 @@ class ProblemPage extends React.Component {
   }
 
   initProblem(problem, publication, selection, review, boot) {
+    let stage = undefined;
+
     if (publication !== undefined) {
       let review = this.state.content.publications.get(publication);
+
+      stage = review.stage;
 
       if (review.review) {
         if (review.publication_before !== undefined) {
@@ -135,15 +140,21 @@ class ProblemPage extends React.Component {
 
     if (problem !== this.state.problem) {
       this.setState(
-        { problem: problem, publication: publication, review: review },
+        {
+          problem: problem,
+          stage: stage,
+          publication: publication,
+          review: review,
+        },
         () => this.fetchProblem(boot),
       );
     } else if (publication !== this.state.publication) {
-      this.setState({ publication: publication, review: review }, () =>
-        this.generateSelection(boot),
+      this.setState(
+        { stage: stage, publication: publication, review: review },
+        () => this.generateSelection(boot),
       );
     } else if (review !== this.state.review) {
-      this.setState({ review: review });
+      this.setState({ stage: stage, review: review });
     }
   }
 

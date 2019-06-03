@@ -60,9 +60,7 @@ class Publication extends Component {
               <i
                 onClick={event => {
                   this.props.history.push(
-                    `/upload/problems/${
-                      this.props.publication.problem
-                    }/stages/${this.props.publication.stage}`,
+                    `/upload/review/${this.props.publication.id}`,
                     this.props.content,
                   );
                   event.stopPropagation();

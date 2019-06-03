@@ -6,7 +6,7 @@ class StageSelector extends Component {
     return (
       <SimpleSelector
         url={`/api/problems/${this.props.problemId}/stages`}
-        title="Select a Stage"
+        title="Select a Publication Type"
         {...this.props}
       />
     );

@@ -8,7 +8,10 @@ class PublicationSelector extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { publications: [] };
+    this.state = {
+      publications: [],
+      initialSelection: this.props.selectedPublications,
+    };
 
     this.pubsContainer = React.createRef();
 
@@ -53,9 +56,16 @@ class PublicationSelector extends Component {
             ).toLocaleDateString()),
         );
 
+        let initialSelection = new Set(
+          this.state.initialSelection.map(id => Number(id)),
+        );
+
         this.setState({
           publications: res.data,
-          selected: Array(res.data.length).fill(false),
+          selected: res.data.map(publication =>
+            initialSelection.has(publication.id),
+          ),
+          initialSelection: [],
         });
       })
       .catch(err => console.error(err.response));
@@ -88,7 +98,11 @@ class PublicationSelector extends Component {
   render() {
     return (
       <div className="ui field">
-        <label>Select a basis of your publication</label>
+        <label>
+          {this.props.singleSelection
+            ? "Which publication are you reviewing?"
+            : "Which publications should yours be linked to?"}
+        </label>
         <div className="ui container">
           <div className="ui stackable grid" ref={this.pubsContainer}>
             {this.state.publications.map((x, i) => (

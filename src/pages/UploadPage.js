@@ -16,16 +16,26 @@ class UploadPage extends Component {
 
     let params = (props.match ? props.match : props).params;
 
-    let problem = params.id;
-    let stage = params.stage;
+    let problem, stage, selection;
+
+    if (this.props.review) {
+      problem = this.props.location.state.problem;
+      stage = this.props.location.state.stage;
+      selection = [params.id];
+    } else {
+      problem = params.id;
+      stage = params.stage;
+      selection = [];
+    }
 
     this.state = {
       title: "",
       description: "",
       linkedProblemsSelected: false,
-      isReview: false,
-      selectedProblemId: problem,
+      isReview: selection.length > 0,
+      selectedProblemId: problem.toString(),
       selectedStageId: stage,
+      publicationsToLink: selection,
     };
 
     if (process.DEBUG_MODE) {
@@ -192,12 +202,12 @@ class UploadPage extends Component {
             {this.shouldRenderLinkingSelector() && this.renderLinkingSelector()}
 
             <TitledForm
-              title="Document Title"
+              title="Publication Title"
               value={this.state.title}
               onChange={this.handleTitleChange}
             />
             <TitledForm
-              title="Document Summary"
+              title="Publication Summary"
               value={this.state.description}
               onChange={this.handleDescriptionChange}
             />
