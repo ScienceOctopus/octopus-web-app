@@ -5,21 +5,27 @@ import ProblemSelector from "../components/ProblemSelector";
 import StageSelector from "../components/StageSelector";
 import TitledForm from "../components/TitledForm";
 import ApiURI from "../urls/ApiURIs";
-import { Redirect } from "react-router-dom";
+import { Redirect, withRouter } from "react-router-dom";
 import PublicationSelector from "../components/PublicationSelector";
 
 const NONLINKING_STAGE = "1";
 
-export default class UploadPage extends Component {
-  constructor() {
-    super();
+class UploadPage extends Component {
+  constructor(props) {
+    super(props);
+
+    let params = (props.match ? props.match : props).params;
+
+    let problem = params.id;
+    let stage = params.stage;
 
     this.state = {
       title: "",
       description: "",
       linkedProblemsSelected: false,
       isReview: false,
-      originalStage: false,
+      selectedProblemId: problem,
+      selectedStageId: stage,
     };
 
     if (process.DEBUG_MODE) {
@@ -47,10 +53,9 @@ export default class UploadPage extends Component {
   handleSubmit = async () => {
     if (this.state.selectedFile === undefined) return;
 
-    let linkedPublications =
-      this.state.originalStage && !this.state.isReview
-        ? []
-        : this.pubSelector.current.getSelectedPublications();
+    let linkedPublications = !this.shouldRenderLinkingSelector()
+      ? []
+      : this.pubSelector.current.getSelectedPublications();
 
     const data = new FormData();
     data.set("title", this.state.title);
@@ -83,11 +88,10 @@ export default class UploadPage extends Component {
     });
   };
 
-  handleStageSelect = (id, original) => {
+  handleStageSelect = id => {
     this.setState({
       selectedStageId: id,
       linkedProblemsSelected: false,
-      originalStage: original,
     });
   };
 
@@ -159,13 +163,17 @@ export default class UploadPage extends Component {
 
             <div className="two fields">
               <div className="field">
-                <ProblemSelector onSelect={this.handleProblemSelect} />
+                <ProblemSelector
+                  onSelect={this.handleProblemSelect}
+                  value={this.state.selectedProblemId}
+                />
               </div>
               {this.state.selectedProblemId !== undefined && (
                 <div className="field">
                   <StageSelector
                     problemId={this.state.selectedProblemId}
                     onSelect={this.handleStageSelect}
+                    value={this.state.selectedStageId}
                   />
                 </div>
               )}
@@ -225,3 +233,5 @@ export default class UploadPage extends Component {
     );
   }
 }
+
+export default withRouter(UploadPage);

@@ -8,6 +8,7 @@ class ProblemSelector extends Component {
         url="/api/problems"
         title="Select a Problem"
         onSelect={this.props.onSelect}
+        value={this.props.value}
       />
     );
   }

@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { withRouter } from "react-router-dom";
 
 import Publication from "./Publication";
 import styled from "styled-components";
@@ -145,6 +146,19 @@ class Stage extends Component {
           onClick={event => event.stopPropagation()}
         >
           <h4 style={{ marginBottom: 0 }}>
+            <i
+              onClick={event => {
+                this.props.history.push(
+                  `/upload/problems/${this.props.content.problem}/stages/${
+                    this.props.stage.id
+                  }`,
+                  this.props.content,
+                );
+                event.stopPropagation();
+              }}
+              className="ui plus square icon"
+              style={{ marginRight: "0.5em", color: "gray", cursor: "pointer" }}
+            />
             {this.props.stage.name}
             <div className={"floating ui " + (active ? "teal " : "") + "label"}>
               {this.props.stage.publications.length}
@@ -264,4 +278,4 @@ const StageLinkContainer = styled.div`
   }
 `;
 
-export default Stage;
+export default withRouter(Stage);

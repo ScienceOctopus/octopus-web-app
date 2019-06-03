@@ -90,7 +90,7 @@ class PublicationSelector extends Component {
       <div className="ui field">
         <label>Select a basis of your publication</label>
         <div className="ui container">
-          <div className="ui grid" ref={this.pubsContainer}>
+          <div className="ui stackable grid" ref={this.pubsContainer}>
             {this.state.publications.map((x, i) => (
               <div className="four wide column" key={i}>
                 <Publication

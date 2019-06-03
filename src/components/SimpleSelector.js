@@ -6,7 +6,7 @@ class SimpleSelector extends Component {
     super(props);
     this.state = {
       loaded: false,
-      value: "",
+      value: (this.props.value || "").toString(),
     };
   }
 
@@ -20,7 +20,7 @@ class SimpleSelector extends Component {
 
   renderOptions() {
     let options = this.state.data.map((x, i) => (
-      <option value={x.id} key={i} first={(i === 0).toString()}>
+      <option value={x.id} key={i}>
         {x.title || x.name}
       </option>
     ));
@@ -37,13 +37,7 @@ class SimpleSelector extends Component {
           onChange={e => {
             this.setState({ value: e.target.value });
 
-            this.props.onSelect &&
-              this.props.onSelect(
-                e.target.value,
-                [...e.target.children]
-                  .find(x => x.value === e.target.value)
-                  .getAttribute("first") === "true",
-              );
+            this.props.onSelect && this.props.onSelect(e.target.value);
           }}
         >
           {this.state.loaded ? this.renderOptions() : "Not loaded yet"}

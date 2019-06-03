@@ -13,16 +13,25 @@ function AppRouter() {
       <Route
         name="problem"
         path={WebURI.Problem}
+        exact
         render={props => <ProblemPage {...props} publication={false} />}
       />
       <Route
         name="publication"
         path={WebURI.Publication}
+        exact
         render={props => <ProblemPage {...props} publication={true} />}
       />
       <Route
         name="uploadPublication"
         path={WebURI.UploadPublication}
+        exact
+        component={UploadPage}
+      />
+      <Route
+        name="uploadPublicationToStage"
+        path={WebURI.UploadPublicationToStage}
+        exact
         component={UploadPage}
       />
     </Switch>

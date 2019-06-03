@@ -481,18 +481,19 @@ class ProblemPage extends React.Component {
             return;
           }
 
-          let container = ref.firstChild.getBoundingClientRect();
+          let root = ref.children[0].getBoundingClientRect();
           let publications = [
             ...ref.children[0].children[0].children[1].children,
           ].map(child => child.getBoundingClientRect());
           let derheider = ref.children[0].children[0].children[1].getBoundingClientRect();
+          let container = ref.children[0].children[0].getBoundingClientRect();
 
-          let offset = publications[0].top - container.top;
+          let offset = publications[0].top - root.top;
           let height = publications[0].bottom - publications[0].top;
           let margin = publications[1].top - publications[0].bottom;
-          let siding = publications[0].left - container.left;
+          let siding = publications[0].left - root.left;
           let heider = derheider.bottom - derheider.top;
-          let tainer = container.bottom - container.top;
+          let tainer = container.bottom - container.top + margin * 2;
 
           this.setState(
             {
