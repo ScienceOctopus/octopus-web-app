@@ -8,6 +8,7 @@ class SummaryView extends Component {
 
     this.state = {
       publication: {},
+      stageName: undefined,
     };
 
     this.fetchProblemData();
@@ -17,7 +18,7 @@ class SummaryView extends Component {
     fetch(`/api/publications/${this.props.publicationId}`)
       .then(response => response.json())
       .then(publication => {
-        this.setState({ publication: publication });
+        this.setState({ publication: publication, stageName: this.props.stages.find(x => x.id === publication.stage).name });
       });
     fetch(`/api/publications/${this.props.publicationId}/resources`)
       .then(response => response.json())
@@ -46,7 +47,7 @@ class SummaryView extends Component {
           <article>
             <h1 className="ui header">
               <StageTitle>
-                Hypothesis
+		{ (this.state.stageName !== undefined) && this.state.stageName }
                 <ReviewTitle>
                   {this.state.publication.review ? " Review" : ""}
                 </ReviewTitle>

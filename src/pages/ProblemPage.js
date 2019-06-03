@@ -449,6 +449,7 @@ class ProblemPage extends React.Component {
               ? this.state.review
               : this.state.publication
           }
+	  stages={this.state.content.stages}
         />
       );
     }
