@@ -27,10 +27,9 @@ class SimpleSelector extends Component {
 
   render() {
     return (
-      <div style={style.container}>
-        <label style={style.label}>{this.props.title}</label>
+      <div className="field">
+        <label>{this.props.title}</label>
         <select
-          style={style.input}
           defaultValue={""}
           onChange={e =>
             this.props.onSelect &&
@@ -49,33 +48,8 @@ class SimpleSelector extends Component {
   }
 }
 
-const style = {
-  container: {
-    width: "15rem",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "flex-start",
-    justifyContent: "center",
-    margin: "0.5em",
-  },
-  label: {
-    display: "block",
-    fontSize: "0.9em",
-    fontWeight: 700,
-  },
-  input: {
-    lineHeight: "1.2em",
-    padding: "0.66em 1em",
-    fontSize: "1em",
-    border: "1px solid lightgrey",
-    borderRadius: "0.3rem",
-    boxShadow: "0 0 0 0 transparent inset",
-    transition: "color .1s ease,border-color .1s ease",
-  },
-};
-
 const emptyOption = (
-  <option disabled selected value key={-1}>
+  <option disabled="disabled" selected="selected" key={-1}>
     {"---select---"}
   </option>
 );

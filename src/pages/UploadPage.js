@@ -5,7 +5,7 @@ import ProblemSelector from "../components/ProblemSelector";
 import StageSelector from "../components/StageSelector";
 import TitledForm from "../components/TitledForm";
 import ApiURI from "../urls/ApiURIs";
-import { Link } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import PublicationSelector from "../components/PublicationSelector";
 
 const NONLINKING_STAGE = "1";
@@ -69,8 +69,8 @@ export default class UploadPage extends Component {
         }/publications`,
       data,
     )
-      .then(() => {
-        this.setState({ uploadSuccessful: true });
+      .then((response) => {
+        this.setState({ insertedId: response.data, uploadSuccessful: true });
       })
       .catch(err => console.error(err.response))
       .finally(() => this.setState({ uploading: false }));
@@ -145,16 +145,24 @@ export default class UploadPage extends Component {
 
   render() {
     return (
-      <div style={styles.container}>
-        <h2>Upload</h2>
+      <div className="ui main container">
+	<div className="ui segment">
+	<div className={"ui " + (this.state.uploading ? "loading " : "") + "form"}>
+        <h2 className="ui dividing header"><i className="ui pencil icon"></i>Upload new science!</h2>
 
+	<div className="two fields">
+	<div className="field">
         <ProblemSelector onSelect={this.handleProblemSelect} />
+	</div>
         {this.state.selectedProblemId !== undefined && (
+		<div className="field">
           <StageSelector
             problemId={this.state.selectedProblemId}
             onSelect={this.handleStageSelect}
           />
+		</div>
         )}
+	</div>
 
         <h4>
           Is a review{" "}
@@ -178,20 +186,27 @@ export default class UploadPage extends Component {
           onChange={this.handleDescriptionChange}
         />
         <FileUploadSelector onSelect={this.handleFileSelect} />
-
-        {this.state.uploading && <h4>Uploading...</h4>}
-        {this.state.uploadSuccessful && (
-          <h4>
-            {"Upload Successful!"}
-            <Link to={`/problems/${this.state.selectedProblemId}`}>
-              Go back to problem
-            </Link>
-          </h4>
-        )}
-        <button onClick={this.handleSubmit} disabled={!this.submitEnabled()}>
+        <div className="inline field">
+	<div className="ui checkbox">
+          <input
+            type="checkbox"
+            onChange={this.handleReviewChange}
+            checked={this.state.isReview}
+		id="is-review"
+          />
+          <label htmlFor="is-review">This publication is a review</label>
+        </div>
+	</div>
+        <button className="ui submit button" onClick={this.handleSubmit} disabled={!this.submitEnabled()}>
           Submit
         </button>
+
+        {this.state.uploadSuccessful && (
+		<Redirect to={`/publications/${this.state.insertedId}`} />
+        )}
       </div>
+	</div>
+	</div>
     );
   }
 
@@ -209,18 +224,3 @@ export default class UploadPage extends Component {
     );
   }
 }
-
-const styles = {
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: "1em 1em",
-    background: "#f9fafb",
-    border: "1px solid lightgrey",
-    borderRadius: "0.3rem",
-    boxShadow: "0 0 0 0 transparent inset",
-    margin: "2em 10em",
-  },
-};

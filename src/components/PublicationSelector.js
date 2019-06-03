@@ -42,8 +42,6 @@ class PublicationSelector extends Component {
       this.props.stageId +
       "/publications";
 
-    console.log(apiRquest);
-
     Axios.get(apiRquest)
       .then(res => {
         this.pubsContainer.current.scrollLeft = 0;
@@ -82,18 +80,22 @@ class PublicationSelector extends Component {
 
   render() {
     return (
-      <div style={styles.container}>
-        <h4>Select basis of your publication</h4>
-        <div style={styles.pubsContainer} ref={this.pubsContainer}>
+	<div className="ui field">
+        <label>Select a basis of your publication</label>
+	<div className="ui container">
+	<div className="ui grid" ref={this.pubsContainer}>
           {this.state.publications.map((x, i) => (
+		<div className="four wide column">
             <Publication
               publication={x}
               highlight={this.state.selected[i]}
               onClick={this.handleProblemClick(i)}
               key={i}
             />
+		</div>
           ))}
         </div>
+      </div>
       </div>
     );
   }
@@ -104,27 +106,6 @@ PublicationSelector.propTypes = {
   stageId: PropTypes.number.isRequired,
   onNoSelection: PropTypes.func,
   onSelect: PropTypes.func,
-};
-
-const styles = {
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    maxWidth: "80%",
-    minWidth: "80%",
-    // marginBottom: 10,
-    // background: "red",
-  },
-  pubsContainer: {
-    width: "100%",
-    display: "flex",
-    flexDirection: "row",
-    overflowX: "auto",
-    overflowY: "hidden",
-    justifyContent: "space-between",
-  },
 };
 
 export default PublicationSelector;

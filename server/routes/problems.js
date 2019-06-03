@@ -65,7 +65,7 @@ const postPublicationToProblemAndStage = (req, res) => {
               publications[0],
               resources[0],
               "main",
-            ).then(id => res.status(200).json(id[0]));
+            ).then(id => res.status(200).json(publications[0]));
           }),
         );
       })
@@ -90,7 +90,7 @@ const postPublicationToProblemAndStage = (req, res) => {
           publications[0],
           resources[0],
           "main",
-        ).then(id => res.status(200).json(id[0]));
+        ).then(id => res.status(200).json(publications[0]));
       });
     })
     .catch(thingy => {
