@@ -9,7 +9,7 @@ it("renders without crashing", () => {
     <Router>
       <App />
     </Router>,
-    div
+    div,
   );
   ReactDOM.unmountComponentAtNode(div);
 });

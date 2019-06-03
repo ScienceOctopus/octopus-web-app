@@ -139,7 +139,7 @@ test("getStagesByProblem returns results", async () => {
 test("getPublicationsByProblemAndStage returns results", async () => {
   const testPublications = [{ id: 1 }, { id: 2 }];
   queries.selectOriginalPublicationsByProblemAndStage.mockResolvedValue(
-    testPublications
+    testPublications,
   );
 
   const mockRequest = () => {
@@ -161,7 +161,7 @@ test("getPublicationsByProblemAndStage returns results", async () => {
   await problems.getPublicationsByProblemAndStage(req, res);
 
   expect(
-    queries.selectOriginalPublicationsByProblemAndStage
+    queries.selectOriginalPublicationsByProblemAndStage,
   ).toHaveBeenCalledWith(req.params.id, req.params.stage);
   expect(res.status).toHaveBeenCalledWith(200);
   expect(res.json).toHaveBeenCalledWith(testPublications);
@@ -196,7 +196,7 @@ test("postPublicationToProblemAndStage does something", async () => {
     req.body.title,
     req.body.summary,
     req.body.description,
-    req.body.review
+    req.body.review,
   );
   //expect(res.status).toHaveBeenCalledWith(200);
   //expect(res.json).toHaveBeenCalledWith(testPublications);

@@ -70,10 +70,16 @@ class Publication extends Component {
       );
     } else {
       publicationView = (
-        <BgDiv className="ui segment" onClick={onClick} {...this.props}>
+        <BgDiv
+          className="ui segment"
+          onClick={onClick}
+          highlight={this.props.highlight}
+          review={this.props.review}
+          pointer={this.props.pointer}
+        >
           <Title>{this.props.publication.title}</Title>
           <div className="meta">{this.props.publication.created_at}</div>
-          <Description className="description" {...this.props}>
+          <Description className="description" highlight={this.props.highlight}>
             {this.props.publication.description}
           </Description>
         </BgDiv>
@@ -88,7 +94,9 @@ const BgDiv = styled.div`
   &.segment {
     background-color: ${props => (props.highlight ? "#99ffd3" : "white")};
     cursor: ${props =>
-      props.highlight && !props.review ? "default" : "pointer"};
+      props.highlight && !props.review && !props.pointer
+        ? "default"
+        : "pointer"};
 
     padding: 1em 1em;
     border-radius: 0.25rem;

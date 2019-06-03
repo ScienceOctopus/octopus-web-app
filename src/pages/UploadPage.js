@@ -69,7 +69,7 @@ export default class UploadPage extends Component {
         }/publications`,
       data,
     )
-      .then((response) => {
+      .then(response => {
         this.setState({ insertedId: response.data, uploadSuccessful: true });
       })
       .catch(err => console.error(err.response))
@@ -146,58 +146,68 @@ export default class UploadPage extends Component {
   render() {
     return (
       <div className="ui main container">
-	<div className="ui segment">
-	<div className={"ui " + (this.state.uploading ? "loading " : "") + "form"}>
-        <h2 className="ui dividing header"><i className="ui pencil icon"></i>Upload new science!</h2>
+        <div className="ui segment">
+          <div
+            className={
+              "ui " + (this.state.uploading ? "loading " : "") + "form"
+            }
+          >
+            <h2 className="ui dividing header">
+              <i className="ui pencil icon" />
+              Upload a new publication
+            </h2>
 
-	<div className="two fields">
-	<div className="field">
-        <ProblemSelector onSelect={this.handleProblemSelect} />
-	</div>
-        {this.state.selectedProblemId !== undefined && (
-		<div className="field">
-          <StageSelector
-            problemId={this.state.selectedProblemId}
-            onSelect={this.handleStageSelect}
-          />
-		</div>
-        )}
-	</div>
+            <div className="two fields">
+              <div className="field">
+                <ProblemSelector onSelect={this.handleProblemSelect} />
+              </div>
+              {this.state.selectedProblemId !== undefined && (
+                <div className="field">
+                  <StageSelector
+                    problemId={this.state.selectedProblemId}
+                    onSelect={this.handleStageSelect}
+                  />
+                </div>
+              )}
+            </div>
+            <div className="inline field">
+              <div className="ui checkbox">
+                <input
+                  type="checkbox"
+                  onChange={this.handleReviewChange}
+                  checked={this.state.isReview}
+                  id="is-review"
+                />
+                <label htmlFor="is-review">This publication is a review</label>
+              </div>
+            </div>
+            {this.shouldRenderLinkingSelector() && this.renderLinkingSelector()}
 
-        {this.shouldRenderLinkingSelector() && this.renderLinkingSelector()}
+            <TitledForm
+              title="Document Title"
+              value={this.state.title}
+              onChange={this.handleTitleChange}
+            />
+            <TitledForm
+              title="Document Summary"
+              value={this.state.description}
+              onChange={this.handleDescriptionChange}
+            />
+            <FileUploadSelector onSelect={this.handleFileSelect} />
+            <button
+              className="ui submit button"
+              onClick={this.handleSubmit}
+              disabled={!this.submitEnabled()}
+            >
+              Submit
+            </button>
 
-        <TitledForm
-          title="Document Title"
-          value={this.state.title}
-          onChange={this.handleTitleChange}
-        />
-        <TitledForm
-          title="Document Summary"
-          value={this.state.description}
-          onChange={this.handleDescriptionChange}
-        />
-        <FileUploadSelector onSelect={this.handleFileSelect} />
-        <div className="inline field">
-	<div className="ui checkbox">
-          <input
-            type="checkbox"
-            onChange={this.handleReviewChange}
-            checked={this.state.isReview}
-		id="is-review"
-          />
-          <label htmlFor="is-review">This publication is a review</label>
+            {this.state.uploadSuccessful && (
+              <Redirect to={`/publications/${this.state.insertedId}`} />
+            )}
+          </div>
         </div>
-	</div>
-        <button className="ui submit button" onClick={this.handleSubmit} disabled={!this.submitEnabled()}>
-          Submit
-        </button>
-
-        {this.state.uploadSuccessful && (
-		<Redirect to={`/publications/${this.state.insertedId}`} />
-        )}
       </div>
-	</div>
-	</div>
     );
   }
 

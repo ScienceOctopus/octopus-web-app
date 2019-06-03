@@ -46,6 +46,13 @@ class PublicationSelector extends Component {
       .then(res => {
         this.pubsContainer.current.scrollLeft = 0;
 
+        res.data.forEach(
+          publication =>
+            (publication.created_at = new Date(
+              publication.created_at,
+            ).toLocaleDateString()),
+        );
+
         this.setState({
           publications: res.data,
           selected: Array(res.data.length).fill(false),
@@ -80,22 +87,22 @@ class PublicationSelector extends Component {
 
   render() {
     return (
-	<div className="ui field">
+      <div className="ui field">
         <label>Select a basis of your publication</label>
-	<div className="ui container">
-	<div className="ui grid" ref={this.pubsContainer}>
-          {this.state.publications.map((x, i) => (
-		<div className="four wide column">
-            <Publication
-              publication={x}
-              highlight={this.state.selected[i]}
-              onClick={this.handleProblemClick(i)}
-              key={i}
-            />
-		</div>
-          ))}
+        <div className="ui container">
+          <div className="ui grid" ref={this.pubsContainer}>
+            {this.state.publications.map((x, i) => (
+              <div className="four wide column" key={i}>
+                <Publication
+                  publication={x}
+                  highlight={this.state.selected[i]}
+                  onClick={this.handleProblemClick(i)}
+                  pointer={!this.props.singleSelection}
+                />
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
       </div>
     );
   }

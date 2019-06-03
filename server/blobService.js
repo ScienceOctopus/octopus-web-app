@@ -12,7 +12,7 @@ const initialise = () => {
     {
       publicAccessLevel: "blob",
     },
-    function(error, result, response) {}
+    function(error, result, response) {},
   );
 
   blobService.createContainerIfNotExists(
@@ -20,7 +20,7 @@ const initialise = () => {
     {
       publicAccessLevel: "blob",
     },
-    function(error, result, response) {}
+    function(error, result, response) {},
   );
 };
 

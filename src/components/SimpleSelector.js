@@ -4,7 +4,10 @@ import React, { Component } from "react";
 class SimpleSelector extends Component {
   constructor(props) {
     super(props);
-    this.state = { loaded: false };
+    this.state = {
+      loaded: false,
+      value: "",
+    };
   }
 
   componentDidMount() {
@@ -30,16 +33,18 @@ class SimpleSelector extends Component {
       <div className="field">
         <label>{this.props.title}</label>
         <select
-          defaultValue={""}
-          onChange={e =>
+          value={this.state.value}
+          onChange={e => {
+            this.setState({ value: e.target.value });
+
             this.props.onSelect &&
-            this.props.onSelect(
-              e.target.value,
-              [...e.target.children]
-                .find(x => x.value === e.target.value)
-                .getAttribute("first") === "true",
-            )
-          }
+              this.props.onSelect(
+                e.target.value,
+                [...e.target.children]
+                  .find(x => x.value === e.target.value)
+                  .getAttribute("first") === "true",
+              );
+          }}
         >
           {this.state.loaded ? this.renderOptions() : "Not loaded yet"}
         </select>
@@ -49,7 +54,7 @@ class SimpleSelector extends Component {
 }
 
 const emptyOption = (
-  <option disabled="disabled" selected="selected" key={-1}>
+  <option disabled value={""} key={-1}>
     {"---select---"}
   </option>
 );

@@ -18,7 +18,7 @@ class Review extends Component {
       >
         <Title>{this.props.review.title}</Title>
         <div className="meta">{this.props.review.created_at}</div>
-        <Description className="description" {...this.props}>
+        <Description className="description" highlight={this.props.highlight}>
           {this.props.review.description}
         </Description>
       </BgDiv>

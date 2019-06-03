@@ -24,7 +24,7 @@ app.use(bodyParser.json());
 app.use(
   bodyParser.urlencoded({
     extended: true,
-  })
+  }),
 );
 
 app.get("/api", (request, response) => {
@@ -38,7 +38,7 @@ app.post("/api/feedback", fb.postFeedback);
 app.post(
   "/api/image",
   upload(blobService.AZURE_FEEDBACK_IMAGE_CONTAINER).single("image"),
-  fb.postImage
+  fb.postImage,
 );
 
 //app.post("/api/pdf2html", pdfToHtml);

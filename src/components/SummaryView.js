@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import PDFImagePreviewRenderer from './PDFImagePreviewRenderer';
+import PDFImagePreviewRenderer from "./PDFImagePreviewRenderer";
 import styled from "styled-components";
 
 class SummaryView extends Component {
@@ -22,11 +22,11 @@ class SummaryView extends Component {
     fetch(`/api/publications/${this.props.publicationId}/resources`)
       .then(response => response.json())
       .then(resources => {
-        this.setState((state) => {
-		var augmented = state;
-		augmented.publication.images = resources;
-		return augmented;
-	});
+        this.setState(state => {
+          var augmented = state;
+          augmented.publication.images = resources;
+          return augmented;
+        });
       });
   }
 
@@ -37,7 +37,7 @@ class SummaryView extends Component {
   }
 
   render() {
-    const imagesPresent = (this.state.publication.images !== undefined);
+    const imagesPresent = this.state.publication.images !== undefined;
 
     return (
       <div>
@@ -61,26 +61,32 @@ class SummaryView extends Component {
               <strong>Date added: </strong>
               {new Date(this.state.publication.created_at).toLocaleDateString()}
             </p>
-	    { imagesPresent && <a className="ui button" href={this.state.publication.images[0].uri}>
-		<i className="ui download icon"></i>Download document
-	    </a> }
+            {imagesPresent && (
+              <a
+                className="ui button"
+                href={this.state.publication.images[0].uri}
+              >
+                <i className="ui download icon" />
+                Download document
+              </a>
+            )}
             <section className="ui segment">
               <h3>Summary</h3>
               <div className="ui divider" />
               {this.state.publication.description}
             </section>
-            { imagesPresent ?
-	      <section className="ui segment">
-                <PDFImagePreviewRenderer state={ this.state } />
+            {imagesPresent ? (
+              <section className="ui segment">
+                <PDFImagePreviewRenderer state={this.state} />
               </section>
-	    :
+            ) : (
               <section className="ui placeholder segment">
                 <div className="ui icon header">
-		  <i className="pencil icon"></i>
-		  No images were uploaded for this publication.
-		</div>
-	      </section>
-            }
+                  <i className="pencil icon" />
+                  No images were uploaded for this publication.
+                </div>
+              </section>
+            )}
           </article>
         </main>
       </div>
