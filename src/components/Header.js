@@ -3,10 +3,9 @@ import { Link } from "react-router-dom";
 
 import "../App.css";
 import WebURI from "../urls/WebsiteURIs";
-import SimpleNav from "./SimpleNav";
+import GoblinIDLoginInvitation from "./GoblinIDLoginInvitation";
+import LogoutInvitation from "./LogoutInvitation";
 import { LoginDataContext } from "../LoginContext";
-
-const SHOW_SIMPLE_NAV = false;
 
 class Header extends Component {
   static contextType = LoginDataContext;
@@ -30,35 +29,8 @@ class Header extends Component {
             <i className="ui pencil alternate icon" />
             Draft a new publication
           </Link>
-
-          <div className="right item">
-		{ loggedIn ? <div>
-            <img
-              src="/images/avatar.jpg"
-              className="ui avatar image"
-              alt="Avatar of Alex"
-            />
-            <strong>Alex</strong>
-            <div
-              style={styles.logout}
-              className="ui button"
-              /*href="/login?logout=1"*/
-            >
-              Logout
-            </div></div> :
-            <div><a href="https://orcid.org/oauth/authorize?state=1337&client_id=APP-3IQDM9L3ZPD3ZC36&response_type=code&scope=/authenticate&redirect_uri=https://octopus-publishing.azurewebsites.net/api/oauth-flow">
-              <img
-                src="/images/avatar.jpg"
-                className="ui avatar image"
-                alt="Generic avatar"
-                title="Log in"
-              />
-            </a>
-            <span>Log in via ORCiD</span></div> }
-          </div>
+	{ loggedIn ? <LogoutInvitation /> : <GoblinIDLoginInvitation state={1337} /> }
         </div>
-
-        {SHOW_SIMPLE_NAV && <SimpleNav />}
       </header>
     );
   }
