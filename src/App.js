@@ -8,7 +8,7 @@ import OctopusSlackFeedback from "./components/SlackFeedback/OctopusSlackFeedbac
 // TODO: Can change this to be a dynamic import
 import DebugReloadButton from "./components/DebugReloadButton";
 
-import "./i18n";
+//import "./i18n";
 
 class App extends Component {
 	constructor() {
