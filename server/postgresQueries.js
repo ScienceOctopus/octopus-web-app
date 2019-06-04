@@ -27,12 +27,26 @@ KnexQueryBuilder.prototype.onConflictUpdate = function(conflict, ...columns) {
     );
   }
 
-  const columnsPlaceHolders = columns.map(() => `??=Values(??)`).join(", ");
+  // Dirty but effective hack
+  let values = this._single.insert;
 
-  return this.client.raw(
-    `${this.toString()} ON CONFLICT(${conflict}) DO UPDATE SET ${columnsPlaceHolders}`,
-    columns.reduce((bindings, column) => bindings.concat([column, column]), []),
+  let bindings = [];
+  let placeholders = columns.map(column => {
+    bindings.push(values[column]);
+    return `"${column}"=?`;
+  });
+
+  let builder = this.client.raw(
+    `${this.toString()} on conflict("${conflict}") do update set ${placeholders.join(
+      ", ",
+    )}`,
+    bindings,
   );
+
+  builder.returning = field =>
+    this.client.raw(`${builder.toString()} returning "${field}"`);
+
+  return builder;
 };
 
 const queries = {
