@@ -13,7 +13,7 @@ class Header extends Component {
   static contextType = LoginDataContext;
 
   render() {
-    const loggedIn = (this.context.user !== undefined);
+    const loggedIn = this.context.user !== undefined;
 
     return (
       <header className="ui teal inverted menu" style={styles.header}>
@@ -40,6 +40,7 @@ class Header extends Component {
 const styles = {
   header: {
     borderRadius: 0,
+    marginBottom: "0rem",
   },
   logo: {
     marginRight: 1.5 + "em",

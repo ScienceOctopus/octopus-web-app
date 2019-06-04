@@ -11,29 +11,29 @@ import DebugReloadButton from "./components/DebugReloadButton";
 //import "./i18n";
 
 class App extends Component {
-	constructor() {
-		super();
+  constructor() {
+    super();
 
-		this.login = (data) => {
-			this.setState(state => ({ user: data }))
-		};
+    this.login = data => {
+      this.setState(state => ({ user: data }));
+    };
 
-		this.state = {
-			user: undefined,
-			login: this.login,
-		};
-	}
+    this.state = {
+      user: undefined,
+      login: this.login,
+    };
+  }
 
   render() {
-	// TODO: investigate whether this Provider is necessary
+    // TODO: investigate whether this Provider is necessary
     return (
       <div className="App">
-	  <LoginDataContext.Provider value={this.state}>
-	    <Header />
-        <AppRouter />
-        <OctopusSlackFeedback />
-        {process.SHOW_DEBUG_SWITCH && <DebugReloadButton />}
-	  </LoginDataContext.Provider>
+        <LoginDataContext.Provider value={this.state}>
+          <Header />
+          <AppRouter />
+          <OctopusSlackFeedback />
+          {process.SHOW_DEBUG_SWITCH && <DebugReloadButton />}
+        </LoginDataContext.Provider>
       </div>
     );
   }
