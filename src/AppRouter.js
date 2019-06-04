@@ -24,12 +24,7 @@ function AppRouter() {
         render={props => <ProblemPage {...props} publication={true} />}
       />
 
-      <Route
-        name="upload"
-        path={WebURI.Upload}
-        exact
-        render={props => <UploadPage {...props} review={false} />}
-      />
+      <Route name="upload" path={WebURI.Upload} exact component={UploadPage} />
       <Route
         name="uploadToProblem"
         path={WebURI.UploadToProblem}
@@ -43,8 +38,14 @@ function AppRouter() {
         render={props => <UploadPage {...props} review={false} />}
       />
       <Route
-        name="uploadReview"
-        path={WebURI.UploadReview}
+        name="uploadToProblemStageAll"
+        path={WebURI.UploadToProblemStageAll}
+        exact
+        render={props => <UploadPage {...props} review={true} />}
+      />
+      <Route
+        name="uploadToProblemStageReview"
+        path={WebURI.UploadToProblemStageReview}
         exact
         render={props => <UploadPage {...props} review={true} />}
       />

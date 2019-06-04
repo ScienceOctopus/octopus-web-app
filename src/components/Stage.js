@@ -152,7 +152,6 @@ class Stage extends Component {
                   `/upload/problems/${this.props.content.problem}/stages/${
                     this.props.stage.id
                   }`,
-                  this.props.content,
                 );
                 event.stopPropagation();
               }}
