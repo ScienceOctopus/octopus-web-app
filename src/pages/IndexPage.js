@@ -5,7 +5,7 @@ import OctopusLogo from "../components/OctopusLogo";
 export default class IndexPage extends Component {
   render() {
     return (
-      <div style={{ marginTop: "-1rem" }}>
+      <div>
         <Container>
           <TitleContainer>
             <MainTitle>Built for scientists</MainTitle>
@@ -16,52 +16,89 @@ export default class IndexPage extends Component {
               corporis sit ut vero.
             </SubTitle>
           </TitleContainer>
-          <OctopusLogo size={600} />
+          <StyledGraph size={450} style={styles.logo} />
         </Container>
 
-        <Container height="-">
-          <OctopusLogo size={400} />
+        {/* <Container height="30vh">
+          <StyledGraph size={400} />
           <TitleContainer>
             <SubTitle>
               A lot of very useful information about octopus and the way it
               works
             </SubTitle>
           </TitleContainer>
-        </Container>
+        </Container> */}
       </div>
     );
   }
 }
 
+const styles = {
+  logo: {
+    maxWidth: "60vw",
+    maxHeight: "60vh",
+  },
+};
+
+const StackableGrid = ({ children }) => (
+  <div className="ui stackable four column grid">
+    {children.map(x => (
+      <div className="column">{x}</div>
+    ))}
+  </div>
+);
+
 const Container = styled.div`
   display: flex;
-  padding: 0 12em;
+  padding: 0 10%;
   background-color: teal;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
   height: ${p => (p.height ? p.height : "80vh")};
   flex-grow: 1;
+  max-height: 600px;
+
+  @media screen and (max-width: 750px) {
+    /* flex-direction: column; */
+    padding: 0 2.5%;
+    height: 100%;
+    max-height: 750px;
+  }
+`;
+
+const StyledGraph = styled(OctopusLogo)`
+  @media screen and (max-width: 750px) {
+    display: none;
+  }
 `;
 
 const TitleContainer = styled.div`
-  /* display: flex;
-  flex-direction: column; */
+  display: flex;
+  flex-direction: column;
   flex-grow: 1;
   flex-basis: 0;
 `;
 
 const MainTitle = styled.div`
-  padding: 3rem 1rem;
+  padding: 1rem 0;
   font-size: 5em;
   line-height: 1em;
   font-weight: 500;
   color: white;
+
+  @media screen and (max-width: 750px) {
+    text-align: center;
+  }
 `;
 
 const SubTitle = styled.div`
-  margin: 1rem 1rem;
+  padding: 1rem 0;
   font-size: 1.4em;
   line-height: 1.4em;
   color: lightgray;
+
+  @media screen and (max-width: 750px) {
+    text-align: center;
+  }
 `;
