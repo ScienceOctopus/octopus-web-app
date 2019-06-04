@@ -22,10 +22,10 @@ const requestInvalid = res => {
   res.status(400).send("400 Bad Request");
 };
 
-const getProblems = (req, res) => {
-  db.selectAllProblems()
-    .then(rows => res.status(200).json(rows))
-    .catch(console.error);
+const getProblems = async (req, res) => {
+  const problems = await db.selectAllProblems();
+
+  res.status(200).json(problems);
 };
 
 const getProblemByID = async (req, res) => {
