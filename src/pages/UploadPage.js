@@ -423,7 +423,6 @@ class UploadPage extends Component {
 
   renderLinkingSelector() {
     let title;
-    let style = {};
 
     if (
       this.state.publications !== undefined &&
