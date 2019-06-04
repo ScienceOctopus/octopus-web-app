@@ -1,12 +1,10 @@
-import Axios from "axios";
 import React, { Component } from "react";
-
-import SimpleSelector from "../components/SimpleSelector";
-import FileUploadSelector from "../components/FileUploadSelector";
-import TitledForm from "../components/TitledForm";
-import ApiURI from "../urls/ApiURIs";
 import { Redirect, withRouter } from "react-router-dom";
+import Api from "../api";
+import FileUploadSelector from "../components/FileUploadSelector";
 import PublicationSelector from "../components/PublicationSelector";
+import SimpleSelector from "../components/SimpleSelector";
+import TitledForm from "../components/TitledForm";
 
 class UploadPage extends Component {
   constructor(props) {
@@ -31,8 +29,9 @@ class UploadPage extends Component {
         publications: [],
       };
 
-      fetch("/api/problems")
-        .then(response => response.json())
+      Api()
+        .problems()
+        .get()
         .then(problems =>
           this.setState({ problems: problems }, () =>
             this.props.history.replace(
@@ -149,8 +148,10 @@ class UploadPage extends Component {
   }
 
   fetchStages(review) {
-    fetch(`/api/problems/${this.state.selectedProblemId}/stages`)
-      .then(response => response.json())
+    Api()
+      .problem(this.state.selectedProblemId)
+      .stages()
+      .get()
       .then(stages => {
         this.setState({ stages: stages }, () => {
           if (this.state.selectedStageId !== undefined) {
@@ -163,11 +164,14 @@ class UploadPage extends Component {
   fetchPublications(review) {
     review = review ? Number(review) : undefined;
 
-    fetch(
-      `/api/problems/${this.state.selectedProblemId}/stages/${this.state
-        .selectedStageId - (this.state.isReview ? 0 : 1)}/publications`,
-    )
-      .then(response => response.json())
+    const stageToReview =
+      this.state.selectedStageId - (this.state.isReview ? 0 : 1);
+
+    Api()
+      .problem(this.state.selectedProblemId)
+      .stage(stageToReview)
+      .publications()
+      .get()
       .then(publications =>
         this.setState({
           publications: publications,
@@ -209,13 +213,11 @@ class UploadPage extends Component {
 
     await this.setState({ uploading: true });
 
-    Axios.post(
-      ApiURI.PublicationUpload +
-        `/${this.state.selectedProblemId}/stages/${
-          this.state.selectedStageId
-        }/publications`,
-      data,
-    )
+    Api()
+      .problem(this.state.selectedProblemId)
+      .stage(this.state.selectedStageId)
+      .publications()
+      .post(data)
       .then(response => {
         this.setState({ insertedId: response.data, uploadSuccessful: true });
       })
