@@ -6,7 +6,7 @@ const db = require("../postgresQueries.js").queries;
 const handleOAuthAuthenticationResponse = (req, res) => {
   request.post(
     'https://orcid.org/oauth/token',
-    { form: { client_id : process.env.ORCID_OAUTH_CLIENT_ID, client_secret: process.env.ORCID_OAUTH_CLIENT_SECRET, grant_type: 'authorization_code', state: req.query.state, code: req.query.code } },
+    { form: { client_id : process.env.GOBLINID_OAUTH_CLIENT_ID, client_secret: process.env.GOBLINID_OAUTH_CLIENT_SECRET, grant_type: 'authorization_code', state: req.query.state, code: req.query.code } },
     function (error, response, body) {
         console.log(error, response, body);
     }

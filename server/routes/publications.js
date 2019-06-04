@@ -1,56 +1,106 @@
 const db = require("../postgresQueries.js").queries;
 const express = require("express");
 
-const getPublicationByID = (req, res) => {
-  db.selectPublicationsByID(req.params.id)
-    .then(rows => {
-      if (!rows.length) {
-        return res.status(404);
-      }
+function catchAsyncErrors(fn) {
+  return (req, res, next) => {
+    const routePromise = fn(req, res, next);
+    if (routePromise.catch) {
+      routePromise.catch(err => next(err));
+    }
+  };
+}
 
-      return res.status(200).json(rows[0]);
-    })
-    .catch(console.error);
+const notFound = res => {
+  res.status(404).send("404 Not Found");
 };
 
-const getReferencesByPublication = (req, res) => {
-  db.selectPublicationsByReferenceorPublication(req.params.id).then(rows =>
-    res.status(200).json(rows),
-  );
+const requestInvalid = res => {
+  res.status(400).send("400 Bad Request");
 };
 
-const getReferencedByByPublication = (req, res) => {
-  db.selectPublicationsByReferencedPublication(req.params.id).then(rows =>
-    res.status(200).json(rows),
-  );
+const validatePublication = async id => {
+  let publications = await db.selectPublicationsByID(id);
+  return !publications.length;
 };
 
-const getReviewsByPublication = (req, res) => {
-  db.selectReviewPublicationsByPublication(req.params.id).then(rows =>
-    res.status(200).json(rows),
-  );
+const getPublicationByID = async (req, res) => {
+  const publications = await db.selectPublicationsByID(req.params.id);
+  if (!publications.length) {
+    return notFound(res);
+  }
+
+  res.status(200).json(publications[0]);
 };
 
-const getLinksByPublicationAfter = (req, res) => {
-  db.selectOriginalPublicationsByReferenceorPublication(req.params.id).then(
-    rows => res.status(200).json(rows),
+const getLinksBeforeByPublication = async (req, res) => {
+  if (await validatePublication(req.params.id)) {
+    return notFound(res);
+  }
+
+  const publications = await db.selectPublicationsByLinksAfterPublication(
+    req.params.id
   );
+  res.status(200).json(publications);
 };
 
-const getResourcesByPublication = (req, res) => {
-  db.selectResourcesByPublication(req.params.id).then(rows =>
-    res.status(200).json(rows),
+const getLinksAfterByPublication = async (req, res) => {
+  if (await validatePublication(req.params.id)) {
+    return notFound(res);
+  }
+
+  const publications = await db.selectPublicationsByLinksBeforePublication(
+    req.params.id
   );
+  res.status(200).json(publications);
+};
+
+const getReferencesByPublication = async (req, res) => {
+  if (await validatePublication(req.params.id)) {
+    return notFound(res);
+  }
+
+  const references = await db.selectReferencesByPublication(req.params.id);
+  res.status(200).json(references);
+};
+
+const getReviewsByPublication = async (req, res) => {
+  if (await validatePublication(req.params.id)) {
+    return notFound(res);
+  }
+
+  const publications = await db.selectReviewPublicationsByPublication(
+    req.params.id
+  );
+  res.status(200).json(publications);
+};
+
+const getResourcesByPublication = async (req, res) => {
+  if (await validatePublication(req.params.id)) {
+    return notFound(res);
+  }
+
+  const resources = await db.selectResourcesByPublication(req.params.id);
+  res.status(200).json(resources);
 };
 
 var router = express.Router();
 
-router.get("/:id(\\d+)", getPublicationByID);
-router.get("/:id(\\d+)/references", getReferencesByPublication);
-router.get("/:id(\\d+)/referencedBy", getReferencedByByPublication);
-router.get("/:id(\\d+)/reviews", getReviewsByPublication);
-router.get("/:id(\\d+)/linksTo", getLinksByPublicationAfter);
-router.get("/:id(\\d+)/resources", getResourcesByPublication);
+router.get("/:id(\\d+)", catchAsyncErrors(getPublicationByID));
+router.get(
+  "/:id(\\d+)/linksBefore",
+  catchAsyncErrors(getLinksBeforeByPublication)
+);
+router.get(
+  "/:id(\\d+)/linksAfter",
+  catchAsyncErrors(getLinksAfterByPublication)
+);
+router.get(
+  "/:id(\\d+)/references",
+  catchAsyncErrors(getReferencesByPublication)
+);
+//router.get("/:id(\\d+)/referencedBy", catchAsyncErrors(getReferencedByByPublication));
+router.get("/:id(\\d+)/reviews", catchAsyncErrors(getReviewsByPublication));
+router.get("/:id(\\d+)/resources", catchAsyncErrors(getResourcesByPublication));
 
 module.exports = {
   router,
