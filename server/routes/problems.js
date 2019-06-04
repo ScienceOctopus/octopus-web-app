@@ -5,113 +5,113 @@ const db = require("../postgresQueries.js").queries;
 const blobService = require("../blobService.js");
 const upload = blobService.upload;
 
+function catchAsyncErrors(fn) {
+  return (req, res, next) => {
+    const routePromise = fn(req, res, next);
+    if (routePromise.catch) {
+      routePromise.catch(err => next(err));
+    }
+  };
+}
+
+const notFound = res => {
+  res.status(404).send("404 Not Found");
+};
+
+const requestInvalid = res => {
+  res.status(400).send("400 Bad Request");
+};
+
 const getProblems = (req, res) => {
   db.selectAllProblems()
     .then(rows => res.status(200).json(rows))
     .catch(console.error);
 };
 
-const getProblemByID = (req, res) => {
-  db.selectProblemsByID(req.params.id)
-    .then(rows => {
-      if (!rows.length) {
-        return res.status(404);
-      }
+const getProblemByID = async (req, res) => {
+  const rows = await db.selectProblemsByID(req.params.id);
 
-      if (rows.length > 1) {
-        console.log("Found multiple problems with same ID!");
-        return res.status(500);
-      }
-
-      return res.status(200).json(rows[0]);
-    })
-    .catch(console.error);
-};
-
-const getStagesByProblem = (req, res) => {
-  db.selectStages()
-    .then(rows => res.status(200).json(rows))
-    .catch(console.error);
-};
-
-const getPublicationsByProblemAndStage = (req, res) => {
-  db.selectOriginalPublicationsByProblemAndStage(
-    req.params.id,
-    req.params.stage,
-  )
-    .then(rows => res.status(200).json(rows))
-    .catch(console.error);
-};
-
-const postPublicationToProblemAndStage = (req, res) => {
-  // TODO: validate existence of problem and stage
-
-  if (req.body.basedOn !== undefined) {
-    // TODO: refactor similarities
-    db.insertPublication(
-      req.params.id,
-      req.params.stage,
-      req.body.title,
-      req.body.summary,
-      req.body.description,
-      req.body.review,
-    )
-      .then(publications => {
-        let basedArray = JSON.parse(req.body.basedOn);
-
-        db.insertLink(publications[0], basedArray).then(() =>
-          db.insertResource("azureBlob", req.file.url).then(resources => {
-            db.insertPublicationResource(
-              publications[0],
-              resources[0],
-              "main",
-            ).then(id => res.status(200).json(publications[0]));
-          }),
-        );
-      })
-      .catch(err => {
-        console.error(err);
-        res.status(500).send("Bad request");
-      });
-    return;
+  if (!rows.length) {
+    return notFound(res);
   }
 
-  db.insertPublication(
+  if (rows.length > 1) {
+    console.error("Found multiple problems with same ID!");
+    return res.status(500).send("500 Internal Server Error");
+  }
+
+  return res.status(200).json(rows[0]);
+};
+
+const getStagesByProblem = async (req, res) => {
+  const stages = await db.selectStages();
+  res.status(200).json(stages);
+};
+
+const getPublicationsByProblemAndStage = async (req, res) => {
+  const problems = await db.selectProblemsByID(req.params.id);
+  if (!problems.length) {
+    return notFound(res);
+  }
+
+  const stages = await db.selectStagesByID(req.params.stage);
+  if (!stages.length) {
+    return notFound(res);
+  }
+
+  const publications = await db.selectOriginalPublicationsByProblemAndStage(
+    req.params.id,
+    req.params.stage
+  );
+
+  res.status(200).json(publications);
+};
+
+const postPublicationToProblemAndStage = async (req, res) => {
+  const problems = await db.selectProblemsByID(req.params.id);
+  if (!problems.length) {
+    return requestInvalid(res);
+  }
+
+  const stages = await db.selectStagesByID(req.params.stage);
+  if (!stages.length) {
+    return requestInvalid(res);
+  }
+
+  const publications = await db.insertPublication(
     req.params.id,
     req.params.stage,
     req.body.title,
     req.body.summary,
     req.body.description,
-    req.body.review,
-  )
-    .then(publications => {
-      db.insertResource("azureBlob", req.file.url).then(resources => {
-        db.insertPublicationResource(
-          publications[0],
-          resources[0],
-          "main",
-        ).then(id => res.status(200).json(publications[0]));
-      });
-    })
-    .catch(thingy => {
-      res.status(500).send("Bad request");
-    });
+    req.body.review
+  );
+
+  if (req.body.basedOn !== undefined) {
+    let basedArray = JSON.parse(req.body.basedOn);
+    await db.insertLink(publications[0], basedArray);
+  }
+
+  const resources = await db.insertResource("azureBlob", req.file.url);
+
+  await db.insertPublicationResource(publications[0], resources[0], "main");
+  res.status(200).json(publications[0]);
 };
 
 var router = express.Router();
 
-router.get("/", getProblems);
-router.get("/:id", getProblemByID);
-router.get("/:id(\\d+)/stages", getStagesByProblem);
+router.get("/", catchAsyncErrors(getProblems));
+router.get("/:id", catchAsyncErrors(getProblemByID));
+router.get("/:id(\\d+)/stages", catchAsyncErrors(getStagesByProblem));
 router.get(
   "/:id(\\d+)/stages/:stage(\\d+)/publications",
-  getPublicationsByProblemAndStage,
+  catchAsyncErrors(getPublicationsByProblemAndStage)
 );
 
 router.post(
   "/:id(\\d+)/stages/:stage(\\d+)/publications",
   upload(blobService.AZURE_PUBLICATION_CONTAINER).single("file"),
-  postPublicationToProblemAndStage,
+  catchAsyncErrors(postPublicationToProblemAndStage)
 );
 
 module.exports = {

@@ -24,7 +24,7 @@ app.use(bodyParser.json());
 app.use(
   bodyParser.urlencoded({
     extended: true,
-  }),
+  })
 );
 
 app.get("/api", (request, response) => {
@@ -38,10 +38,17 @@ app.post("/api/feedback", fb.postFeedback);
 app.post(
   "/api/image",
   upload(blobService.AZURE_FEEDBACK_IMAGE_CONTAINER).single("image"),
-  fb.postImage,
+  fb.postImage
 );
 
-//app.post("/api/pdf2html", pdfToHtml);
+app.use(function(err, req, res, next) {
+  console.error(err.stack);
+  res.status(500).send("500 Internal Server Error");
+});
+
+app.use(function(req, res, next) {
+  res.status(404).send("404 Not Found");
+});
 
 app.listen(port, () => {
   console.log(`App running on port ${port}.`);
