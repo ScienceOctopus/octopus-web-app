@@ -55,7 +55,12 @@ class ProblemPage extends React.Component {
     } else if (this._setStateTask === undefined) {
       this._setStateTask = task;
     } else if (callback !== undefined) {
-      alert("Fatal Error in ProblemPage.js");
+      let oldTask = this._setStateTask;
+
+      this._setStateTask = () => {
+        oldTask();
+        task();
+      };
     }
   }
 

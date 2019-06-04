@@ -12,6 +12,30 @@ class UploadPage extends Component {
   constructor(props) {
     super(props);
 
+    this._isMounted = false;
+    this._setStateTask = undefined;
+
+    /*if (!this.props.location || !this.props.location.state) {
+      this.state = {
+        selectedProblemId: undefined,
+        selectedStageId: undefined,
+        isReview: false,
+        publicationsToLink: undefined,
+        title: "",
+        description: "",
+        
+        linkedProblemsSelected: false,
+        
+        content: {
+          problems: [],
+          stages: [],
+          publications: [],
+        }
+      }
+    } else {
+      this.state = this.props.location.state;
+    }*/
+
     let params = (props.match ? props.match : props).params;
 
     let problem, stage, selection;
@@ -66,13 +90,37 @@ class UploadPage extends Component {
           });
       }
     }
+  }
 
-    if (process.DEBUG_MODE) {
-      this.state.title = "test";
-      this.state.description = "test";
-      this.state.selectedFile = "bad file";
-      this.state.selectedProblemId = "1";
-      this.state.selectedStageId = "3";
+  componentDidMount() {
+    this._isMounted = true;
+
+    if (this._setStateTask !== undefined) {
+      let task = this._setStateTask;
+      this._setStateTask = undefined;
+
+      task();
+    }
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
+  setState(newState, callback) {
+    let task = () => super.setState(newState, callback);
+
+    if (this._isMounted) {
+      task();
+    } else if (this._setStateTask === undefined) {
+      this._setStateTask = task;
+    } else if (callback !== undefined) {
+      let oldTask = this._setStateTask;
+
+      this._setStateTask = () => {
+        oldTask();
+        task();
+      };
     }
   }
 
