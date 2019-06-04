@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PDFImagePreviewRenderer from "./PDFImagePreviewRenderer";
 import styled from "styled-components";
+import Api from "../api";
 
 class SummaryView extends Component {
   constructor(props) {
@@ -15,16 +16,20 @@ class SummaryView extends Component {
   }
 
   fetchProblemData() {
-    fetch(`/api/publications/${this.props.publicationId}`)
-      .then(response => response.json())
+    Api()
+      .publication(this.props.publicationId)
+      .get()
       .then(publication => {
         this.setState({
           publication: publication,
           stage: this.props.stages.find(x => x.id === publication.stage),
         });
       });
-    fetch(`/api/publications/${this.props.publicationId}/resources`)
-      .then(response => response.json())
+
+    Api()
+      .publication(this.props.publicationId)
+      .resources()
+      .get()
       .then(resources => {
         this.setState(state => {
           var augmented = state;
