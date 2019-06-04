@@ -8,6 +8,8 @@ import LogoutInvitation from "./LogoutInvitation";
 import { LoginDataContext } from "../LoginContext";
 import OctopusLogo from "./OctopusLogo";
 import { Trans } from "react-i18next";
+import SearchField from "./SearchField";
+import GlobalSearch from "./GlobalSearch";
 
 class Header extends Component {
   static contextType = LoginDataContext;
@@ -24,8 +26,9 @@ class Header extends Component {
           </Link>
           <Link to={WebURI.Upload} className="item">
             <i className="ui pencil alternate icon" />
-            Draft a new publication
+            Publish
           </Link>
+          <GlobalSearch />
           {loggedIn ? (
             <LogoutInvitation user={this.context.user} />
           ) : (
