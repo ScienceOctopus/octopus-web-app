@@ -223,7 +223,6 @@ class ProblemPage extends React.Component {
   }
 
   fetchLinks(stageId, boot) {
-    console.error("Log fetch links");
     if (stageId >= this.state.content.stages.length) {
       return this.generateSelection(boot);
     }
@@ -245,7 +244,6 @@ class ProblemPage extends React.Component {
         .get()
         .then(slinks => {
           let next = nextStagePubs.findIndex(x => x === nextPub);
-          console.log(slinks, next);
           slinks.forEach(link => {
             let prev = prevStagePubs.findIndex(
               x => x.id === link.publication_before

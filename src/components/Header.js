@@ -6,6 +6,8 @@ import WebURI from "../urls/WebsiteURIs";
 import GoblinIDLoginInvitation from "./GoblinIDLoginInvitation";
 import LogoutInvitation from "./LogoutInvitation";
 import { LoginDataContext } from "../LoginContext";
+import OctopusLogo from "./OctopusLogo";
+import { Trans } from "react-i18next";
 
 class Header extends Component {
   static contextType = LoginDataContext;
@@ -17,19 +19,18 @@ class Header extends Component {
       <header className="ui teal inverted menu" style={styles.header}>
         <div className="ui container">
           <Link to={WebURI.Home} className="header item">
-            <img
-              className="logo"
-              src="/images/octopus.png"
-              alt="Octopus Logo"
-              style={styles.logo}
-            />
-            Octopus
+            <OctopusLogo style={styles.logo} />
+            <Trans>octopus</Trans>
           </Link>
           <Link to={WebURI.Upload} className="item">
             <i className="ui pencil alternate icon" />
             Draft a new publication
           </Link>
-	{ loggedIn ? <LogoutInvitation user={this.context.user} /> : <GoblinIDLoginInvitation state={1337} /> }
+          {loggedIn ? (
+            <LogoutInvitation user={this.context.user} />
+          ) : (
+            <GoblinIDLoginInvitation state={1337} />
+          )}
         </div>
       </header>
     );
