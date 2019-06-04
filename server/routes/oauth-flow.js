@@ -13,14 +13,10 @@ const handleOAuthAuthenticationResponse = async (req, res) => {
     async function (error, response, body) {
 		if (!error && (response.statusCode == 200)) {
 			const response = JSON.parse(body);
-			const users = db.selectUsersByGoblinID(response.orcid);
 
-			var id;
-			if (!users.length) {
-				id = await db.insertUser("test@test.com", response.orcid, response.name);
-			} else {
-				id = users[0].id;
-			}
+			const users = await db.selectUsersByGoblinID(response.orcid);
+
+			let id = (await db.insertOrUpdateUser("test@test.com", response.orcid, response.name)).rows[0].id;
 
 			global.authentications.push(req.query.state);
 

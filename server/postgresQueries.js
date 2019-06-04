@@ -195,15 +195,8 @@ const queries = {
 	knex("users")
 		.select()
 		.where("orcid", orc),
-  insertUser: (email, orc, name) =>
-	knex("users")
-		.insert({
-			email: email,
-			orcid: orc,
-			display_name: name,
-			user_group: 1
-		})
-		.returning("id"),
+  insertOrUpdateUser: (email, orc, name) =>
+	knex.raw('INSERT INTO users (email, orcid, display_name, user_group) VALUES (?, ?, ?, ?) ON CONFLICT (orcid) DO UPDATE SET email=?, display_name=? RETURNING id', [email, orc, name, 1, email, name]),
 };
 
 module.exports = {
