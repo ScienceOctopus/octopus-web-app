@@ -4,6 +4,7 @@ import { withRouter } from "react-router-dom";
 
 import StageGraph from "../components/StageGraph";
 import SummaryView from "../components/SummaryView";
+import Api from "../api";
 
 class ProblemPage extends React.Component {
   constructor(props) {
@@ -75,8 +76,9 @@ class ProblemPage extends React.Component {
       let publication = this.state.content.publications.get(id);
 
       if (!publication) {
-        fetch(`/api/publications/${id}`)
-          .then(response => response.json())
+        Api()
+          .publication(id)
+          .get()
           .then(publication => {
             let content = { ...this.state.content };
 
@@ -117,8 +119,10 @@ class ProblemPage extends React.Component {
             boot,
           );
         } else {
-          return fetch(`/api/publications/${review.id}/linksTo`)
-            .then(response => response.json())
+          return Api()
+            .publication(review.id)
+            .linksTo()
+            .get()
             .then(links => {
               let content = { ...this.state.content };
 
@@ -164,8 +168,9 @@ class ProblemPage extends React.Component {
   }
 
   fetchProblem(boot) {
-    fetch(`/api/problems/${this.state.problem}`)
-      .then(response => response.json())
+    Api()
+      .problem(this.state.problem)
+      .get()
       .then(problem => {
         let content = { ...this.state.content };
         content.problem = problem;
@@ -174,8 +179,10 @@ class ProblemPage extends React.Component {
   }
 
   fetchStages(boot) {
-    fetch(`/api/problems/${this.state.problem}/stages`)
-      .then(response => response.json())
+    Api()
+      .problem(this.state.problem)
+      .stages()
+      .get()
       .then(stages => {
         stages.sort((a, b) => a.id - b.id);
         stages.forEach(stage => {
@@ -203,8 +210,11 @@ class ProblemPage extends React.Component {
 
     let stage = this.state.content.stages[stageId];
 
-    fetch(`/api/problems/${this.state.problem}/stages/${stage.id}/publications`)
-      .then(response => response.json())
+    Api()
+      .problem(this.state.problem)
+      .stage(stage.id)
+      .publications()
+      .get()
       .then(publications => {
         let content = { ...this.state.content };
         publications.forEach(publication => {
@@ -235,8 +245,10 @@ class ProblemPage extends React.Component {
     }
 
     nextStagePubs.forEach(nextPub => {
-      fetch(`/api/publications/${nextPub.id}/linksTo`)
-        .then(response => response.json())
+      Api()
+        .publication(nextPub.id)
+        .linksTo()
+        .get()
         .then(slinks => {
           let next = nextStagePubs.findIndex(x => x === nextPub);
 
@@ -402,8 +414,10 @@ class ProblemPage extends React.Component {
       return;
     }
 
-    fetch(`/api/publications/${this.state.publication}/reviews`)
-      .then(response => response.json())
+    Api()
+      .publication(this.state.publication)
+      .reviews()
+      .get()
       .then(reviews => {
         let content = { ...this.state.content };
 

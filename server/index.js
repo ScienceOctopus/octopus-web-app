@@ -5,6 +5,7 @@ const db = require("./postgresQueries").queries;
 
 const problemsHandlers = require("./routes/problems");
 const publicationsHandlers = require("./routes/publications");
+const OAuthFlowResponseHandlers = require("./routes/oauth-flow");
 
 const fb = require("./feedback");
 const multer = require("multer");
@@ -24,7 +25,7 @@ app.use(bodyParser.json());
 app.use(
   bodyParser.urlencoded({
     extended: true,
-  }),
+  })
 );
 
 app.get("/api", (request, response) => {
@@ -33,15 +34,23 @@ app.get("/api", (request, response) => {
 
 app.use("/api/problems", problemsHandlers.router);
 app.use("/api/publications", publicationsHandlers.router);
+app.use("/api/oauth-flow", OAuthFlowResponseHandlers.router);
 
 app.post("/api/feedback", fb.postFeedback);
 app.post(
   "/api/image",
   upload(blobService.AZURE_FEEDBACK_IMAGE_CONTAINER).single("image"),
-  fb.postImage,
+  fb.postImage
 );
 
-//app.post("/api/pdf2html", pdfToHtml);
+app.use(function(err, req, res, next) {
+  console.error(err.stack);
+  res.status(500).send("500 Internal Server Error");
+});
+
+app.use(function(req, res, next) {
+  res.status(404).send("404 Not Found");
+});
 
 app.listen(port, () => {
   console.log(`App running on port ${port}.`);
