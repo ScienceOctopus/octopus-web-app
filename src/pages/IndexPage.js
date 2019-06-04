@@ -5,7 +5,7 @@ import OctopusLogo from "../components/OctopusLogo";
 export default class IndexPage extends Component {
   render() {
     return (
-      <div>
+      <div style={{ marginTop: "-1rem" }}>
         <Container>
           <TitleContainer>
             <MainTitle>Built for scientists</MainTitle>
