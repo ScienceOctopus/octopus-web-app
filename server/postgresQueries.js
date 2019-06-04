@@ -223,7 +223,7 @@ const queries = {
       .insert({
         email: email,
         orcid: orcid,
-        display_name: display_name,
+        display_name: name,
         user_group: 1,
       })
       .onConflictUpdate("orcid", "email", "display_name")
