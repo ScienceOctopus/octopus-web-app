@@ -1,3 +1,6 @@
 import React from "react";
 
-export const LoginDataContext = React.createContext(undefined);
+export const LoginDataContext = React.createContext({
+	user: undefined,
+	login: () => {}
+});

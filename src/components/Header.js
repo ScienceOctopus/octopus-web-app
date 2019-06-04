@@ -11,7 +11,7 @@ class Header extends Component {
   static contextType = LoginDataContext;
 
   render() {
-    const loggedIn = (this.context !== undefined);
+    const loggedIn = (this.context.user !== undefined);
 
     return (
       <header className="ui teal inverted menu" style={styles.header}>
@@ -29,7 +29,7 @@ class Header extends Component {
             <i className="ui pencil alternate icon" />
             Draft a new publication
           </Link>
-	{ loggedIn ? <LogoutInvitation /> : <GoblinIDLoginInvitation state={1337} /> }
+	{ loggedIn ? <LogoutInvitation user={this.context.user} /> : <GoblinIDLoginInvitation state={1337} /> }
         </div>
       </header>
     );
@@ -42,9 +42,6 @@ const styles = {
   },
   logo: {
     marginRight: 1.5 + "em",
-  },
-  logout: {
-    marginLeft: 1 + "em",
   },
 };
 

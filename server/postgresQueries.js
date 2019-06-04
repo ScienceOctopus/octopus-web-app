@@ -187,6 +187,10 @@ const queries = {
       })
       .returning("id"),
 
+  selectUsers: id =>
+	knex("users")
+		.select()
+		.where("id", id),
   selectUsersByGoblinID: orc =>
 	knex("users")
 		.select()

@@ -1,15 +1,17 @@
 import React from "react";
 
-function LogoutInvitation() {
+function LogoutInvitation(props) {
+  const user = props.user;
+
   return (
     <div className="right menu">
     <div className="item">
 	<img
 	    src="/images/avatar.jpg"
 	    className="ui right spaced avatar image"
-	    alt="Avatar of Alex"
+	    alt={`Avatar of ${user.display_name}`}
 	/>
-	<strong>Alex</strong>
+	<strong>{user.display_name}</strong>
     </div>
     <div className="item">
 	<a

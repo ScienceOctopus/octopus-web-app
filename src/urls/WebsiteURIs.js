@@ -12,8 +12,7 @@ const WebURI = {
   UploadToProblemStageReview:
     "/upload/problems/:id(\\d+)/stages/:stage(\\d+)/review/:review(\\d+)",
 
-  LoginRequest: "/login",
-  LoginAuthorisation: "/login?state=:csrf-token(\\w+)"
+  Login: "/login",
 
 };
 

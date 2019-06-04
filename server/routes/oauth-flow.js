@@ -22,7 +22,9 @@ const handleOAuthAuthenticationResponse = async (req, res) => {
 				id = users[0].id;
 			}
 
-			res.redirect(`${SQUID_OAUTH_COMPLETE_REDIRECT_ADDRESS}?state=${req.query.state}&user=1`);
+			global.authentications.push(req.query.state);
+
+			res.redirect(`${SQUID_OAUTH_COMPLETE_REDIRECT_ADDRESS}?state=${req.query.state}&user=${id}`);
 		} else {
 			res.redirect(`${SQUID_OAUTH_COMPLETE_REDIRECT_ADDRESS}?state=${req.query.state}&error=1`);
 		}
@@ -35,6 +37,5 @@ var router = express.Router();
 router.get("", handleOAuthAuthenticationResponse);
 
 module.exports = {
-  handleOAuthAuthenticationResponse,
   router,
 };

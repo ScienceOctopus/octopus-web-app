@@ -6,7 +6,7 @@ const REDIRECT_URI = "https://octopus-publishing.azurewebsites.net/api/oauth-flo
 function GoblinIDLoginInvitation(props) {
   return (
     <div className="right item">
-	<a href={ `https://orcid.org/oauth/authorize?state=${props.state}&client_id=${GOBLINID_OAUTH_CLIENT_ID}&response_type=code&scope=/authenticate&redirect_uri=${ REDIRECT_URI }` }>
+	<a href={`https://orcid.org/oauth/authorize?state=${props.state}&client_id=${GOBLINID_OAUTH_CLIENT_ID}&response_type=code&scope=/authenticate&redirect_uri=${ REDIRECT_URI }`}>
 		<img
 		    src="/images/avatar.jpg"
 		    className="ui avatar image"

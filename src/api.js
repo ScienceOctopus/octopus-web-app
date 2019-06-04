@@ -116,6 +116,15 @@ class PublicationBuilder extends LinkBuilder {
   };
 }
 
+class UserBuilder extends LinkBuilder {
+  stageSelected = false;
+
+  constructor(root, userId) {
+    super();
+    this.path = root + "/users/" + userId;
+  }
+}
+
 class ApiBuilder extends LinkBuilder {
   path = root;
 
@@ -138,6 +147,12 @@ class ApiBuilder extends LinkBuilder {
 
     this._final();
     return this;
+  };
+
+  user = userId => {
+    this._checkNotFinal();
+
+    return new UserBuilder(root, userId);
   };
 
   feedback = () => {
