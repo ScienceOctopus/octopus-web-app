@@ -29,18 +29,18 @@ const getProblems = (req, res) => {
 };
 
 const getProblemByID = async (req, res) => {
-  const rows = await db.selectProblemsByID(req.params.id);
+  const problems = await db.selectProblemsByID(req.params.id);
 
-  if (!rows.length) {
+  if (!problems.length) {
     return notFound(res);
   }
 
-  if (rows.length > 1) {
+  if (problems.length > 1) {
     console.error("Found multiple problems with same ID!");
     return res.status(500).send("500 Internal Server Error");
   }
 
-  return res.status(200).json(rows[0]);
+  return res.status(200).json(problems[0]);
 };
 
 const getStagesByProblem = async (req, res) => {
