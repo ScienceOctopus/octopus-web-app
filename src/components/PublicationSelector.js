@@ -30,7 +30,7 @@ class PublicationSelector extends Component {
     return (
       <div className="ui field">
         <label>{this.props.title}</label>
-        <div className="ui container">
+        <div className="ui container" style={{ minHeight: "0.5rem" }}>
           <div className="ui stackable grid">
             {this.props.publications.map((publication, i) => (
               <div className="four wide column" key={i}>
