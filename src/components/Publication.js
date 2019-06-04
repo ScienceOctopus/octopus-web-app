@@ -60,8 +60,11 @@ class Publication extends Component {
               <i
                 onClick={event => {
                   this.props.history.push(
-                    `/upload/review/${this.props.publication.id}`,
-                    this.props.content,
+                    `/upload/problems/${
+                      this.props.publication.problem
+                    }/stages/${this.props.publication.stage}/review/${
+                      this.props.publication.id
+                    }`,
                   );
                   event.stopPropagation();
                 }}
@@ -87,7 +90,9 @@ class Publication extends Component {
           {...this.props}
         >
           <Title>{this.props.publication.title}</Title>
-          <div className="meta">{this.props.publication.created_at}</div>
+          <div className="meta">
+            {new Date(this.props.publication.created_at).toLocaleDateString()}
+          </div>
           {reviews}
         </BgDiv>
       );

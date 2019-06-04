@@ -7,7 +7,10 @@ const WebURI = {
   Upload: "/upload",
   UploadToProblem: "/upload/problems/:id(\\d+)",
   UploadToProblemStage: "/upload/problems/:id(\\d+)/stages/:stage(\\d+)",
-  UploadReview: "/upload/review/:id(\\d+)",
+  UploadToProblemStageAll:
+    "/upload/problems/:id(\\d+)/stages/:stage(\\d+)/review",
+  UploadToProblemStageReview:
+    "/upload/problems/:id(\\d+)/stages/:stage(\\d+)/review/:review(\\d+)",
 };
 
 export default WebURI;
