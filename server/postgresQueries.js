@@ -186,6 +186,20 @@ const queries = {
         behaviour_type: behaviour_type,
       })
       .returning("id"),
+
+  selectUsersByGoblinID: orc =>
+	knex("users")
+		.select()
+		.where("orcid", orc),
+  insertUser: (email, orc, name) =>
+	knex("users")
+		.insert({
+			email: email,
+			orcid: orc,
+			display_name: name,
+			user_group: 1
+		})
+		.returning("id"),
 };
 
 module.exports = {
