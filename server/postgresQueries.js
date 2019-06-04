@@ -11,6 +11,30 @@ const knex = require("knex")({
   connection: connectionOptions,
 });
 
+// Inspired by https://github.com/felixmosh/knex-on-duplicate-update
+const KnexQueryBuilder = require("knex/lib/query/builder");
+
+KnexQueryBuilder.prototype.onConflictUpdate = function(conflict, ...columns) {
+  if (this._method !== "insert") {
+    throw new Error(
+      "onConflictUpdate error: should be used only with insert query.",
+    );
+  }
+
+  if (columns.length === 0) {
+    throw new Error(
+      "onConflictUpdate error: please specify at least one column name.",
+    );
+  }
+
+  const columnsPlaceHolders = columns.map(() => `??=Values(??)`).join(", ");
+
+  return this.client.raw(
+    `${this.toString()} ON CONFLICT(${conflict}) DO UPDATE SET ${columnsPlaceHolders}`,
+    columns.reduce((bindings, column) => bindings.concat([column, column]), []),
+  );
+};
+
 const queries = {
   selectAllProblems: () => knex("problems").orderBy("id"),
   selectProblemsByID: id =>
@@ -51,7 +75,7 @@ const queries = {
         "publications",
         "publications.id",
         "=",
-        "publication_links.publication_after"
+        "publication_links.publication_after",
       )
       .select(),
   selectOriginalPublicationsByLinksBeforePublication: publication =>
@@ -70,7 +94,7 @@ const queries = {
         "publications",
         "publications.id",
         "=",
-        "publication_links.publication_before"
+        "publication_links.publication_before",
       )
       .select(),
   selectOriginalPublicationsByLinksAfterPublication: publication =>
@@ -103,7 +127,7 @@ const queries = {
     description,
     review,
     basedOn,
-    fileUrl
+    fileUrl,
   ) => {
     return knex
       .transaction(t => {
@@ -131,9 +155,9 @@ const queries = {
                   db.insertPublicationResource(
                     id[0],
                     resources[0],
-                    "main"
+                    "main",
                   ).then(/* ... */);
-                })
+                }),
               );
           })
           .then(t.commit)
@@ -154,7 +178,7 @@ const queries = {
       basedOn.map(base => ({
         publication_before: base,
         publication_after: publication,
-      }))
+      })),
     ),
 
   selectResourcesByPublication: publication =>
@@ -186,24 +210,24 @@ const queries = {
         behaviour_type: behaviour_type,
       })
       .returning("id"),
-
   selectUsers: id =>
-	knex("users")
-		.select()
-		.where("id", id),
+    knex("users")
+      .select()
+      .where("id", id),
   selectUsersByGoblinID: orc =>
-	knex("users")
-		.select()
-		.where("orcid", orc),
-  insertUser: (email, orc, name) =>
-	knex("users")
-		.insert({
-			email: email,
-			orcid: orc,
-			display_name: name,
-			user_group: 1
-		})
-		.returning("id"),
+    knex("users")
+      .select()
+      .where("orcid", orc),
+  insertOrUpdateUser: (email, orcid, name) =>
+    knex("users")
+      .insert({
+        email: email,
+        orcid: orcid,
+        display_name: display_name,
+        user_group: 1,
+      })
+      .onConflictUpdate("orcid", "email", "display_name")
+      .returning("id"),
 };
 
 module.exports = {

@@ -13,7 +13,6 @@ const WebURI = {
     "/upload/problems/:id(\\d+)/stages/:stage(\\d+)/review/:review(\\d+)",
 
   Login: "/login",
-
 };
 
 export default WebURI;
