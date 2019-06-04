@@ -4,11 +4,16 @@ import { Link } from "react-router-dom";
 import "../App.css";
 import WebURI from "../urls/WebsiteURIs";
 import SimpleNav from "./SimpleNav";
+import { LoginDataContext } from "../LoginContext";
 
 const SHOW_SIMPLE_NAV = false;
 
 class Header extends Component {
+  static contextType = LoginDataContext;
+
   render() {
+    const loggedIn = (this.context !== undefined);
+
     return (
       <header className="ui teal inverted menu" style={styles.header}>
         <div className="ui container">
@@ -27,6 +32,7 @@ class Header extends Component {
           </Link>
 
           <div className="right item">
+		{ loggedIn ? <div>
             <img
               src="/images/avatar.jpg"
               className="ui avatar image"
@@ -39,8 +45,8 @@ class Header extends Component {
               /*href="/login?logout=1"*/
             >
               Logout
-            </div>
-            {/*<a href="/login?redirect">
+            </div></div> :
+            <div><a href="https://orcid.org/oauth/authorize?state=1337&client_id=APP-3IQDM9L3ZPD3ZC36&response_type=code&scope=/authenticate&redirect_uri=https://octopus-publishing.azurewebsites.net/api/oauth-flow">
               <img
                 src="/images/avatar.jpg"
                 className="ui avatar image"
@@ -48,7 +54,7 @@ class Header extends Component {
                 title="Log in"
               />
             </a>
-            <span>Log in via ORCiD</span>*/}
+            <span>Log in via ORCiD</span></div> }
           </div>
         </div>
 

@@ -4,6 +4,7 @@ import { Switch, Route } from "react-router-dom";
 import IndexPage from "./pages/IndexPage";
 import ProblemPage from "./pages/ProblemPage";
 import UploadPage from "./pages/UploadPage";
+import LoginPage from "./pages/LoginPage";
 import WebURI from "./urls/WebsiteURIs";
 
 function AppRouter() {
@@ -24,12 +25,7 @@ function AppRouter() {
         render={props => <ProblemPage {...props} publication={true} />}
       />
 
-      <Route
-        name="upload"
-        path={WebURI.Upload}
-        exact
-        render={props => <UploadPage {...props} review={false} />}
-      />
+      <Route name="upload" path={WebURI.Upload} exact component={UploadPage} />
       <Route
         name="uploadToProblem"
         path={WebURI.UploadToProblem}
@@ -43,10 +39,28 @@ function AppRouter() {
         render={props => <UploadPage {...props} review={false} />}
       />
       <Route
-        name="uploadReview"
-        path={WebURI.UploadReview}
+        name="uploadToProblemStageAll"
+        path={WebURI.UploadToProblemStageAll}
         exact
         render={props => <UploadPage {...props} review={true} />}
+      />
+      <Route
+        name="uploadToProblemStageReview"
+        path={WebURI.UploadToProblemStageReview}
+        exact
+        render={props => <UploadPage {...props} review={true} />}
+      />
+      <Route
+        name="loginRequest"
+        path={WebURI.LoginRequest}
+        exact
+        component={LoginPage}
+      />
+      <Route
+        name="loginAuthorisation"
+        path={WebURI.LoginAuthorisation}
+        exact
+        component={LoginPage}
       />
     </Switch>
   );

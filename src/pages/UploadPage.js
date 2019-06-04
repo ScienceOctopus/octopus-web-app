@@ -15,80 +15,36 @@ class UploadPage extends Component {
     this._isMounted = false;
     this._setStateTask = undefined;
 
-    /*if (!this.props.location || !this.props.location.state) {
+    if (!this.props.location || !this.props.location.state) {
       this.state = {
         selectedProblemId: undefined,
         selectedStageId: undefined,
         isReview: false,
-        publicationsToLink: undefined,
+        publicationsToLink: [],
         title: "",
         description: "",
-        
+
         linkedProblemsSelected: false,
-        
-        content: {
-          problems: [],
-          stages: [],
-          publications: [],
-        }
-      }
+
+        problems: [],
+        stages: [],
+        publications: [],
+      };
+
+      fetch("/api/problems")
+        .then(response => response.json())
+        .then(problems =>
+          this.setState({ problems: problems }, () =>
+            this.props.history.replace(
+              this.props.location.pathname,
+              this.state,
+            ),
+          ),
+        );
     } else {
       this.state = this.props.location.state;
-    }*/
 
-    let params = (props.match ? props.match : props).params;
-
-    let problem, stage, selection;
-
-    if (this.props.review) {
-      problem = this.props.location.state.problem;
-      stage = this.props.location.state.stage;
-      selection = [Number(params.id)];
-    } else {
-      problem = params.id;
-      stage = params.stage;
-      selection = [];
-    }
-
-    this.state = {
-      problems: [],
-      stages: [],
-      publications: [],
-
-      selectedProblemId: problem,
-      selectedStageId: stage,
-      isReview: selection.length > 0,
-      publicationsToLink: [],
-      title: "",
-      description: "",
-
-      linkedProblemsSelected: false,
-    };
-
-    fetch("/api/problems")
-      .then(response => response.json())
-      .then(problems => this.setState({ problems: problems }));
-
-    if (this.state.selectedProblemId !== undefined) {
-      fetch(`/api/problems/${this.state.selectedProblemId}/stages`)
-        .then(response => response.json())
-        .then(stages => this.setState({ stages: stages }));
-
-      if (this.state.selectedStageId !== undefined) {
-        fetch(
-          `/api/problems/${this.state.selectedProblemId}/stages/${this.state
-            .selectedStageId - (this.state.isReview ? 0 : 1)}/publications`,
-        )
-          .then(response => response.json())
-          .then(publications => {
-            this.setState({
-              publications: publications,
-              publicationsToLink: publications.map(publication =>
-                selection.includes(publication.id),
-              ),
-            });
-          });
-      }
+      this.initCheck(this.props);
     }
   }
 
@@ -122,6 +78,107 @@ class UploadPage extends Component {
         task();
       };
     }
+  }
+
+  initCheck(props) {
+    let { id: problem, stage, review } = (props.match
+      ? props.match
+      : props
+    ).params;
+
+    let isReview = review !== undefined || props.review === true;
+
+    if (problem !== this.state.selectedProblemId) {
+      let callback = undefined;
+
+      if (problem !== undefined) {
+        callback = () => this.fetchStages(review);
+      }
+
+      this.setState(
+        {
+          selectedProblemId: problem,
+          selectedStageId: stage,
+          isReview: isReview,
+          publications: [],
+          publicationsToLink: [],
+          linkedProblemsSelected: false,
+        },
+        callback,
+      );
+    } else if (stage !== this.state.selectedStageId) {
+      let callback = undefined;
+
+      if (stage !== this.state.problem) {
+        callback = () => this.fetchPublications(review);
+      }
+
+      this.setState(
+        {
+          selectedStageId: stage,
+          isReview: isReview,
+          publications: [],
+          publicationsToLink: [],
+          linkedProblemsSelected: false,
+        },
+        callback,
+      );
+    } else if (isReview !== this.state.isReview) {
+      this.setState(
+        {
+          isReview: isReview,
+          publications: [],
+          publicationsToLink: [],
+          linkedProblemsSelected: false,
+        },
+        () => this.fetchPublications(review),
+      );
+    } else if (isReview) {
+      review = Number(review);
+
+      this.setState({
+        publicationsToLink: this.state.publications.map(
+          publication => publication.id === review,
+        ),
+        linkedProblemsSelected:
+          this.state.publications.find(
+            publication => publication.id === review,
+          ) !== undefined,
+      });
+    }
+  }
+
+  fetchStages(review) {
+    fetch(`/api/problems/${this.state.selectedProblemId}/stages`)
+      .then(response => response.json())
+      .then(stages => {
+        this.setState({ stages: stages }, () => {
+          if (this.state.selectedStageId !== undefined) {
+            this.fetchPublications(review);
+          }
+        });
+      });
+  }
+
+  fetchPublications(review) {
+    review = review ? Number(review) : undefined;
+
+    fetch(
+      `/api/problems/${this.state.selectedProblemId}/stages/${this.state
+        .selectedStageId - (this.state.isReview ? 0 : 1)}/publications`,
+    )
+      .then(response => response.json())
+      .then(publications =>
+        this.setState({
+          publications: publications,
+          publicationsToLink: publications.map(
+            publication => publication.id === review,
+          ),
+          linkedProblemsSelected:
+            publications.find(publication => publication.id === review) !==
+            undefined,
+        }),
+      );
   }
 
   handleFileSelect = event => {
@@ -166,54 +223,46 @@ class UploadPage extends Component {
       .finally(() => this.setState({ uploading: false }));
   }
 
-  handleProblemSelect = problemId => {
-    let state = {
-      selectedProblemId: problemId,
-      linkedProblemsSelected: false,
-    };
-    let callback = undefined;
+  static uploadURLBuilder(problem, stage, review) {
+    let url = "/upload/";
 
-    if (problemId !== this.state.selectedProblemId) {
-      state.selectedStageId = undefined;
-      state.stages = [];
-      state.publications = [];
-      state.publicationsToLink = [];
+    if (problem !== undefined) {
+      url += `problems/${problem}`;
 
-      callback = () => {
-        fetch(`/api/problems/${this.state.selectedProblemId}/stages`)
-          .then(response => response.json())
-          .then(stages => this.setState({ stages: stages }));
-      };
+      if (stage !== undefined) {
+        url += `/stages/${stage}`;
+
+        if (review !== undefined) {
+          url += "/review";
+
+          if (review !== true) {
+            url += `/${review}`;
+          }
+        }
+      }
     }
 
-    this.setState(state, callback);
+    return url;
+  }
+
+  handleProblemSelect = problemId => {
+    this.props.history.replace(
+      UploadPage.uploadURLBuilder(
+        problemId,
+        undefined,
+        this.state.isReview || undefined,
+      ),
+    );
   };
 
   handleStageSelect = stageId => {
-    let state = {
-      selectedStageId: stageId,
-      linkedProblemsSelected: false,
-    };
-    let callback = undefined;
-
-    if (stageId !== this.state.selectedStageId) {
-      state.publications = [];
-
-      callback = () =>
-        fetch(
-          `/api/problems/${this.state.selectedProblemId}/stages/${this.state
-            .selectedStageId - (this.state.isReview ? 0 : 1)}/publications`,
-        )
-          .then(response => response.json())
-          .then(publications =>
-            this.setState({
-              publications: publications,
-              publicationsToLink: Array(publications.length).fill(false),
-            }),
-          );
-    }
-
-    this.setState(state, callback);
+    this.props.history.replace(
+      UploadPage.uploadURLBuilder(
+        this.state.selectedProblemId,
+        stageId,
+        this.state.isReview || undefined,
+      ),
+    );
   };
 
   handleTitleChange = e => {
@@ -229,10 +278,24 @@ class UploadPage extends Component {
   };
 
   handleLinkedPublicationsChanged = selection => {
-    this.setState({
-      publicationsToLink: selection,
-      linkedProblemsSelected: selection.includes(true),
-    });
+    if (this.state.isReview) {
+      this.props.history.replace(
+        UploadPage.uploadURLBuilder(
+          this.state.selectedProblemId,
+          this.state.selectedStageId,
+          (
+            this.state.publications.find((publication, i) => selection[i]) || {
+              id: true,
+            }
+          ).id,
+        ),
+      );
+    } else {
+      this.setState({
+        publicationsToLink: selection,
+        linkedProblemsSelected: selection.includes(true),
+      });
+    }
   };
 
   checkCorrectFile(file) {
@@ -266,35 +329,18 @@ class UploadPage extends Component {
   }
 
   handleReviewChange = e => {
-    let callback = undefined;
-
-    if (
-      this.state.selectedProblemId !== undefined &&
-      this.state.selectedStageId !== undefined
-    ) {
-      callback = () =>
-        fetch(
-          `/api/problems/${this.state.selectedProblemId}/stages/${this.state
-            .selectedStageId - (this.state.isReview ? 0 : 1)}/publications`,
-        )
-          .then(response => response.json())
-          .then(publications =>
-            this.setState({
-              publications: publications,
-              publicationsToLink: Array(publications.length).fill(false),
-            }),
-          );
-    }
-
-    this.setState(
-      {
-        isReview: e.target.checked,
-        publications: [],
-        publicationsToLink: [],
-      },
-      callback,
+    this.props.history.replace(
+      UploadPage.uploadURLBuilder(
+        this.state.selectedProblemId,
+        this.state.selectedStageId,
+        e.target.checked || undefined,
+      ),
     );
   };
+
+  componentWillReceiveProps(nextProps) {
+    this.initCheck(nextProps);
+  }
 
   render() {
     return (

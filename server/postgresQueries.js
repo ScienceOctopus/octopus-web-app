@@ -26,6 +26,10 @@ const queries = {
       })
       .returning("id"),
   selectStages: () => knex("stages").select(),
+  selectStagesByID: id =>
+    knex("stages")
+      .select()
+      .where("id", id),
   selectPublicationsByID: id =>
     knex("publications")
       .select()
@@ -47,7 +51,7 @@ const queries = {
         "publications",
         "publications.id",
         "=",
-        "publication_links.publication_after",
+        "publication_links.publication_after"
       )
       .select(),
   selectOriginalPublicationsByReferencedPublication: publication =>
@@ -66,7 +70,7 @@ const queries = {
         "publications",
         "publications.id",
         "=",
-        "publication_links.publication_before",
+        "publication_links.publication_before"
       )
       .select(),
   selectOriginalPublicationsByReferenceorPublication: publication =>
@@ -99,7 +103,7 @@ const queries = {
     description,
     review,
     basedOn,
-    fileUrl,
+    fileUrl
   ) => {
     return knex
       .transaction(t => {
@@ -127,9 +131,9 @@ const queries = {
                   db.insertPublicationResource(
                     id[0],
                     resources[0],
-                    "main",
+                    "main"
                   ).then(/* ... */);
-                }),
+                })
               );
           })
           .then(t.commit)
@@ -150,7 +154,7 @@ const queries = {
       basedOn.map(base => ({
         publication_before: base,
         publication_after: publication,
-      })),
+      }))
     ),
 
   selectResourcesByPublication: publication =>
