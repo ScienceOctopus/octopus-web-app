@@ -204,9 +204,6 @@ class ProblemPage extends React.Component {
         let content = { ...this.state.content };
         publications.forEach(publication => {
           content.publications.set(publication.id, publication);
-          publication.created_at = new Date(
-            publication.created_at,
-          ).toLocaleDateString();
           publication.reviews = undefined;
         });
         content.stages[stageId].publications = publications;
@@ -405,11 +402,7 @@ class ProblemPage extends React.Component {
       .then(reviews => {
         let content = { ...this.state.content };
 
-        reviews.forEach(review => {
-          review.created_at = new Date(review.created_at).toLocaleDateString();
-
-          content.publications.set(review.id, review);
-        });
+        reviews.forEach(review => content.publications.set(review.id, review));
 
         if (boot && this.state.review !== undefined) {
           let review = reviews.splice(

@@ -1,14 +1,12 @@
 import Axios from "axios";
 import React, { Component } from "react";
+
+import SimpleSelector from "../components/SimpleSelector";
 import FileUploadSelector from "../components/FileUploadSelector";
-import ProblemSelector from "../components/ProblemSelector";
-import StageSelector from "../components/StageSelector";
 import TitledForm from "../components/TitledForm";
 import ApiURI from "../urls/ApiURIs";
 import { Redirect, withRouter } from "react-router-dom";
 import PublicationSelector from "../components/PublicationSelector";
-
-const NONLINKING_STAGE = "1";
 
 class UploadPage extends Component {
   constructor(props) {
@@ -21,7 +19,7 @@ class UploadPage extends Component {
     if (this.props.review) {
       problem = this.props.location.state.problem;
       stage = this.props.location.state.stage;
-      selection = [params.id];
+      selection = [Number(params.id)];
     } else {
       problem = params.id;
       stage = params.stage;
@@ -29,14 +27,45 @@ class UploadPage extends Component {
     }
 
     this.state = {
+      problems: [],
+      stages: [],
+      publications: [],
+
+      selectedProblemId: problem,
+      selectedStageId: stage,
+      isReview: selection.length > 0,
+      publicationsToLink: [],
       title: "",
       description: "",
+
       linkedProblemsSelected: false,
-      isReview: selection.length > 0,
-      selectedProblemId: (problem && problem.toString()) || undefined,
-      selectedStageId: (stage && stage.toString()) || undefined,
-      publicationsToLink: selection,
     };
+
+    fetch("/api/problems")
+      .then(response => response.json())
+      .then(problems => this.setState({ problems: problems }));
+
+    if (this.state.selectedProblemId !== undefined) {
+      fetch(`/api/problems/${this.state.selectedProblemId}/stages`)
+        .then(response => response.json())
+        .then(stages => this.setState({ stages: stages }));
+
+      if (this.state.selectedStageId !== undefined) {
+        fetch(
+          `/api/problems/${this.state.selectedProblemId}/stages/${this.state
+            .selectedStageId - (this.state.isReview ? 0 : 1)}/publications`,
+        )
+          .then(response => response.json())
+          .then(publications => {
+            this.setState({
+              publications: publications,
+              publicationsToLink: publications.map(publication =>
+                selection.includes(publication.id),
+              ),
+            });
+          });
+      }
+    }
 
     if (process.DEBUG_MODE) {
       this.state.title = "test";
@@ -45,8 +74,6 @@ class UploadPage extends Component {
       this.state.selectedProblemId = "1";
       this.state.selectedStageId = "3";
     }
-
-    this.pubSelector = React.createRef();
   }
 
   handleFileSelect = event => {
@@ -60,12 +87,12 @@ class UploadPage extends Component {
     });
   };
 
-  handleSubmit = async () => {
+  async handleSubmit() {
     if (this.state.selectedFile === undefined) return;
 
-    let linkedPublications = !this.shouldRenderLinkingSelector()
-      ? []
-      : this.pubSelector.current.getSelectedPublications();
+    let linkedPublications = this.state.publications.filter(
+      (_, i) => this.state.publicationsToLink[i],
+    );
 
     const data = new FormData();
     data.set("title", this.state.title);
@@ -89,20 +116,56 @@ class UploadPage extends Component {
       })
       .catch(err => console.error(err.response))
       .finally(() => this.setState({ uploading: false }));
-  };
+  }
 
   handleProblemSelect = problemId => {
-    this.setState({
+    let state = {
       selectedProblemId: problemId,
       linkedProblemsSelected: false,
-    });
+    };
+    let callback = undefined;
+
+    if (problemId !== this.state.selectedProblemId) {
+      state.selectedStageId = undefined;
+      state.stages = [];
+      state.publications = [];
+      state.publicationsToLink = [];
+
+      callback = () => {
+        fetch(`/api/problems/${this.state.selectedProblemId}/stages`)
+          .then(response => response.json())
+          .then(stages => this.setState({ stages: stages }));
+      };
+    }
+
+    this.setState(state, callback);
   };
 
-  handleStageSelect = id => {
-    this.setState({
-      selectedStageId: id,
+  handleStageSelect = stageId => {
+    let state = {
+      selectedStageId: stageId,
       linkedProblemsSelected: false,
-    });
+    };
+    let callback = undefined;
+
+    if (stageId !== this.state.selectedStageId) {
+      state.publications = [];
+
+      callback = () =>
+        fetch(
+          `/api/problems/${this.state.selectedProblemId}/stages/${this.state
+            .selectedStageId - (this.state.isReview ? 0 : 1)}/publications`,
+        )
+          .then(response => response.json())
+          .then(publications =>
+            this.setState({
+              publications: publications,
+              publicationsToLink: Array(publications.length).fill(false),
+            }),
+          );
+    }
+
+    this.setState(state, callback);
   };
 
   handleTitleChange = e => {
@@ -117,22 +180,23 @@ class UploadPage extends Component {
     });
   };
 
-  handleLinkedProblemSelected = selected => () => {
+  handleLinkedPublicationsChanged = selection => {
     this.setState({
-      linkedProblemsSelected: selected,
+      publicationsToLink: selection,
+      linkedProblemsSelected: selection.includes(true),
     });
   };
 
-  checkCorrectFile = file => {
+  checkCorrectFile(file) {
     //TODO check file format
     return true;
-  };
+  }
 
-  preprocessFile = file => {
+  preprocessFile(file) {
     // e.g. Scrape data
-  };
+  }
 
-  submitEnabled = () => {
+  submitEnabled() {
     return (
       this.state.selectedFile &&
       this.state.selectedProblemId &&
@@ -142,19 +206,46 @@ class UploadPage extends Component {
       this.state.title &&
       this.state.description
     );
-  };
+  }
 
   shouldRenderLinkingSelector() {
     return (
       this.state.selectedStageId !== undefined &&
-      (this.state.isReview || this.state.selectedStageId !== NONLINKING_STAGE)
+      (this.state.isReview ||
+        Number(this.state.selectedStageId) !==
+          (this.state.stages.length ? this.state.stages[0].id : undefined))
     );
   }
 
   handleReviewChange = e => {
-    this.setState({
-      isReview: e.target.checked,
-    });
+    let callback = undefined;
+
+    if (
+      this.state.selectedProblemId !== undefined &&
+      this.state.selectedStageId !== undefined
+    ) {
+      callback = () =>
+        fetch(
+          `/api/problems/${this.state.selectedProblemId}/stages/${this.state
+            .selectedStageId - (this.state.isReview ? 0 : 1)}/publications`,
+        )
+          .then(response => response.json())
+          .then(publications =>
+            this.setState({
+              publications: publications,
+              publicationsToLink: Array(publications.length).fill(false),
+            }),
+          );
+    }
+
+    this.setState(
+      {
+        isReview: e.target.checked,
+        publications: [],
+        publicationsToLink: [],
+      },
+      callback,
+    );
   };
 
   render() {
@@ -173,17 +264,22 @@ class UploadPage extends Component {
 
             <div className="two fields">
               <div className="field">
-                <ProblemSelector
-                  onSelect={this.handleProblemSelect}
+                <SimpleSelector
+                  title="Select a Problem"
                   value={this.state.selectedProblemId}
+                  data={this.state.problems}
+                  accessor={x => [x.title, x.id]}
+                  onSelect={this.handleProblemSelect}
                 />
               </div>
               {this.state.selectedProblemId !== undefined && (
                 <div className="field">
-                  <StageSelector
-                    problemId={this.state.selectedProblemId}
-                    onSelect={this.handleStageSelect}
+                  <SimpleSelector
+                    title="Select a Publication Type"
                     value={this.state.selectedStageId}
+                    data={this.state.stages}
+                    accessor={x => [x.name, x.id]}
+                    onSelect={this.handleStageSelect}
                   />
                 </div>
               )}
@@ -232,13 +328,15 @@ class UploadPage extends Component {
   renderLinkingSelector() {
     return (
       <PublicationSelector
-        ref={this.pubSelector}
+        title={
+          this.state.isReview
+            ? "Which publication are you reviewing?"
+            : "Which publications should yours be linked to?"
+        }
         singleSelection={this.state.isReview}
-        problemId={this.state.selectedProblemId}
-        stageId={this.state.selectedStageId - (this.state.isReview ? 0 : 1)}
-        selectedPublications={this.state.publicationsToLink}
-        onSelect={this.handleLinkedProblemSelected(true)}
-        onNoSelection={this.handleLinkedProblemSelected(false)}
+        publications={this.state.publications}
+        selection={this.state.publicationsToLink}
+        onSelection={this.handleLinkedPublicationsChanged}
       />
     );
   }

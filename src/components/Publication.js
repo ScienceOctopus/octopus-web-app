@@ -101,7 +101,9 @@ class Publication extends Component {
           pointer={this.props.pointer}
         >
           <Title>{this.props.publication.title}</Title>
-          <div className="meta">{this.props.publication.created_at}</div>
+          <div className="meta">
+            {new Date(this.props.publication.created_at).toLocaleDateString()}
+          </div>
           <Description className="description" highlight={this.props.highlight}>
             {this.props.publication.description}
           </Description>

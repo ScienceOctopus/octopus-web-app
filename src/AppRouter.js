@@ -10,6 +10,7 @@ function AppRouter() {
   return (
     <Switch>
       <Route name="home" path={WebURI.Home} exact component={IndexPage} />
+
       <Route
         name="problem"
         path={WebURI.Problem}
@@ -22,15 +23,22 @@ function AppRouter() {
         exact
         render={props => <ProblemPage {...props} publication={true} />}
       />
+
       <Route
-        name="uploadPublication"
-        path={WebURI.UploadPublication}
+        name="upload"
+        path={WebURI.Upload}
         exact
         render={props => <UploadPage {...props} review={false} />}
       />
       <Route
-        name="uploadPublicationToStage"
-        path={WebURI.UploadPublicationToStage}
+        name="uploadToProblem"
+        path={WebURI.UploadToProblem}
+        exact
+        render={props => <UploadPage {...props} review={false} />}
+      />
+      <Route
+        name="uploadToProblemStage"
+        path={WebURI.UploadToProblemStage}
         exact
         render={props => <UploadPage {...props} review={false} />}
       />

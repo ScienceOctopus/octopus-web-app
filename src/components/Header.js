@@ -21,7 +21,7 @@ class Header extends Component {
             />
             Octopus
           </Link>
-          <Link to={WebURI.UploadPublication} className="item">
+          <Link to={WebURI.Upload} className="item">
             <i className="ui pencil alternate icon" />
             Draft a new publication
           </Link>

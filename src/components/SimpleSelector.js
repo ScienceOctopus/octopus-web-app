@@ -1,31 +1,16 @@
-import Axios from "axios";
 import React, { Component } from "react";
 
 class SimpleSelector extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      loaded: false,
-      value: (this.props.value || "").toString(),
-    };
-  }
-
-  componentDidMount() {
-    Axios.get(this.props.url)
-      .then(res =>
-        this.setState({ data: res.data, loaded: res.data.length > 0 }),
-      )
-      .catch(console.error);
-  }
-
   renderOptions() {
-    let options = this.state.data.map((x, i) => (
-      <option value={x.id} key={i}>
-        {x.title || x.name}
-      </option>
-    ));
-    options.unshift(emptyOption);
-    return options;
+    return this.props.data.map((x, i) => {
+      let [display, value] = this.props.accessor(x);
+
+      return (
+        <option value={value} key={i}>
+          {display}
+        </option>
+      );
+    });
   }
 
   render() {
@@ -33,24 +18,20 @@ class SimpleSelector extends Component {
       <div className="field">
         <label>{this.props.title}</label>
         <select
-          value={this.state.value}
-          onChange={e => {
-            this.setState({ value: e.target.value });
-
-            this.props.onSelect && this.props.onSelect(e.target.value);
-          }}
+          value={(this.props.value || "").toString()}
+          onChange={e =>
+            this.props.onSelect && this.props.onSelect(e.target.value)
+          }
+          disabled={this.props.data.length <= 0}
         >
-          {this.state.loaded ? this.renderOptions() : "Not loaded yet"}
+          <option disabled value={""} key={-1}>
+            {this.props.data.length ? "--- Select ---" : "--- Loading ---"}
+          </option>
+          {this.renderOptions()}
         </select>
       </div>
     );
   }
 }
-
-const emptyOption = (
-  <option disabled value={""} key={-1}>
-    {"---select---"}
-  </option>
-);
 
 export default SimpleSelector;

@@ -17,7 +17,9 @@ class Review extends Component {
         }}
       >
         <Title>{this.props.review.title}</Title>
-        <div className="meta">{this.props.review.created_at}</div>
+        <div className="meta">
+          {new Date(this.props.review.created_at).toLocaleDateString()}
+        </div>
         <Description className="description" highlight={this.props.highlight}>
           {this.props.review.description}
         </Description>
