@@ -26,7 +26,7 @@ class UploadPage extends Component {
 
         problems: [],
         stages: [],
-        publications: [],
+        publications: undefined,
       };
 
       Api()
@@ -99,7 +99,7 @@ class UploadPage extends Component {
           selectedProblemId: problem,
           selectedStageId: stage,
           isReview: isReview,
-          publications: [],
+          publications: undefined,
           publicationsToLink: [],
           linkedProblemsSelected: false,
         },
@@ -116,7 +116,7 @@ class UploadPage extends Component {
         {
           selectedStageId: stage,
           isReview: isReview,
-          publications: [],
+          publications: undefined,
           publicationsToLink: [],
           linkedProblemsSelected: false,
         },
@@ -126,7 +126,7 @@ class UploadPage extends Component {
       this.setState(
         {
           isReview: isReview,
-          publications: [],
+          publications: undefined,
           publicationsToLink: [],
           linkedProblemsSelected: false,
         },
@@ -422,15 +422,33 @@ class UploadPage extends Component {
   }
 
   renderLinkingSelector() {
+    let title;
+    let style = {};
+
+    if (
+      this.state.publications !== undefined &&
+      this.state.publications.length <= 0
+    ) {
+      if (this.state.isReview) {
+        title = "There are no publications to review in this stage";
+      } else {
+        title = "There are no publications from the previous stage to link to.";
+      }
+
+      title = <span style={{ color: "red" }}>{title}</span>;
+    } else {
+      if (this.state.isReview) {
+        title = "Which publication are you reviewing?";
+      } else {
+        title = "Which publications should yours be linked to?";
+      }
+    }
+
     return (
       <PublicationSelector
-        title={
-          this.state.isReview
-            ? "Which publication are you reviewing?"
-            : "Which publications should yours be linked to?"
-        }
+        title={title}
         singleSelection={this.state.isReview}
-        publications={this.state.publications}
+        publications={this.state.publications || []}
         selection={this.state.publicationsToLink}
         onSelection={this.handleLinkedPublicationsChanged}
       />
