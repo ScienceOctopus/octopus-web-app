@@ -61,7 +61,7 @@ const getPublicationsByProblemAndStage = async (req, res) => {
 
   const publications = await db.selectOriginalPublicationsByProblemAndStage(
     req.params.id,
-    req.params.stage
+    req.params.stage,
   );
 
   res.status(200).json(publications);
@@ -84,7 +84,7 @@ const postPublicationToProblemAndStage = async (req, res) => {
     req.body.title,
     req.body.summary,
     req.body.description,
-    req.body.review
+    req.body.review,
   );
 
   if (req.body.basedOn !== undefined) {
@@ -105,13 +105,13 @@ router.get("/:id", catchAsyncErrors(getProblemByID));
 router.get("/:id(\\d+)/stages", catchAsyncErrors(getStagesByProblem));
 router.get(
   "/:id(\\d+)/stages/:stage(\\d+)/publications",
-  catchAsyncErrors(getPublicationsByProblemAndStage)
+  catchAsyncErrors(getPublicationsByProblemAndStage),
 );
 
 router.post(
   "/:id(\\d+)/stages/:stage(\\d+)/publications",
   upload(blobService.AZURE_PUBLICATION_CONTAINER).single("file"),
-  catchAsyncErrors(postPublicationToProblemAndStage)
+  catchAsyncErrors(postPublicationToProblemAndStage),
 );
 
 module.exports = {
