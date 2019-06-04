@@ -5,6 +5,7 @@ const db = require("./postgresQueries").queries;
 
 const problemsHandlers = require("./routes/problems");
 const publicationsHandlers = require("./routes/publications");
+const OAuthFlowResponseHandlers = require("./routes/oauth-flow");
 
 const fb = require("./feedback");
 const multer = require("multer");
@@ -33,6 +34,7 @@ app.get("/api", (request, response) => {
 
 app.use("/api/problems", problemsHandlers.router);
 app.use("/api/publications", publicationsHandlers.router);
+app.use("/api/oauth-flow", OAuthFlowResponseHandlers.router);
 
 app.post("/api/feedback", fb.postFeedback);
 app.post(
