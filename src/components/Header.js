@@ -6,6 +6,7 @@ import WebURI from "../urls/WebsiteURIs";
 import GoblinIDLoginInvitation from "./GoblinIDLoginInvitation";
 import LogoutInvitation from "./LogoutInvitation";
 import { LoginDataContext } from "../LoginContext";
+import OctopusLogo from "./OctopusLogo";
 import { Trans } from "react-i18next";
 
 class Header extends Component {
@@ -18,12 +19,7 @@ class Header extends Component {
       <header className="ui teal inverted menu" style={styles.header}>
         <div className="ui container">
           <Link to={WebURI.Home} className="header item">
-            <img
-              className="logo"
-              src="/images/octopus.png"
-              alt="Octopus Logo"
-              style={styles.logo}
-            />
+            <OctopusLogo style={styles.logo} />
             <Trans>octopus</Trans>
           </Link>
           <Link to={WebURI.Upload} className="item">
@@ -44,6 +40,7 @@ class Header extends Component {
 const styles = {
   header: {
     borderRadius: 0,
+    marginBottom: 0,
   },
   logo: {
     marginRight: 1.5 + "em",
