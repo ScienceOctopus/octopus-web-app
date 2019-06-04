@@ -39,7 +39,6 @@ class Header extends Component {
 const styles = {
   header: {
     borderRadius: 0,
-    marginBottom: 0,
   },
   logo: {
     marginRight: 1.5 + "em",
