@@ -95,13 +95,18 @@ class PublicationBuilder extends LinkBuilder {
     return this;
   };
 
-  referencedBy = () => {
+  /* referencedBy = () => {
     this.path += "/referencedBy";
+    return this;
+    }; */
+
+  linksBefore = () => {
+    this.path += "/linksBefore";
     return this;
   };
 
-  linksTo = () => {
-    this.path += "/linksTo";
+  linksAfter = () => {
+    this.path += "/linksAfter";
     return this;
   };
 

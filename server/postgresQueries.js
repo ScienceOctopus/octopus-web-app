@@ -43,7 +43,7 @@ const queries = {
     queries
       .selectPublicationsByProblemAndStage(problem, stage)
       .where("review", false),
-  selectPublicationsByReferencedPublication: publication =>
+  selectPublicationsByLinksBeforePublication: publication =>
     knex("publication_links")
       .select()
       .where("publication_before", publication)
@@ -54,15 +54,15 @@ const queries = {
         "publication_links.publication_after"
       )
       .select(),
-  selectOriginalPublicationsByReferencedPublication: publication =>
+  selectOriginalPublicationsByLinksBeforePublication: publication =>
     queries
-      .selectPublicationsByReferencedPublication(publication)
+      .selectPublicationsByLinksBeforePublication(publication)
       .where("review", false),
   selectReviewPublicationsByPublication: publication =>
     queries
-      .selectPublicationsByReferencedPublication(publication)
+      .selectPublicationsByLinksBeforePublication(publication)
       .where("review", true),
-  selectPublicationsByReferenceorPublication: publication =>
+  selectPublicationsByLinksAfterPublication: publication =>
     knex("publication_links")
       .select()
       .where("publication_after", publication)
@@ -73,14 +73,14 @@ const queries = {
         "publication_links.publication_before"
       )
       .select(),
-  selectOriginalPublicationsByReferenceorPublication: publication =>
+  selectOriginalPublicationsByLinksAfterPublication: publication =>
     queries
-      .selectPublicationsByReferenceorPublication(publication)
+      .selectPublicationsByLinksAfterPublication(publication)
       .where("review", false),
 
   selectReviewedPublicationsByReviewPublication: publication =>
     queries
-      .selectPublicationsByReferencedPublication(publication)
+      .selectPublicationsByLinksAfterPublication(publication)
       .where("review", true),
   insertPublication: (problem, stage, title, summary, description, review) =>
     knex("publications")
