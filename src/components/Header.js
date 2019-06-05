@@ -22,10 +22,12 @@ class Header extends Component {
             <OctopusLogo style={styles.logo} className="logo" />
             <Trans>octopus</Trans>
           </Link>
-          <Link to={WebURI.Upload} className="item">
-            <i className="ui pencil alternate icon" />
-            Publish
-          </Link>
+          {loggedIn && (
+            <Link to={WebURI.Upload} className="item">
+              <i className="ui pencil alternate icon" />
+              Publish
+            </Link>
+          )}
           <GlobalSearch />
           {loggedIn ? (
             <LogoutInvitation user={this.context.user} />
