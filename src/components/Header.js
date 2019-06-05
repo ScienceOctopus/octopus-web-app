@@ -1,15 +1,13 @@
 import React, { Component } from "react";
+import { Trans } from "react-i18next";
 import { Link } from "react-router-dom";
-
 import "../App.css";
+import { LoginDataContext } from "../LoginContext";
 import WebURI from "../urls/WebsiteURIs";
+import GlobalSearch from "./GlobalSearch";
 import GoblinIDLoginInvitation from "./GoblinIDLoginInvitation";
 import LogoutInvitation from "./LogoutInvitation";
-import { LoginDataContext } from "../LoginContext";
 import OctopusLogo from "./OctopusLogo";
-import { Trans } from "react-i18next";
-import SearchField from "./SearchField";
-import GlobalSearch from "./GlobalSearch";
 
 class Header extends Component {
   static contextType = LoginDataContext;

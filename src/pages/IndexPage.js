@@ -1,34 +1,24 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import OctopusLogo from "../components/OctopusLogo";
+import { createGlobalStyle } from "styled-components";
 
 export default class IndexPage extends Component {
   render() {
     return (
-      <div>
-        <Container>
-          <TitleContainer>
-            <MainTitle>Built for scientists</MainTitle>
-            <SubTitle>
-              Octopus is a publication platform inspired by the way you
-              research. Lorem ipsum dolor sit amet, consectetur adipisicing
-              elit. Esse, doloremque minus. In minima nemo accusantium iste
-              corporis sit ut vero.
-            </SubTitle>
-          </TitleContainer>
-          <StyledGraph size={450} style={styles.logo} />
-        </Container>
-
-        {/* <Container height="30vh">
-          <StyledGraph size={400} />
-          <TitleContainer>
-            <SubTitle>
-              A lot of very useful information about octopus and the way it
-              works
-            </SubTitle>
-          </TitleContainer>
-        </Container> */}
-      </div>
+      <Container>
+        <GlobalStyle />
+        <TitleContainer>
+          <MainTitle>Built for scientists</MainTitle>
+          <SubTitle>
+            Octopus is a publication platform inspired by the way you research.
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Esse,
+            doloremque minus. In minima nemo accusantium iste corporis sit ut
+            vero.
+          </SubTitle>
+        </TitleContainer>
+        <StyledGraph size={450} style={styles.logo} />
+      </Container>
     );
   }
 }
@@ -48,6 +38,22 @@ const StackableGrid = ({ children }) => (
   </div>
 );
 
+const GlobalStyle = createGlobalStyle`
+  body {
+    height: 100%;
+  }
+
+  #root {
+    height: 100%;
+  }
+
+  .App {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+  }
+`;
+
 const Container = styled.div`
   display: flex;
   padding: 0 10%;
@@ -55,15 +61,16 @@ const Container = styled.div`
   flex-direction: row;
   justify-content: space-around;
   align-items: center;
-  height: ${p => (p.height ? p.height : "80vh")};
+  /* height: ${p => (p.height ? p.height : "100%")}; */
   flex-grow: 1;
-  max-height: 600px;
+  /* max-height: 600px; */
+  flex: 1 1 auto;
 
   @media screen and (max-width: 750px) {
     /* flex-direction: column; */
     padding: 0 2.5%;
-    height: 100%;
-    max-height: 750px;
+    /* height: 100%; */
+    /* max-height: 750px; */
   }
 `;
 
