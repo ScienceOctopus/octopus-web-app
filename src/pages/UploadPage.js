@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Redirect, withRouter } from "react-router-dom";
+import { LoginDataContext } from "../LoginContext";
 import Api from "../api";
 import FileUploadSelector from "../components/FileUploadSelector";
 import PublicationSelector from "../components/PublicationSelector";
@@ -7,6 +8,8 @@ import SimpleSelector from "../components/SimpleSelector";
 import TitledForm from "../components/TitledForm";
 
 class UploadPage extends Component {
+  static contextType = LoginDataContext;
+
   constructor(props) {
     super(props);
 
@@ -199,16 +202,23 @@ class UploadPage extends Component {
   handleSubmit = async () => {
     if (this.state.selectedFile === undefined) return;
 
-    let linkedPublications = this.state.publications.filter(
-      (_, i) => this.state.publicationsToLink[i],
-    );
+    let linkedPublications = undefined;
+    this.state.publications &&
+      (linkedPublications = this.state.publications.filter(
+        (_, i) => this.state.publicationsToLink[i],
+      ));
 
     const data = new FormData();
     data.set("title", this.state.title);
     data.set("description", this.state.description);
     data.set("summary", "");
+    data.set("user", this.context.user.id);
     data.set("review", this.state.isReview);
-    data.set("basedOn", JSON.stringify(linkedPublications.map(x => x.id)));
+
+    if (linkedPublications !== undefined) {
+      data.set("basedOn", JSON.stringify(linkedPublications.map(x => x.id)));
+    }
+
     data.append("file", this.state.selectedFile);
 
     await this.setState({ uploading: true });

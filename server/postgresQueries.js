@@ -131,6 +131,12 @@ const queries = {
         review: review,
       })
       .returning("id"),
+  insertPublicationCollaborator: (publication, collaborator, role) =>
+    knex("publication_collaborators").insert({
+      publication: publication,
+      user: collaborator,
+      role: role,
+    }),
 
   //TODO: actually use transactions
   insertPublicationLinkedToTransaction: (

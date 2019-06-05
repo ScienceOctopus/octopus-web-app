@@ -87,6 +87,12 @@ const postPublicationToProblemAndStage = async (req, res) => {
     req.body.review,
   );
 
+  await db.insertPublicationCollaborator(
+    publications[0],
+    req.body.user,
+    "author",
+  );
+
   if (req.body.basedOn !== undefined) {
     let basedArray = JSON.parse(req.body.basedOn);
     await db.insertLink(publications[0], basedArray);
