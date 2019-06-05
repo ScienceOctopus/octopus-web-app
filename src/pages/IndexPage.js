@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import OctopusLogo from "../components/OctopusLogo";
 import { createGlobalStyle } from "styled-components";
 import { Link } from "react-router-dom";
@@ -17,9 +17,9 @@ export default class IndexPage extends Component {
             doloremque minus. In minima nemo accusantium iste crporis sit ut
             vero.
             <LinkContainer>
-              <StyledLink to={WebURI.OrcidLogin(1337)}>
+              <StyledAnchor href={WebURI.OrcidLogin(1337)}>
                 Log In via ORCID
-              </StyledLink>
+              </StyledAnchor>
               <StyledLink to={WebURI.Upload}>Explore Science</StyledLink>
             </LinkContainer>
           </SubTitle>
@@ -45,7 +45,7 @@ const StackableGrid = ({ children }) => (
   </div>
 );
 
-const StyledLink = styled(Link)`
+const linkStyle = css`
   padding-right: 2rem;
   color: white;
   text-decoration: underline;
@@ -57,6 +57,14 @@ const StyledLink = styled(Link)`
   :hover {
     color: lightgreen;
   }
+`;
+
+const StyledLink = styled(Link)`
+  ${linkStyle}
+`;
+
+const StyledAnchor = styled.a`
+  ${linkStyle}
 `;
 
 const LinkContainer = styled.div`
