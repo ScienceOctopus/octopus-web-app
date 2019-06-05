@@ -34,7 +34,13 @@ const getUserByID = async (req, res) => {
     return res.status(500).send("500 Internal Server Error");
   }
 
-  return res.status(200).json(users[0]);
+  let user = users[0];
+
+  // Ensure only public ORCID information can be read in the frontend
+  return res.status(200).json({
+    id: user.id,
+    display_name: user.display_name,
+  });
 };
 
 var router = express.Router();
