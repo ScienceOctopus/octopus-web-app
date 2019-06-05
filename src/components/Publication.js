@@ -163,9 +163,9 @@ class Publication extends Component {
           <div className="meta">
             {new Date(this.props.publication.created_at).toLocaleDateString()}
           </div>
-          <Description className="description" highlight={this.props.highlight}>
-            {this.props.publication.description}
-          </Description>
+          <Summary className="description" highlight={this.props.highlight}>
+            {this.props.publication.summary}
+          </Summary>
         </BgDiv>
       );
     }
@@ -202,7 +202,7 @@ const Title = styled.h5`
   width: 100%;
 `;
 
-const Description = styled.div`
+const Summary = styled.div`
   &.description {
     position: relative;
     height: 3rem;

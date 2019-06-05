@@ -100,9 +100,6 @@ class SummaryView extends Component {
                 {(stagePresent || reviewPresent) && ": "}
               </StageTitle>
               {this.state.publication.title}
-              <div className="ui sub header">
-                {this.state.publication.summary}
-              </div>
             </h1>
             <p>
               <strong>Date added: </strong>
@@ -124,7 +121,7 @@ class SummaryView extends Component {
             <section className="ui segment">
               <h3>Summary</h3>
               <div className="ui divider" />
-              {this.state.publication.description}
+              {this.state.publication.summary}
             </section>
             {imagesPresent ? (
               <section className="ui segment">

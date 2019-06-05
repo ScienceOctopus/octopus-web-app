@@ -20,9 +20,9 @@ class Review extends Component {
         <div className="meta">
           {new Date(this.props.review.created_at).toLocaleDateString()}
         </div>
-        <Description className="description" highlight={this.props.highlight}>
-          {this.props.review.description}
-        </Description>
+        <Summary className="description" highlight={this.props.highlight}>
+          {this.props.review.summary}
+        </Summary>
       </BgDiv>
     );
   }
@@ -53,7 +53,7 @@ const Title = styled.h5`
   width: 100%;
 `;
 
-const Description = styled.div`
+const Summary = styled.div`
   &.description {
     position: relative;
     height: 3rem;

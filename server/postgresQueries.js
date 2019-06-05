@@ -124,15 +124,16 @@ const queries = {
     knex("publication_collaborators")
       .select()
       .where("publication", publication),
-  insertPublication: (problem, stage, title, summary, description, review) =>
+  insertPublication: (problem, stage, title, summary, funding, review, data) =>
     knex("publications")
       .insert({
         problem: problem,
         stage: stage,
         title: title,
-        description: description,
         summary: summary,
+        funding: funding,
         review: review,
+        data: data,
       })
       .returning("id"),
   insertPublicationCollaborator: (publication, collaborator, role) =>

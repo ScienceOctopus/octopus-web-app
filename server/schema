@@ -1,0 +1,14 @@
+Stage-specific data schema
+
+SCHEMA: [[key, type, title, description], ...]
+DATA: [data, ...]
+
+TYPES:
+- File: uploaded to blob storage, stored as resource
+- URI: stored as resource
+- Text
+- Boolean
+
+STAGES (only applies of not a review):
+- Hypothesis: [["pre_registration", "bool", "Pre-registration", "Data has not yet been collected in order to support / according to this hypothesis"]]
+- Data: [["ethical_permission", "text", "Ethical permissions", ""], ["ethical_permission_statement", "file", "Ethical permissions document", ""], ["data", "uri", "Data (repository) URL", ""]]

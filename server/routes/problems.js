@@ -83,8 +83,9 @@ const postPublicationToProblemAndStage = async (req, res) => {
     req.params.stage,
     req.body.title,
     req.body.summary,
-    req.body.description,
+    req.body.funding,
     req.body.review,
+    req.body.data,
   );
 
   await db.insertPublicationCollaborator(

@@ -23,7 +23,9 @@ class UploadPage extends Component {
         isReview: false,
         publicationsToLink: [],
         title: "",
-        description: "",
+        summary: "",
+        funding: "",
+        data: [],
 
         linkedProblemsSelected: false,
 
@@ -210,10 +212,13 @@ class UploadPage extends Component {
 
     const data = new FormData();
     data.set("title", this.state.title);
-    data.set("description", this.state.description);
-    data.set("summary", "");
+    data.set("summary", this.state.summary);
+    data.set("funding", this.state.funding);
     data.set("user", this.context.user.id);
     data.set("review", this.state.isReview);
+
+    // TODO: map back to simplified list
+    data.set("data", "[]");
 
     if (linkedPublications !== undefined) {
       data.set("basedOn", JSON.stringify(linkedPublications.map(x => x.id)));
@@ -283,11 +288,19 @@ class UploadPage extends Component {
     });
   };
 
-  handleDescriptionChange = e => {
+  handleSummaryChange = e => {
     this.setState({
-      description: e.target.value,
+      summary: e.target.value,
     });
   };
+
+  handleFundingChange = e => {
+    this.setState({
+      funding: e.target.value,
+    });
+  };
+
+  // TODO: handle data fields change
 
   handleLinkedPublicationsChanged = selection => {
     if (this.state.isReview) {
@@ -327,7 +340,8 @@ class UploadPage extends Component {
       (!this.shouldRenderLinkingSelector() ||
         this.state.linkedProblemsSelected) &&
       this.state.title &&
-      this.state.description
+      this.state.summary &&
+      true // TODO: handle all data fields set
     );
   }
 
@@ -422,8 +436,13 @@ class UploadPage extends Component {
             />
             <TitledForm
               title="Publication Summary"
-              value={this.state.description}
-              onChange={this.handleDescriptionChange}
+              value={this.state.summary}
+              onChange={this.handleSummaryChange}
+            />
+            <TitledForm
+              title="Funding Statement"
+              value={this.state.funding}
+              onChange={this.handleFundingChange}
             />
             <FileUploadSelector onSelect={this.handleFileSelect} />
             <div className="ui hidden divider" />
