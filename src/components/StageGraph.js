@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 
 import Stage from "./Stage";
 
@@ -39,23 +39,25 @@ class StageGraph extends Component {
             style={{ backgroundColor: "initial", marginBottom: 0 }}
           />
         </div>
-        <div style={{ clear: "both" }} />
       </div>
     );
 
     let stages;
+	const stagesLoaded = this.props.stages.length > 0;
 
-    if (this.props.content.content.loading) {
-      stages = (
-        <div
-          className={"ui six column grid"}
-          style={{
-            overflowX: "auto",
-            overflowY: "hidden",
-            flexWrap: "nowrap",
-          }}
-        >
-          {new Array(6).fill(null).map((_, i) => (
+    if (stagesLoaded) {
+      stages = this.props.stages.map(stage => (
+            <Stage
+              key={stage.id}
+              stage={stage}
+              content={this.props.content}
+              open={open}
+            />
+          ))
+      ;
+    } else {
+      stages =
+		new Array(6).fill(null).map((_, i) => (
             <Stage
               key={i}
               stage={{
@@ -71,31 +73,11 @@ class StageGraph extends Component {
               content={this.props.content}
               open={open}
             />
-          ))}
-        </div>
-      );
-    } else {
-      stages = (
-        <div
-          className={"ui " + numbers[this.props.stages.length] + " column grid"}
-          style={{
-            overflowX: "auto",
-            overflowY: "hidden",
-            flexWrap: "nowrap",
-          }}
-        >
-          {this.props.stages.map(stage => (
-            <Stage
-              key={stage.id}
-              stage={stage}
-              content={this.props.content}
-              open={open}
-            />
-          ))}
-        </div>
-      );
+          ))
+      ;
     }
 
+	const stagesLength = stagesLoaded ? this.props.stages.length : 6;
     return (
       <div
         onClick={event => {
@@ -107,8 +89,10 @@ class StageGraph extends Component {
           }
           event.stopPropagation();
         }}
+		className="ui one column grid"
+		style={{ backgroundColor: "#dcf8ec" }}
       >
-        <ProblemTitleContainer>
+        <div className="column">
           <div className="ui container">
             <h3
               className="ui block header"
@@ -119,57 +103,51 @@ class StageGraph extends Component {
                     : "default",
               }}
             >
-              <span style={{ float: "left", marginRight: "0.5em" }}>
+              <span style={{ marginRight: "0.5em", float: "left" }}>
                 Problem:
               </span>
               {problem}
             </h3>
           </div>
-        </ProblemTitleContainer>
+        </div>
 
-        <div style={{ backgroundColor: "#dcf8ec" }}>
+        <div className="column">
+			<div
+			  className={"ui " + numbers[stagesLength] + " column grid"}
+			  style={{
+				overflowX: "auto",
+				overflowY: "hidden",
+				flexWrap: "nowrap",
+				padding: "0 1em",
+			  }}
+			>
+
           <div
-            className="ui segment"
+            className="column"
             onClick={event => {
               this.props.toggleOpen();
               event.stopPropagation();
             }}
             style={{
-              float: "left",
-              margin: "1em 30px 0 30px",
               cursor: "pointer",
+			  width: "5.4em",
             }}
           >
+		  <div className="ui segment">
             <GraphHider
-              className={"chevron down icon " + (open ? "opened" : "collapsed")}
+              className={"chevron icon " + (open ? "up " : "down")}
             />
+			</div>
           </div>
 
-          <GraphContainer>{stages}</GraphContainer>
+          {stages}
+
+			</div>
         </div>
       </div>
     );
   }
 }
-
-const commonStyle = css`
-  overflow-x: auto;
-  overflow-y: hidden;
-`;
-
-const GraphContainer = styled.div`
-  ${commonStyle}
-  padding-top: 1em;
-  padding-right: 30px;
-  padding-bottom: 30px;
-`;
-
-const ProblemTitleContainer = styled.div`
-  ${commonStyle}
-  background-color: #dcf8ec;
-  padding-top: 1.5rem;
-  padding-bottom: 1.5rem;
-`;
 
 const GraphHider = styled.i`
   fontsize: 1.07142857rem;
