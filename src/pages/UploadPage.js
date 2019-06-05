@@ -34,11 +34,8 @@ class UploadPage extends Component {
         .get()
         .then(problems =>
           this.setState({ problems: problems }, () =>
-            this.props.history.replace(
-              this.props.location.pathname,
-              this.state,
-            ),
-          ),
+            this.props.history.replace(this.props.location.pathname, this.state)
+          )
         );
     } else {
       this.state = this.props.location.state;
@@ -103,7 +100,7 @@ class UploadPage extends Component {
           publicationsToLink: [],
           linkedProblemsSelected: false,
         },
-        callback,
+        callback
       );
     } else if (stage !== this.state.selectedStageId) {
       let callback = undefined;
@@ -120,7 +117,7 @@ class UploadPage extends Component {
           publicationsToLink: [],
           linkedProblemsSelected: false,
         },
-        callback,
+        callback
       );
     } else if (isReview !== this.state.isReview) {
       this.setState(
@@ -130,18 +127,18 @@ class UploadPage extends Component {
           publicationsToLink: [],
           linkedProblemsSelected: false,
         },
-        () => this.fetchPublications(review),
+        () => this.fetchPublications(review)
       );
     } else if (isReview) {
       review = Number(review);
 
       this.setState({
         publicationsToLink: this.state.publications.map(
-          publication => publication.id === review,
+          publication => publication.id === review
         ),
         linkedProblemsSelected:
           this.state.publications.find(
-            publication => publication.id === review,
+            publication => publication.id === review
           ) !== undefined,
       });
     }
@@ -176,12 +173,12 @@ class UploadPage extends Component {
         this.setState({
           publications: publications,
           publicationsToLink: publications.map(
-            publication => publication.id === review,
+            publication => publication.id === review
           ),
           linkedProblemsSelected:
             publications.find(publication => publication.id === review) !==
             undefined,
-        }),
+        })
       );
   }
 
@@ -196,11 +193,11 @@ class UploadPage extends Component {
     });
   };
 
-  async handleSubmit() {
+  handleSubmit = async () => {
     if (this.state.selectedFile === undefined) return;
 
     let linkedPublications = this.state.publications.filter(
-      (_, i) => this.state.publicationsToLink[i],
+      (_, i) => this.state.publicationsToLink[i]
     );
 
     const data = new FormData();
@@ -223,7 +220,7 @@ class UploadPage extends Component {
       })
       .catch(err => console.error(err.response))
       .finally(() => this.setState({ uploading: false }));
-  }
+  };
 
   static uploadURLBuilder(problem, stage, review) {
     let url = "/upload/";
@@ -252,8 +249,8 @@ class UploadPage extends Component {
       UploadPage.uploadURLBuilder(
         problemId,
         undefined,
-        this.state.isReview || undefined,
-      ),
+        this.state.isReview || undefined
+      )
     );
   };
 
@@ -262,8 +259,8 @@ class UploadPage extends Component {
       UploadPage.uploadURLBuilder(
         this.state.selectedProblemId,
         stageId,
-        this.state.isReview || undefined,
-      ),
+        this.state.isReview || undefined
+      )
     );
   };
 
@@ -289,8 +286,8 @@ class UploadPage extends Component {
             this.state.publications.find((publication, i) => selection[i]) || {
               id: true,
             }
-          ).id,
-        ),
+          ).id
+        )
       );
     } else {
       this.setState({
@@ -335,8 +332,8 @@ class UploadPage extends Component {
       UploadPage.uploadURLBuilder(
         this.state.selectedProblemId,
         this.state.selectedStageId,
-        e.target.checked || undefined,
-      ),
+        e.target.checked || undefined
+      )
     );
   };
 
