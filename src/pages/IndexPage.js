@@ -109,7 +109,7 @@ const Container = styled.div`
     /* max-height: 750px; */
   }
 
-  @media screen and (max-height: 400px) {
+  @media screen and (max-height: 500px) {
     /* flex-direction: column; */
     /* padding: 0 25%; */
     flex-grow: 0;
@@ -143,7 +143,7 @@ const MainTitle = styled.div`
     text-align: center;
   }
 
-  @media screen and (max-height: 400px) {
+  @media screen and (max-height: 500px) {
     font-size: 4em;
   }
 `;
@@ -159,7 +159,7 @@ const SubTitle = styled.div`
     font-size: 2.5em;
   }
 
-  @media screen and (max-height: 400px) {
+  @media screen and (max-height: 500px) {
     font-size: 1.5em;
   }
 `;
