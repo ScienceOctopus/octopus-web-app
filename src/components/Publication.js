@@ -114,7 +114,7 @@ class Publication extends Component {
               <i
                 onClick={event => {
                   this.props.history.push(
-                    `/upload/problems/${
+                    `/publish/problems/${
                       this.props.publication.problem
                     }/stages/${this.props.publication.stage}/review/${
                       this.props.publication.id

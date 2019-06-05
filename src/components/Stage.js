@@ -178,7 +178,7 @@ class Stage extends Component {
           <i
             onClick={event => {
               this.props.history.push(
-                `/upload/problems/${this.props.content.problem}/stages/${
+                `/publish/problems/${this.props.content.problem}/stages/${
                   this.props.stage.id
                 }`,
               );

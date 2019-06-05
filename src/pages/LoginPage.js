@@ -15,7 +15,12 @@ class LoginPage extends Component {
     Api()
       .user(params.user)
       .get()
-      .then(user => this.context.login({ id: params.user, display_name: user.display_name }));
+      .then(user =>
+        this.context.login({
+          id: params.user,
+          display_name: user.display_name,
+        }),
+      );
   }
 
   render() {

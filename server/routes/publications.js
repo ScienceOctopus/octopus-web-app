@@ -110,7 +110,10 @@ router.get(
 //router.get("/:id(\\d+)/referencedBy", catchAsyncErrors(getReferencedByByPublication));
 router.get("/:id(\\d+)/reviews", catchAsyncErrors(getReviewsByPublication));
 router.get("/:id(\\d+)/resources", catchAsyncErrors(getResourcesByPublication));
-router.get("/:id(\\d+)/collaborators", catchAsyncErrors(getCollaboratorsByPublication));
+router.get(
+  "/:id(\\d+)/collaborators",
+  catchAsyncErrors(getCollaboratorsByPublication),
+);
 
 module.exports = {
   router,

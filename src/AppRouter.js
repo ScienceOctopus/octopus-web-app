@@ -2,6 +2,9 @@ import React from "react";
 import { Switch, Route } from "react-router-dom";
 
 import IndexPage from "./pages/IndexPage";
+import MorePage from "./pages/MorePage";
+import FAQPage from "./pages/FAQPage";
+import ExplorePage from "./pages/ExplorePage";
 import ProblemPage from "./pages/ProblemPage";
 import UploadPage from "./pages/UploadPage";
 import LoginPage from "./pages/LoginPage";
@@ -15,6 +18,27 @@ function AppRouter() {
         path={WebURI.LanguageMatcher + WebURI.Home}
         exact
         component={IndexPage}
+      />
+
+      <Route
+        name="more"
+        path={WebURI.LanguageMatcher + WebURI.More}
+        exact
+        component={MorePage}
+      />
+
+      <Route
+        name="faq"
+        path={WebURI.LanguageMatcher + WebURI.FAQ}
+        exact
+        component={FAQPage}
+      />
+
+      <Route
+        name="explore"
+        path={WebURI.LanguageMatcher + WebURI.Explore}
+        exact
+        component={ExplorePage}
       />
 
       <Route
@@ -60,6 +84,7 @@ function AppRouter() {
         exact
         render={props => <UploadPage {...props} review={true} />}
       />
+
       <Route
         name="login"
         path={WebURI.LanguageMatcher + WebURI.Login}

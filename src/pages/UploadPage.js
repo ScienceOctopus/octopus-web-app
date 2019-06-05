@@ -236,7 +236,7 @@ class UploadPage extends Component {
   };
 
   static uploadURLBuilder(problem, stage, review) {
-    let url = "/upload/";
+    let url = "/publish/";
 
     if (problem !== undefined) {
       url += `problems/${problem}`;

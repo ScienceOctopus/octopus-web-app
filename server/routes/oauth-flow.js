@@ -24,10 +24,8 @@ const handleOAuthAuthenticationResponse = async (req, res) => {
 
         const users = await db.selectUsersByGoblinID(response.orcid);
 
-        let id = (await db.insertOrUpdateUser(
-          response.orcid,
-          response.name,
-        )).rows[0].id;
+        let id = (await db.insertOrUpdateUser(response.orcid, response.name))
+          .rows[0].id;
 
         global.authentications.push(req.query.state);
 

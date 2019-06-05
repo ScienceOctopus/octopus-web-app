@@ -43,41 +43,38 @@ class StageGraph extends Component {
     );
 
     let stages;
-	const stagesLoaded = this.props.stages.length > 0;
+    const stagesLoaded = this.props.stages.length > 0;
 
     if (stagesLoaded) {
       stages = this.props.stages.map(stage => (
-            <Stage
-              key={stage.id}
-              stage={stage}
-              content={this.props.content}
-              open={open}
-            />
-          ))
-      ;
+        <Stage
+          key={stage.id}
+          stage={stage}
+          content={this.props.content}
+          open={open}
+        />
+      ));
     } else {
-      stages =
-		new Array(6).fill(null).map((_, i) => (
-            <Stage
-              key={i}
-              stage={{
-                name: undefined,
-                publications: [],
-                links: [],
-                selection: {
-                  publications: [],
-                  links: [],
-                },
-                loading: true,
-              }}
-              content={this.props.content}
-              open={open}
-            />
-          ))
-      ;
+      stages = new Array(6).fill(null).map((_, i) => (
+        <Stage
+          key={i}
+          stage={{
+            name: undefined,
+            publications: [],
+            links: [],
+            selection: {
+              publications: [],
+              links: [],
+            },
+            loading: true,
+          }}
+          content={this.props.content}
+          open={open}
+        />
+      ));
     }
 
-	const stagesLength = stagesLoaded ? this.props.stages.length : 6;
+    const stagesLength = stagesLoaded ? this.props.stages.length : 6;
     return (
       <div
         onClick={event => {
@@ -89,8 +86,8 @@ class StageGraph extends Component {
           }
           event.stopPropagation();
         }}
-		className="ui one column grid"
-		style={{ backgroundColor: "#dcf8ec" }}
+        className="ui one column grid"
+        style={{ backgroundColor: "#dcf8ec" }}
       >
         <div className="column">
           <div className="ui container">
@@ -112,37 +109,35 @@ class StageGraph extends Component {
         </div>
 
         <div className="column">
-			<div
-			  className={"ui " + numbers[stagesLength] + " column grid"}
-			  style={{
-				overflowX: "auto",
-				overflowY: "hidden",
-				flexWrap: "nowrap",
-				padding: "0 1em",
-			  }}
-			>
-
           <div
-            className="column"
-            onClick={event => {
-              this.props.toggleOpen();
-              event.stopPropagation();
-            }}
+            className={"ui " + numbers[stagesLength] + " column grid"}
             style={{
-              cursor: "pointer",
-			  width: "5.4em",
+              overflowX: "auto",
+              overflowY: "hidden",
+              flexWrap: "nowrap",
+              padding: "0 1em",
             }}
           >
-		  <div className="ui segment">
-            <GraphHider
-              className={"chevron icon " + (open ? "up " : "down")}
-            />
-			</div>
+            <div
+              className="column"
+              onClick={event => {
+                this.props.toggleOpen();
+                event.stopPropagation();
+              }}
+              style={{
+                cursor: "pointer",
+                width: "5.4em",
+              }}
+            >
+              <div className="ui segment">
+                <GraphHider
+                  className={"chevron icon " + (open ? "up " : "down")}
+                />
+              </div>
+            </div>
+
+            {stages}
           </div>
-
-          {stages}
-
-			</div>
         </div>
       </div>
     );

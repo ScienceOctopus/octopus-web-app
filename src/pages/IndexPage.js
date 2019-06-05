@@ -14,20 +14,25 @@ export default class IndexPage extends Component {
           <h1 className="ui inverted header" style={styles.heading}>
             Built for scientists
           </h1>
-          <div style={styles.subtitle}>
-            Octopus is a publication platform inspired by the way you research.
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Esse,
-            doloremque minus. In minima nemo accusantium iste corporis sit ut
-            vero.
+          <h2 style={styles.subtitle}>
+            Octopus is the new way to publish your scientific ideas, findings
+            and research.
+          </h2>
+          <div style={styles.explanation}>
+            Designed to replace journals and papers, Octopus is free to use and
+            gets your work out there much more quickly, to a wider audience and
+            ensures you get maximum credit for the work you do, whether that’s
+            coming up with hypotheses, designing protocols, collecting data,
+            doing analyses or writing reviews.
           </div>
           <div className="ui hidden divider" />
           <div className="ui stackable grid">
             <div className="column" style={styles.explore}>
               <Link
-                to={WebURI.Upload}
-                className="ui brown large right labeled icon button"
+                to={WebURI.Explore}
+                className="ui teal large right labeled icon button"
               >
-                <i className="internet explorer icon" />
+                <i className="search icon" />
                 Explore Science
               </Link>
             </div>
@@ -40,14 +45,34 @@ export default class IndexPage extends Component {
                 Log In via ORCiD
               </a>
             </div>
+            <div className="column" style={styles.more}>
+              <Link
+                to={WebURI.More}
+                className="ui purple large right labeled icon button"
+              >
+                <i className="exclamation icon" />
+                Learn more
+              </Link>
+            </div>
+            <div className="column">
+              <Link
+                to={WebURI.FAQ}
+                className="ui violet large right labeled icon button"
+              >
+                <i className="question icon" />
+                FAQ
+              </Link>
+            </div>
           </div>
         </div>
         <div className="four wide column computer only">
-          <img
-            src={graph}
-            alt="Science Graph Preview"
-            className="ui fluid image"
-          />
+          <Link to={WebURI.Explore}>
+            <img
+              src={graph}
+              alt="Science Graph Preview"
+              className="ui fluid image"
+            />
+          </Link>
         </div>
 
         {/* <Container height="30vh">
@@ -72,16 +97,25 @@ const styles = {
   heading: {
     fontSize: "5em",
     fontWeight: "normal",
+    marginBottom: 0,
   },
   subtitle: {
+    color: "#fff",
+    fontSize: "2em",
+    marginTop: 0,
+  },
+  explanation: {
     color: "lightgray",
     lineHeight: "1.5em",
     fontSize: "1.4em",
   },
   explore: {
-    width: "17em",
+    width: "30ch",
   },
   login: {
-    width: "18em",
+    width: "31ch",
+  },
+  more: {
+    width: "26ch",
   },
 };
