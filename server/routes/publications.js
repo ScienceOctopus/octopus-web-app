@@ -38,7 +38,7 @@ const getLinksBeforeByPublication = async (req, res) => {
   }
 
   const publications = await db.selectPublicationsByLinksAfterPublication(
-    req.params.id
+    req.params.id,
   );
   res.status(200).json(publications);
 };
@@ -49,7 +49,7 @@ const getLinksAfterByPublication = async (req, res) => {
   }
 
   const publications = await db.selectPublicationsByLinksBeforePublication(
-    req.params.id
+    req.params.id,
   );
   res.status(200).json(publications);
 };
@@ -69,7 +69,7 @@ const getReviewsByPublication = async (req, res) => {
   }
 
   const publications = await db.selectReviewPublicationsByPublication(
-    req.params.id
+    req.params.id,
   );
   res.status(200).json(publications);
 };
@@ -88,15 +88,15 @@ var router = express.Router();
 router.get("/:id(\\d+)", catchAsyncErrors(getPublicationByID));
 router.get(
   "/:id(\\d+)/linksBefore",
-  catchAsyncErrors(getLinksBeforeByPublication)
+  catchAsyncErrors(getLinksBeforeByPublication),
 );
 router.get(
   "/:id(\\d+)/linksAfter",
-  catchAsyncErrors(getLinksAfterByPublication)
+  catchAsyncErrors(getLinksAfterByPublication),
 );
 router.get(
   "/:id(\\d+)/references",
-  catchAsyncErrors(getReferencesByPublication)
+  catchAsyncErrors(getReferencesByPublication),
 );
 //router.get("/:id(\\d+)/referencedBy", catchAsyncErrors(getReferencedByByPublication));
 router.get("/:id(\\d+)/reviews", catchAsyncErrors(getReviewsByPublication));

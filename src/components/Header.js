@@ -8,12 +8,14 @@ import LogoutInvitation from "./LogoutInvitation";
 import { LoginDataContext } from "../LoginContext";
 import OctopusLogo from "./OctopusLogo";
 import { Trans } from "react-i18next";
+import SearchField from "./SearchField";
+import GlobalSearch from "./GlobalSearch";
 
 class Header extends Component {
   static contextType = LoginDataContext;
 
   render() {
-    const loggedIn = this.context !== undefined;
+    const loggedIn = this.context.user !== undefined;
 
     return (
       <header className="ui teal inverted menu" style={styles.header}>
@@ -24,10 +26,11 @@ class Header extends Component {
           </Link>
           <Link to={WebURI.Upload} className="item">
             <i className="ui pencil alternate icon" />
-            Draft a new publication
+            Publish
           </Link>
+          <GlobalSearch />
           {loggedIn ? (
-            <LogoutInvitation />
+            <LogoutInvitation user={this.context.user} />
           ) : (
             <GoblinIDLoginInvitation state={1337} />
           )}
@@ -40,12 +43,10 @@ class Header extends Component {
 const styles = {
   header: {
     borderRadius: 0,
+    marginBottom: "0rem",
   },
   logo: {
     marginRight: 1.5 + "em",
-  },
-  logout: {
-    marginLeft: 1 + "em",
   },
 };
 

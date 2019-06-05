@@ -6,7 +6,8 @@ const DEFAULT_SIZE = 40;
 const OctopusLogo = props => {
   return (
     <img
-      className="logo"
+      //   className="logo"
+      className={props.className}
       src={logo}
       alt="Octopus Logo"
       style={props.style}

@@ -102,7 +102,6 @@ class StageGraph extends Component {
 const commonStyle = css`
   overflow-x: auto;
   overflow-y: hidden;
-  margin-top: -1rem;
 `;
 
 const GraphContainer = styled.div`

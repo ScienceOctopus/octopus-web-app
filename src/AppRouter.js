@@ -50,18 +50,7 @@ function AppRouter() {
         exact
         render={props => <UploadPage {...props} review={true} />}
       />
-      <Route
-        name="loginRequest"
-        path={WebURI.LoginRequest}
-        exact
-        component={LoginPage}
-      />
-      <Route
-        name="loginAuthorisation"
-        path={WebURI.LoginAuthorisation}
-        exact
-        component={LoginPage}
-      />
+      <Route name="login" path={WebURI.Login} exact component={LoginPage} />
     </Switch>
   );
 }

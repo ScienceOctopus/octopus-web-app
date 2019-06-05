@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 
 const db = require("./postgresQueries").queries;
 
+const usersHandlers = require("./routes/users");
 const problemsHandlers = require("./routes/problems");
 const publicationsHandlers = require("./routes/publications");
 const OAuthFlowResponseHandlers = require("./routes/oauth-flow");
@@ -18,6 +19,8 @@ blobService.initialise();
 const app = express();
 const port = process.env.PORT || 3001;
 
+global.authentications = [];
+
 // Can access anything in this folder
 app.use(express.static("public"));
 
@@ -25,7 +28,7 @@ app.use(bodyParser.json());
 app.use(
   bodyParser.urlencoded({
     extended: true,
-  })
+  }),
 );
 
 app.get("/api", (request, response) => {
@@ -34,13 +37,14 @@ app.get("/api", (request, response) => {
 
 app.use("/api/problems", problemsHandlers.router);
 app.use("/api/publications", publicationsHandlers.router);
+app.use("/api/users", usersHandlers.router);
 app.use("/api/oauth-flow", OAuthFlowResponseHandlers.router);
 
 app.post("/api/feedback", fb.postFeedback);
 app.post(
   "/api/image",
   upload(blobService.AZURE_FEEDBACK_IMAGE_CONTAINER).single("image"),
-  fb.postImage
+  fb.postImage,
 );
 
 app.use(function(err, req, res, next) {
