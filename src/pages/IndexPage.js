@@ -1,34 +1,31 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import OctopusLogo from "../components/OctopusLogo";
-
+import { createGlobalStyle } from "styled-components";
+import { Link } from "react-router-dom";
+import WebURI from "../urls/WebsiteURIs";
 export default class IndexPage extends Component {
   render() {
     return (
-      <div>
-        <Container>
-          <TitleContainer>
-            <MainTitle>Built for scientists</MainTitle>
-            <SubTitle>
-              Octopus is a publication platform inspired by the way you
-              research. Lorem ipsum dolor sit amet, consectetur adipisicing
-              elit. Esse, doloremque minus. In minima nemo accusantium iste
-              corporis sit ut vero.
-            </SubTitle>
-          </TitleContainer>
-          <StyledGraph size={450} style={styles.logo} />
-        </Container>
-
-        {/* <Container height="30vh">
-          <StyledGraph size={400} />
-          <TitleContainer>
-            <SubTitle>
-              A lot of very useful information about octopus and the way it
-              works
-            </SubTitle>
-          </TitleContainer>
-        </Container> */}
-      </div>
+      <Container>
+        <GlobalStyle />
+        <TitleContainer>
+          <MainTitle>Built for scientists</MainTitle>
+          <SubTitle>
+            Octopus is a publication platform inspired by the way you research.
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Esse,
+            doloremque minus. In minima nemo accusantium iste crporis sit ut
+            vero.
+            <LinkContainer>
+              <StyledLink to={WebURI.OrcidLogin(1337)}>
+                Log In via ORCID
+              </StyledLink>
+              <StyledLink to={WebURI.Upload}>Explore Science</StyledLink>
+            </LinkContainer>
+          </SubTitle>
+        </TitleContainer>
+        <StyledGraph size={450} style={styles.logo} />
+      </Container>
     );
   }
 }
@@ -48,6 +45,51 @@ const StackableGrid = ({ children }) => (
   </div>
 );
 
+const StyledLink = styled(Link)`
+  padding-right: 2rem;
+  color: white;
+  text-decoration: underline;
+
+  :after {
+    content: " >";
+  }
+
+  :hover {
+    color: lightgreen;
+  }
+`;
+
+const LinkContainer = styled.div`
+  margin-top: 1em;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  @media screen and (max-width: 750px) {
+    flex-direction: column;
+    justify-content: space-evenly;
+  }
+`;
+
+const GlobalStyle = createGlobalStyle`
+  body {
+    height: 100%;
+    background-color:teal;
+  }
+
+  #root {
+    height: 100%;
+  }
+
+  .App {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+    @media screen and (max-height: 400px) {
+      height:unset;
+    }
+  }
+`;
+
 const Container = styled.div`
   display: flex;
   padding: 0 10%;
@@ -55,15 +97,24 @@ const Container = styled.div`
   flex-direction: row;
   justify-content: space-around;
   align-items: center;
-  height: ${p => (p.height ? p.height : "80vh")};
+  /* height: ${p => (p.height ? p.height : "100%")}; */
   flex-grow: 1;
-  max-height: 600px;
+  /* max-height: 600px; */
+  /* flex: 1 1 auto; */
 
   @media screen and (max-width: 750px) {
     /* flex-direction: column; */
     padding: 0 2.5%;
-    height: 100%;
-    max-height: 750px;
+    /* height: 100%; */
+    /* max-height: 750px; */
+  }
+
+  @media screen and (max-height: 400px) {
+    /* flex-direction: column; */
+    /* padding: 0 25%; */
+    flex-grow: 0;
+    height:200%;
+    padding: 0 10%;
   }
 `;
 
@@ -88,7 +139,12 @@ const MainTitle = styled.div`
   color: white;
 
   @media screen and (max-width: 750px) {
+    font-size: 8em;
     text-align: center;
+  }
+
+  @media screen and (max-height: 400px) {
+    font-size: 4em;
   }
 `;
 
@@ -100,5 +156,10 @@ const SubTitle = styled.div`
 
   @media screen and (max-width: 750px) {
     text-align: center;
+    font-size: 2.5em;
+  }
+
+  @media screen and (max-height: 400px) {
+    font-size: 1.5em;
   }
 `;
