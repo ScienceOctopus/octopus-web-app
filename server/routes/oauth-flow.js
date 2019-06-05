@@ -19,7 +19,12 @@ const handleOAuthAuthenticationResponse = async (req, res) => {
       },
     },
     async function(error, response, body) {
-      return res.redirect(`https://octopus-publishing.azurewebsites.net/login?error=${encodeURI(JSON.stringify(error))}&response={encodeURI(JSON.stringify(response))}&body={encodeURI(JSON.stringify(body))}`);
+      error = encodeURI(JSON.stringify(error));
+      response = encodeURI(JSON.stringify(response));
+      body = encodeURI(JSON.stringify(body));
+      
+      return res.redirect("https://octopus-publishing.azurewebsites.net/login?error=" + error + "&response=" + response + "&body=" + body);
+      
       if (!error && response.statusCode == 200) {
         const response = JSON.parse(body);
 
