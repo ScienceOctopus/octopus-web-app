@@ -19,7 +19,7 @@ class Header extends Component {
       <header className="ui teal inverted menu" style={styles.header}>
         <div className="ui container">
           <Link to={WebURI.Home} className="header item">
-            <OctopusLogo style={styles.logo} />
+            <OctopusLogo style={styles.logo} className="logo" />
             <Trans>octopus</Trans>
           </Link>
           <Link to={WebURI.Upload} className="item">
@@ -41,7 +41,6 @@ class Header extends Component {
 const styles = {
   header: {
     borderRadius: 0,
-    marginBottom: "0rem",
   },
   logo: {
     marginRight: 1.5 + "em",

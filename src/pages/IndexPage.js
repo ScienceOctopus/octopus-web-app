@@ -1,181 +1,71 @@
 import React, { Component } from "react";
-import styled, { css } from "styled-components";
-import { createGlobalStyle } from "styled-components";
-import { Link } from "react-router-dom";
 import WebURI from "../urls/WebsiteURIs";
 import graph from "../assets/images/graph.png";
 
 export default class IndexPage extends Component {
   render() {
     return (
-      <Container>
-        <GlobalStyle />
-        <TitleContainer>
-          <MainTitle>Built for scientists</MainTitle>
-          <SubTitle>
-            Octopus is a publication platform inspired by the way you research.
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Esse,
-            doloremque minus. In minima nemo accusantium iste crporis sit ut
-            vero.
-            <LinkContainer>
-              <StyledAnchor href={WebURI.OrcidLogin(1337)}>
-                Log In via ORCID
-              </StyledAnchor>
-              <StyledLink to={WebURI.Upload}>Explore Science</StyledLink>
-            </LinkContainer>
-          </SubTitle>
-        </TitleContainer>
+      <main className="ui middle aligned two column centered stackable grid" style={styles.main}>
+        <div className="eight wide column">
+			<h1 className="ui inverted header" style={styles.heading}>Built for scientists</h1>
+			<div style={styles.subtitle}>
+			  Octopus is a publication platform inspired by the way you
+			  research. Lorem ipsum dolor sit amet, consectetur adipisicing
+			  elit. Esse, doloremque minus. In minima nemo accusantium iste
+			  corporis sit ut vero.
+			</div>
+			<div className="ui hidden divider"></div>
+			<div className="ui stackable grid">
+			  <div className="column" style={styles.explore}>
+			  <a className="ui brown large right labeled icon button" href={WebURI.Upload}>
+				<i className="internet explorer icon"></i>
+			  Explore Science
+			  </a>
+			  </div>
+			  <div className="column" style={styles.login}>
+				  <a className="ui olive large right labeled icon button" href={WebURI.OrcidLogin(1337)}>
+					<i className="address book icon"></i>
+					Log In via ORCiD
+				  </a>
+			  </div>
+			</div>
+        </div>
+		<div className="four wide column computer only">
+			<img src={graph} alt="Science Graph Preview" className="ui fluid image" />
+		</div>
 
-        <StyledGraph />
-      </Container>
+        {/* <Container height="30vh">
+          <StyledGraph size={400} />
+          <TitleContainer>
+            <SubTitle>
+              A lot of very useful information about octopus and the way it
+              works
+            </SubTitle>
+          </TitleContainer>
+        </Container> */}
+      </main>
     );
   }
 }
 
 const styles = {
-  logo: {
-    maxWidth: "50vw",
-    maxHeight: "50vh",
+  main: {
+    padding: "4em 0",
+    backgroundColor: "teal",
+  },
+  heading: {
+	  fontSize: "5em",
+	  fontWeight: "normal",
+  },
+  subtitle: {
+	  color: "lightgray",
+	  lineHeight: "1.5em",
+	  fontSize: "1.4em",
+  },
+  explore: {
+	  width: "17em",
+  },
+  login: {
+	  width: "18em",
   },
 };
-
-const StackableGrid = ({ children }) => (
-  <div className="ui stackable four column grid">
-    {children.map(x => (
-      <div className="column">{x}</div>
-    ))}
-  </div>
-);
-
-const linkStyle = css`
-  padding-right: 2rem;
-  color: white;
-  text-decoration: underline;
-
-  :after {
-    content: " >";
-  }
-
-  :hover {
-    color: lightgreen;
-  }
-`;
-
-const StyledLink = styled(Link)`
-  ${linkStyle}
-`;
-
-const StyledAnchor = styled.a`
-  ${linkStyle}
-`;
-
-const LinkContainer = styled.div`
-  margin-top: 1em;
-  width: 100%;
-  display: flex;
-  flex-wrap: wrap;
-  @media screen and (max-width: 750px) {
-    flex-direction: column;
-    justify-content: space-evenly;
-  }
-`;
-
-const GlobalStyle = createGlobalStyle`
-  body {
-    height: 100%;
-    background-color:teal;
-  }
-
-  #root {
-    height: 100%;
-  }
-
-  .App {
-    display: flex;
-    flex-flow: column;
-    height: 100%;
-    @media screen and (max-height: 400px) {
-      height:unset;
-    }
-  }
-`;
-
-const Container = styled.div`
-  display: flex;
-  padding: 0 10%;
-  background-color: teal;
-  flex-direction: row;
-  justify-content: space-evenly;
-  align-items: center;
-  /* height: ${p => (p.height ? p.height : "100%")}; */
-  /* flex-grow: 1; */
-  /* max-height: 600px; */
-  flex: 1 1 auto;
-
-
-  @media screen and (max-width: 750px) {
-    /* flex-direction: column; */
-    padding: 0 2.5%;
-    /* height: 100%; */
-    /* max-height: 750px; */
-  }
-
-  @media screen and (max-height: 500px) {
-    /* flex-direction: column; */
-    /* padding: 0 25%; */
-    flex-grow: 0;
-    height:200%;
-    padding: 0 10%;
-  }
-`;
-
-const StyledGraph = styled.img.attrs({
-  src: graph,
-  alt: "Science Graph Preview",
-})`
-  max-width: 50vw;
-  max-height: 50vh;
-  @media screen and (max-width: 750px) {
-    display: none;
-  }
-`;
-
-const TitleContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  flex-basis: 0;
-`;
-
-const MainTitle = styled.div`
-  padding: 1rem 0;
-  font-size: 5em;
-  line-height: 1em;
-  font-weight: 500;
-  color: white;
-
-  @media screen and (max-width: 750px) {
-    font-size: 8em;
-    text-align: center;
-  }
-
-  @media screen and (max-height: 500px) {
-    font-size: 4em;
-  }
-`;
-
-const SubTitle = styled.div`
-  padding: 1rem 0;
-  font-size: 1.4em;
-  line-height: 1.4em;
-  color: lightgray;
-
-  @media screen and (max-width: 750px) {
-    text-align: center;
-    font-size: 2.5em;
-  }
-
-  @media screen and (max-height: 500px) {
-    font-size: 1.5em;
-  }
-`;
