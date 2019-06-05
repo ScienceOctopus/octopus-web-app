@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import styled, { css } from "styled-components";
-import OctopusLogo from "../components/OctopusLogo";
 import { createGlobalStyle } from "styled-components";
 import { Link } from "react-router-dom";
 import WebURI from "../urls/WebsiteURIs";
+import graph from "../assets/images/graph.png";
+
 export default class IndexPage extends Component {
   render() {
     return (
@@ -24,7 +25,8 @@ export default class IndexPage extends Component {
             </LinkContainer>
           </SubTitle>
         </TitleContainer>
-        <StyledGraph size={450} style={styles.logo} />
+
+        <StyledGraph />
       </Container>
     );
   }
@@ -32,8 +34,8 @@ export default class IndexPage extends Component {
 
 const styles = {
   logo: {
-    maxWidth: "60vw",
-    maxHeight: "60vh",
+    maxWidth: "50vw",
+    maxHeight: "50vh",
   },
 };
 
@@ -103,12 +105,13 @@ const Container = styled.div`
   padding: 0 10%;
   background-color: teal;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: space-evenly;
   align-items: center;
   /* height: ${p => (p.height ? p.height : "100%")}; */
-  flex-grow: 1;
+  /* flex-grow: 1; */
   /* max-height: 600px; */
-  /* flex: 1 1 auto; */
+  flex: 1 1 auto;
+
 
   @media screen and (max-width: 750px) {
     /* flex-direction: column; */
@@ -126,7 +129,12 @@ const Container = styled.div`
   }
 `;
 
-const StyledGraph = styled(OctopusLogo)`
+const StyledGraph = styled.img.attrs({
+  src: graph,
+  alt: "Science Graph Preview",
+})`
+  max-width: 50vw;
+  max-height: 50vh;
   @media screen and (max-width: 750px) {
     display: none;
   }
