@@ -381,7 +381,6 @@ class UploadPage extends Component {
               <i className="ui pencil icon" />
               Upload a new publication
             </h2>
-
             <div className="two fields">
               <div className="field">
                 <SimpleSelector
@@ -416,7 +415,6 @@ class UploadPage extends Component {
               </div>
             </div>
             {this.shouldRenderLinkingSelector() && this.renderLinkingSelector()}
-
             <TitledForm
               title="Publication Title"
               value={this.state.title}
@@ -428,14 +426,16 @@ class UploadPage extends Component {
               onChange={this.handleDescriptionChange}
             />
             <FileUploadSelector onSelect={this.handleFileSelect} />
+            <div className="ui hidden divider" />
             <button
               className="ui submit button"
               onClick={this.handleSubmit}
               disabled={!this.submitEnabled()}
             >
               Submit
-            </button>
-
+            </button>{" "}
+            as publication author{" "}
+            <strong>{this.context.user.display_name}</strong>.
             {this.state.uploadSuccessful && (
               <Redirect to={`/publications/${this.state.insertedId}`} />
             )}
