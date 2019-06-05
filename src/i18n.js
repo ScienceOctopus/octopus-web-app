@@ -8,11 +8,10 @@ i18n
   .init({
     detection: {
       // order and from where user language should be detected
-      order: ["subdomain", "path", "navigator"],
+      order: ["path", "navigator"],
 
       // keys or params to lookup language from
       lookupFromPathIndex: 0,
-      lookupFromSubdomainIndex: 1,
 
       // cache user language on
       caches: [],
