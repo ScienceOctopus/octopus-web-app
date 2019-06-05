@@ -5,7 +5,7 @@ const PDFImagePreviewRenderer = props => {
   const canvasEl = useRef(null);
 
   const [loading] = usePdf({
-    file: props.state.publication.images[0].uri,
+    file: props.state.images[0].uri,
     page: 1,
     canvasEl,
   });

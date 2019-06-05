@@ -120,6 +120,10 @@ const queries = {
     queries
       .selectPublicationsByLinksAfterPublication(publication)
       .where("review", true),
+  selectCollaboratorsByPublication: publication =>
+    knex("publication_collaborators")
+      .select()
+      .where("publication", publication),
   insertPublication: (problem, stage, title, summary, description, review) =>
     knex("publications")
       .insert({
@@ -230,6 +234,7 @@ const queries = {
         behaviour_type: behaviour_type,
       })
       .returning("id"),
+
   selectUsers: id =>
     knex("users")
       .select()

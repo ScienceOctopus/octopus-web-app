@@ -83,6 +83,15 @@ const getResourcesByPublication = async (req, res) => {
   res.status(200).json(resources);
 };
 
+const getCollaboratorsByPublication = async (req, res) => {
+  if (await validatePublication(req.params.id)) {
+    return notFound(res);
+  }
+
+  const resources = await db.selectCollaboratorsByPublication(req.params.id);
+  res.status(200).json(resources);
+};
+
 var router = express.Router();
 
 router.get("/:id(\\d+)", catchAsyncErrors(getPublicationByID));
@@ -101,6 +110,7 @@ router.get(
 //router.get("/:id(\\d+)/referencedBy", catchAsyncErrors(getReferencedByByPublication));
 router.get("/:id(\\d+)/reviews", catchAsyncErrors(getReviewsByPublication));
 router.get("/:id(\\d+)/resources", catchAsyncErrors(getResourcesByPublication));
+router.get("/:id(\\d+)/collaborators", catchAsyncErrors(getCollaboratorsByPublication));
 
 module.exports = {
   router,

@@ -114,6 +114,11 @@ class PublicationBuilder extends LinkBuilder {
     this.path += "/reviews";
     return this;
   };
+
+  collaborators = () => {
+    this.path += "/collaborators";
+    return this;
+  };
 }
 
 class UserBuilder extends LinkBuilder {

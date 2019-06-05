@@ -9,6 +9,8 @@ class SummaryView extends Component {
 
     this.state = {
       publication: {},
+      collaborators: [],
+      images: undefined,
       stage: undefined,
     };
 
@@ -31,10 +33,27 @@ class SummaryView extends Component {
       .resources()
       .get()
       .then(resources => {
-        this.setState(state => {
-          var augmented = state;
-          augmented.publication.images = resources;
-          return augmented;
+        this.setState({
+          images: resources,
+        });
+      });
+
+    Api()
+      .publication(this.props.publicationId)
+      .collaborators()
+      .get()
+      .then(collaborators => {
+        collaborators.forEach(collaborator => {
+          Api()
+            .user(collaborator.user)
+            .get()
+            .then(user => {
+              this.setState(state => {
+                var augmented = state;
+                augmented.collaborators.push(user);
+                return augmented;
+              });
+            });
         });
       });
   }
@@ -65,7 +84,7 @@ class SummaryView extends Component {
   render() {
     // TODO: handle cases where publication may not have loaded?
 
-    const imagesPresent = this.state.publication.images !== undefined;
+    const imagesPresent = this.state.images !== undefined;
     const stagePresent = this.state.stage !== undefined;
     const reviewPresent = this.state.publication.review;
 
@@ -89,11 +108,15 @@ class SummaryView extends Component {
               <strong>Date added: </strong>
               {new Date(this.state.publication.created_at).toLocaleDateString()}
             </p>
+            {this.state.collaborators.map(user => (
+              <p key={user.id}>
+                <strong>Author: </strong>
+                {user.display_name}
+              </p>
+            ))}
+
             {imagesPresent && (
-              <a
-                className="ui button"
-                href={this.state.publication.images[0].uri}
-              >
+              <a className="ui button" href={this.state.images[0].uri}>
                 <i className="ui download icon" />
                 Download document
               </a>
