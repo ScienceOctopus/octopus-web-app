@@ -13,16 +13,26 @@ class GlobalSearch extends Component {
   };
 
   handleSubmit = event => {
-    this.props.history.push(`/problems/${1}`);
+    event.target.firstChild.firstChild.blur();
+
+    if (this.state.value === "") {
+      this.props.history.push("/");
+    } else {
+      this.setState({ value: "breast cancer" }, () =>
+        this.props.history.push(`/problems/${1}`),
+      );
+    }
+
     event.preventDefault();
   };
 
   render() {
     return (
       <SearchField
-        placeholder="Search for anything"
+        placeholder="Search science"
         onChange={this.handleChange}
         onSubmit={this.handleSubmit}
+        value={this.state.value}
       />
     );
   }
