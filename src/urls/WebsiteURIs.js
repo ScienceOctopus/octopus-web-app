@@ -3,6 +3,7 @@ const REDIRECT_URI =
   "https://octopus-publishing.azurewebsites.net/api/oauth-flow";
 
 const WebURI = {
+  LanguageMatcher: "/([a-z][a-z]-[A-Z][A-Z]|[a-z][a-z])?",
   Home: "/",
 
   Problem: "/problems/:id(\\d+)",

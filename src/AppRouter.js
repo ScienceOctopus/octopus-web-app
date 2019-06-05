@@ -10,47 +10,62 @@ import WebURI from "./urls/WebsiteURIs";
 function AppRouter() {
   return (
     <Switch>
-      <Route name="home" path={WebURI.Home} exact component={IndexPage} />
+      <Route
+        name="home"
+        path={WebURI.LanguageMatcher + WebURI.Home}
+        exact
+        component={IndexPage}
+      />
 
       <Route
         name="problem"
-        path={WebURI.Problem}
+        path={WebURI.LanguageMatcher + WebURI.Problem}
         exact
         render={props => <ProblemPage {...props} publication={false} />}
       />
       <Route
         name="publication"
-        path={WebURI.Publication}
+        path={WebURI.LanguageMatcher + WebURI.Publication}
         exact
         render={props => <ProblemPage {...props} publication={true} />}
       />
 
-      <Route name="upload" path={WebURI.Upload} exact component={UploadPage} />
+      <Route
+        name="upload"
+        path={WebURI.LanguageMatcher + WebURI.Upload}
+        exact
+        component={UploadPage}
+      />
       <Route
         name="uploadToProblem"
-        path={WebURI.UploadToProblem}
+        path={WebURI.LanguageMatcher + WebURI.UploadToProblem}
         exact
         render={props => <UploadPage {...props} review={false} />}
       />
       <Route
         name="uploadToProblemStage"
-        path={WebURI.UploadToProblemStage}
+        path={WebURI.LanguageMatcher + WebURI.UploadToProblemStage}
         exact
         render={props => <UploadPage {...props} review={false} />}
       />
       <Route
         name="uploadToProblemStageAll"
-        path={WebURI.UploadToProblemStageAll}
+        path={WebURI.LanguageMatcher + WebURI.UploadToProblemStageAll}
         exact
         render={props => <UploadPage {...props} review={true} />}
       />
       <Route
         name="uploadToProblemStageReview"
-        path={WebURI.UploadToProblemStageReview}
+        path={WebURI.LanguageMatcher + WebURI.UploadToProblemStageReview}
         exact
         render={props => <UploadPage {...props} review={true} />}
       />
-      <Route name="login" path={WebURI.Login} exact component={LoginPage} />
+      <Route
+        name="login"
+        path={WebURI.LanguageMatcher + WebURI.Login}
+        exact
+        component={LoginPage}
+      />
     </Switch>
   );
 }
