@@ -22,6 +22,7 @@ class ProblemPage extends React.Component {
           problem: {},
           stages: [],
           publications: new Map(),
+          loading: true,
         },
         open: true,
         measurements: undefined,
@@ -192,12 +193,14 @@ class ProblemPage extends React.Component {
             publications: [],
             links: [],
           };
+          stage.loading = true;
         });
 
         let content = { ...this.state.content };
 
         content.publications = new Map();
         content.stages = stages;
+        content.loading = false;
 
         this.setState({ content: content }, () => this.fetchStage(0, boot));
       });
@@ -222,6 +225,7 @@ class ProblemPage extends React.Component {
           publication.reviews = undefined;
         });
         content.stages[stageId].publications = publications;
+        content.stages[stageId].loading = false;
 
         this.setState({ content: content }, () =>
           this.fetchStage(stageId + 1, boot),
