@@ -25,7 +25,7 @@ const handleOAuthAuthenticationResponse = async (req, res) => {
         const users = await db.selectUsersByGoblinID(response.orcid);
 
         let id = (await db.insertOrUpdateUser(
-          "test@test.com",
+          response.email || null,
           response.orcid,
           response.name,
         )).rows[0].id;
