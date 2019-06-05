@@ -45,27 +45,7 @@ class StageGraph extends Component {
 
     let stages;
 
-    if (this.props.stages.length > 0) {
-      stages = (
-        <div
-          className={"ui " + numbers[this.props.stages.length] + " column grid"}
-          style={{
-            overflowX: "auto",
-            overflowY: "hidden",
-            flexWrap: "nowrap",
-          }}
-        >
-          {this.props.stages.map(stage => (
-            <Stage
-              key={stage.id}
-              stage={stage}
-              content={this.props.content}
-              open={open}
-            />
-          ))}
-        </div>
-      );
-    } else {
+    if (this.props.content.content.loading) {
       stages = (
         <div
           className={"ui six column grid"}
@@ -86,7 +66,28 @@ class StageGraph extends Component {
                   publications: [],
                   links: [],
                 },
+                loading: true,
               }}
+              content={this.props.content}
+              open={open}
+            />
+          ))}
+        </div>
+      );
+    } else {
+      stages = (
+        <div
+          className={"ui " + numbers[this.props.stages.length] + " column grid"}
+          style={{
+            overflowX: "auto",
+            overflowY: "hidden",
+            flexWrap: "nowrap",
+          }}
+        >
+          {this.props.stages.map(stage => (
+            <Stage
+              key={stage.id}
+              stage={stage}
               content={this.props.content}
               open={open}
             />
