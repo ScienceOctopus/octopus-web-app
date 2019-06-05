@@ -379,7 +379,7 @@ class UploadPage extends Component {
           >
             <h2 className="ui dividing header">
               <i className="ui pencil icon" />
-              Upload a new publication
+              Publish your work
             </h2>
             <div className="two fields">
               <div className="field">

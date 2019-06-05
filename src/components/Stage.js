@@ -157,7 +157,7 @@ class Stage extends Component {
         <>
           <div style={{ float: "left" }}>
             <i
-              className="ui plus square icon"
+              className="ui pencil alternate icon"
               style={{ marginRight: "0.5em", color: "gray" }}
             />
             &#x200b;
@@ -184,7 +184,7 @@ class Stage extends Component {
               );
               event.stopPropagation();
             }}
-            className="ui plus square icon"
+            className="ui pencil alternate icon"
             style={{ marginRight: "0.5em", color: "gray", cursor: "pointer" }}
           />
           {this.props.stage.name}

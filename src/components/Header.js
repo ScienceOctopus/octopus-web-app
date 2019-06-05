@@ -25,7 +25,7 @@ class Header extends Component {
           {loggedIn && (
             <Link to={WebURI.Upload} className="item">
               <i className="ui pencil alternate icon" />
-              Publish
+              Publish your work
             </Link>
           )}
           <GlobalSearch />
