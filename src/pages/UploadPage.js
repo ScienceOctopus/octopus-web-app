@@ -355,6 +355,20 @@ class UploadPage extends Component {
   }
 
   render() {
+    if (this.context.user === undefined) {
+      return (
+        <div className="ui main text container">
+          <div className="ui negative icon message">
+            <i className="key icon" />
+            <div className="content">
+              <div className="header">Log-in required</div>
+              <p>Logging in via your ORCiD is required to post publications.</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="ui main container">
         <div className="ui segment">
