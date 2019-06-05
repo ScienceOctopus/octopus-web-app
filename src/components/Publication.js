@@ -96,7 +96,7 @@ class Publication extends Component {
           {reviews}
         </BgDiv>
       );
-    } else {
+    } else if (this.props.publication.title) {
       publicationView = (
         <BgDiv
           className="ui segment"
@@ -114,6 +114,60 @@ class Publication extends Component {
           </Description>
         </BgDiv>
       );
+    } else {
+      publicationView = (
+        <BgDiv
+          className="ui segment"
+          highlight={false}
+          review={false}
+          pointer={false}
+        >
+          <div className="ui placeholder">
+            <h5 style={{ marginBottom: 0 }}>
+              <span style={{ float: "left" }}>&#x200b;</span>
+              <div className="header" style={{ fontSize: 0 }} />
+              <div style={{ clear: "both" }} />
+            </h5>
+            <div style={{ height: "1rem", backgroundColor: "#fff" }} />
+            <div className="meta">
+              <span style={{ float: "left" }}>&#x200b;</span>
+              <div
+                className="full line"
+                style={{
+                  backgroundColor: "initial",
+                  marginTop: 0,
+                  marginBottom: 0,
+                }}
+              />
+              <div style={{ clear: "both" }} />
+            </div>
+            <div
+              className="description"
+              style={{
+                height: "3rem",
+                lineHeight: "1.2rem",
+                overflow: "hidden",
+              }}
+            >
+              <div
+                className="full line"
+                style={{ backgroundColor: "initial" }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: 0,
+                  right: 0,
+                  width: "100%",
+                  height: "0.6rem",
+                  background:
+                    "linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%)",
+                }}
+              />
+            </div>
+          </div>
+        </BgDiv>
+      );
     }
 
     return publicationView;
@@ -124,7 +178,8 @@ const BgDiv = styled.div`
   &.segment {
     background-color: ${props => (props.highlight ? "#99ffd3" : "white")};
     cursor: ${props =>
-      props.highlight && !props.review && !props.pointer
+      (props.highlight && !props.review && !props.pointer) ||
+      props.pointer === false
         ? "default"
         : "pointer"};
 

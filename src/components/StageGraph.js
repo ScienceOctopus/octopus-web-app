@@ -68,210 +68,29 @@ class StageGraph extends Component {
     } else {
       stages = (
         <div
-          className="ui six column grid"
-          style={{ overflowX: "auto", overflowY: "hidden", flexWrap: "nowrap" }}
+          className={"ui six column grid"}
+          style={{
+            overflowX: "auto",
+            overflowY: "hidden",
+            flexWrap: "nowrap",
+          }}
         >
-          <div
-            className="column"
-            style={{ backgroundColor: "#dcf8ec", minWidth: "200px" }}
-          >
-            <div className="ui segment">
-              <h4 style={{ marginBottom: 0 }}>
-                <div style={{ float: "left" }}>
-                  <i
-                    className="ui plus square icon"
-                    style={{ marginRight: "0.5em", color: "gray" }}
-                  />
-                  &#x200b;
-                </div>
-                <div
-                  className="ui placeholder"
-                  style={{ marginRight: "1.5em", height: "1.2em" }}
-                >
-                  <div
-                    className="long line"
-                    style={{ backgroundColor: "initial" }}
-                  />
-                </div>
-                <div style={{ clear: "both" }} />
-                <div className="floating ui label">
-                  <span style={{ width: "1ch", display: "inline-block" }}>
-                    &#x200b;
-                  </span>
-                </div>
-              </h4>
-              <div style={{ marginTop: "1rem", marginBottom: "-1rem" }}>
-                <div
-                  style={{
-                    padding: "1em 1em",
-                    borderRadius: "0.25rem",
-                    border: "1px solid rgba(34, 36, 38, 0.15)",
-                    fontSize: "0.75rem",
-                    paddingBottom: 0,
-                    marginBottom: "1rem",
-                  }}
-                  className="ui segment"
-                >
-                  <div className="ui placeholder">
-                    <h5 style={{ marginBottom: 0 }}>
-                      <span style={{ float: "left" }}>&#x200b;</span>
-                      <div className="header" style={{ fontSize: 0 }} />
-                      <div style={{ clear: "both" }} />
-                    </h5>
-                    <div style={{ height: "1rem", backgroundColor: "#fff" }} />
-                    <div className="meta">
-                      <span style={{ float: "left" }}>&#x200b;</span>
-                      <div
-                        className="full line"
-                        style={{
-                          backgroundColor: "initial",
-                          marginTop: 0,
-                          marginBottom: 0,
-                        }}
-                      />
-                      <div style={{ clear: "both" }} />
-                    </div>
-                    <div
-                      className="description"
-                      style={{
-                        height: "3rem",
-                        lineHeight: "1.2rem",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <div
-                        className="full line"
-                        style={{ backgroundColor: "initial" }}
-                      />
-                      <div
-                        style={{
-                          position: "absolute",
-                          bottom: 0,
-                          right: 0,
-                          width: "100%",
-                          height: "0.6rem",
-                          background:
-                            "linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%)",
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div
-                  style={{
-                    padding: "1em 1em",
-                    borderRadius: "0.25rem",
-                    border: "1px solid rgba(34, 36, 38, 0.15)",
-                    fontSize: "0.75rem",
-                    paddingBottom: 0,
-                    marginBottom: "1rem",
-                  }}
-                  className="ui segment"
-                >
-                  <div className="ui placeholder">
-                    <h5 style={{ marginBottom: 0 }}>
-                      <span style={{ float: "left" }}>&#x200b;</span>
-                      <div className="header" style={{ fontSize: 0 }} />
-                      <div style={{ clear: "both" }} />
-                    </h5>
-                    <div style={{ height: "1rem", backgroundColor: "#fff" }} />
-                    <div className="meta">
-                      <span style={{ float: "left" }}>&#x200b;</span>
-                      <div
-                        className="full line"
-                        style={{
-                          backgroundColor: "initial",
-                          marginTop: 0,
-                          marginBottom: 0,
-                        }}
-                      />
-                      <div style={{ clear: "both" }} />
-                    </div>
-                    <div
-                      className="description"
-                      style={{
-                        height: "3rem",
-                        lineHeight: "1.2rem",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <div
-                        className="full line"
-                        style={{ backgroundColor: "initial" }}
-                      />
-                      <div
-                        style={{
-                          position: "absolute",
-                          bottom: 0,
-                          right: 0,
-                          width: "100%",
-                          height: "0.6rem",
-                          background:
-                            "linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%)",
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div
-                  style={{
-                    padding: "1em 1em",
-                    borderRadius: "0.25rem",
-                    border: "1px solid rgba(34, 36, 38, 0.15)",
-                    fontSize: "0.75rem",
-                    paddingBottom: 0,
-                    marginBottom: "1rem",
-                  }}
-                  className="ui segment"
-                >
-                  <div className="ui placeholder">
-                    <h5 style={{ marginBottom: 0 }}>
-                      <span style={{ float: "left" }}>&#x200b;</span>
-                      <div className="header" style={{ fontSize: 0 }} />
-                      <div style={{ clear: "both" }} />
-                    </h5>
-                    <div style={{ height: "1rem", backgroundColor: "#fff" }} />
-                    <div className="meta">
-                      <span style={{ float: "left" }}>&#x200b;</span>
-                      <div
-                        className="full line"
-                        style={{
-                          backgroundColor: "initial",
-                          marginTop: 0,
-                          marginBottom: 0,
-                        }}
-                      />
-                      <div style={{ clear: "both" }} />
-                    </div>
-                    <div
-                      className="description"
-                      style={{
-                        height: "3rem",
-                        lineHeight: "1.2rem",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <div
-                        className="full line"
-                        style={{ backgroundColor: "initial" }}
-                      />
-                      <div
-                        style={{
-                          position: "absolute",
-                          bottom: 0,
-                          right: 0,
-                          width: "100%",
-                          height: "0.6rem",
-                          background:
-                            "linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%)",
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          {new Array(6).fill(null).map((_, i) => (
+            <Stage
+              key={i}
+              stage={{
+                name: undefined,
+                publications: [],
+                links: [],
+                selection: {
+                  publications: [],
+                  links: [],
+                },
+              }}
+              content={this.props.content}
+              open={open}
+            />
+          ))}
         </div>
       );
     }
@@ -279,10 +98,12 @@ class StageGraph extends Component {
     return (
       <div
         onClick={event => {
-          this.props.history.push(
-            `/problems/${this.props.problem.id}`,
-            this.props.content,
-          );
+          if (this.props.problem.id !== undefined) {
+            this.props.history.push(
+              `/problems/${this.props.problem.id}`,
+              this.props.content,
+            );
+          }
           event.stopPropagation();
         }}
       >

@@ -124,8 +124,68 @@ class Stage extends Component {
           return publicationConstructor(publication);
         },
       );
-    } else {
+    } else if (this.props.stage.name) {
       publications = this.props.stage.publications.map(publicationConstructor);
+    } else {
+      publications = new Array(3)
+        .fill(null)
+        .map((_, i) => (
+          <Publication
+            key={i}
+            publication={{}}
+            highlight={false}
+            content={this.props.content}
+          />
+        ));
+    }
+
+    let titleCard;
+
+    if (this.props.stage.name) {
+      titleCard = (
+        <>
+          <i
+            onClick={event => {
+              this.props.history.push(
+                `/upload/problems/${this.props.content.problem}/stages/${
+                  this.props.stage.id
+                }`,
+              );
+              event.stopPropagation();
+            }}
+            className="ui plus square icon"
+            style={{ marginRight: "0.5em", color: "gray", cursor: "pointer" }}
+          />
+          {this.props.stage.name}
+          <div className={"floating ui " + (active ? "teal " : "") + "label"}>
+            {this.props.stage.publications.length}
+          </div>
+        </>
+      );
+    } else {
+      titleCard = (
+        <>
+          <div style={{ float: "left" }}>
+            <i
+              className="ui plus square icon"
+              style={{ marginRight: "0.5em", color: "gray" }}
+            />
+            &#x200b;
+          </div>
+          <div
+            className="ui placeholder"
+            style={{ marginRight: "1.5em", height: "1.2em" }}
+          >
+            <div className="long line" style={{ backgroundColor: "initial" }} />
+          </div>
+          <div style={{ clear: "both" }} />
+          <div className={"floating ui label"}>
+            <span style={{ width: "1ch", display: "inline-block" }}>
+              &#x200b;
+            </span>
+          </div>
+        </>
+      );
     }
 
     return (
@@ -145,24 +205,7 @@ class Stage extends Component {
           tainer={tainer}
           onClick={event => event.stopPropagation()}
         >
-          <h4 style={{ marginBottom: 0 }}>
-            <i
-              onClick={event => {
-                this.props.history.push(
-                  `/upload/problems/${this.props.content.problem}/stages/${
-                    this.props.stage.id
-                  }`,
-                );
-                event.stopPropagation();
-              }}
-              className="ui plus square icon"
-              style={{ marginRight: "0.5em", color: "gray", cursor: "pointer" }}
-            />
-            {this.props.stage.name}
-            <div className={"floating ui " + (active ? "teal " : "") + "label"}>
-              {this.props.stage.publications.length}
-            </div>
-          </h4>
+          <h4 style={{ marginBottom: 0 }}>{titleCard}</h4>
           <PublicationCollapser
             className={this.props.open ? "opened" : "collapsed"}
             height={height}
