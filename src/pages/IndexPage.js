@@ -12,11 +12,15 @@ export default class IndexPage extends Component {
           className="ui middle aligned two column centered stackable grid"
           style={styles.main}
         >
-          <div className="eight wide column">
-            <h1 className="ui inverted header" style={styles.heading}>
+          <div className="seven wide column">
+            <h1
+              id="octopus-mobile-centered-header"
+              className="ui inverted header"
+              style={styles.heading}
+            >
               Built for scientists
             </h1>
-            <h2 style={styles.subtitle}>
+            <h2 id="octopus-mobile-centered-header" style={styles.subtitle}>
               Octopus is the new way to publish your scientific ideas, findings
               and research.
             </h2>
@@ -28,7 +32,7 @@ export default class IndexPage extends Component {
               collecting data, doing analyses or writing reviews.
             </div>
             <div className="ui hidden divider" />
-            <div className="ui stackable grid">
+            <div className="ui grid">
               <div className="column" style={styles.explore}>
                 <Link
                   to={WebURI.Explore}
@@ -56,7 +60,7 @@ export default class IndexPage extends Component {
                   Learn more
                 </Link>
               </div>
-              <div className="column">
+              <div className="column" style={styles.faq}>
                 <Link
                   to={WebURI.FAQ}
                   className="ui violet large right labeled icon button"
@@ -67,12 +71,13 @@ export default class IndexPage extends Component {
               </div>
             </div>
           </div>
-          <div className="four wide column computer only">
+          <div className="seven wide column computer tablet only">
             <Link to={WebURI.Explore}>
               <img
                 src={graph}
                 alt="Science Graph Preview"
                 className="ui fluid image"
+                style={styles.heroImage}
               />
             </Link>
           </div>
@@ -85,13 +90,13 @@ export default class IndexPage extends Component {
 
 const styles = {
   main: {
-    padding: "4em 0",
+    padding: "2em 0",
     backgroundColor: "teal",
   },
   heading: {
     fontSize: "5em",
     fontWeight: "normal",
-    marginBottom: 0,
+    lineHeight: "0.9em",
   },
   subtitle: {
     color: "#fff",
@@ -111,5 +116,11 @@ const styles = {
   },
   more: {
     width: "26ch",
+  },
+  faq: {
+    width: "20ch",
+  },
+  heroImage: {
+    minWidth: "40vw",
   },
 };

@@ -1,0 +1,9 @@
+/* Center header when width falls below threshold.
+Value copied from Semantic UI's 「copmute tarblet only」 */
+@media only screen and (max-width: 767px)
+{
+	#octopus-mobile-centered-header
+	{
+		text-align: center;
+	}
+}
