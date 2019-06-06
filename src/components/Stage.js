@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
-
-import Publication from "./Publication";
 import styled from "styled-components";
+import Publication from "./Publication";
 
 class Stage extends Component {
   render() {
