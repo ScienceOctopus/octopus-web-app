@@ -583,7 +583,7 @@ class UploadPage extends Component {
                     title="Select a Publication Type"
                     value={this.state.selectedStageId}
                     data={this.state.stages}
-                    accessor={x => [x.name, x.id]}
+                    accessor={x => [x.singular, x.id]}
                     onSelect={this.handleStageSelect}
                   />
                 </div>
