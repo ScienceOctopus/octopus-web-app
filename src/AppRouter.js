@@ -8,6 +8,7 @@ import ExplorePage from "./pages/ExplorePage";
 import ProblemPage from "./pages/ProblemPage";
 import UploadPage from "./pages/UploadPage";
 import LoginPage from "./pages/LoginPage";
+import NotFoundPage from "./pages/NotFoundPage";
 import WebURI from "./urls/WebsiteURIs";
 
 function AppRouter() {
@@ -91,6 +92,8 @@ function AppRouter() {
         exact
         component={LoginPage}
       />
+
+      <Route name="notFound" path="/*" component={NotFoundPage} />
     </Switch>
   );
 }
