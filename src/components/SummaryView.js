@@ -79,6 +79,7 @@ class SummaryView extends Component {
     // Memory reference compare; but I guess it's okay to prevent recursive updates
     if (
       oldProps.stages !== this.props.stages &&
+      this.state.publication !== undefined &&
       this.state.publication.stage !== undefined
     ) {
       let stage = this.props.stages.find(
