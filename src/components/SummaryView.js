@@ -32,7 +32,7 @@ class SummaryView extends Component {
         this.setState({
           publication: publication,
           stage: stage,
-          schema: JSON.parse(stage.schema),
+          schema: stage && JSON.parse(stage.schema),
         });
       });
 
