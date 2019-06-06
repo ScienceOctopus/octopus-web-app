@@ -14,16 +14,20 @@ class LoginPage extends Component {
 
     let params = QueryString.parse(props.location.search);
 
-    Api()
-      .user(params.user)
-      .get()
-      .then(user => {
-        this.context.login({
-          id: params.user,
-          display_name: user.display_name,
+    if (params.logout === undefined) {
+      Api()
+        .user(params.user)
+        .get()
+        .then(user => {
+          this.context.login({
+            id: params.user,
+            display_name: user.display_name,
+          });
+          this.setState({ redirect: params.state });
         });
-        this.setState({ redirect: params.state });
-      });
+    } else {
+      this.state.redirect = "";
+    }
   }
 
   render() {
