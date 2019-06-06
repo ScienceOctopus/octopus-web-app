@@ -162,7 +162,7 @@ class UploadPage extends Component {
       .stages()
       .get()
       .then(stages => {
-        stages.sort((a, b) => a.id - b.id);
+        stages.sort((a, b) => a.order - b.order);
 
         stages.forEach(stage => (stage.schema = JSON.parse(stage.schema)));
 

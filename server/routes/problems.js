@@ -44,7 +44,12 @@ const getProblemByID = async (req, res) => {
 };
 
 const getStagesByProblem = async (req, res) => {
-  const stages = await db.selectStages();
+  const problems = await db.selectProblemsByID(req.params.id);
+  if (!problems.length) {
+    return notFound(res);
+  }
+  const stages = await db.selectStagesByProblem(req.params.id);
+
   res.status(200).json(stages);
 };
 
