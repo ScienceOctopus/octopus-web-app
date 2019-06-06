@@ -10,22 +10,31 @@ class LoginPage extends Component {
   constructor(props) {
     super(props);
 
+    this.state = { redirect: undefined };
+
     let params = QueryString.parse(props.location.search);
 
-    Api()
-      .user(params.user)
-      .get()
-      .then(user =>
-        this.context.login({
-          id: params.user,
-          display_name: user.display_name,
-        }),
-      );
+    if (params.logout === undefined) {
+      Api()
+        .user(params.user)
+        .get()
+        .then(user => {
+          this.context.login({
+            id: params.user,
+            display_name: user.display_name,
+          });
+          this.setState({ redirect: params.state });
+        });
+    } else {
+      this.state.redirect = "";
+    }
   }
 
   render() {
     return (
-      <Redirect to={QueryString.parse(this.props.location.search).state} />
+      (this.state.redirect != undefined && (
+        <Redirect to={this.state.redirect} />
+      )) || <h3 style={{ textAlign: "center" }}>Logging you in ...</h3>
     );
   }
 }
