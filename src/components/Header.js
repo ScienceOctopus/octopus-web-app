@@ -32,7 +32,10 @@ class Header extends Component {
           {loggedIn ? (
             <LogoutInvitation user={this.context.user} />
           ) : (
-            <GoblinIDLoginInvitation showAvatar state={this.props.location.pathname} />
+            <GoblinIDLoginInvitation
+              showAvatar
+              state={this.props.location.pathname}
+            />
           )}
         </div>
       </header>

@@ -24,7 +24,9 @@ class LoginPage extends Component {
   }
 
   render() {
-    return <Redirect to="" />;
+    return (
+      <Redirect to={QueryString.parse(this.props.location.search).state} />
+    );
   }
 }
 

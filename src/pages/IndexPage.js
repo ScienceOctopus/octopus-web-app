@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import WebURI from "../urls/WebsiteURIs";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import graph from "../assets/images/graph.png";
 import Footer from "../components/Footer";
 
-export default class IndexPage extends Component {
+class IndexPage extends Component {
   render() {
     return (
       <div>
@@ -45,7 +45,7 @@ export default class IndexPage extends Component {
               <div className="column" style={styles.login}>
                 <a
                   className="ui olive large right labeled icon button"
-                  href={WebURI.OrcidLogin(1337)}
+                  href={WebURI.OrcidLogin(this.props.location.pathname)}
                 >
                   <i className="address book icon" />
                   Log In via ORCiD
@@ -124,3 +124,5 @@ const styles = {
     minWidth: "40vw",
   },
 };
+
+export default withRouter(IndexPage);

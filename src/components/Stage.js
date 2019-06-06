@@ -156,11 +156,17 @@ class Stage extends Component {
       titleCard = (
         <>
           <div style={{ float: "left" }}>
-            <div className="ui icon button teal disabled" style={{padding: "0.5rem", margin: "-0.5rem 0.5rem -0.5rem -0.25rem"}}>
-            <i
-              className="ui pencil alternate icon"
-              style={{ marginRight: "0.5em", color: "white" }}
-            />
+            <div
+              className="ui icon button teal disabled"
+              style={{
+                padding: "0.5rem",
+                margin: "-0.5rem 0.5rem -0.5rem -0.25rem",
+              }}
+            >
+              <i
+                className="ui pencil alternate icon"
+                style={{ marginRight: "0.5em", color: "white" }}
+              />
             </div>
             &#x200b;
           </div>
@@ -177,18 +183,29 @@ class Stage extends Component {
     } else {
       titleCard = (
         <>
-          <div className="ui icon button teal" style={{padding: "0.5rem", margin: "-0.5rem 0.5rem -0.5rem -0.25rem"}} onClick={event => {
+          <div
+            className="ui icon button teal"
+            style={{
+              padding: "0.5rem",
+              margin: "-0.5rem 0.5rem -0.5rem -0.25rem",
+            }}
+            onClick={event => {
               this.props.history.push(
                 `/publish/problems/${this.props.content.problem}/stages/${
                   this.props.stage.id
                 }`,
               );
               event.stopPropagation();
-            }}>
-          <i
-            className="ui pencil alternate icon"
-            style={{ marginRight: "0.5em", color: "white", cursor: "pointer" }}
-          />
+            }}
+          >
+            <i
+              className="ui pencil alternate icon"
+              style={{
+                marginRight: "0.5em",
+                color: "white",
+                cursor: "pointer",
+              }}
+            />
           </div>
           {this.props.stage.name}
           {pubsNumber}

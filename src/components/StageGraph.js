@@ -74,7 +74,7 @@ class StageGraph extends Component {
       ));
     }
 
-    const {tainer, heider, margin} = this.props.content.measurements;
+    const { tainer, heider, margin } = this.props.content.measurements;
 
     const stagesLength = stagesLoaded ? this.props.stages.length : 6;
     return (
@@ -136,7 +136,11 @@ class StageGraph extends Component {
                 heider={heider}
                 margin={margin}
               >
-                <GraphMiddler><GraphHider className={(open ? "minus " : "plus") + " icon"} /></GraphMiddler>
+                <GraphMiddler>
+                  <GraphHider
+                    className={(open ? "minus " : "plus") + " icon"}
+                  />
+                </GraphMiddler>
               </GraphButton>
             </div>
 

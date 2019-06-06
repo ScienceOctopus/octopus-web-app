@@ -109,9 +109,22 @@ class Publication extends Component {
 
       reviews = (
         <div>
-          <div style={{ height: "3rem", position: "relative", marginBottom: this.props.publication.reviews.length === 0 ? "1rem" : 0 }}>
+          <div
+            style={{
+              height: "3rem",
+              position: "relative",
+              marginBottom:
+                this.props.publication.reviews.length === 0 ? "1rem" : 0,
+            }}
+          >
             <h4 style={{ fontSize: "1rem", position: "absolute", bottom: 0 }}>
-              <div className="ui icon button yellow" style={{padding: "0.5rem", margin: "-0.5rem 0.5rem -0.5rem 0"}} onClick={event => {
+              <div
+                className="ui icon button yellow"
+                style={{
+                  padding: "0.5rem",
+                  margin: "-0.5rem 0.5rem -0.5rem 0",
+                }}
+                onClick={event => {
                   this.props.history.push(
                     `/publish/problems/${
                       this.props.publication.problem
@@ -120,14 +133,15 @@ class Publication extends Component {
                     }`,
                   );
                   event.stopPropagation();
-                }}>
-              <i
-                className="ui pencil alternate icon"
-                style={{
-                  marginRight: "0.5em",
-                  color: "black",
                 }}
-              />
+              >
+                <i
+                  className="ui pencil alternate icon"
+                  style={{
+                    marginRight: "0.5em",
+                    color: "black",
+                  }}
+                />
               </div>
               {reviews === null ? "No" : this.props.publication.reviews.length}{" "}
               Review{this.props.publication.reviews.length != 1 ? "s" : ""}
