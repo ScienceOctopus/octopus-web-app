@@ -129,7 +129,8 @@ class Publication extends Component {
                   cursor: "pointer",
                 }}
               />
-              {reviews === null ? "No " : ""}Reviews
+              {reviews === null ? "No" : this.props.publication.reviews.length}{" "}
+              Review{this.props.publication.reviews.length != 1 ? "s" : ""}
             </h4>
           </div>
           {reviews}
