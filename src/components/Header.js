@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Trans } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import "../App.css";
 import { LoginDataContext } from "../LoginContext";
 import WebURI from "../urls/WebsiteURIs";
@@ -32,7 +32,7 @@ class Header extends Component {
           {loggedIn ? (
             <LogoutInvitation user={this.context.user} />
           ) : (
-            <GoblinIDLoginInvitation showAvatar state={1337} />
+            <GoblinIDLoginInvitation showAvatar state={this.props.location.pathname} />
           )}
         </div>
       </header>
@@ -49,4 +49,4 @@ const styles = {
   },
 };
 
-export default Header;
+export default withRouter(Header);
