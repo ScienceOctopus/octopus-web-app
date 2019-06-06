@@ -6,6 +6,7 @@ import FileUploadSelector from "../components/FileUploadSelector";
 import PublicationSelector from "../components/PublicationSelector";
 import SimpleSelector from "../components/SimpleSelector";
 import TitledForm from "../components/TitledForm";
+import TitledCheckbox from "../components/TitledCheckbox";
 
 class UploadPage extends Component {
   static contextType = LoginDataContext;
@@ -25,7 +26,8 @@ class UploadPage extends Component {
         title: "",
         summary: "",
         funding: "",
-        data: [],
+        data: {},
+        selectedFile: undefined,
 
         linkedProblemsSelected: false,
 
@@ -107,6 +109,7 @@ class UploadPage extends Component {
           publications: undefined,
           publicationsToLink: [],
           linkedProblemsSelected: false,
+          data: undefined,
         },
         callback,
       );
@@ -124,6 +127,7 @@ class UploadPage extends Component {
           publications: undefined,
           publicationsToLink: [],
           linkedProblemsSelected: false,
+          data: undefined,
         },
         callback,
       );
@@ -158,6 +162,10 @@ class UploadPage extends Component {
       .stages()
       .get()
       .then(stages => {
+        stages.sort((a, b) => a.id - b.id);
+
+        stages.forEach(stage => (stage.schema = JSON.parse(stage.schema)));
+
         this.setState({ stages: stages }, () => {
           if (this.state.selectedStageId !== undefined) {
             this.fetchPublications(review);
@@ -168,6 +176,35 @@ class UploadPage extends Component {
 
   fetchPublications(review) {
     review = review ? Number(review) : undefined;
+
+    if (review === undefined && this.state.data === undefined) {
+      let data = {};
+
+      this.state.stages
+        .find(stage => stage.id === Number(this.state.selectedStageId))
+        .schema.forEach(([key, type, title, description]) => {
+          switch (type) {
+            case "file":
+              data[key] = undefined;
+              break;
+            case "uri":
+              data[key] = "";
+              break;
+            case "text":
+              data[key] = "";
+              break;
+            case "bool":
+              data[key] = false;
+              break;
+          }
+        });
+
+      this.setState({ data: data });
+    }
+
+    if (!this.shouldRenderLinkingSelector()) {
+      return;
+    }
 
     const stageToReview =
       this.state.selectedStageId - (this.state.isReview ? 0 : 1);
@@ -219,6 +256,8 @@ class UploadPage extends Component {
 
     // TODO: map back to simplified list
     data.set("data", "[]");
+
+    return console.log("TODO", this.state.data);
 
     if (linkedPublications !== undefined) {
       data.set("basedOn", JSON.stringify(linkedPublications.map(x => x.id)));
@@ -300,7 +339,35 @@ class UploadPage extends Component {
     });
   };
 
-  // TODO: handle data fields change
+  handleDataChange = key => e => {
+    let field = this.state.stages
+      .find(stage => stage.id === Number(this.state.selectedStageId))
+      .schema.find(field => field[0] === key);
+    let data = { ...this.state.data };
+
+    let content = e.target;
+
+    switch (field[1]) {
+      case "file":
+        content = content.files[0];
+        break;
+      case "uri":
+        content = content.value;
+        break;
+      case "text":
+        content = content.value;
+        break;
+      case "bool":
+        content = content.selected;
+        break;
+      default:
+        return;
+    }
+
+    data[key] = content;
+
+    this.setState({ data: data });
+  };
 
   handleLinkedPublicationsChanged = selection => {
     if (this.state.isReview) {
@@ -341,7 +408,14 @@ class UploadPage extends Component {
         this.state.linkedProblemsSelected) &&
       this.state.title &&
       this.state.summary &&
-      true // TODO: handle all data fields set
+      this.state.funding &&
+      (this.isReview ||
+        this.state.stages
+          .find(stage => stage.id === Number(this.state.selectedStageId))
+          .schema.every(field => {
+            let content = this.state.data[field[0]];
+            return content !== undefined && content !== "";
+          }))
     );
   }
 
@@ -369,6 +443,7 @@ class UploadPage extends Component {
   }
 
   render() {
+    this.context.user = { display_name: "Anonymous" };
     if (this.context.user === undefined) {
       return (
         <div className="ui main text container">
@@ -381,6 +456,74 @@ class UploadPage extends Component {
           </div>
         </div>
       );
+    }
+
+    let metaData = null;
+
+    if (
+      this.state.isReview === false &&
+      this.state.selectedStageId !== undefined
+    ) {
+      let stage = this.state.stages.find(
+        stage => stage.id === Number(this.state.selectedStageId),
+      );
+
+      if (stage !== undefined && this.state.data !== undefined) {
+        metaData = (
+          <>
+            {stage.schema.map(([key, type, title, description]) => {
+              let value = this.state.data[key];
+              let onChange = this.handleDataChange(key);
+
+              switch (type) {
+                case "file":
+                  return (
+                    <FileUploadSelector
+                      key={key}
+                      title={title}
+                      description={description}
+                      files={[value]}
+                      onSelect={onChange}
+                    />
+                  );
+                case "uri":
+                  return (
+                    <TitledForm
+                      key={key}
+                      title={title}
+                      description={description}
+                      value={value}
+                      onChange={onChange}
+                    />
+                  );
+                case "text":
+                  return (
+                    <TitledForm
+                      key={key}
+                      title={title}
+                      description={description}
+                      value={value}
+                      onChange={onChange}
+                    />
+                  );
+                case "bool":
+                  return (
+                    <TitledCheckbox
+                      key={key}
+                      title={title}
+                      description={description}
+                      checked={value}
+                      onChange={onChange}
+                    />
+                  );
+                default:
+                  return null;
+              }
+            })}
+            <div className="ui divider" />
+          </>
+        );
+      }
     }
 
     return (
@@ -444,8 +587,12 @@ class UploadPage extends Component {
               value={this.state.funding}
               onChange={this.handleFundingChange}
             />
-            <FileUploadSelector onSelect={this.handleFileSelect} />
-            <div className="ui hidden divider" />
+            <FileUploadSelector
+              title="Publication Document"
+              onSelect={this.handleFileSelect}
+            />
+            <div className="ui divider" />
+            {metaData}
             <button
               className="ui submit button"
               onClick={this.handleSubmit}

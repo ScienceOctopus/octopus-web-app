@@ -18,6 +18,8 @@ class SummaryView extends Component {
   }
 
   fetchProblemData() {
+    this.setState({ collaborators: [] });
+
     Api()
       .publication(this.props.publicationId)
       .get()
