@@ -254,16 +254,46 @@ class UploadPage extends Component {
     data.set("user", this.context.user.id);
     data.set("review", this.state.isReview);
 
-    // TODO: map back to simplified list
-    data.set("data", "[]");
-
-    return console.log("TODO", this.state.data);
-
     if (linkedPublications !== undefined) {
       data.set("basedOn", JSON.stringify(linkedPublications.map(x => x.id)));
     }
 
     data.append("file", this.state.selectedFile);
+
+    let fileIdx = 1;
+
+    if (this.state.isReview) {
+      data.set("data", "[]");
+    } else {
+      let schema = this.state.stages.find(
+        stage => stage.id === Number(this.state.selectedStageId),
+      ).schema;
+
+      let ddata = [];
+
+      schema.forEach(([key, type, title, description]) => {
+        let content = this.state.data[key];
+
+        switch (type) {
+          case "file":
+            data.append("file", content);
+            content = fileIdx++;
+            break;
+          case "uri":
+            break;
+          case "text":
+            break;
+          case "bool":
+            break;
+          default:
+            return;
+        }
+
+        ddata.push(content);
+      });
+
+      data.set("data", JSON.stringify(ddata));
+    }
 
     await this.setState({ uploading: true });
 
@@ -443,7 +473,6 @@ class UploadPage extends Component {
   }
 
   render() {
-    this.context.user = { display_name: "Anonymous" };
     if (this.context.user === undefined) {
       return (
         <div className="ui main text container">

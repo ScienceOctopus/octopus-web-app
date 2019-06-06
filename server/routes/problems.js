@@ -68,14 +68,85 @@ const getPublicationsByProblemAndStage = async (req, res) => {
 };
 
 const postPublicationToProblemAndStage = async (req, res) => {
+  if (
+    typeof req.body.user !== "number" ||
+    (await db.selectUsers(req.body.user)).length <= 0
+  ) {
+    return requestInvalid(res);
+  }
+
   const problems = await db.selectProblemsByID(req.params.id);
   if (!problems.length) {
     return requestInvalid(res);
   }
 
   const stages = await db.selectStagesByID(req.params.stage);
+
   if (!stages.length) {
     return requestInvalid(res);
+  }
+
+  let data;
+  let resources = [];
+
+  if (req.body.review === "true") {
+    data = [];
+  } else {
+    const schema = JSON.parse(stages[0].schema);
+    data = JSON.parse(req.body.data);
+
+    if (schema.length !== data.length) {
+      return requestInvalid(res);
+    }
+
+    for (let i = 0; i < schema.length; i++) {
+      let content = data[i];
+      let error;
+
+      switch (schema[i][1]) {
+        case "file":
+          error =
+            typeof content != "number" ||
+            content <= 0 ||
+            req.files[content] === undefined;
+          break;
+        case "uri":
+          error = typeof content != "string";
+          break;
+        case "text":
+          error = typeof content != "string";
+          break;
+        case "bool":
+          error = typeof content != "boolean";
+          break;
+        default:
+          error = true;
+      }
+
+      if (error) {
+        return requestInvalid(res);
+      }
+
+      switch (schema[i][1]) {
+        case "file":
+          content = (await db.insertResource(
+            "azureBlob",
+            req.files[content].url,
+          ))[0];
+          resources.push(content);
+          break;
+        case "uri":
+          content = (await db.insertResource("uri", content))[0];
+          resources.push(content);
+          break;
+        case "text":
+          break;
+        case "bool":
+          break;
+      }
+
+      data[i] = content;
+    }
   }
 
   const publications = await db.insertPublication(
@@ -85,7 +156,7 @@ const postPublicationToProblemAndStage = async (req, res) => {
     req.body.summary,
     req.body.funding,
     req.body.review,
-    req.body.data,
+    JSON.stringify(data),
   );
 
   await db.insertPublicationCollaborator(
@@ -99,9 +170,16 @@ const postPublicationToProblemAndStage = async (req, res) => {
     await db.insertLink(publications[0], basedArray);
   }
 
-  const resources = await db.insertResource("azureBlob", req.file.url);
+  resources.unshift(await db.insertResource("azureBlob", req.files[0].url)[0]);
 
-  await db.insertPublicationResource(publications[0], resources[0], "main");
+  for (let i = 0; i < resources.length; i++) {
+    await db.insertPublicationResource(
+      publications[0],
+      resource,
+      i <= 0 ? "main" : "meta",
+    );
+  }
+
   res.status(200).json(publications[0]);
 };
 
@@ -117,7 +195,7 @@ router.get(
 
 router.post(
   "/:id(\\d+)/stages/:stage(\\d+)/publications",
-  upload(blobService.AZURE_PUBLICATION_CONTAINER).single("file"),
+  upload(blobService.AZURE_PUBLICATION_CONTAINER).array("file"),
   catchAsyncErrors(postPublicationToProblemAndStage),
 );
 
