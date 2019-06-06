@@ -26,9 +26,9 @@ class SummaryView extends Component {
       .get()
       .then(publication => {
         publication.data = JSON.parse(publication.data);
-        
+
         let stage = this.props.stages.find(x => x.id === publication.stage);
-        
+
         this.setState({
           publication: publication,
           stage: stage,
@@ -81,8 +81,10 @@ class SummaryView extends Component {
       oldProps.stages !== this.props.stages &&
       this.state.publication.stage !== undefined
     ) {
-      let stage = this.props.stages.find(x => x.id === this.state.publication.stage);
-      
+      let stage = this.props.stages.find(
+        x => x.id === this.state.publication.stage,
+      );
+
       this.setState({
         stage: stage,
         schema: JSON.parse(stage.schema),
@@ -95,32 +97,39 @@ class SummaryView extends Component {
     if (this.state.publication === undefined) {
       return null;
     }
-    
+
     const publicationPresent = this.state.publication !== undefined;
-    const mainResourcePresent = this.state.resources !== undefined && this.state.resources.length > 0;
+    const mainResourcePresent =
+      this.state.resources !== undefined && this.state.resources.length > 0;
     const stagePresent = this.state.stage !== undefined;
     const reviewPresent = this.state.publication.review;
 
     let metadata = null;
-    
-    if (this.state.publication !== {} && stagePresent && this.state.resources !== undefined) {
+
+    if (
+      this.state.publication !== {} &&
+      stagePresent &&
+      this.state.resources !== undefined
+    ) {
       metadata = this.state.schema.map(([key, type, title, description], i) => {
         let datum = this.state.publication.data[i];
-        
+
         if (datum === undefined) {
           return null;
         }
-        
+
         let content;
-        
+
         switch (type) {
           case "file":
-            datum = this.state.resources.find(resource => resource.id === datum);
-            
+            datum = this.state.resources.find(
+              resource => resource.id === datum,
+            );
+
             if (datum === undefined) {
               return null;
             }
-            
+
             content = (
               <a className="ui button" href={datum.uri}>
                 <i className="ui download icon" />
@@ -129,17 +138,15 @@ class SummaryView extends Component {
             );
             break;
           case "uri":
-            datum = this.state.resources.find(resource => resource.id === datum);
-            
+            datum = this.state.resources.find(
+              resource => resource.id === datum,
+            );
+
             if (datum === undefined) {
               return null;
             }
-          
-            content = (
-              <a href={datum.uri}>
-                {datum.uri}
-              </a>
-            );
+
+            content = <a href={datum.uri}>{datum.uri}</a>;
             break;
           case "text":
             content = datum;
@@ -148,21 +155,25 @@ class SummaryView extends Component {
             content = (
               <div className="ui checkbox">
                 <input type="checkbox" checked={datum} disabled />
-                <label>{" "}</label>
+                <label> </label>
               </div>
             );
             break;
         }
-        
-        return (<section key={key} className="ui segment">
-          <h3>{title}</h3>
-          {description ? <div style={{marginTop: "-0.5rem"}}>{description}</div> : null}
-          <div className="ui divider" />
-          {content}
-        </section>);
+
+        return (
+          <section key={key} className="ui segment">
+            <h3>{title}</h3>
+            {description ? (
+              <div style={{ marginTop: "-0.5rem" }}>{description}</div>
+            ) : null}
+            <div className="ui divider" />
+            {content}
+          </section>
+        );
       });
     }
-    
+
     return (
       <div>
         <div className="ui divider" />
@@ -198,9 +209,9 @@ class SummaryView extends Component {
               <div className="ui divider" />
               {this.state.publication.summary}
             </section>
-            
+
             {metadata}
-            
+
             {mainResourcePresent ? (
               <section className="ui segment">
                 <PDFImagePreviewRenderer document={this.state.resources[0]} />
