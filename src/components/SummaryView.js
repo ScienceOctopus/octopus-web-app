@@ -8,25 +8,31 @@ class SummaryView extends Component {
     super(props);
 
     this.state = {
-      publication: {},
+      publication: undefined,
       collaborators: [],
-      images: undefined,
+      resources: undefined,
       stage: undefined,
+      schema: undefined,
     };
 
     this.fetchProblemData();
   }
 
   fetchProblemData() {
-    this.setState({ collaborators: [] });
+    this.setState({ publication: undefined, collaborators: [] });
 
     Api()
       .publication(this.props.publicationId)
       .get()
       .then(publication => {
+        publication.data = JSON.parse(publication.data);
+        
+        let stage = this.props.stages.find(x => x.id === publication.stage);
+        
         this.setState({
           publication: publication,
-          stage: this.props.stages.find(x => x.id === publication.stage),
+          stage: stage,
+          schema: JSON.parse(stage.schema),
         });
       });
 
@@ -36,7 +42,7 @@ class SummaryView extends Component {
       .get()
       .then(resources => {
         this.setState({
-          images: resources,
+          resources: resources,
         });
       });
 
@@ -75,21 +81,88 @@ class SummaryView extends Component {
       oldProps.stages !== this.props.stages &&
       this.state.publication.stage !== undefined
     ) {
+      let stage = this.props.stages.find(x => x.id === this.state.publication.stage);
+      
       this.setState({
-        stage: this.props.stages.find(
-          x => x.id === this.state.publication.stage,
-        ),
+        stage: stage,
+        schema: JSON.parse(stage.schema),
       });
     }
   }
 
   render() {
     // TODO: handle cases where publication may not have loaded?
-
-    const imagesPresent = this.state.images !== undefined;
+    if (this.state.publication === undefined) {
+      return null;
+    }
+    
+    const publicationPresent = this.state.publication !== undefined;
+    const mainResourcePresent = this.state.resources !== undefined && this.state.resources.length > 0;
     const stagePresent = this.state.stage !== undefined;
     const reviewPresent = this.state.publication.review;
 
+    let metadata = null;
+    
+    if (this.state.publication !== {} && stagePresent && this.state.resources !== undefined) {
+      metadata = this.state.schema.map(([key, type, title, description], i) => {
+        let datum = this.state.publication.data[i];
+        
+        if (datum === undefined) {
+          return null;
+        }
+        
+        let content;
+        
+        switch (type) {
+          case "file":
+            datum = this.state.resources.find(resource => resource.id === datum);
+            
+            if (datum === undefined) {
+              return null;
+            }
+            
+            content = (
+              <a className="ui button" href={datum.uri}>
+                <i className="ui download icon" />
+                Download document
+              </a>
+            );
+            break;
+          case "uri":
+            datum = this.state.resources.find(resource => resource.id === datum);
+            
+            if (datum === undefined) {
+              return null;
+            }
+          
+            content = (
+              <a href={datum.uri}>
+                {datum.uri}
+              </a>
+            );
+            break;
+          case "text":
+            content = datum;
+            break;
+          case "bool":
+            content = (
+              <div className="ui checkbox">
+                <input type="checkbox" checked={datum} disabled />
+                <label>{" "}</label>
+              </div>
+            );
+            break;
+        }
+        
+        return (<section key={key} className="ui segment">
+          <h3>{title}</h3>
+          {description ? <div style={{marginTop: "-0.5rem"}}>{description}</div> : null}
+          <div className="ui divider" />
+          {content}
+        </section>);
+      });
+    }
+    
     return (
       <div>
         <div className="ui divider" />
@@ -114,8 +187,8 @@ class SummaryView extends Component {
               </p>
             ))}
 
-            {imagesPresent && (
-              <a className="ui button" href={this.state.images[0].uri}>
+            {mainResourcePresent && (
+              <a className="ui button" href={this.state.resources[0].uri}>
                 <i className="ui download icon" />
                 Download document
               </a>
@@ -125,15 +198,18 @@ class SummaryView extends Component {
               <div className="ui divider" />
               {this.state.publication.summary}
             </section>
-            {imagesPresent ? (
+            
+            {metadata}
+            
+            {mainResourcePresent ? (
               <section className="ui segment">
-                <PDFImagePreviewRenderer state={this.state} />
+                <PDFImagePreviewRenderer document={this.state.resources[0]} />
               </section>
             ) : (
               <section className="ui placeholder segment">
                 <div className="ui icon header">
                   <i className="pencil icon" />
-                  No images were uploaded for this publication.
+                  No resources were uploaded for this publication.
                 </div>
               </section>
             )}
