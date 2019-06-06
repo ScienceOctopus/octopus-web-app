@@ -92,6 +92,7 @@ const styles = {
   main: {
     padding: "2em 0",
     backgroundColor: "teal",
+    minHeight: "94vh",
   },
   heading: {
     fontSize: "5em",
@@ -121,6 +122,6 @@ const styles = {
     width: "20ch",
   },
   heroImage: {
-    minWidth: "40vw",
+    minWidth: "45vw",
   },
 };
