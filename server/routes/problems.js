@@ -69,7 +69,7 @@ const getPublicationsByProblemAndStage = async (req, res) => {
 
 const postPublicationToProblemAndStage = async (req, res) => {
   if (
-    typeof req.body.user !== "number" ||
+    Number(req.body.user) === NaN ||
     (await db.selectUsers(req.body.user)).length <= 0
   ) {
     return requestInvalid(res);
@@ -170,12 +170,14 @@ const postPublicationToProblemAndStage = async (req, res) => {
     await db.insertLink(publications[0], basedArray);
   }
 
-  resources.unshift(await db.insertResource("azureBlob", req.files[0].url)[0]);
+  resources.unshift(
+    (await db.insertResource("azureBlob", req.files[0].url))[0],
+  );
 
   for (let i = 0; i < resources.length; i++) {
     await db.insertPublicationResource(
       publications[0],
-      resource,
+      resources[i],
       i <= 0 ? "main" : "meta",
     );
   }
