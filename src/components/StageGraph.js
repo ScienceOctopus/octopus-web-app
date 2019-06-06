@@ -120,19 +120,21 @@ class StageGraph extends Component {
           >
             <div
               className="column"
-              onClick={event => {
-                this.props.toggleOpen();
-                event.stopPropagation();
-              }}
               style={{
-                cursor: "pointer",
                 width: "5.4em",
               }}
             >
-              <div className="ui segment">
-                <GraphHider
-                  className={"chevron icon " + (open ? "up " : "down")}
-                />
+              <div
+                className="ui segment inverted teal"
+                onClick={event => {
+                  this.props.toggleOpen();
+                  event.stopPropagation();
+                }}
+                style={{
+                  cursor: "pointer",
+                }}
+              >
+                <GraphHider className={(open ? "minus " : "plus") + " icon"} />
               </div>
             </div>
 
@@ -146,8 +148,8 @@ class StageGraph extends Component {
 
 const GraphHider = styled.i`
   fontsize: 1.07142857rem;
-  color: #4b72ab;
-  transition: transform 0.3s ease-in-out;
+  color: #fff;
+  /*transition: transform 0.3s ease-in-out;
 
   &.opened {
     transform: rotate(180deg) translateY(-5px);
@@ -155,7 +157,7 @@ const GraphHider = styled.i`
 
   &.collapsed {
     transform: rotate(0deg) translateY(-5px);
-  }
+  }*/
 `;
 
 export default withRouter(StageGraph);

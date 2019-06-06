@@ -196,7 +196,7 @@ class Stage extends Component {
     return (
       <div
         className="column"
-        style={{ backgroundColor: "#dcf8ec", minWidth: "200px" }}
+        style={{ backgroundColor: "#dcf8ec", minWidth: "220px" }}
       >
         <PublicationSegment
           className={
