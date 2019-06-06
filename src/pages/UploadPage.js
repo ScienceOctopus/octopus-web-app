@@ -388,7 +388,7 @@ class UploadPage extends Component {
         content = content.value;
         break;
       case "bool":
-        content = content.selected;
+        content = content.checked;
         break;
       default:
         return;
