@@ -1,12 +1,18 @@
 import React, { Component } from "react";
-import { Redirect, withRouter } from "react-router-dom";
-import { LoginDataContext } from "../LoginContext";
+import { withRouter } from "react-router-dom";
 import Api from "../api";
 import FileUploadSelector from "../components/FileUploadSelector";
 import PublicationSelector from "../components/PublicationSelector";
 import SimpleSelector from "../components/SimpleSelector";
-import TitledForm from "../components/TitledForm";
 import TitledCheckbox from "../components/TitledCheckbox";
+import TitledForm from "../components/TitledForm";
+import { LoginDataContext } from "../LoginContext";
+import {
+  LocalizedRedirect,
+  RouterURI,
+  localizeLink,
+} from "../urls/WebsiteURIs";
+import { generatePath } from "react-router";
 
 class UploadPage extends Component {
   static contextType = LoginDataContext;
@@ -310,7 +316,7 @@ class UploadPage extends Component {
   };
 
   static uploadURLBuilder(problem, stage, review) {
-    let url = "/publish/";
+    let url = localizeLink("/publish/");
 
     if (problem !== undefined) {
       url += `problems/${problem}`;
@@ -632,7 +638,11 @@ class UploadPage extends Component {
             as publication author{" "}
             <strong>{this.context.user.display_name}</strong>.
             {this.state.uploadSuccessful && (
-              <Redirect to={`/publications/${this.state.insertedId}`} />
+              <LocalizedRedirect
+                to={generatePath(RouterURI.Publication, {
+                  id: this.state.insertedId,
+                })}
+              />
             )}
           </div>
         </div>

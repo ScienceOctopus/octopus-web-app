@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import styled from "styled-components";
 import Publication from "./Publication";
+import { generateLocalizedPath, RouterURI } from "../urls/WebsiteURIs";
 
 class Stage extends Component {
   render() {
@@ -190,9 +191,10 @@ class Stage extends Component {
             }}
             onClick={event => {
               this.props.history.push(
-                `/publish/problems/${this.props.content.problem}/stages/${
-                  this.props.stage.id
-                }`,
+                generateLocalizedPath(RouterURI.UploadToProblemStage, {
+                  id: this.props.content.problem,
+                  stage: this.props.stage.id,
+                }),
               );
               event.stopPropagation();
             }}

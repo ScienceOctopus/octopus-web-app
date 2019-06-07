@@ -1,9 +1,8 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
-
 import styled from "styled-components";
-
 import Review from "./Review";
+import { RouterURI, generateLocalizedPath } from "../urls/WebsiteURIs";
 
 class Publication extends Component {
   render() {
@@ -11,7 +10,9 @@ class Publication extends Component {
       this.props.onClick ||
       (event => {
         this.props.history.push(
-          `/publications/${this.props.publication.id}`,
+          generateLocalizedPath(RouterURI.Publication, {
+            id: this.props.publication.id,
+          }),
           this.props.content,
         );
         event.stopPropagation();

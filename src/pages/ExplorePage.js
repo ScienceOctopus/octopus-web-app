@@ -1,12 +1,13 @@
 import React, { Component } from "react";
-
-import { Redirect, withRouter } from "react-router-dom";
-
-import WebURI from "../urls/WebsiteURIs";
+import { withRouter } from "react-router-dom";
+import { LocalizedRedirect, RouterURI } from "../urls/WebsiteURIs";
+import { generatePath } from "react-router-dom";
 
 class ExplorePage extends Component {
   render() {
-    return <Redirect to="/problems/1" />;
+    return (
+      <LocalizedRedirect to={generatePath(RouterURI.Problem, { id: 1 })} />
+    );
   }
 }
 

@@ -1,7 +1,7 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
-import { LANGUAGE_LINK_KEY, AVAILABLE_LANGUAGES } from "../i18n";
+import { Link, Redirect } from "react-router-dom";
+import i18n, { AVAILABLE_LANGUAGES, SHORT_LINK_LANGS } from "../i18n";
+import { generatePath } from "react-router-dom";
 
 const GOBLINID_OAUTH_CLIENT_ID = "APP-3IQDM9L3ZPD3ZC36";
 const REDIRECT_URI =
@@ -9,6 +9,19 @@ const REDIRECT_URI =
 
 const languageRegex = AVAILABLE_LANGUAGES.reduce((a, b) => a + "|" + b);
 const LanguageMatcher = `/(${languageRegex})?`;
+
+const langLinkPrefix = () => {
+  if (SHORT_LINK_LANGS.includes(i18n.language)) return "";
+  else return "/" + i18n.language;
+};
+
+export const localizeLink = link => {
+  return langLinkPrefix() + link;
+};
+
+export const generateLocalizedPath = (pattern, params) => {
+  return localizeLink(generatePath(pattern, params));
+};
 
 export const RouterURI = {
   Problem: "/problems/:id(\\d+)",
@@ -35,9 +48,11 @@ const WebURI = {
 };
 
 export const LocalizedLink = props => {
-  const { t } = useTranslation();
-  console.log(t(LANGUAGE_LINK_KEY) + props.to);
-  return <Link {...props} to={t(LANGUAGE_LINK_KEY) + props.to} />;
+  return <Link {...props} to={localizeLink(props.to)} />;
+};
+
+export const LocalizedRedirect = props => {
+  return <Redirect {...props} to={localizeLink(props.to)} />;
 };
 
 export default WebURI;

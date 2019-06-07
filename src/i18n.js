@@ -2,8 +2,8 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 
-export const LANGUAGE_LINK_KEY = "linkLanguageKey";
 export const AVAILABLE_LANGUAGES = ["en", "pt-BR"];
+export const SHORT_LINK_LANGS = ["en", "en-GB"];
 
 i18n
   .use(LanguageDetector)
@@ -22,13 +22,11 @@ i18n
     resources: {
       en: {
         translation: {
-          [LANGUAGE_LINK_KEY]: "",
           octopus: "Octopus",
         },
       },
       "pt-BR": {
         translation: {
-          [LANGUAGE_LINK_KEY]: "/pt-BR",
           octopus: "jellyblob",
         },
       },
