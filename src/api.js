@@ -135,11 +135,16 @@ class UserBuilder extends LinkBuilder {
 class AuthenticationBuilder extends LinkBuilder {
   constructor(root, userId) {
     super();
-    this.path = root + "/oauth-flow/";
+    this.path = root + "/oauth-flow";
   }
 
   state = () => {
     this.path += "/acquire-state";
+    return this;
+  };
+
+  discard = () => {
+    this.path += "/discard-state";
     return this;
   };
 }

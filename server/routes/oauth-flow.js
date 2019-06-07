@@ -15,10 +15,9 @@ const handleOAuthAuthenticationResponse = (req, res) => {
   const session = req.cookies[SESSION_COOKIE_NAME];
   if (
     global.sessions[session] === undefined ||
-    global.sessions[session].state !== req.query.state
+    global.sessions[session].OAuthState !== req.query.state
   ) {
     res.sendStatus(403);
-    console.log(global.sessions);
     return;
   }
 
@@ -71,7 +70,7 @@ const handleOAuthAuthenticationResponse = (req, res) => {
             email,
           )).rows[0].id;
 
-          global.sessions.push(req.query.state);
+          global.sessions[session].user = id;
 
           res.redirect(
             `${redirectAddress}?error=0&state=${req.query.state}&redirect=${
@@ -84,7 +83,21 @@ const handleOAuthAuthenticationResponse = (req, res) => {
   );
 };
 
-const handleOAuthStateRequest = (req, res) => {
+const handleOAuthStateRequest = async (req, res) => {
+  if (req.headers.cookie !== undefined) {
+    const session = req.cookies[SESSION_COOKIE_NAME];
+    const data = global.sessions[session];
+    if (data !== undefined) {
+      if (data.user === undefined) {
+        res.status(200).json({ OAuthState: data.OAuthState });
+      } else {
+        const user = (await db.selectUsers(data.user))[0];
+        res.status(200).json({ OAuthState: data.OAuthState, user: user });
+      }
+      return;
+    }
+  }
+
   cryptography.randomBytes(128, (err, buf) => {
     if (err) {
       res.sendStatus(500);
@@ -95,18 +108,26 @@ const handleOAuthStateRequest = (req, res) => {
     const session = bytes.slice(0, 64);
     const OAuthState = bytes.slice(64, 128);
 
-    global.sessions[session] = { state: OAuthState, authenticated: false };
+    global.sessions[session] = { OAuthState: OAuthState, user: undefined };
     res
       .cookie(SESSION_COOKIE_NAME, session, { httpOnly: true, path: "/" })
       .status(200)
-      .json({ state: OAuthState });
+      .json({ OAuthState: OAuthState });
   });
+};
+
+const handleOAuthStateDiscardRequest = async (req, res) => {
+  // TODO discard on server as well?
+  res
+    .clearCookie(SESSION_COOKIE_NAME, { httpOnly: true, path: "/" })
+    .sendStatus(204);
 };
 
 var router = express.Router();
 
 router.get("", handleOAuthAuthenticationResponse);
 router.get("/acquire-state", handleOAuthStateRequest);
+router.get("/discard-state", handleOAuthStateDiscardRequest);
 
 module.exports = {
   router,

@@ -13,17 +13,16 @@ class App extends Component {
   constructor() {
     super();
 
-    this.state = { user: undefined, OAuthState: undefined };
-
     // Initialise global login state
-    global.session = this.state;
+    global.session = { user: undefined, OAuthState: undefined };
+
     Api()
       .authentication()
       .state()
       .get()
       .then(res => {
-        global.session.OAuthState = res.state;
-        this.setState({ OAuthState: res.state });
+        global.session = { user: res.user, OAuthState: res.OAuthState };
+        this.forceUpdate();
       });
   }
 
