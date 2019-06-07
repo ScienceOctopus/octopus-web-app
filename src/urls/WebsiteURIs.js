@@ -28,6 +28,8 @@ export const generateLocalizedPath = (pattern, params) => {
   return localizeLink(generatePath(pattern, params));
 };
 
+export const path = generatePath;
+
 export const RouterURI = {
   Problem: "/problems/:id(\\d+)",
   Publication: "/publications/:id(\\d+)",

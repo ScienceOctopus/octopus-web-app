@@ -16,6 +16,13 @@ class LinkBuilder {
 
   get = () => Axios.get(this.path).then(x => x.data);
 
+  head = () => Axios.head(this.path).then(x => x.headers);
+
+  count = () =>
+    this.head()
+      .then(x => x["x-total-count"])
+      .catch(console.err);
+
   getFull = () => Axios.get(this.path);
 
   post = data => Axios.post(this.path, data);
@@ -68,9 +75,6 @@ class ProblemBuilder extends LinkBuilder {
 
   publications = () => {
     this._checkNotFinal();
-    if (!this.stageSelected) {
-      throw Error("Need to select stage to select publications for problem");
-    }
 
     this.path += "/publications";
 

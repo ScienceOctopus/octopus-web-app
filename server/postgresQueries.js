@@ -74,19 +74,28 @@ const queries = {
       .where("problem", problem)
       .join("stages", "stages.id", "=", "problem_stages.stage")
       .select(),
+
   selectPublicationsByID: id =>
     knex("publications")
       .select()
       .where("id", id),
-  selectPublicationsByProblemAndStage: (problem, stage) =>
+
+  selectPublicationsByProblem: problem =>
     knex("publications")
       .select()
-      .where("problem", problem)
-      .where("stage", stage),
+      .where("problem", problem),
+
+  countPublicationsForProblem: problem =>
+    queries.selectPublicationsByProblem(problem).count(),
+
+  selectPublicationsByProblemAndStage: (problem, stage) =>
+    queries.selectPublicationsByProblem(problem).where("stage", stage),
+
   selectOriginalPublicationsByProblemAndStage: (problem, stage) =>
     queries
       .selectPublicationsByProblemAndStage(problem, stage)
       .where("review", false),
+
   selectPublicationsByLinksBeforePublication: publication =>
     knex("publication_links")
       .select()
@@ -98,14 +107,17 @@ const queries = {
         "publication_links.publication_after",
       )
       .select(),
+
   selectOriginalPublicationsByLinksBeforePublication: publication =>
     queries
       .selectPublicationsByLinksBeforePublication(publication)
       .where("review", false),
+
   selectReviewPublicationsByPublication: publication =>
     queries
       .selectPublicationsByLinksBeforePublication(publication)
       .where("review", true),
+
   selectPublicationsByLinksAfterPublication: publication =>
     knex("publication_links")
       .select()
@@ -130,6 +142,7 @@ const queries = {
     knex("publication_collaborators")
       .select()
       .where("publication", publication),
+
   insertPublication: (problem, stage, title, summary, funding, review, data) =>
     knex("publications")
       .insert({

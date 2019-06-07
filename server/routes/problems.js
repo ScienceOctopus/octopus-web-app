@@ -72,6 +72,29 @@ const getPublicationsByProblemAndStage = async (req, res) => {
   res.status(200).json(publications);
 };
 
+const getPublicationsByProblem = async (req, res) => {
+  const problems = await db.selectProblemsByID(req.params.id);
+  if (!problems.length) {
+    return notFound(res);
+  }
+
+  const publications = await db.selectPublicationsByProblem(req.params.id);
+
+  res
+    .status(200)
+    .append("X-Total-Count", publications.length)
+    .json(publications);
+};
+
+const getPublicationCountByProblem = async (req, res) => {
+  const count = await db.countPublicationsForProblem(req.params.id);
+
+  res
+    .status(200)
+    .append("X-Total-Count", count)
+    .end();
+};
+
 const postPublicationToProblemAndStage = async (req, res) => {
   if (
     Number(req.body.user) === NaN ||
@@ -193,6 +216,14 @@ const postPublicationToProblemAndStage = async (req, res) => {
 var router = express.Router();
 
 router.get("/", catchAsyncErrors(getProblems));
+router.get(
+  "/:id(\\d+)/publications",
+  catchAsyncErrors(getPublicationsByProblem),
+);
+router.head(
+  "/:id(\\d+)/publications",
+  catchAsyncErrors(getPublicationCountByProblem),
+);
 router.get("/:id", catchAsyncErrors(getProblemByID));
 router.get("/:id(\\d+)/stages", catchAsyncErrors(getStagesByProblem));
 router.get(
