@@ -1,6 +1,6 @@
 import QueryString from "query-string";
 import React, { Component } from "react";
-import { withRouter } from "react-router-dom";
+import { Redirect, withRouter } from "react-router-dom";
 import Api from "../api";
 import { LoginDataContext } from "../LoginContext";
 import { LocalizedRedirect } from "../urls/WebsiteURIs";
@@ -34,7 +34,7 @@ class LoginPage extends Component {
   render() {
     return (
       (this.state.redirect != undefined && (
-        <LocalizedRedirect to={this.state.redirect} />
+        <Redirect to={this.state.redirect} />
       )) || <h3 style={{ textAlign: "center" }}>Logging you in ...</h3>
     );
   }
