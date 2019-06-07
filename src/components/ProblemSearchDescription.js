@@ -33,8 +33,8 @@ export default class ProblemSearchDescription extends Component {
 
   renderPublicationCount() {
     return (
-      <div className="ui icon button teal" style={styles.countLabel}>
-        <i className="ui icon file alternate outline" />
+      <div className="ui button  icon teal" style={styles.countLabel}>
+        <i className="ui icon file alternate outline computer tablet only" />
         {" " + this.publicationCountString()}
       </div>
     );
@@ -48,8 +48,8 @@ export default class ProblemSearchDescription extends Component {
     const dateString = new Date(updated_at).toLocaleDateString();
 
     return (
-      <div className="ui container" style={styles.container}>
-        <div className="ui grid " style={styles.container}>
+      <div>
+        <div className="ui grid" style={styles.container}>
           <div className="fourteen wide column">
             <LocalizedLink
               style={styles.link}
@@ -72,7 +72,8 @@ export default class ProblemSearchDescription extends Component {
 
   render() {
     return (
-      <div>
+      <div className="ui container" style={styles.container}>
+        <hr />
         {this.state.loaded ? this.renderProblem() : this.renderLoading()}
       </div>
     );
@@ -88,7 +89,10 @@ const styles = {
   },
   description: {
     marginTop: "0.4rem",
-    fontsize: "1rem",
+    fontSize: "1rem",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    maxHeight: "2.4rem",
   },
   modifiedDate: {
     fontSize: "0.8rem",
@@ -97,5 +101,9 @@ const styles = {
   countLabel: {
     fontSize: "1rem",
     width: "100%",
+    fontWeight: "700",
+    borderRadius: "0.28rem",
+    cursor: "unset",
+    backgroundColor: "#00b5ad",
   },
 };
