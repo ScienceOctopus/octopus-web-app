@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import SearchField from "./SearchField";
+import WebURI, { generateLocalizedPath, RouterURI } from "../urls/WebsiteURIs";
 
 class GlobalSearch extends Component {
   constructor(props) {
@@ -16,10 +17,12 @@ class GlobalSearch extends Component {
     event.target.firstChild.firstChild.blur();
 
     if (this.state.value === "") {
-      this.props.history.push("/");
+      this.props.history.push(generateLocalizedPath(WebURI.Home));
     } else {
       this.setState({ value: "breast cancer" }, () =>
-        this.props.history.push(`/problems/${1}`),
+        this.props.history.push(
+          generateLocalizedPath(RouterURI.Problem, { id: 1 }),
+        ),
       );
     }
 

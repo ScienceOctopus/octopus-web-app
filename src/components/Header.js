@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import { Trans } from "react-i18next";
-import { Link } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import "../App.css";
 import { LoginDataContext } from "../LoginContext";
-import WebURI from "../urls/WebsiteURIs";
+import WebURI, { LocalizedLink } from "../urls/WebsiteURIs";
 import GlobalSearch from "./GlobalSearch";
 import GoblinIDLoginInvitation from "./GoblinIDLoginInvitation";
 import LogoutInvitation from "./LogoutInvitation";
@@ -18,21 +18,24 @@ class Header extends Component {
     return (
       <header className="ui teal inverted menu" style={styles.header}>
         <div className="ui container">
-          <Link to={WebURI.Home} className="header item">
+          <LocalizedLink to={WebURI.Home} className="header item">
             <OctopusLogo style={styles.logo} className="logo" />
             <Trans>octopus</Trans>
-          </Link>
+          </LocalizedLink>
           {loggedIn && (
-            <Link to={WebURI.Upload} className="item">
+            <LocalizedLink to={WebURI.Upload} className="item">
               <i className="ui pencil alternate icon" />
               Publish your work
-            </Link>
+            </LocalizedLink>
           )}
           <GlobalSearch />
           {loggedIn ? (
             <LogoutInvitation user={this.context.user} />
           ) : (
-            <GoblinIDLoginInvitation showAvatar state={1337} />
+            <GoblinIDLoginInvitation
+              showAvatar
+              state={this.props.location.pathname}
+            />
           )}
         </div>
       </header>
@@ -49,4 +52,4 @@ const styles = {
   },
 };
 
-export default Header;
+export default withRouter(Header);

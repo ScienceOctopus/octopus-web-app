@@ -1,8 +1,9 @@
-import React, { Component } from "react";
-import { LoginDataContext } from "../LoginContext";
-import { Redirect, withRouter } from "react-router-dom";
 import QueryString from "query-string";
+import React, { Component } from "react";
+import { withRouter } from "react-router-dom";
 import Api from "../api";
+import { LoginDataContext } from "../LoginContext";
+import { LocalizedRedirect } from "../urls/WebsiteURIs";
 
 class LoginPage extends Component {
   static contextType = LoginDataContext;
@@ -10,21 +11,32 @@ class LoginPage extends Component {
   constructor(props) {
     super(props);
 
+    this.state = { redirect: undefined };
+
     let params = QueryString.parse(props.location.search);
 
-    Api()
-      .user(params.user)
-      .get()
-      .then(user =>
-        this.context.login({
-          id: params.user,
-          display_name: user.display_name,
-        }),
-      );
+    if (params.logout === undefined) {
+      Api()
+        .user(params.user)
+        .get()
+        .then(user => {
+          this.context.login({
+            id: params.user,
+            display_name: user.display_name,
+          });
+          this.setState({ redirect: params.state });
+        });
+    } else {
+      this.state.redirect = "";
+    }
   }
 
   render() {
-    return <Redirect to="" />;
+    return (
+      (this.state.redirect != undefined && (
+        <LocalizedRedirect to={this.state.redirect} />
+      )) || <h3 style={{ textAlign: "center" }}>Logging you in ...</h3>
+    );
   }
 }
 

@@ -116,7 +116,7 @@ test("getProblemByID errors on multiple results", async () => {
 
 test("getStagesByProblem returns results", async () => {
   const testStages = [{ id: 1 }, { id: 2 }];
-  queries.selectStages.mockResolvedValue(testStages);
+  queries.selectStagesByProblem.mockResolvedValue(testStages);
 
   const mockRequest = () => {
     return {

@@ -1,10 +1,10 @@
 import React, { Component } from "react";
-import WebURI from "../urls/WebsiteURIs";
-import { Link } from "react-router-dom";
+import WebURI, { LocalizedLink } from "../urls/WebsiteURIs";
+import { Link, withRouter } from "react-router-dom";
 import graph from "../assets/images/graph.png";
 import Footer from "../components/Footer";
 
-export default class IndexPage extends Component {
+class IndexPage extends Component {
   render() {
     return (
       <div>
@@ -34,52 +34,52 @@ export default class IndexPage extends Component {
             <div className="ui hidden divider" />
             <div className="ui grid">
               <div className="column" style={styles.explore}>
-                <Link
+                <LocalizedLink
                   to={WebURI.Explore}
                   className="ui teal large right labeled icon button"
                 >
                   <i className="search icon" />
                   Explore Science
-                </Link>
+                </LocalizedLink>
               </div>
               <div className="column" style={styles.login}>
                 <a
                   className="ui olive large right labeled icon button"
-                  href={WebURI.OrcidLogin(1337)}
+                  href={WebURI.OrcidLogin(this.props.location.pathname)}
                 >
                   <i className="address book icon" />
                   Log In via ORCiD
                 </a>
               </div>
               <div className="column" style={styles.more}>
-                <Link
+                <LocalizedLink
                   to={WebURI.More}
                   className="ui purple large right labeled icon button"
                 >
                   <i className="exclamation icon" />
                   Learn more
-                </Link>
+                </LocalizedLink>
               </div>
               <div className="column" style={styles.faq}>
-                <Link
+                <LocalizedLink
                   to={WebURI.FAQ}
                   className="ui violet large right labeled icon button"
                 >
                   <i className="question icon" />
                   FAQ
-                </Link>
+                </LocalizedLink>
               </div>
             </div>
           </div>
           <div className="seven wide column computer tablet only">
-            <Link to={WebURI.Explore}>
+            <LocalizedLink to={WebURI.Explore}>
               <img
                 src={graph}
                 alt="Science Graph Preview"
                 className="ui fluid image"
                 style={styles.heroImage}
               />
-            </Link>
+            </LocalizedLink>
           </div>
         </main>
         <Footer />
@@ -125,3 +125,5 @@ const styles = {
     minWidth: "45vw",
   },
 };
+
+export default withRouter(IndexPage);

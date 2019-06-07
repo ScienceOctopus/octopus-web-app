@@ -7,3 +7,21 @@ Value copied from Semantic UI's 「copmute tarblet only」 */
 		text-align: center;
 	}
 }
+
+/* Semantic applies a -1em margin to all sides of a grid.
+However on touch-based smooth zoom capable browsers this will cause the grid to flow onto the right of the viewport.
+This then causes an artifact when zooming out.
+Fix by eliminating this margin. */
+.ui.grid
+{
+	margin-right: 0;
+}
+
+#octopus-flow-graph
+{
+	margin-right: -1em; /* Make sure the graph stretches to the edge of the grid, after the grid fix above is applied */
+	overflow-x: auto;
+	overflow-y: hidden;
+	flex-wrap: nowrap;
+	padding-left: 1em;
+}

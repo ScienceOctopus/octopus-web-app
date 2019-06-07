@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import styled from "styled-components";
 
+import { generateLocalizedPath, RouterURI } from "../urls/WebsiteURIs";
 import Stage from "./Stage";
 
 const numbers = [
@@ -74,13 +75,17 @@ class StageGraph extends Component {
       ));
     }
 
+    const { tainer, heider, margin } = this.props.content.measurements;
+
     const stagesLength = stagesLoaded ? this.props.stages.length : 6;
     return (
       <div
         onClick={event => {
           if (this.props.problem.id !== undefined) {
             this.props.history.push(
-              `/problems/${this.props.problem.id}`,
+              generateLocalizedPath(RouterURI.Problem, {
+                id: this.props.problem.id,
+              }),
               this.props.content,
             );
           }
@@ -111,12 +116,7 @@ class StageGraph extends Component {
         <div className="column">
           <div
             className={"ui " + numbers[stagesLength] + " column grid"}
-            style={{
-              overflowX: "auto",
-              overflowY: "hidden",
-              flexWrap: "nowrap",
-              padding: "0 1em",
-            }}
+            id="octopus-flow-graph"
           >
             <div
               className="column"
@@ -124,18 +124,22 @@ class StageGraph extends Component {
                 width: "5.4em",
               }}
             >
-              <div
-                className="ui segment inverted teal"
+              <GraphButton
+                className="ui icon button teal"
                 onClick={event => {
                   this.props.toggleOpen();
                   event.stopPropagation();
                 }}
-                style={{
-                  cursor: "pointer",
-                }}
+                tainer={tainer}
+                heider={heider}
+                margin={margin}
               >
-                <GraphHider className={(open ? "minus " : "plus") + " icon"} />
-              </div>
+                <GraphMiddler>
+                  <GraphHider
+                    className={(open ? "minus " : "plus") + " icon"}
+                  />
+                </GraphMiddler>
+              </GraphButton>
             </div>
 
             {stages}
@@ -146,18 +150,23 @@ class StageGraph extends Component {
   }
 }
 
+const GraphButton = styled.div`
+  width: ${p => p.tainer - p.heider - p.margin * 3 + "px"};
+  height: ${p => p.tainer - p.heider - p.margin * 3 + "px"};
+  position: relative;
+`;
+
+const GraphMiddler = styled.div`
+  margin: auto !important;
+  position: absolute;
+  width: 1rem;
+  height: 1rem;
+  inset: 0;
+`;
+
 const GraphHider = styled.i`
-  fontsize: 1.07142857rem;
+  font-size: 1rem;
   color: #fff;
-  /*transition: transform 0.3s ease-in-out;
-
-  &.opened {
-    transform: rotate(180deg) translateY(-5px);
-  }
-
-  &.collapsed {
-    transform: rotate(0deg) translateY(-5px);
-  }*/
 `;
 
 export default withRouter(StageGraph);

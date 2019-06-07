@@ -1,94 +1,98 @@
 import React from "react";
-import { Switch, Route } from "react-router-dom";
-
-import IndexPage from "./pages/IndexPage";
-import MorePage from "./pages/MorePage";
-import FAQPage from "./pages/FAQPage";
+import { Route, Switch } from "react-router-dom";
 import ExplorePage from "./pages/ExplorePage";
+import FAQPage from "./pages/FAQPage";
+import IndexPage from "./pages/IndexPage";
+import LoginPage from "./pages/LoginPage";
+import MorePage from "./pages/MorePage";
+import NotFoundPage from "./pages/NotFoundPage";
 import ProblemPage from "./pages/ProblemPage";
 import UploadPage from "./pages/UploadPage";
-import LoginPage from "./pages/LoginPage";
-import NotFoundPage from "./pages/NotFoundPage";
-import WebURI from "./urls/WebsiteURIs";
+import WebURI, { RouterPath, RouterURI } from "./urls/WebsiteURIs";
 
 function AppRouter() {
   return (
     <Switch>
       <Route
         name="home"
-        path={WebURI.LanguageMatcher + WebURI.Home}
+        path={RouterPath(WebURI.Home)}
         exact
         component={IndexPage}
       />
 
       <Route
         name="more"
-        path={WebURI.LanguageMatcher + WebURI.More}
+        path={RouterPath(WebURI.More)}
         exact
         component={MorePage}
       />
 
       <Route
         name="faq"
-        path={WebURI.LanguageMatcher + WebURI.FAQ}
+        path={RouterPath(WebURI.FAQ)}
         exact
         component={FAQPage}
       />
 
       <Route
         name="explore"
-        path={WebURI.LanguageMatcher + WebURI.Explore}
+        path={RouterPath(WebURI.Explore)}
         exact
         component={ExplorePage}
       />
 
       <Route
         name="problem"
-        path={WebURI.LanguageMatcher + WebURI.Problem}
+        path={RouterPath(RouterURI.Problem)}
         exact
         render={props => <ProblemPage {...props} publication={false} />}
       />
+
       <Route
         name="publication"
-        path={WebURI.LanguageMatcher + WebURI.Publication}
+        path={RouterPath(RouterURI.Publication)}
         exact
         render={props => <ProblemPage {...props} publication={true} />}
       />
 
       <Route
         name="upload"
-        path={WebURI.LanguageMatcher + WebURI.Upload}
+        path={RouterPath(WebURI.Upload)}
         exact
         component={UploadPage}
       />
+
       <Route
         name="uploadToProblem"
-        path={WebURI.LanguageMatcher + WebURI.UploadToProblem}
+        path={RouterPath(RouterURI.UploadToProblem)}
         exact
         render={props => <UploadPage {...props} review={false} />}
       />
+
       <Route
         name="uploadToProblemStage"
-        path={WebURI.LanguageMatcher + WebURI.UploadToProblemStage}
+        path={RouterPath(RouterURI.UploadToProblemStage)}
         exact
         render={props => <UploadPage {...props} review={false} />}
       />
+
       <Route
         name="uploadToProblemStageAll"
-        path={WebURI.LanguageMatcher + WebURI.UploadToProblemStageAll}
+        path={RouterPath(RouterURI.UploadToProblemStageAll)}
         exact
         render={props => <UploadPage {...props} review={true} />}
       />
+
       <Route
         name="uploadToProblemStageReview"
-        path={WebURI.LanguageMatcher + WebURI.UploadToProblemStageReview}
+        path={RouterPath(RouterURI.UploadToProblemStageReview)}
         exact
         render={props => <UploadPage {...props} review={true} />}
       />
 
       <Route
         name="login"
-        path={WebURI.LanguageMatcher + WebURI.Login}
+        path={RouterPath(WebURI.Login)}
         exact
         component={LoginPage}
       />

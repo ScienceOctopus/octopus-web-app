@@ -1,9 +1,8 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
-
 import styled from "styled-components";
-
 import Review from "./Review";
+import { RouterURI, generateLocalizedPath } from "../urls/WebsiteURIs";
 
 class Publication extends Component {
   render() {
@@ -11,7 +10,9 @@ class Publication extends Component {
       this.props.onClick ||
       (event => {
         this.props.history.push(
-          `/publications/${this.props.publication.id}`,
+          generateLocalizedPath(RouterURI.Publication, {
+            id: this.props.publication.id,
+          }),
           this.props.content,
         );
         event.stopPropagation();
@@ -109,26 +110,44 @@ class Publication extends Component {
 
       reviews = (
         <div>
-          <div style={{ height: "3rem", position: "relative" }}>
+          <div
+            style={{
+              height: "3rem",
+              position: "relative",
+              marginBottom:
+                this.props.publication.reviews.length === 0 ? "1rem" : 0,
+            }}
+          >
             <h4 style={{ fontSize: "1rem", position: "absolute", bottom: 0 }}>
-              <i
+              <div
+                className="ui icon button yellow"
+                style={{
+                  padding: "0.5rem",
+                  margin: "-0.5rem 0.5rem -0.5rem 0",
+                }}
                 onClick={event => {
+                  const { problem, stage, id } = this.props.publication;
                   this.props.history.push(
-                    `/publish/problems/${
-                      this.props.publication.problem
-                    }/stages/${this.props.publication.stage}/review/${
-                      this.props.publication.id
-                    }`,
+                    generateLocalizedPath(
+                      RouterURI.UploadToProblemStageReview,
+                      {
+                        id: problem,
+                        stage,
+                        review: id,
+                      },
+                    ),
                   );
                   event.stopPropagation();
                 }}
-                className="ui pencil alternate icon"
-                style={{
-                  marginRight: "0.5em",
-                  color: "gray",
-                  cursor: "pointer",
-                }}
-              />
+              >
+                <i
+                  className="ui pencil alternate icon"
+                  style={{
+                    marginRight: "0.5em",
+                    color: "black",
+                  }}
+                />
+              </div>
               {reviews === null ? "No" : this.props.publication.reviews.length}{" "}
               Review{this.props.publication.reviews.length != 1 ? "s" : ""}
             </h4>

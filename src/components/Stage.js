@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
-
-import Publication from "./Publication";
 import styled from "styled-components";
+import Publication from "./Publication";
+import { generateLocalizedPath, RouterURI } from "../urls/WebsiteURIs";
 
 class Stage extends Component {
   render() {
@@ -156,10 +156,18 @@ class Stage extends Component {
       titleCard = (
         <>
           <div style={{ float: "left" }}>
-            <i
-              className="ui pencil alternate icon"
-              style={{ marginRight: "0.5em", color: "gray" }}
-            />
+            <div
+              className="ui icon button teal disabled"
+              style={{
+                padding: "0.5rem",
+                margin: "-0.5rem 0.5rem -0.5rem -0.25rem",
+              }}
+            >
+              <i
+                className="ui pencil alternate icon"
+                style={{ marginRight: "0.5em", color: "white" }}
+              />
+            </div>
             &#x200b;
           </div>
           <div
@@ -175,18 +183,31 @@ class Stage extends Component {
     } else {
       titleCard = (
         <>
-          <i
+          <div
+            className="ui icon button teal"
+            style={{
+              padding: "0.5rem",
+              margin: "-0.5rem 0.5rem -0.5rem -0.25rem",
+            }}
             onClick={event => {
               this.props.history.push(
-                `/publish/problems/${this.props.content.problem}/stages/${
-                  this.props.stage.id
-                }`,
+                generateLocalizedPath(RouterURI.UploadToProblemStage, {
+                  id: this.props.content.problem,
+                  stage: this.props.stage.id,
+                }),
               );
               event.stopPropagation();
             }}
-            className="ui pencil alternate icon"
-            style={{ marginRight: "0.5em", color: "gray", cursor: "pointer" }}
-          />
+          >
+            <i
+              className="ui pencil alternate icon"
+              style={{
+                marginRight: "0.5em",
+                color: "white",
+                cursor: "pointer",
+              }}
+            />
+          </div>
           {this.props.stage.name}
           {pubsNumber}
         </>
