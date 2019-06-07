@@ -1,13 +1,15 @@
 const express = require("express");
 const request = require("request");
-
 const db = require("../postgresQueries.js").queries;
 
 const GOBLINID_EXCHANGE_OAUTH_TOKEN_ADDRESS = "https://orcid.org/oauth/token";
-const SQUID_OAUTH_COMPLETE_REDIRECT_ADDRESS =
-  "https://octopus-publishing.azurewebsites.net/login";
 
 const handleOAuthAuthenticationResponse = async (req, res) => {
+  console.log("ref: " + req.headers.referer);
+  console.log("host: " + req.headers.host);
+
+  const redirectAddress = req.headers.referer + "login";
+
   request.post(
     GOBLINID_EXCHANGE_OAUTH_TOKEN_ADDRESS,
     {
@@ -29,17 +31,9 @@ const handleOAuthAuthenticationResponse = async (req, res) => {
 
         global.authentications.push(req.query.state);
 
-        res.redirect(
-          `${SQUID_OAUTH_COMPLETE_REDIRECT_ADDRESS}?state=${
-            req.query.state
-          }&user=${id}`,
-        );
+        res.redirect(`${redirectAddress}?state=${req.query.state}&user=${id}`);
       } else {
-        res.redirect(
-          `${SQUID_OAUTH_COMPLETE_REDIRECT_ADDRESS}?state=${
-            req.query.state
-          }&error=1`,
-        );
+        res.redirect(`${redirectAddress}?state=${req.query.state}&error=1`);
       }
     },
   );

@@ -4,8 +4,11 @@ import i18n, { AVAILABLE_LANGUAGES, SHORT_LINK_LANGS } from "../i18n";
 import { generatePath } from "react-router-dom";
 
 const GOBLINID_OAUTH_CLIENT_ID = "APP-3IQDM9L3ZPD3ZC36";
-const REDIRECT_URI =
-  "https://octopus-publishing.azurewebsites.net/api/oauth-flow";
+
+const REDIRECT_HOST = window.location.host.endsWith(":3000")
+  ? window.location.host.slice(0, -1) + "1"
+  : window.location.host;
+const REDIRECT_URI = `http://${REDIRECT_HOST}/api/oauth-flow`;
 
 const languageRegex = AVAILABLE_LANGUAGES.reduce((a, b) => a + "|" + b);
 const LanguageMatcher = `/(${languageRegex})?`;
@@ -16,7 +19,8 @@ const langLinkPrefix = () => {
 };
 
 export const localizeLink = link => {
-  return langLinkPrefix() + link;
+  //   return langLinkPrefix() + link;
+  return link;
 };
 
 export const generateLocalizedPath = (pattern, params) => {
@@ -48,11 +52,11 @@ const WebURI = {
 };
 
 export const LocalizedLink = props => {
-  return <Link {...props} to={localizeLink(props.to)} />;
+  return <Link {...props} />;
 };
 
 export const LocalizedRedirect = props => {
-  return <Redirect {...props} to={localizeLink(props.to)} />;
+  return <Redirect {...props} />;
 };
 
 export default WebURI;
