@@ -31,7 +31,6 @@ class Header extends Component {
           ) : (
             <GoblinIDLoginInvitation
               showAvatar
-              state={this.props.location.pathname}
             />
           )}
         </div>

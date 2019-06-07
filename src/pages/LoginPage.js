@@ -21,7 +21,7 @@ class LoginPage extends Component {
             id: params.user,
             display_name: user.display_name,
           };
-          this.setState({ redirect: params.state });
+          this.setState({ redirect: params.redirect });
         });
     } else {
       this.state.redirect = "";

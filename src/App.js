@@ -14,6 +14,7 @@ class App extends Component {
 
 // Initialise global login state
     global.user = undefined;
+	global.session = 1337;
   }
 
   render() {

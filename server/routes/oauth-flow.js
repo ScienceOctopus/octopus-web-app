@@ -1,11 +1,16 @@
 const express = require("express");
 const request = require("request");
+const url = require('url');
 const db = require("../postgresQueries.js").queries;
 
 const GOBLINID_EXCHANGE_OAUTH_TOKEN_ADDRESS = "https://orcid.org/oauth/token";
 
 const handleOAuthAuthenticationResponse = (req, res) => {
-  const redirectAddress = req.headers.referer + "login";
+	 // Note: if the user agent doesn't send the Referer header the user will not automatically return to their previous page
+  const redirectPath = url.parse(req.headers.referer).path;
+  
+  // Don't get from Referer since an arbitrary redirect is vulnerability, according to OWASSUP?
+  const redirectAddress = process.env.SQUID_OAUTH_COMPLETE_REDIRECT_ADDRESS + '/login';
   
   request.post(
     GOBLINID_EXCHANGE_OAUTH_TOKEN_ADDRESS,
@@ -20,9 +25,7 @@ const handleOAuthAuthenticationResponse = (req, res) => {
     function(error, response, body) {
       if (error || response.statusCode !== 200) {
         res.redirect(
-          `${redirectAddress}?state=${
-            req.query.state
-          }&error=1`,
+          `${redirectAddress}?error=1`,
         );
         return;
       }
@@ -42,9 +45,7 @@ const handleOAuthAuthenticationResponse = (req, res) => {
         async function(error, response, body) {
           if (error || response.statusCode !== 200) {
             res.redirect(
-              `${redirectAddress}?state=${
-                req.query.state
-              }&error=1`,
+              `${redirectAddress}?error=1`,
             );
             return;
           }
@@ -61,9 +62,9 @@ const handleOAuthAuthenticationResponse = (req, res) => {
           global.authentications.push(req.query.state);
 
           res.redirect(
-            `${redirectAddress}?state=${
+            `${redirectAddress}?error=0&state=${
               req.query.state
-            }&user=${id}`,
+            }&redirect=${redirectPath}&user=${id}`,
           );
         },
       );
