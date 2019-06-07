@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import Api from "../api";
 import { LocalizedLink, path, RouterURI } from "../urls/WebsiteURIs";
 
+const DESC_MAX_LENGTH = 200;
+
 export default class ProblemSearchDescription extends Component {
   constructor(props) {
     super(props);
@@ -33,7 +35,7 @@ export default class ProblemSearchDescription extends Component {
 
   renderPublicationCount() {
     return (
-      <div className="ui button  icon teal" style={styles.countLabel}>
+      <div className="ui button icon teal" style={styles.countLabel}>
         <i className="ui icon file alternate outline computer tablet only" />
         {" " + this.publicationCountString()}
       </div>
@@ -60,7 +62,9 @@ export default class ProblemSearchDescription extends Component {
           </div>
           <div className="two wide column">{this.renderPublicationCount()}</div>
         </div>
-        <p style={styles.description}>{description}</p>
+        <p style={styles.description}>
+          {trimmed(description, DESC_MAX_LENGTH)}
+        </p>
         <p style={styles.modifiedDate}>Last modified: {dateString}</p>
       </div>
     );
@@ -80,6 +84,12 @@ export default class ProblemSearchDescription extends Component {
   }
 }
 
+const trimmed = (str, n) => {
+  if (str.length <= n) return str;
+  str = str.substring(0, n - 4);
+  return str.substring(0, Math.min(str.length, str.lastIndexOf(" "))) + " ...";
+};
+
 const styles = {
   container: {
     paddingTop: "1em",
@@ -90,9 +100,9 @@ const styles = {
   description: {
     marginTop: "0.4rem",
     fontSize: "1rem",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    maxHeight: "2.4rem",
+    // overflow: "hidden",
+    // textOverflow: "ellipsis",
+    // maxHeight: "2.4rem",
   },
   modifiedDate: {
     fontSize: "0.8rem",
