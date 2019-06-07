@@ -4,7 +4,7 @@ import WebURI from "../urls/WebsiteURIs";
 function GoblinIDLoginInvitation(props) {
   return (
     <div className="right item">
-      <a href={WebURI.OrcidLogin(global.session)}>
+      <a href={WebURI.OrcidLogin(global.session, props.returnPath)}>
         {props.showAvatar && (
           <img
             src="/images/avatar.jpg"

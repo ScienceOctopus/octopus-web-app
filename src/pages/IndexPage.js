@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import WebURI, { LocalizedLink, LocalizedRedirect } from "../urls/WebsiteURIs";
-import { Link, withRouter } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import graph from "../assets/images/graph.png";
 import Footer from "../components/Footer";
 
