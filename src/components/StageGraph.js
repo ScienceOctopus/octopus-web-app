@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import styled from "styled-components";
 
+import WebURI, { generateLocalizedPath, RouterURI } from "../urls/WebsiteURIs";
 import Stage from "./Stage";
 
 const numbers = [
@@ -82,7 +83,9 @@ class StageGraph extends Component {
         onClick={event => {
           if (this.props.problem.id !== undefined) {
             this.props.history.push(
-              `/problems/${this.props.problem.id}`,
+              generateLocalizedPath(RouterURI.Problem, {
+                id: this.props.problem.id,
+              }),
               this.props.content,
             );
           }

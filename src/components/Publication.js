@@ -126,12 +126,16 @@ class Publication extends Component {
                   margin: "-0.5rem 0.5rem -0.5rem 0",
                 }}
                 onClick={event => {
+                  const { problem, stage, id } = this.props.publication;
                   this.props.history.push(
-                    `/publish/problems/${
-                      this.props.publication.problem
-                    }/stages/${this.props.publication.stage}/review/${
-                      this.props.publication.id
-                    }`,
+                    generateLocalizedPath(
+                      RouterURI.UploadToProblemStageReview,
+                      {
+                        id: problem,
+                        stage,
+                        review: id,
+                      },
+                    ),
                   );
                   event.stopPropagation();
                 }}
