@@ -11,6 +11,11 @@ class LoginPage extends Component {
 
     let params = QueryString.parse(props.location.search);
 
+    if (props.location.pathname === params.redirect) {
+      // Prevent infinite loops
+      params.redirect = "/";
+    }
+
     if (params.logout === undefined) {
       Api()
         .user(params.user)
