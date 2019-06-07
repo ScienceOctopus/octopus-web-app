@@ -1,5 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 
 const db = require("./postgresQueries").queries;
 
@@ -19,12 +20,13 @@ blobService.initialise();
 const app = express();
 const port = process.env.PORT || 3001;
 
-global.authentications = [];
+global.sessions = [];
 
 // Can access anything in this folder
 app.use(express.static("public"));
 
 app.use(bodyParser.json());
+app.use(cookieParser());
 app.use(
   bodyParser.urlencoded({
     extended: true,

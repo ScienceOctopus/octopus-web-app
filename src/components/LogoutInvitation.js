@@ -2,13 +2,13 @@ import React from "react";
 import ApiURI from "../urls/ApiURIs";
 
 function LogoutInvitation() {
-  const user = global.user;
+  const user = global.session.user;
 
   return (
     <div className="right menu">
       <div className="item">
         <img
-          src={ApiURI.UsersEndpoint + global.user.id + ApiURI.UserAvatar}
+          src={ApiURI.UsersEndpoint + global.session.user.id + ApiURI.UserAvatar}
           className="ui right spaced avatar image"
           alt={`Avatar of ${user.display_name}`}
         />

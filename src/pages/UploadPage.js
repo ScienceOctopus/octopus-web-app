@@ -254,7 +254,7 @@ class UploadPage extends Component {
     data.set("title", this.state.title);
     data.set("summary", this.state.summary);
     data.set("funding", this.state.funding);
-    data.set("user", global.user.id);
+    data.set("user", global.session.user.id);
     data.set("review", this.state.isReview);
 
     if (linkedPublications !== undefined) {
@@ -476,7 +476,7 @@ class UploadPage extends Component {
   }
 
   render() {
-    if (global.user === undefined) {
+    if (global.session.user === undefined) {
       return (
         <div className="ui main text container">
           <div className="ui negative icon message">
@@ -633,7 +633,7 @@ class UploadPage extends Component {
               Submit
             </button>{" "}
             as publication author{" "}
-            <strong>{global.user.display_name}</strong>.
+            <strong>{global.session.user.display_name}</strong>.
             {this.state.uploadSuccessful && (
               <LocalizedRedirect
                 to={generatePath(RouterURI.Publication, {

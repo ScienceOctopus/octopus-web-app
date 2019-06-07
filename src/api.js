@@ -122,12 +122,22 @@ class PublicationBuilder extends LinkBuilder {
 }
 
 class UserBuilder extends LinkBuilder {
-  stageSelected = false;
-
   constructor(root, userId) {
     super();
     this.path = root + "/users/" + userId;
   }
+}
+
+class AuthenticationBuilder extends LinkBuilder {
+  constructor(root, userId) {
+    super();
+    this.path = root + "/oauth-flow/";
+  }
+
+  state = () => {
+    this.path += "/acquire-state";
+    return this;
+  };
 }
 
 class ApiBuilder extends LinkBuilder {
@@ -176,6 +186,12 @@ class ApiBuilder extends LinkBuilder {
 
     this._final();
     return this;
+  };
+
+  authentication = () => {
+    this._checkNotFinal();
+
+    return new AuthenticationBuilder(root);
   };
 }
 

@@ -10,7 +10,7 @@ import OctopusLogo from "./OctopusLogo";
 
 class Header extends Component {
   render() {
-    const loggedIn = global.user !== undefined;
+    const loggedIn = global.session.user !== undefined;
 
     return (
       <header className="ui teal inverted menu" style={styles.header}>

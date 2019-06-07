@@ -16,7 +16,7 @@ class LoginPage extends Component {
         .user(params.user)
         .get()
         .then(user => {
-          global.user = {
+          global.session.user = {
             id: params.user,
             display_name: user.display_name,
           };
