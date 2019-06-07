@@ -46,7 +46,8 @@ const handleOAuthAuthenticationResponse = (req, res) => {
             return;
           }
 
-          const email = JSON.parse(body).email[0].email;
+			const details = JSON.parse(body);
+          const email = (details.email.length >= 1) ? details.email[0].email : null;
           const users = await db.selectUsersByGoblinID(authentication.orcid);
 
           let id = (await db.insertOrUpdateUser(

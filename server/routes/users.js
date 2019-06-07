@@ -58,8 +58,15 @@ const getUserAvatar = async (req, res) => {
   }
 
   let user = users[0];
+  if (user.email === null)
+  {
+	  res.redirect('/images/avatar.jpg');
+  }
+  else
+  {
 	let email_hash = cryptography.createHash('md5').update(user.email).digest('hex');
 	req.pipe(request({ qs:req.query, uri: `https://gravatar.com/avatar/${email_hash}` })).pipe(res);
+  }
 };
 
 var router = express.Router();
