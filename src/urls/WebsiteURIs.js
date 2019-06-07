@@ -6,9 +6,10 @@ import { generatePath } from "react-router-dom";
 const GOBLINID_OAUTH_CLIENT_ID = "APP-3IQDM9L3ZPD3ZC36";
 
 const REDIRECT_HOST = window.location.host.endsWith(":3000")
-  ? window.location.host.slice(0, -1) + "1"
-  : window.location.host;
-const REDIRECT_URI = `http://${REDIRECT_HOST}/api/oauth-flow`;
+  ? "http://" + window.location.host.slice(0, -1) + "1"
+  : "https://" + window.location.host;
+
+const REDIRECT_URI = `${REDIRECT_HOST}/api/oauth-flow`;
 
 const languageRegex = AVAILABLE_LANGUAGES.reduce((a, b) => a + "|" + b);
 const LanguageMatcher = `/(${languageRegex})?`;
