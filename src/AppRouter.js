@@ -9,6 +9,7 @@ import NotFoundPage from "./pages/NotFoundPage";
 import ProblemPage from "./pages/ProblemPage";
 import UploadPage from "./pages/UploadPage";
 import WebURI, { RouterPath, RouterURI } from "./urls/WebsiteURIs";
+import SearchPage from "./pages/SearchPage";
 
 function AppRouter() {
   return (
@@ -95,6 +96,13 @@ function AppRouter() {
         path={RouterPath(WebURI.Login)}
         exact
         component={LoginPage}
+      />
+
+      <Route
+        name="search"
+        path={RouterPath(WebURI.Search)}
+        exact
+        component={SearchPage}
       />
 
       <Route name="notFound" path="/*" component={NotFoundPage} />
