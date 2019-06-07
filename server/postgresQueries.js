@@ -250,15 +250,15 @@ const queries = {
     knex("users")
       .select()
       .where("orcid", orc),
-  insertOrUpdateUser: (orcid, name) =>
+  insertOrUpdateUser: (orcid, name, primary_email) =>
     knex("users")
       .insert({
-        email: null,
+        email: primary_email,
         orcid: orcid,
         display_name: name,
         user_group: 1,
       })
-      .onConflictUpdate("orcid", "display_name")
+      .onConflictUpdate("orcid", "display_name", "email")
       .returning("id"),
 };
 

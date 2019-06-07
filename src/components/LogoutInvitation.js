@@ -1,13 +1,14 @@
 import React from "react";
+import ApiURI from "../urls/ApiURIs";
 
-function LogoutInvitation(props) {
-  const user = props.user;
+function LogoutInvitation() {
+  const user = global.user;
 
   return (
     <div className="right menu">
       <div className="item">
         <img
-          src="/images/avatar.jpg"
+          src={ApiURI.UsersEndpoint + global.user.id + ApiURI.UserAvatar}
           className="ui right spaced avatar image"
           alt={`Avatar of ${user.display_name}`}
         />

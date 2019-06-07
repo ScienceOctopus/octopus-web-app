@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { Trans } from "react-i18next";
 import { withRouter } from "react-router-dom";
 import "../App.css";
-import { LoginDataContext } from "../LoginContext";
 import WebURI, { LocalizedLink } from "../urls/WebsiteURIs";
 import GlobalSearch from "./GlobalSearch";
 import GoblinIDLoginInvitation from "./GoblinIDLoginInvitation";
@@ -10,10 +9,8 @@ import LogoutInvitation from "./LogoutInvitation";
 import OctopusLogo from "./OctopusLogo";
 
 class Header extends Component {
-  static contextType = LoginDataContext;
-
   render() {
-    const loggedIn = this.context.user !== undefined;
+    const loggedIn = global.user !== undefined;
 
     return (
       <header className="ui teal inverted menu" style={styles.header}>
@@ -30,7 +27,7 @@ class Header extends Component {
           )}
           <GlobalSearch />
           {loggedIn ? (
-            <LogoutInvitation user={this.context.user} />
+            <LogoutInvitation />
           ) : (
             <GoblinIDLoginInvitation
               showAvatar

@@ -6,7 +6,6 @@ import PublicationSelector from "../components/PublicationSelector";
 import SimpleSelector from "../components/SimpleSelector";
 import TitledCheckbox from "../components/TitledCheckbox";
 import TitledForm from "../components/TitledForm";
-import { LoginDataContext } from "../LoginContext";
 import {
   LocalizedRedirect,
   RouterURI,
@@ -15,8 +14,6 @@ import {
 import { generatePath } from "react-router";
 
 class UploadPage extends Component {
-  static contextType = LoginDataContext;
-
   constructor(props) {
     super(props);
 
@@ -257,7 +254,7 @@ class UploadPage extends Component {
     data.set("title", this.state.title);
     data.set("summary", this.state.summary);
     data.set("funding", this.state.funding);
-    data.set("user", this.context.user.id);
+    data.set("user", global.user.id);
     data.set("review", this.state.isReview);
 
     if (linkedPublications !== undefined) {
@@ -479,7 +476,7 @@ class UploadPage extends Component {
   }
 
   render() {
-    if (this.context.user === undefined) {
+    if (global.user === undefined) {
       return (
         <div className="ui main text container">
           <div className="ui negative icon message">
@@ -636,7 +633,7 @@ class UploadPage extends Component {
               Submit
             </button>{" "}
             as publication author{" "}
-            <strong>{this.context.user.display_name}</strong>.
+            <strong>{global.user.display_name}</strong>.
             {this.state.uploadSuccessful && (
               <LocalizedRedirect
                 to={generatePath(RouterURI.Publication, {

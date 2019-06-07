@@ -2,12 +2,9 @@ import QueryString from "query-string";
 import React, { Component } from "react";
 import { Redirect, withRouter } from "react-router-dom";
 import Api from "../api";
-import { LoginDataContext } from "../LoginContext";
 import { LocalizedRedirect } from "../urls/WebsiteURIs";
 
 class LoginPage extends Component {
-  static contextType = LoginDataContext;
-
   constructor(props) {
     super(props);
 
@@ -20,10 +17,10 @@ class LoginPage extends Component {
         .user(params.user)
         .get()
         .then(user => {
-          this.context.login({
+          global.user = {
             id: params.user,
             display_name: user.display_name,
-          });
+          };
           this.setState({ redirect: params.state });
         });
     } else {

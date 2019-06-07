@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import AppRouter from "./AppRouter";
 import Header from "./components/Header";
-import { LoginDataContext } from "./LoginContext";
 import OctopusSlackFeedback from "./components/SlackFeedback/OctopusSlackFeedback";
 
 // TODO: Can change this to be a dynamic import
@@ -13,26 +12,18 @@ class App extends Component {
   constructor() {
     super();
 
-    this.login = data => {
-      this.setState(state => ({ user: data }));
-    };
-
-    this.state = {
-      user: undefined,
-      login: this.login,
-    };
+// Initialise global login state
+    global.user = undefined;
   }
 
   render() {
     // TODO: investigate whether this Provider is necessary
     return (
       <div className="App">
-        <LoginDataContext.Provider value={this.state}>
           <Header />
           <AppRouter />
           <OctopusSlackFeedback />
           {process.SHOW_DEBUG_SWITCH && <DebugReloadButton />}
-        </LoginDataContext.Provider>
       </div>
     );
   }
