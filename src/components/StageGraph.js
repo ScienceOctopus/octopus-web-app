@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import styled from "styled-components";
 
-import WebURI, { generateLocalizedPath, RouterURI } from "../urls/WebsiteURIs";
+import { generateLocalizedPath, RouterURI } from "../urls/WebsiteURIs";
 import Stage from "./Stage";
 
 const numbers = [
@@ -116,12 +116,7 @@ class StageGraph extends Component {
         <div className="column">
           <div
             className={"ui " + numbers[stagesLength] + " column grid"}
-            style={{
-              overflowX: "auto",
-              overflowY: "hidden",
-              flexWrap: "nowrap",
-              padding: "0 1em",
-            }}
+            id="octopus-flow-graph"
           >
             <div
               className="column"
