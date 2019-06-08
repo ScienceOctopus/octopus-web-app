@@ -13,23 +13,28 @@ class ProblemPage extends React.Component {
     this._isMounted = false;
     this._setStateTask = undefined;
 
-    if (!this.props.location || !this.props.location.state) {
-      this.state = {
-        problem: undefined,
-        stage: undefined,
-        publication: undefined,
-        content: {
-          problem: {},
-          stages: [],
-          publications: new Map(),
-          loading: true,
-        },
-        open: true,
-        measurements: undefined,
-      };
-    } else {
-      this.state = this.props.location.state;
+    //if (!this.props.location || !this.props.location.state) {
+    this.state = {
+      problem: undefined,
+      stage: undefined,
+      publication: undefined,
+      content: {
+        problem: {},
+        stages: [],
+        publications: new Map(),
+        loading: true,
+      },
+      open: true,
+      measurements: undefined,
+    };
+    //} else {
+    //  this.state = this.props.location.state;
+    //
+    //  this.initCheck(this.props, false, undefined, false);
+    //}
 
+    // TODO: Put measurements into global, non-history state
+    if (!this.props.location || !this.props.location.state) {
       this.initCheck(this.props, false, undefined, false);
     }
   }
@@ -474,7 +479,6 @@ class ProblemPage extends React.Component {
               ? this.state.review
               : this.state.publication
           }
-          stages={this.state.content.stages}
         />
       );
     }

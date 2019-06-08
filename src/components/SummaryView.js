@@ -6,7 +6,7 @@ import Api from "../api";
 class SummaryView extends Component {
   constructor(props) {
     super(props);
-
+    //console.log("constructor(SummaryView)");
     this.state = {
       publication: undefined,
       collaborators: [],
@@ -15,10 +15,10 @@ class SummaryView extends Component {
       schema: undefined,
     };
 
-    this.fetchProblemData();
+    this.fetchPublicationData();
   }
 
-  fetchProblemData() {
+  fetchPublicationData() {
     this.setState({ publication: undefined, collaborators: [] });
 
     Api()
@@ -27,13 +27,23 @@ class SummaryView extends Component {
       .then(publication => {
         publication.data = JSON.parse(publication.data);
 
-        let stage = this.props.stages.find(x => x.id === publication.stage);
-
-        this.setState({
-          publication: publication,
-          stage: stage,
-          schema: stage && JSON.parse(stage.schema),
-        });
+        this.setState(
+          {
+            publication: publication,
+          },
+          () => {
+            Api()
+              .problem(this.state.publication.problem)
+              .stage(this.state.publication.stage)
+              .get()
+              .then(stage =>
+                this.setState({
+                  stage: stage,
+                  schema: JSON.parse(stage.schema),
+                }),
+              );
+          },
+        );
       });
 
     Api()
@@ -68,28 +78,7 @@ class SummaryView extends Component {
 
   componentDidUpdate(oldProps) {
     if (oldProps.publicationId !== this.props.publicationId) {
-      this.fetchProblemData();
-    }
-
-    // Make sure to update stage when our props.stages gets populated upstream
-    // even if the publication id didn't change (e.g. direct navigation to page)
-    // Note about duplication: the stage update in fetchProblemData is for publication state updating
-    //  and the stage update here is for props updating. props.stages is never undefined, only an empty
-    //  array (I hope...) so we won't need to worry about that crashing.
-    // Memory reference compare; but I guess it's okay to prevent recursive updates
-    if (
-      oldProps.stages !== this.props.stages &&
-      this.state.publication !== undefined &&
-      this.state.publication.stage !== undefined
-    ) {
-      let stage = this.props.stages.find(
-        x => x.id === this.state.publication.stage,
-      );
-
-      this.setState({
-        stage: stage,
-        schema: JSON.parse(stage.schema),
-      });
+      this.fetchPublicationData();
     }
   }
 
@@ -99,7 +88,6 @@ class SummaryView extends Component {
       return null;
     }
 
-    const publicationPresent = this.state.publication !== undefined;
     const mainResourcePresent =
       this.state.resources !== undefined && this.state.resources.length > 0;
     const stagePresent = this.state.stage !== undefined;
@@ -160,6 +148,8 @@ class SummaryView extends Component {
               </div>
             );
             break;
+          default:
+            return null;
         }
 
         return (

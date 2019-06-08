@@ -37,7 +37,7 @@ const getUserByID = async (req, res) => {
   }
 
   let user = users[0];
-	
+
   // Ensure only public ORCID information can be read in the frontend
   return res.status(200).json({
     id: user.id,
@@ -58,14 +58,21 @@ const getUserAvatar = async (req, res) => {
   }
 
   let user = users[0];
-  if (user.email === null)
-  {
-	  res.redirect('/images/avatar.jpg');
-  }
-  else
-  {
-	let email_hash = cryptography.createHash('md5').update(user.email).digest('hex');
-	req.pipe(request({ qs:req.query, uri: `https://gravatar.com/avatar/${email_hash}` })).pipe(res);
+  if (user.email === null) {
+    res.redirect("/images/avatar.jpg");
+  } else {
+    let email_hash = cryptography
+      .createHash("md5")
+      .update(user.email)
+      .digest("hex");
+    req
+      .pipe(
+        request({
+          qs: req.query,
+          uri: `https://gravatar.com/avatar/${email_hash}`,
+        }),
+      )
+      .pipe(res);
   }
 };
 

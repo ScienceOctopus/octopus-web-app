@@ -53,6 +53,20 @@ const getStagesByProblem = async (req, res) => {
   res.status(200).json(stages);
 };
 
+const getStageByProblem = async (req, res) => {
+  const problems = await db.selectProblemsByID(req.params.id);
+  if (!problems.length) {
+    return notFound(res);
+  }
+
+  const stages = await db.selectStagesByID(req.params.stage);
+  if (!stages.length) {
+    return notFound(res);
+  }
+
+  res.status(200).json(stages[0]);
+};
+
 const getPublicationsByProblemAndStage = async (req, res) => {
   const problems = await db.selectProblemsByID(req.params.id);
   if (!problems.length) {
@@ -226,6 +240,10 @@ router.head(
 );
 router.get("/:id", catchAsyncErrors(getProblemByID));
 router.get("/:id(\\d+)/stages", catchAsyncErrors(getStagesByProblem));
+router.get(
+  "/:id(\\d+)/stages/:stage(\\d+)",
+  catchAsyncErrors(getStageByProblem),
+);
 router.get(
   "/:id(\\d+)/stages/:stage(\\d+)/publications",
   catchAsyncErrors(getPublicationsByProblemAndStage),

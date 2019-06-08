@@ -46,7 +46,10 @@ class IndexPage extends Component {
               <div className="column" style={styles.login}>
                 <a
                   className="ui olive large right labeled icon button"
-                  href={WebURI.OrcidLogin(global.session.OAuthState, this.props.location.pathname)}
+                  href={WebURI.OrcidLogin(
+                    global.session.OAuthState,
+                    this.props.location.pathname,
+                  )}
                 >
                   <i className="address book icon" />
                   Log In via ORCiD

@@ -20,41 +20,42 @@ class UploadPage extends Component {
     this._isMounted = false;
     this._setStateTask = undefined;
 
-    if (!this.props.location || !this.props.location.state) {
-      this.state = {
-        selectedProblemId: undefined,
-        selectedStageId: undefined,
-        isReview: false,
-        publicationsToLink: [],
-        title: "",
-        summary: "",
-        funding: "",
-        data: {},
-        selectedFile: undefined,
+    //if (!this.props.location || !this.props.location.state) {
+    this.state = {
+      selectedProblemId: undefined,
+      selectedStageId: undefined,
+      isReview: false,
+      publicationsToLink: [],
+      title: "",
+      summary: "",
+      funding: "",
+      data: {},
+      selectedFile: undefined,
 
-        linkedProblemsSelected: false,
+      linkedProblemsSelected: false,
 
-        problems: [],
-        stages: [],
-        publications: undefined,
-      };
+      problems: [],
+      stages: [],
+      publications: undefined,
+    };
 
-      Api()
-        .problems()
-        .get()
-        .then(problems =>
-          this.setState({ problems: problems }, () =>
-            this.props.history.replace(
-              this.props.location.pathname,
-              this.state,
-            ),
-          ),
-        );
-    } else {
-      this.state = this.props.location.state;
-
-      this.initCheck(this.props);
-    }
+    Api()
+      .problems()
+      .get()
+      .then(problems =>
+        this.setState({ problems: problems }, () =>
+          //this.props.history.replace(
+          //  this.props.location.pathname,
+          //  this.state,
+          //),
+          this.initCheck(this.props),
+        ),
+      );
+    //} else {
+    //  this.state = this.props.location.state;
+    //
+    //  this.initCheck(this.props);
+    //}
   }
 
   componentDidMount() {
@@ -199,6 +200,8 @@ class UploadPage extends Component {
             case "bool":
               data[key] = false;
               break;
+            default:
+            // No-op
           }
         });
 

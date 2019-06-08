@@ -1,5 +1,61 @@
 import Axios from "axios";
 
+class Store {
+  store = {};
+
+  static clone = data => JSON.parse(JSON.stringify(data));
+
+  static pathBreaker = path => path.split("/");
+
+  static getPath = (store, [next, ...rest]) => {
+    if (store === undefined) {
+      return undefined;
+    }
+
+    if (next === undefined) {
+      return store;
+    }
+
+    return Store.getPath(store[next], rest);
+  };
+
+  static ensurePath = (store, [next, ...rest]) => {
+    if (store === undefined) {
+      store = { _data: undefined };
+    }
+
+    if (next === undefined) {
+      return store;
+    }
+
+    store[next] = Store.ensurePath(store[next], rest);
+
+    return store;
+  };
+
+  get = path => {
+    const broken = Store.pathBreaker(path);
+
+    Store.ensurePath(this.store, broken);
+    let container = Store.getPath(this.store, broken);
+
+    if (container._data === undefined) {
+      console.log(`get(${path})`);
+      return Axios.get(path).then(result => {
+        container._data = result.data;
+
+        return Store.clone(container._data);
+      });
+    }
+    console.log(`cache(${path})`);
+    return new Promise((resolve, reject) =>
+      resolve(Store.clone(container._data)),
+    );
+  };
+}
+
+let store = new Store();
+
 const root = "/api";
 
 class LinkBuilder {
@@ -12,20 +68,34 @@ class LinkBuilder {
 
   link = () => this.path;
 
-  fetch = () => fetch(this.path);
+  fetch = () => {
+    console.error(`fetch(${this.path})`);
+    return fetch(this.path);
+  };
 
-  get = () => Axios.get(this.path).then(x => x.data);
+  get = () => store.get(this.path);
 
-  head = () => Axios.head(this.path).then(x => x.headers);
+  head = () => {
+    console.error(`head({$this.path})`);
+    return Axios.head(this.path).then(x => x.headers);
+  };
 
-  count = () =>
-    this.head()
+  count = () => {
+    console.error(`count({$this.path})`);
+    return this.head()
       .then(x => x["x-total-count"])
       .catch(console.err);
+  };
 
-  getFull = () => Axios.get(this.path);
+  getFull = () => {
+    console.error(`getFull({$this.path})`);
+    return Axios.get(this.path);
+  };
 
-  post = data => Axios.post(this.path, data);
+  post = data => {
+    console.error(`post({$this.path})`);
+    return Axios.post(this.path, data);
+  };
 
   _resetPath() {
     this.path = root;
@@ -70,11 +140,12 @@ class ProblemBuilder extends LinkBuilder {
     this.path += "/stages/" + stageId;
 
     this.stageSelected = true;
+    this._final();
     return this;
   };
 
   publications = () => {
-    this._checkNotFinal();
+    // TODO: proper DFA this._checkNotFinal();
 
     this.path += "/publications";
 

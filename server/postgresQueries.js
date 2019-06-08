@@ -63,7 +63,6 @@ const queries = {
         creator: creator,
       })
       .returning("id"),
-  selectStages: () => knex("stages").select(),
   selectStagesByID: id =>
     knex("stages")
       .select()
@@ -74,7 +73,6 @@ const queries = {
       .where("problem", problem)
       .join("stages", "stages.id", "=", "problem_stages.stage")
       .select(),
-
   selectPublicationsByID: id =>
     knex("publications")
       .select()

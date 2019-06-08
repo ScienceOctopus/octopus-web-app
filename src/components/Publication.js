@@ -149,7 +149,7 @@ class Publication extends Component {
                 />
               </div>
               {reviews === null ? "No" : this.props.publication.reviews.length}{" "}
-              Review{this.props.publication.reviews.length != 1 ? "s" : ""}
+              Review{this.props.publication.reviews.length !== 1 ? "s" : ""}
             </h4>
           </div>
           {reviews}
