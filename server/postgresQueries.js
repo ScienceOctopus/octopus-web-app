@@ -17,13 +17,13 @@ const KnexQueryBuilder = require("knex/lib/query/builder");
 KnexQueryBuilder.prototype.onConflictUpdate = function(conflict, ...columns) {
   if (this._method !== "insert") {
     throw new Error(
-      "onConflictUpdate error: should be used only with insert query.",
+      "onConflictUpdate error: should be used only with insert query."
     );
   }
 
   if (columns.length === 0) {
     throw new Error(
-      "onConflictUpdate error: please specify at least one column name.",
+      "onConflictUpdate error: please specify at least one column name."
     );
   }
 
@@ -38,9 +38,9 @@ KnexQueryBuilder.prototype.onConflictUpdate = function(conflict, ...columns) {
 
   let builder = this.client.raw(
     `${this.toString()} on conflict("${conflict}") do update set ${placeholders.join(
-      ", ",
+      ", "
     )}`,
-    bindings,
+    bindings
   );
 
   builder.returning = field =>
@@ -51,10 +51,12 @@ KnexQueryBuilder.prototype.onConflictUpdate = function(conflict, ...columns) {
 
 const queries = {
   selectAllProblems: () => knex("problems").orderBy("id"),
+
   selectProblemsByID: id =>
     knex("problems")
       .select()
       .where("id", id),
+
   insertProblem: (title, description, creator) =>
     knex("problems")
       .insert({
@@ -63,25 +65,31 @@ const queries = {
         creator: creator,
       })
       .returning("id"),
+
   selectStagesByID: id =>
     knex("stages")
       .select()
       .where("id", id),
+
   selectStagesByProblem: problem =>
     knex("problem_stages")
       .select()
       .where("problem", problem)
       .join("stages", "stages.id", "=", "problem_stages.stage")
       .select(),
+
   selectPublicationsByID: id =>
     knex("publications")
       .select()
       .where("id", id),
 
-  selectPublicationsByProblem: problem =>
+  selectAllPublicationsByProblem: problem =>
     knex("publications")
       .select()
       .where("problem", problem),
+
+  selectPublicationsByProblem: problem =>
+    queries.selectAllPublicationsByProblem(problem).where("draft", false),
 
   countPublicationsForProblem: problem =>
     queries.selectPublicationsByProblem(problem).count(),
@@ -102,7 +110,7 @@ const queries = {
         "publications",
         "publications.id",
         "=",
-        "publication_links.publication_after",
+        "publication_links.publication_after"
       )
       .select(),
 
@@ -124,7 +132,7 @@ const queries = {
         "publications",
         "publications.id",
         "=",
-        "publication_links.publication_before",
+        "publication_links.publication_before"
       )
       .select(),
   selectOriginalPublicationsByLinksAfterPublication: publication =>
@@ -141,7 +149,16 @@ const queries = {
       .select()
       .where("publication", publication),
 
-  insertPublication: (problem, stage, title, summary, funding, review, data) =>
+  insertPublication: (
+    problem,
+    stage,
+    title,
+    summary,
+    funding,
+    review,
+    data,
+    draft
+  ) =>
     knex("publications")
       .insert({
         problem: problem,
@@ -151,14 +168,48 @@ const queries = {
         funding: funding,
         review: review,
         data: data,
+        draft: draft,
       })
       .returning("id"),
+
+  finalisePublication: publication =>
+    knex("publications")
+      .update({ draft: true })
+      .where("id", publication),
+
+  updatePublication: (publication, revision, title, summary, funding, data) =>
+    knex("publications")
+      .update({
+        title: title,
+        summary: summary,
+        funding: funding,
+        data: data,
+        revision: revision + 1,
+      })
+      .where("id", publication)
+      .where("revision", revision),
+
   insertPublicationCollaborator: (publication, collaborator, role) =>
     knex("publication_collaborators").insert({
       publication: publication,
       user: collaborator,
       role: role,
     }),
+
+  selectPublicationSignoffsForRevision: (publication, revision) =>
+    knex("publication_signoffs")
+      .select()
+      .where("publication", publication)
+      .where("revision", revision),
+
+  insertPublicationSignoff: (publication, revision, user) =>
+    knex("publication_signoffs")
+      .insert({
+        publication: publication,
+        revision: revision,
+        user: user,
+      })
+      .returning(id),
 
   //TODO: actually use transactions
   insertPublicationLinkedToTransaction: (
@@ -169,7 +220,7 @@ const queries = {
     description,
     review,
     basedOn,
-    fileUrl,
+    fileUrl
   ) => {
     return knex
       .transaction(t => {
@@ -197,9 +248,9 @@ const queries = {
                   db.insertPublicationResource(
                     id[0],
                     resources[0],
-                    "main",
+                    "main"
                   ).then(/* ... */);
-                }),
+                })
               );
           })
           .then(t.commit)
@@ -220,7 +271,7 @@ const queries = {
       basedOn.map(base => ({
         publication_before: base,
         publication_after: publication,
-      })),
+      }))
     ),
 
   selectResourcesByPublication: publication =>
@@ -229,10 +280,12 @@ const queries = {
       .where("publication", publication)
       .join("resources", "resources.id", "=", "publication_resources.resource")
       .select(),
+
   selectResource: id =>
     knex("resources")
       .select()
       .where("id", id),
+
   insertResource: (type, uri) =>
     knex("resources")
       .insert({
@@ -240,10 +293,12 @@ const queries = {
         uri: uri,
       })
       .returning("id"),
+
   selectPublicationResource: id =>
     knex("publication_resources")
       .select()
       .where("id", id),
+
   insertPublicationResource: (publication, resource, behaviour_type) =>
     knex("publication_resources")
       .insert({
@@ -257,10 +312,12 @@ const queries = {
     knex("users")
       .select()
       .where("id", id),
+
   selectUsersByGoblinID: orc =>
     knex("users")
       .select()
       .where("orcid", orc),
+
   insertOrUpdateUser: (orcid, name, primary_email) =>
     knex("users")
       .insert({
