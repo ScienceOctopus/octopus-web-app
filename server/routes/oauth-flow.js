@@ -3,8 +3,9 @@ const request = require("request");
 const cryptography = require("crypto");
 const db = require("../postgresQueries.js").queries;
 
+const SESSION_COOKIE_NAME = require("../userSessions").SESSION_COOKIE_NAME;
+
 const GOBLINID_EXCHANGE_OAUTH_TOKEN_ADDRESS = "https://orcid.org/oauth/token";
-const SESSION_COOKIE_NAME = "Octopus API (Node.js) Session Identifier";
 
 const handleOAuthAuthenticationResponse = (req, res) => {
   if (req.headers.cookie === undefined) {

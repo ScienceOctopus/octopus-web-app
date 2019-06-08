@@ -1,5 +1,6 @@
 const db = require("../postgresQueries.js").queries;
 const express = require("express");
+const getUserFromSession = require("../userSessions.js").getUserFromSession;
 
 function catchAsyncErrors(fn) {
   return (req, res, next) => {
@@ -18,34 +19,46 @@ const requestInvalid = res => {
   res.status(400).send("400 Bad Request");
 };
 
-const validatePublication = async id => {
+const getAndValidatePublication = async (id, req) => {
   let publications = await db.selectPublicationsByID(id);
   if (!publications.length) {
-    return true;
+    return undefined;
   }
 
-  // TODO: validate that the user requesting has viewing permissions
+  let publication = publications[0];
 
-  return false;
+  // Validate that the user is a collaborator of the publication if it is a draft.
+  if (publication.draft) {
+    const user = getUserFromSession(req);
+    if (!user) {
+      return undefined;
+    }
+
+    let collaborators = await db.selectCollaboratorsByPublication(id);
+    collaborators = collaborators.filter(
+      collaborator => collaborator.user === user
+    );
+    if (!collaborators.length) {
+      return undefined;
+    }
+  }
+
+  return publication;
 };
 
 const getPublicationByID = async (req, res) => {
-  const publications = await db.selectPublicationsByID(req.params.id);
-  if (!publications.length) {
-    return notFound(res);
+  const publication = await getAndValidatePublication(req.params.id, req);
+  if (!publication) {
+    return res.sendStatus(404);
   }
 
-  if (publications[0].draft) {
-    // TODO: validate that the user requesting has viewing permissions
-  }
-
-  res.status(200).json(publications[0]);
+  res.status(200).json(publication);
 };
 
 const postPublicationToID = async (req, res) => {
-  const publications = await db.selectPublicationsByID(req.params.id);
-  if (!publications.length) {
-    return notFound(res);
+  const publication = await getAndValidatePublication(req.params.id, req);
+  if (!publication) {
+    return res.sendStatus(404);
   }
 
   await db.updatePublication(
@@ -54,35 +67,38 @@ const postPublicationToID = async (req, res) => {
     req.body.title,
     req.body.summary,
     req.body.funding,
-    req.body.data,
+    req.body.data
   );
 };
 
 const getLinksBeforeByPublication = async (req, res) => {
-  if (await validatePublication(req.params.id)) {
-    return notFound(res);
+  const publication = await getAndValidatePublication(req.params.id, req);
+  if (!publication) {
+    return res.sendStatus(404);
   }
 
   const publications = await db.selectPublicationsByLinksAfterPublication(
-    req.params.id,
+    req.params.id
   );
   res.status(200).json(publications);
 };
 
 const getLinksAfterByPublication = async (req, res) => {
-  if (await validatePublication(req.params.id)) {
-    return notFound(res);
+  const publication = await getAndValidatePublication(req.params.id, req);
+  if (!publication) {
+    return res.sendStatus(404);
   }
 
   const publications = await db.selectPublicationsByLinksBeforePublication(
-    req.params.id,
+    req.params.id
   );
   res.status(200).json(publications);
 };
 
 const getReferencesByPublication = async (req, res) => {
-  if (await validatePublication(req.params.id)) {
-    return notFound(res);
+  const publication = await getAndValidatePublication(req.params.id, req);
+  if (!publication) {
+    return res.sendStatus(404);
   }
 
   const references = await db.selectReferencesByPublication(req.params.id);
@@ -90,19 +106,21 @@ const getReferencesByPublication = async (req, res) => {
 };
 
 const getReviewsByPublication = async (req, res) => {
-  if (await validatePublication(req.params.id)) {
-    return notFound(res);
+  const publication = await getAndValidatePublication(req.params.id, req);
+  if (!publication) {
+    return res.sendStatus(404);
   }
 
   const publications = await db.selectReviewPublicationsByPublication(
-    req.params.id,
+    req.params.id
   );
   res.status(200).json(publications);
 };
 
 const getResourcesByPublication = async (req, res) => {
-  if (await validatePublication(req.params.id)) {
-    return notFound(res);
+  const publication = await getAndValidatePublication(req.params.id, req);
+  if (!publication) {
+    return res.sendStatus(404);
   }
 
   const resources = await db.selectResourcesByPublication(req.params.id);
@@ -110,8 +128,9 @@ const getResourcesByPublication = async (req, res) => {
 };
 
 const getCollaboratorsByPublication = async (req, res) => {
-  if (await validatePublication(req.params.id)) {
-    return notFound(res);
+  const publication = await getAndValidatePublication(req.params.id, req);
+  if (!publication) {
+    return res.sendStatus(404);
   }
 
   const resources = await db.selectCollaboratorsByPublication(req.params.id);
@@ -119,37 +138,38 @@ const getCollaboratorsByPublication = async (req, res) => {
 };
 
 const postCollaboratorToPublication = async (req, res) => {
-  if (await validatePublication(req.params.id)) {
-    return notFound(res);
+  const publication = await getAndValidatePublication(req.params.id, req);
+  if (!publication) {
+    return res.sendStatus(404);
   }
 
   const id = await insertPublicationCollaborator(
     req.params.id,
     req.body.user,
-    "author",
+    "author"
   );
 
-  res.statusCode(200);
+  res.sendStatus(200);
 };
 
 const getSignoffsByPublication = async (req, res) => {
-  const publications = await db.selectPublicationsByID(req.params.id);
-  if (!publications.length) {
-    return notFound(res);
+  const publication = await getAndValidatePublication(req.params.id, req);
+  if (!publication) {
+    return res.sendStatus(404);
   }
 
   const signoffs = await db.selectPublicationSignoffsForRevision(
     req.params.id,
-    publications[0].revision,
+    publication.revision
   );
 
   res.status(200).json(signoffs);
 };
 
 const postSignoffToPublication = async (req, res) => {
-  const publications = await db.selectPublicationsByID(req.params.id);
-  if (!publications.length) {
-    return notFound(res);
+  const publication = await getAndValidatePublication(req.params.id, req);
+  if (!publication) {
+    return res.sendStatus(404);
   }
 
   // TODO: prevent duplicate signoffs being created.
@@ -157,40 +177,41 @@ const postSignoffToPublication = async (req, res) => {
   const id = await db.insertPublicationSignoff(
     req.params.id,
     req.body.revision,
-    req.body.user,
+    req.body.user
   );
 
-  res.statusCode(200);
+  res.sendStatus(200);
 };
 
 const getSignoffsRemainingByPublication = async (req, res) => {
-  const publications = await db.selectPublicationsByID(req.params.id);
-  if (!publications.length) {
-    return notFound(res);
+  const publication = await getAndValidatePublication(req.params.id, req);
+  if (!publication) {
+    return res.sendStatus(404);
   }
 
   let collaborators = await db.selectCollaboratorsByPublication(req.params.id);
   collaborators = collaborators.filter(
-    collaborator => collaborator.role === "author",
+    collaborator => collaborator.role === "author"
   );
 
   const signoffs = await db.selectPublicationSignoffsForRevision(
     req.params.id,
-    publications[0].revision,
+    publication.revision
   );
 
   collaborators = collaborators.filter(
     collaborator =>
       signoffs.filter(signoff => signoff.user !== collaborator.user).length ===
-      0,
+      0
   );
 
   res.status(200).json(collaborators);
 };
 
 const postFinaliseToPublication = async (req, res) => {
-  if (await validatePublication(req.params.id)) {
-    return notFound(res);
+  const publication = await getAndValidatePublication(req.params.id, req);
+  if (!publication) {
+    return res.sendStatus(404);
   }
 
   // TODO: validate draft and correct user permissions
@@ -205,32 +226,32 @@ router.get("/:id(\\d+)", catchAsyncErrors(getPublicationByID));
 router.post("/:id(\\d+)", catchAsyncErrors(postPublicationToID));
 router.get(
   "/:id(\\d+)/linksBefore",
-  catchAsyncErrors(getLinksBeforeByPublication),
+  catchAsyncErrors(getLinksBeforeByPublication)
 );
 router.get(
   "/:id(\\d+)/linksAfter",
-  catchAsyncErrors(getLinksAfterByPublication),
+  catchAsyncErrors(getLinksAfterByPublication)
 );
 router.get(
   "/:id(\\d+)/references",
-  catchAsyncErrors(getReferencesByPublication),
+  catchAsyncErrors(getReferencesByPublication)
 );
 //router.get("/:id(\\d+)/referencedBy", catchAsyncErrors(getReferencedByByPublication));
 router.get("/:id(\\d+)/reviews", catchAsyncErrors(getReviewsByPublication));
 router.get("/:id(\\d+)/resources", catchAsyncErrors(getResourcesByPublication));
 router.get(
   "/:id(\\d+)/collaborators",
-  catchAsyncErrors(getCollaboratorsByPublication),
+  catchAsyncErrors(getCollaboratorsByPublication)
 );
 router.post(
   "/:id(\\d+)/collaborators",
-  catchAsyncErrors(postCollaboratorToPublication),
+  catchAsyncErrors(postCollaboratorToPublication)
 );
 router.get("/:id(\\d+)/signoffs", catchAsyncErrors(getSignoffsByPublication));
 router.post("/:id(\\d+)/signoffs", catchAsyncErrors(postSignoffToPublication));
 router.get(
   "/:id(\\d+)/signoffs_remaining",
-  catchAsyncErrors(getSignoffsRemainingByPublication),
+  catchAsyncErrors(getSignoffsRemainingByPublication)
 );
 router.post("/:id(\\d+)/finalise", catchAsyncErrors(postFinaliseToPublication));
 
