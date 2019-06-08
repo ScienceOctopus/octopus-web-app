@@ -43,16 +43,16 @@ class IndexPage extends Component {
                   Explore Science
                 </LocalizedLink>
               </div>
-              <div className="column" style={styles.login}>
+              <div className="column" style={styles.publish}>
                 <a
                   className="ui olive large right labeled icon button"
                   href={WebURI.OrcidLogin(
                     global.session.OAuthState,
-                    this.props.location.pathname,
+                    WebURI.Upload,
                   )}
                 >
-                  <i className="address book icon" />
-                  Log In via ORCiD
+                  <i className="ui pencil alternate icon" />
+                  Publish your work
                 </a>
               </div>
               <div className="column" style={styles.more}>
@@ -116,8 +116,8 @@ const styles = {
   explore: {
     width: "30ch",
   },
-  login: {
-    width: "31ch",
+  publish: {
+    width: "32ch",
   },
   more: {
     width: "26ch",
