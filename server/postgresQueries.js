@@ -94,6 +94,19 @@ const queries = {
   countPublicationsForProblem: problem =>
     queries.selectPublicationsByProblem(problem).count(),
 
+  selectPublicationsByProblemForCollaborator: (problem, user) =>
+    knex("publication_collaborators")
+      .select()
+      .where("publication_collaborators.user", user)
+      .join(
+        "publications",
+        "publications.id",
+        "=",
+        "publication_collaborators.publication"
+      )
+      .select()
+      .where("problem", problem),
+
   selectPublicationsByProblemAndStage: (problem, stage) =>
     queries.selectPublicationsByProblem(problem).where("stage", stage),
 
@@ -101,6 +114,16 @@ const queries = {
     queries
       .selectPublicationsByProblemAndStage(problem, stage)
       .where("review", false),
+
+  selectOriginalDraftPublicationsByProblemAndStageAndUser: (
+    problem,
+    stage,
+    user
+  ) =>
+    queries
+      .selectPublicationsByProblemForCollaborator(problem, user)
+      .where("review", false)
+      .where("draft", true),
 
   selectPublicationsByLinksBeforePublication: publication =>
     knex("publication_links")

@@ -78,10 +78,23 @@ const getPublicationsByProblemAndStage = async (req, res) => {
     return notFound(res);
   }
 
-  const publications = await db.selectOriginalPublicationsByProblemAndStage(
+  let publications = await db.selectOriginalPublicationsByProblemAndStage(
     req.params.id,
-    req.params.stage,
+    req.params.stage
   );
+
+  // TODO: refactor session cookie name into environmental waste
+  const session = req.cookies["Octopus API (Node.js) Session Identifier"];
+  const sessionState = global.sessions[session];
+  if (sessionState && sessionState.user) {
+    const additionalPublications = await db.selectOriginalDraftPublicationsByProblemAndStageAndUser(
+      req.params.id,
+      req.params.stage,
+      sessionState.user
+    );
+
+    publications = publications.concat(additionalPublications);
+  }
 
   res.status(200).json(publications);
 };
@@ -173,7 +186,7 @@ const postPublicationToProblemAndStage = async (req, res) => {
         case "file":
           content = (await db.insertResource(
             "azureBlob",
-            req.files[content].url,
+            req.files[content].url
           ))[0];
           resources.push(content);
           break;
@@ -198,13 +211,13 @@ const postPublicationToProblemAndStage = async (req, res) => {
     req.body.summary,
     req.body.funding,
     req.body.review,
-    JSON.stringify(data),
+    JSON.stringify(data)
   );
 
   await db.insertPublicationCollaborator(
     publications[0],
     req.body.user,
-    "author",
+    "author"
   );
 
   if (req.body.basedOn !== undefined) {
@@ -213,14 +226,14 @@ const postPublicationToProblemAndStage = async (req, res) => {
   }
 
   resources.unshift(
-    (await db.insertResource("azureBlob", req.files[0].url))[0],
+    (await db.insertResource("azureBlob", req.files[0].url))[0]
   );
 
   for (let i = 0; i < resources.length; i++) {
     await db.insertPublicationResource(
       publications[0],
       resources[i],
-      i <= 0 ? "main" : "meta",
+      i <= 0 ? "main" : "meta"
     );
   }
 
@@ -232,27 +245,27 @@ var router = express.Router();
 router.get("/", catchAsyncErrors(getProblems));
 router.get(
   "/:id(\\d+)/publications",
-  catchAsyncErrors(getPublicationsByProblem),
+  catchAsyncErrors(getPublicationsByProblem)
 );
 router.head(
   "/:id(\\d+)/publications",
-  catchAsyncErrors(getPublicationCountByProblem),
+  catchAsyncErrors(getPublicationCountByProblem)
 );
 router.get("/:id", catchAsyncErrors(getProblemByID));
 router.get("/:id(\\d+)/stages", catchAsyncErrors(getStagesByProblem));
 router.get(
   "/:id(\\d+)/stages/:stage(\\d+)",
-  catchAsyncErrors(getStageByProblem),
+  catchAsyncErrors(getStageByProblem)
 );
 router.get(
   "/:id(\\d+)/stages/:stage(\\d+)/publications",
-  catchAsyncErrors(getPublicationsByProblemAndStage),
+  catchAsyncErrors(getPublicationsByProblemAndStage)
 );
 
 router.post(
   "/:id(\\d+)/stages/:stage(\\d+)/publications",
   upload(blobService.AZURE_PUBLICATION_CONTAINER).array("file"),
-  catchAsyncErrors(postPublicationToProblemAndStage),
+  catchAsyncErrors(postPublicationToProblemAndStage)
 );
 
 module.exports = {
