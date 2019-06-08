@@ -27,14 +27,19 @@ function uploadImage(image, success, error) {
 const icon = () => <OctopusIcon />;
 
 export default class OctopusSlackFeedback extends Component {
-  username = "Slim";
-
   render() {
     return (
       <SlackFeedback
+        ref={ref =>
+          ref &&
+          ref.SlackFeedback.current.children[1].style.setProperty(
+            "background-color",
+            "#30947e",
+          )
+        }
         theme={OctopusTheme}
         showChannel="false"
-        user={this.username}
+        user="Slim"
         icon={icon}
         onImageUpload={uploadImage}
         onSubmit={sendToServer}
