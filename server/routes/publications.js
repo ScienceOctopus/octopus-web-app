@@ -42,6 +42,22 @@ const getPublicationByID = async (req, res) => {
   res.status(200).json(publications[0]);
 };
 
+const postPublicationToID = async (req, res) => {
+  const publications = await db.selectPublicationsByID(req.params.id);
+  if (!publications.length) {
+    return notFound(res);
+  }
+
+  await db.updatePublication(
+    req.params.id,
+    req.body.revision,
+    req.body.title,
+    req.body.summary,
+    req.body.funding,
+    req.body.data
+  );
+};
+
 const getLinksBeforeByPublication = async (req, res) => {
   if (await validatePublication(req.params.id)) {
     return notFound(res);
@@ -172,9 +188,21 @@ const getSignoffsRemainingByPublication = async (req, res) => {
   res.status(200).json(collaborators);
 };
 
+const postFinaliseToPublication = async (req, res) => {
+  if (await validatePublication(req.params.id)) {
+    return notFound(res);
+  }
+
+  // TODO: validate draft and correct user permissions
+
+  // TODO: validate that the publication does has no signoffs awaiting
+  await db.finalisePublication(req.params.id);
+};
+
 var router = express.Router();
 
 router.get("/:id(\\d+)", catchAsyncErrors(getPublicationByID));
+router.post("/:id(\\d+)", catchAsyncErrors(postPublicationToID));
 router.get(
   "/:id(\\d+)/linksBefore",
   catchAsyncErrors(getLinksBeforeByPublication)
@@ -204,6 +232,7 @@ router.get(
   "/:id(\\d+)/signoffs_remaining",
   catchAsyncErrors(getSignoffsRemainingByPublication)
 );
+router.post("/:id(\\d+)/finalise", catchAsyncErrors(postFinaliseToPublication));
 
 module.exports = {
   router,
