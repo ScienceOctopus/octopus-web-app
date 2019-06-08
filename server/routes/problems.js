@@ -78,10 +78,23 @@ const getPublicationsByProblemAndStage = async (req, res) => {
     return notFound(res);
   }
 
-  const publications = await db.selectOriginalPublicationsByProblemAndStage(
+  let publications = await db.selectOriginalPublicationsByProblemAndStage(
     req.params.id,
     req.params.stage,
   );
+
+  // TODO: refactor session cookie name into environmental waste
+  const session = req.cookies["Octopus API (Node.js) Session Identifier"];
+  const sessionState = global.sessions[session];
+  if (sessionState && sessionState.user) {
+    const additionalPublications = await db.selectOriginalDraftPublicationsByProblemAndStageAndUser(
+      req.params.id,
+      req.params.stage,
+      sessionState.user,
+    );
+
+    publications = publications.concat(additionalPublications);
+  }
 
   res.status(200).json(publications);
 };

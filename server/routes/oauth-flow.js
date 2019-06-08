@@ -42,7 +42,6 @@ const handleOAuthAuthenticationResponse = (req, res) => {
       }
 
       const authentication = JSON.parse(body);
-
       request(
         {
           url: `https://pub.orcid.org/v2.1/${authentication.orcid}/email`,

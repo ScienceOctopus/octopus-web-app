@@ -4,6 +4,7 @@ import { withRouter } from "react-router-dom";
 
 import StageGraph from "../components/StageGraph";
 import SummaryView from "../components/SummaryView";
+import EditPublicationView from "../components/EditPublicationView";
 import Api from "../api";
 
 class ProblemPage extends React.Component {
@@ -472,15 +473,23 @@ class ProblemPage extends React.Component {
     let publication = null;
 
     if (this.state.publication !== undefined) {
-      publication = (
-        <SummaryView
-          publicationId={
-            this.state.review !== undefined
-              ? this.state.review
-              : this.state.publication
-          }
-        />
-      );
+      let pub = this.state.content.publications.get(this.state.publication);
+
+      if (pub && pub.draft) {
+        publication = (
+          <EditPublicationView publicationId={this.state.publication} />
+        );
+      } else {
+        publication = (
+          <SummaryView
+            publicationId={
+              this.state.review !== undefined
+                ? this.state.review
+                : this.state.publication
+            }
+          />
+        );
+      }
     }
 
     return (
