@@ -35,10 +35,12 @@ export default class ProblemSearchDescription extends Component {
 
   renderPublicationCount() {
     return (
-      <div className="ui button icon teal" style={styles.countLabel}>
-        <i className="ui icon file alternate outline computer tablet only" />
-        {" " + this.publicationCountString()}
-      </div>
+      <LocalizedLink to={path(RouterURI.Problem, { id: this.props.id })}>
+        <div className="ui button icon teal" style={styles.countLabel}>
+          <i className="ui icon file alternate outline computer tablet only" />
+          {" " + this.publicationCountString()}
+        </div>
+      </LocalizedLink>
     );
   }
 
@@ -112,8 +114,5 @@ const styles = {
     fontSize: "1rem",
     width: "100%",
     fontWeight: "700",
-    borderRadius: "0.28rem",
-    cursor: "unset",
-    backgroundColor: "#00b5ad",
   },
 };

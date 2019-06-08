@@ -104,7 +104,7 @@ const getPublicationCountByProblem = async (req, res) => {
   const count = await db.countPublicationsForProblem(req.params.id);
 
   res
-    .status(200)
+    .status(204)
     .append("X-Total-Count", count)
     .end();
 };

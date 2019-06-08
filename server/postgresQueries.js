@@ -17,13 +17,13 @@ const KnexQueryBuilder = require("knex/lib/query/builder");
 KnexQueryBuilder.prototype.onConflictUpdate = function(conflict, ...columns) {
   if (this._method !== "insert") {
     throw new Error(
-      "onConflictUpdate error: should be used only with insert query."
+      "onConflictUpdate error: should be used only with insert query.",
     );
   }
 
   if (columns.length === 0) {
     throw new Error(
-      "onConflictUpdate error: please specify at least one column name."
+      "onConflictUpdate error: please specify at least one column name.",
     );
   }
 
@@ -38,9 +38,9 @@ KnexQueryBuilder.prototype.onConflictUpdate = function(conflict, ...columns) {
 
   let builder = this.client.raw(
     `${this.toString()} on conflict("${conflict}") do update set ${placeholders.join(
-      ", "
+      ", ",
     )}`,
-    bindings
+    bindings,
   );
 
   builder.returning = field =>
@@ -110,7 +110,7 @@ const queries = {
         "publications",
         "publications.id",
         "=",
-        "publication_links.publication_after"
+        "publication_links.publication_after",
       )
       .select(),
 
@@ -132,7 +132,7 @@ const queries = {
         "publications",
         "publications.id",
         "=",
-        "publication_links.publication_before"
+        "publication_links.publication_before",
       )
       .select(),
   selectOriginalPublicationsByLinksAfterPublication: publication =>
@@ -157,7 +157,7 @@ const queries = {
     funding,
     review,
     data,
-    draft
+    draft,
   ) =>
     knex("publications")
       .insert({
@@ -220,7 +220,7 @@ const queries = {
     description,
     review,
     basedOn,
-    fileUrl
+    fileUrl,
   ) => {
     return knex
       .transaction(t => {
@@ -248,9 +248,9 @@ const queries = {
                   db.insertPublicationResource(
                     id[0],
                     resources[0],
-                    "main"
+                    "main",
                   ).then(/* ... */);
-                })
+                }),
               );
           })
           .then(t.commit)
@@ -271,7 +271,7 @@ const queries = {
       basedOn.map(base => ({
         publication_before: base,
         publication_after: publication,
-      }))
+      })),
     ),
 
   selectResourcesByPublication: publication =>
