@@ -88,16 +88,16 @@ const queries = {
       .select()
       .where("problem", problem),
 
-  selectPublicationsByProblem: problem =>
+  selectCompletedPublicationsByProblem: problem =>
     queries.selectAllPublicationsByProblem(problem).where("draft", false),
 
-  countPublicationsForProblem: problem =>
-    queries.selectPublicationsByProblem(problem).count(),
+  countCompletedPublicationsForProblem: problem =>
+    queries.selectCompletedPublicationsByProblem(problem).count(),
 
-  selectPublicationsByProblemForCollaborator: (problem, user) =>
+  selectPublicationsByProblemAndCollaborator: (problem, collaborator) =>
     knex("publication_collaborators")
       .select()
-      .where("publication_collaborators.user", user)
+      .where("publication_collaborators.user", collaborator)
       .join(
         "publications",
         "publications.id",
@@ -108,7 +108,7 @@ const queries = {
       .where("problem", problem),
 
   selectPublicationsByProblemAndStage: (problem, stage) =>
-    queries.selectPublicationsByProblem(problem).where("stage", stage),
+    queries.selectCompletedPublicationsByProblem(problem).where("stage", stage),
 
   selectOriginalPublicationsByProblemAndStage: (problem, stage) =>
     queries
@@ -121,7 +121,7 @@ const queries = {
     user
   ) =>
     queries
-      .selectPublicationsByProblemForCollaborator(problem, user)
+      .selectPublicationsByProblemAndCollaborator(problem, user)
       .where("review", false)
       .where("draft", true),
 

@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const db = require("../postgresQueries.js").queries;
 const blobService = require("../blobService.js");
 const upload = blobService.upload;
+const getUserFromSession = require("../userSessions.js").getUserFromSession;
 
 function catchAsyncErrors(fn) {
   return (req, res, next) => {
@@ -84,13 +85,12 @@ const getPublicationsByProblemAndStage = async (req, res) => {
   );
 
   // TODO: refactor session cookie name into environmental waste
-  const session = req.cookies["Octopus API (Node.js) Session Identifier"];
-  const sessionState = global.sessions[session];
-  if (sessionState && sessionState.user) {
+  const sessionUser = getUserFromSession(req);
+  if (sessionUser) {
     const additionalPublications = await db.selectOriginalDraftPublicationsByProblemAndStageAndUser(
       req.params.id,
       req.params.stage,
-      sessionState.user
+      sessionUser
     );
 
     publications = publications.concat(additionalPublications);
@@ -105,7 +105,9 @@ const getPublicationsByProblem = async (req, res) => {
     return notFound(res);
   }
 
-  const publications = await db.selectPublicationsByProblem(req.params.id);
+  const publications = await db.selectCompletedPublicationsByProblem(
+    req.params.id
+  );
 
   res
     .status(200)
@@ -114,7 +116,7 @@ const getPublicationsByProblem = async (req, res) => {
 };
 
 const getPublicationCountByProblem = async (req, res) => {
-  const count = await db.countPublicationsForProblem(req.params.id);
+  const count = await db.countCompletedPublicationsForProblem(req.params.id);
 
   res
     .status(200)
