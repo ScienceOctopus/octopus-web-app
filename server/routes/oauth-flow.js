@@ -67,7 +67,7 @@ const handleOAuthAuthenticationResponse = (req, res) => {
           let id = (await db.insertOrUpdateUser(
             authentication.orcid,
             authentication.name,
-            email
+            email,
           )).rows[0].id;
 
           global.sessions[session].user = id;
@@ -75,11 +75,11 @@ const handleOAuthAuthenticationResponse = (req, res) => {
           res.redirect(
             `${redirectAddress}?error=0&state=${req.query.state}&redirect=${
               req.query.return_path
-            }&user=${id}`
+            }&user=${id}`,
           );
-        }
+        },
       );
-    }
+    },
   );
 };
 

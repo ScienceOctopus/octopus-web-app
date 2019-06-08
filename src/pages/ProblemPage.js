@@ -75,7 +75,8 @@ class ProblemPage extends React.Component {
   initCheck(props, selection, review, boot) {
     // id should be in params as soon as proper start page exists
     let id = Number(
-      (props.match ? props.match.params.id : props.params.id) || props.params.id
+      (props.match ? props.match.params.id : props.params.id) ||
+        props.params.id,
     );
 
     if (props.publication) {
@@ -91,7 +92,13 @@ class ProblemPage extends React.Component {
             content.publications.set(id, publication);
 
             this.setState({ content: content }, () =>
-              this.initProblem(publication.problem, id, selection, review, boot)
+              this.initProblem(
+                publication.problem,
+                id,
+                selection,
+                review,
+                boot,
+              ),
             );
           });
       } else {
@@ -116,7 +123,7 @@ class ProblemPage extends React.Component {
             { publication: true, params: { id: review.publication_before } },
             selection,
             review.id,
-            boot
+            boot,
           );
         } else {
           return Api()
@@ -139,8 +146,8 @@ class ProblemPage extends React.Component {
                   },
                   selection,
                   review.id,
-                  boot
-                )
+                  boot,
+                ),
               );
             });
         }
@@ -155,12 +162,12 @@ class ProblemPage extends React.Component {
           publication: publication,
           review: review,
         },
-        () => this.fetchProblem(boot)
+        () => this.fetchProblem(boot),
       );
     } else if (publication !== this.state.publication) {
       this.setState(
         { stage: stage, publication: publication, review: review },
-        () => this.generateSelection(boot)
+        () => this.generateSelection(boot),
       );
     } else if (review !== this.state.review) {
       this.setState({ stage: stage, review: review });
@@ -227,7 +234,7 @@ class ProblemPage extends React.Component {
         content.stages[stageId].loading = false;
 
         this.setState({ content: content }, () =>
-          this.fetchStage(stageId + 1, boot)
+          this.fetchStage(stageId + 1, boot),
         );
       });
   }
@@ -256,7 +263,7 @@ class ProblemPage extends React.Component {
           let next = nextStagePubs.findIndex(x => x === nextPub);
           slinks.forEach(link => {
             let prev = prevStagePubs.findIndex(
-              x => x.id === link.publication_before
+              x => x.id === link.publication_before,
             );
             if (prev !== -1 && next !== -1) {
               links.push([prev, next]);
@@ -267,7 +274,7 @@ class ProblemPage extends React.Component {
             let content = { ...this.state.content };
             content.stages[stageId - 1].links = links;
             this.setState({ content: content }, () =>
-              this.fetchLinks(stageId + 1, boot)
+              this.fetchLinks(stageId + 1, boot),
             );
           }
         });
@@ -290,7 +297,7 @@ class ProblemPage extends React.Component {
     let stage = this.state.content.stages[stageId];
 
     let publicationId = stage.publications.findIndex(
-      x => x.id === this.state.publication
+      x => x.id === this.state.publication,
     );
 
     let reachable = [];
@@ -332,13 +339,13 @@ class ProblemPage extends React.Component {
     // Start from first stage and select the three pubs with the highest degree
     if (content.stages.length) {
       reachable[0] = new Map(
-        [...reachable[0].entries()].sort((a, b) => b[1] - a[1]).slice(0, 3)
+        [...reachable[0].entries()].sort((a, b) => b[1] - a[1]).slice(0, 3),
       );
     }
 
     const linkFromPrevStageExistsToPub = (pub, stageId) =>
       content.stages[stageId - 1].links.find(
-        ([prev, next]) => next === pub && reachable[stageId - 1].has(prev)
+        ([prev, next]) => next === pub && reachable[stageId - 1].has(prev),
       ) !== undefined;
 
     for (let i = 1; i < content.stages.length; i++) {
@@ -361,7 +368,7 @@ class ProblemPage extends React.Component {
         ok_reachable.concat(
           no_reachable
             .sort((a, b) => b[1] - a[1])
-            .slice(0, 3 - ok_reachable.length)
+            .slice(0, 3 - ok_reachable.length),
         );
       }
 
@@ -377,18 +384,18 @@ class ProblemPage extends React.Component {
 
     for (let i = 1; i < content.stages.length; i++) {
       links.push(
-        retainLinksWhichConnectReachablePubs(content.stages[i - 1].links, i)
+        retainLinksWhichConnectReachablePubs(content.stages[i - 1].links, i),
       );
     }
 
     reachable = reachable.map(map =>
-      [...map].sort((a, b) => b[1] - a[1]).map(pub => pub[0])
+      [...map].sort((a, b) => b[1] - a[1]).map(pub => pub[0]),
     );
     links = links.map((links, stageId) =>
       links.map(([prev, next]) => [
         reachable[stageId].findIndex(x => x === prev),
         reachable[stageId + 1].findIndex(x => x === next),
-      ])
+      ]),
     );
 
     content.stages.forEach((stage, stageId) => {
@@ -408,7 +415,7 @@ class ProblemPage extends React.Component {
     }
 
     let publication = this.state.content.publications.get(
-      this.state.publication
+      this.state.publication,
     );
 
     if (publication.reviews !== undefined) {
@@ -427,7 +434,7 @@ class ProblemPage extends React.Component {
         if (boot && this.state.review !== undefined) {
           let review = reviews.splice(
             reviews.findIndex(x => x.id === this.state.review),
-            1
+            1,
           )[0];
 
           reviews.unshift(review);
@@ -436,7 +443,7 @@ class ProblemPage extends React.Component {
         content.stages
           .find(stage => stage.id === publication.stage)
           .publications.find(
-            pub => pub.id === publication.id
+            pub => pub.id === publication.id,
           ).reviews = reviews;
 
         this.setState(
@@ -445,9 +452,9 @@ class ProblemPage extends React.Component {
             ? () =>
                 this.props.history.replace(
                   this.props.location.pathname,
-                  this.state
+                  this.state,
                 )
-            : undefined
+            : undefined,
         );
       });
   }
@@ -538,7 +545,7 @@ class ProblemPage extends React.Component {
                 tainer: tainer,
               },
             },
-            () => this.initCheck(this.props, false, undefined, true)
+            () => this.initCheck(this.props, false, undefined, true),
           );
         }}
       >

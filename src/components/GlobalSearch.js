@@ -16,15 +16,7 @@ class GlobalSearch extends Component {
   handleSubmit = event => {
     event.target.firstChild.firstChild.blur();
 
-    if (this.state.value === "") {
-      this.props.history.push(generateLocalizedPath(WebURI.Home));
-    } else {
-      this.setState({ value: "breast cancer" }, () =>
-        this.props.history.push(
-          generateLocalizedPath(RouterURI.Problem, { id: 1 }),
-        ),
-      );
-    }
+    this.props.history.push(generateLocalizedPath(WebURI.Search));
 
     event.preventDefault();
   };

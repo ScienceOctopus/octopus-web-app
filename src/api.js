@@ -1,5 +1,77 @@
 import Axios from "axios";
 
+class MultiPromise {
+  constructor(result) {
+    this._then = undefined;
+    this._catch = undefined;
+    this._finally = undefined;
+
+    this._result = [result, result !== undefined];
+  }
+
+  then = callback => {
+    if (this._then !== undefined || typeof callback !== "function") {
+      return;
+    }
+
+    this._then = callback;
+
+    if (this._result[0] !== undefined) {
+      this._then(this._result[0]);
+
+      this._result[0] = undefined;
+    }
+
+    return this;
+  };
+
+  catch = callback => {
+    if (this._catch !== undefined || typeof callback !== "function") {
+      return;
+    }
+
+    this._catch = callback;
+
+    return this;
+  };
+
+  finally = callback => {
+    if (this._finally !== undefined || typeof callback !== "function") {
+      return;
+    }
+
+    this._finally = callback;
+
+    if (this._result[1] === true) {
+      this._result[1] = false;
+
+      this._finally();
+    }
+
+    return this;
+  };
+
+  resolve = value => {
+    if (this._then !== undefined) {
+      this._then(value);
+    }
+
+    if (this._finally !== undefined) {
+      this._finally();
+    }
+  };
+
+  reject = value => {
+    if (this._catch !== undefined) {
+      this._catch(value);
+    }
+
+    if (this._finally !== undefined) {
+      this._finally();
+    }
+  };
+}
+
 class Store {
   store = {};
 
@@ -39,18 +111,55 @@ class Store {
     Store.ensurePath(this.store, broken);
     let container = Store.getPath(this.store, broken);
 
+    let promise;
+
     if (container._data === undefined) {
+      promise = new MultiPromise();
       console.log(`get(${path})`);
-      return Axios.get(path).then(result => {
+      Axios.get(path).then(result => {
         container._data = result.data;
 
-        return Store.clone(container._data);
+        if (
+          typeof result.data === "array" &&
+          result.headers["x-total-count"] === undefined
+        ) {
+          result.headers["x-total-count"] = result.data.length;
+        }
+
+        container._head = result.headers;
+
+        promise.resolve(Store.clone(container._data));
       });
+    } else {
+      promise = new MultiPromise(Store.clone(container._data));
+      console.log(`cache(${path})`);
     }
-    console.log(`cache(${path})`);
-    return new Promise((resolve, reject) =>
-      resolve(Store.clone(container._data)),
-    );
+
+    return promise;
+  };
+
+  head = path => {
+    const broken = Store.pathBreaker(path);
+
+    Store.ensurePath(this.store, broken);
+    let container = Store.getPath(this.store, broken);
+
+    let promise;
+
+    if (container._head === undefined) {
+      promise = new MultiPromise();
+      console.log(`head(${path})`);
+      Axios.head(path).then(result => {
+        container._head = result.headers;
+
+        promise.resolve(Store.clone(container._head));
+      });
+    } else {
+      promise = new MultiPromise(Store.clone(container._head));
+      console.log(`cache(${path})`);
+    }
+
+    return promise;
   };
 }
 
@@ -68,29 +177,41 @@ class LinkBuilder {
 
   link = () => this.path;
 
-  fetch = () => {
+  /*fetch = () => {
     console.error(`fetch(${this.path})`);
     return fetch(this.path);
-  };
+  };*/
 
   get = () => store.get(this.path);
 
-  head = () => {
+  head = () =>
+    store.head(
+      this.path,
+    ); /*{
     console.error(`head({$this.path})`);
     return Axios.head(this.path).then(x => x.headers);
-  };
+  }*/
 
   count = () => {
+    let promise = store.head(this.path);
+
+    const promise_then = promise.then;
+
+    promise.then = callback =>
+      promise_then(head => callback(head["x-total-count"]));
+
+    return promise;
+  }; /*{
     console.error(`count({$this.path})`);
     return this.head()
       .then(x => x["x-total-count"])
       .catch(console.err);
-  };
+  }*/
 
-  getFull = () => {
+  /*getFull = () => {
     console.error(`getFull({$this.path})`);
     return Axios.get(this.path);
-  };
+  };*/
 
   post = data => {
     console.error(`post({$this.path})`);
