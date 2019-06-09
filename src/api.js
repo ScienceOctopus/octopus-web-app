@@ -73,6 +73,7 @@ class MultiPromise {
 }
 
 const root = "/api";
+const port = process.env.NODE_ENV === "development" ? ":3001" : "";
 
 const promise_dummy = { resolve: value => {} };
 
@@ -87,7 +88,7 @@ class Store {
   }
 
   _connect = () => {
-    this.ws = new WebSocket(`ws://${window.location.hostname}:3001${root}`);
+    this.ws = new WebSocket(`ws://${window.location.hostname}${port}${root}`);
 
     this.ws.onopen = event => {
       if (process.DEBUG_MODE) {
