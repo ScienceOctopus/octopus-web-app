@@ -377,7 +377,7 @@ class LinkBuilder {
 
   post = data => {
     console.error(`post({$this.path})`);
-    return Axios.post(this.path, data);
+    return Axios.post(root + this.path, data);
   };
 
   _resetPath() {
