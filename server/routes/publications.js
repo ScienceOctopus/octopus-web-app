@@ -36,7 +36,7 @@ const getAndValidatePublication = async (id, req) => {
 
     let collaborators = await db.selectCollaboratorsByPublication(id);
     collaborators = collaborators.filter(
-      collaborator => collaborator.user === user
+      collaborator => collaborator.user === user,
     );
     if (!collaborators.length) {
       return undefined;
@@ -67,7 +67,7 @@ const postPublicationToID = async (req, res) => {
     req.body.title,
     req.body.summary,
     req.body.funding,
-    req.body.data
+    req.body.data,
   );
 };
 
@@ -78,7 +78,7 @@ const getLinksBeforeByPublication = async (req, res) => {
   }
 
   const publications = await db.selectPublicationsByLinksAfterPublication(
-    req.params.id
+    req.params.id,
   );
   res.status(200).json(publications);
 };
@@ -90,7 +90,7 @@ const getLinksAfterByPublication = async (req, res) => {
   }
 
   const publications = await db.selectPublicationsByLinksBeforePublication(
-    req.params.id
+    req.params.id,
   );
   res.status(200).json(publications);
 };
@@ -112,7 +112,7 @@ const getReviewsByPublication = async (req, res) => {
   }
 
   const publications = await db.selectReviewPublicationsByPublication(
-    req.params.id
+    req.params.id,
   );
   res.status(200).json(publications);
 };
@@ -146,7 +146,7 @@ const postCollaboratorToPublication = async (req, res) => {
   const id = await insertPublicationCollaborator(
     req.params.id,
     req.body.user,
-    "author"
+    "author",
   );
 
   res.sendStatus(200);
@@ -160,7 +160,7 @@ const getSignoffsByPublication = async (req, res) => {
 
   const signoffs = await db.selectPublicationSignoffsForRevision(
     req.params.id,
-    publication.revision
+    publication.revision,
   );
 
   res.status(200).json(signoffs);
@@ -177,7 +177,7 @@ const postSignoffToPublication = async (req, res) => {
   const id = await db.insertPublicationSignoff(
     req.params.id,
     req.body.revision,
-    req.body.user
+    req.body.user,
   );
 
   res.sendStatus(200);
@@ -191,18 +191,18 @@ const getSignoffsRemainingByPublication = async (req, res) => {
 
   let collaborators = await db.selectCollaboratorsByPublication(req.params.id);
   collaborators = collaborators.filter(
-    collaborator => collaborator.role === "author"
+    collaborator => collaborator.role === "author",
   );
 
   const signoffs = await db.selectPublicationSignoffsForRevision(
     req.params.id,
-    publication.revision
+    publication.revision,
   );
 
   collaborators = collaborators.filter(
     collaborator =>
       signoffs.filter(signoff => signoff.user !== collaborator.user).length ===
-      0
+      0,
   );
 
   res.status(200).json(collaborators);
@@ -226,32 +226,32 @@ router.get("/:id(\\d+)", catchAsyncErrors(getPublicationByID));
 router.post("/:id(\\d+)", catchAsyncErrors(postPublicationToID));
 router.get(
   "/:id(\\d+)/linksBefore",
-  catchAsyncErrors(getLinksBeforeByPublication)
+  catchAsyncErrors(getLinksBeforeByPublication),
 );
 router.get(
   "/:id(\\d+)/linksAfter",
-  catchAsyncErrors(getLinksAfterByPublication)
+  catchAsyncErrors(getLinksAfterByPublication),
 );
 router.get(
   "/:id(\\d+)/references",
-  catchAsyncErrors(getReferencesByPublication)
+  catchAsyncErrors(getReferencesByPublication),
 );
 //router.get("/:id(\\d+)/referencedBy", catchAsyncErrors(getReferencedByByPublication));
 router.get("/:id(\\d+)/reviews", catchAsyncErrors(getReviewsByPublication));
 router.get("/:id(\\d+)/resources", catchAsyncErrors(getResourcesByPublication));
 router.get(
   "/:id(\\d+)/collaborators",
-  catchAsyncErrors(getCollaboratorsByPublication)
+  catchAsyncErrors(getCollaboratorsByPublication),
 );
 router.post(
   "/:id(\\d+)/collaborators",
-  catchAsyncErrors(postCollaboratorToPublication)
+  catchAsyncErrors(postCollaboratorToPublication),
 );
 router.get("/:id(\\d+)/signoffs", catchAsyncErrors(getSignoffsByPublication));
 router.post("/:id(\\d+)/signoffs", catchAsyncErrors(postSignoffToPublication));
 router.get(
   "/:id(\\d+)/signoffs_remaining",
-  catchAsyncErrors(getSignoffsRemainingByPublication)
+  catchAsyncErrors(getSignoffsRemainingByPublication),
 );
 router.post("/:id(\\d+)/finalise", catchAsyncErrors(postFinaliseToPublication));
 

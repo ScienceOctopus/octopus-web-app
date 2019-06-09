@@ -40,9 +40,9 @@ class EditPublicationView extends Component {
                 this.setState({
                   stage: stage,
                   schema: JSON.parse(stage.schema),
-                })
+                }),
               );
-          }
+          },
         );
       });
 
@@ -112,7 +112,7 @@ class EditPublicationView extends Component {
         switch (type) {
           case "file":
             datum = this.state.resources.find(
-              resource => resource.id === datum
+              resource => resource.id === datum,
             );
 
             if (datum === undefined) {
@@ -128,7 +128,7 @@ class EditPublicationView extends Component {
             break;
           case "uri":
             datum = this.state.resources.find(
-              resource => resource.id === datum
+              resource => resource.id === datum,
             );
 
             if (datum === undefined) {

@@ -61,9 +61,9 @@ class MultiPromise {
     }
   };
 
-  reject = value => {
+  reject = reason => {
     if (this._catch !== undefined) {
-      this._catch(value);
+      this._catch(reason);
     }
 
     if (this._finally !== undefined) {
@@ -72,103 +72,275 @@ class MultiPromise {
   };
 }
 
+const root = "/api";
+
+const promise_dummy = { resolve: value => {} };
+
 class Store {
-  store = {};
+  constructor() {
+    this.store = new Map();
+    this.keys = new Map();
 
-  static clone = data => JSON.parse(JSON.stringify(data));
+    this.ws_queue = new Set();
 
-  static pathBreaker = path => path.split("/");
+    this._connect();
+  }
 
-  static getPath = (store, [next, ...rest]) => {
-    if (store === undefined) {
-      return undefined;
-    }
+  _connect = () => {
+    this.ws = new WebSocket(`ws://${window.location.hostname}:3001${root}`);
 
-    if (next === undefined) {
-      return store;
-    }
+    this.ws.onopen = event => {
+      if (process.DEBUG_MODE) {
+        console.log(`Established WebSocket connection with`, event);
+      }
 
-    return Store.getPath(store[next], rest);
+      this.ws_queue.forEach(message => this.ws.send(message));
+
+      this.ws_queue.clear();
+    };
+
+    this.ws.onmessage = event => {
+      if (process.DEBUG_MODE) {
+        console.log(`Notified of update on ${event.data}`);
+      }
+
+      this._update(event.data);
+    };
+
+    this.ws.onerror = event => {
+      if (process.DEBUG_MODE) {
+        console.log(`Error in WebSocket connection with`, event);
+      }
+
+      this.ws.close();
+    };
+
+    this.ws.onclose = event => {
+      if (process.DEBUG_MODE) {
+        console.log(`Closes WebSocket connection with`, event);
+      }
+
+      this.store.forEach((cache, path, store) => {
+        if (cache.subscribed === Store.SUBSCRIBED_NONE) {
+          return;
+        }
+
+        this._subscribe(path);
+      });
+
+      setTimeout(this._connect, 1000);
+    };
   };
 
-  static ensurePath = (store, [next, ...rest]) => {
-    if (store === undefined) {
-      store = { _data: undefined };
+  static _clone = data =>
+    data === undefined ? undefined : JSON.parse(JSON.stringify(data));
+
+  _update = path => {
+    let cache = this.store.get(path);
+
+    if (
+      cache === undefined &&
+      cache.callbacks.size > 0 &&
+      cache.subscribed !== Store.SUBSCRIBED_NONE
+    ) {
+      return;
     }
 
-    if (next === undefined) {
-      return store;
-    }
+    if (cache.subscribed === Store.SUBSCRIBED_HEADERS) {
+      Axios.head(root + path).then(result => {
+        let cache = this.store.get(path);
 
-    store[next] = Store.ensurePath(store[next], rest);
+        if (cache === undefined) {
+          return;
+        }
 
-    return store;
-  };
+        cache.headers = Store._clone(result.headers);
 
-  get = path => {
-    const broken = Store.pathBreaker(path);
+        cache.callbacks.forEach(
+          ([callback, subscribed], primary, callbacks) => {
+            if (subscribed === Store.SUBSCRIBED_HEADERS) {
+              callback.resolve(Store._clone(cache.headers));
+            }
+          },
+        );
+      });
+    } else if (cache.subscribed === Store.SUBSCRIBED_BOTH) {
+      Axios.get(root + path).then(result => {
+        let cache = this.store.get(path);
 
-    Store.ensurePath(this.store, broken);
-    let container = Store.getPath(this.store, broken);
+        if (cache === undefined) {
+          return;
+        }
 
-    let promise;
-
-    if (container._data === undefined) {
-      promise = new MultiPromise();
-      console.log(`get(${path})`);
-      Axios.get(path).then(result => {
-        container._data = result.data;
+        cache.data = Store._clone(result.data);
 
         if (
-          typeof result.data === "array" &&
+          typeof result.data === "object" &&
+          result.data.length !== undefined &&
           result.headers["x-total-count"] === undefined
         ) {
           result.headers["x-total-count"] = result.data.length;
         }
 
-        container._head = result.headers;
+        cache.headers = Store._clone(result.headers);
 
-        promise.resolve(Store.clone(container._data));
+        cache.callbacks.forEach(
+          ([callback, subscribed], primary, callbacks) => {
+            if (subscribed === Store.SUBSCRIBED_HEADERS) {
+              callback.resolve(Store._clone(cache.headers));
+            } else if (subscribed === Store.SUBSCRIBED_DATA) {
+              callback.resolve(Store._clone(cache.data));
+            }
+          },
+        );
       });
+    }
+  };
+
+  _subscribe = path => {
+    this._send(`GO ${path}`);
+  };
+
+  _unsubscribe = path => {
+    this._send(`NO ${path}`);
+  };
+
+  _send = message => {
+    if (this.ws.readyState === WebSocket.OPEN) {
+      this.ws.send(message);
     } else {
-      promise = new MultiPromise(Store.clone(container._data));
-      console.log(`cache(${path})`);
+      this.ws_queue.add(message);
+    }
+  };
+
+  // remove all callbacks with same primary but different secondary
+  // save that this primary currently uses this secondary
+  open = (primary, secondary) => {
+    const purge = this.keys.get(primary) !== secondary;
+
+    this.keys.set(primary, secondary);
+
+    this.store.forEach((cache, path, store) => {
+      const changed = cache.callbacks.delete(primary);
+
+      if (purge && changed && cache.callbacks.size <= 0) {
+        this._unsubscribe(path);
+
+        store.delete(path);
+      }
+    });
+  };
+
+  close = primary => {
+    this.store.forEach((cache, path, store) => {
+      let callback = cache.callbacks.get(primary);
+
+      if (callback !== undefined) {
+        cache.callbacks.set(primary, promise_dummy);
+      }
+    });
+  };
+
+  getOrInit = path => {
+    let cache = this.store.get(path);
+
+    if (cache === undefined) {
+      cache = {
+        subscribed: Store.SUBSCRIBED_NONE,
+        data: undefined,
+        headers: undefined,
+        callbacks: new Map(),
+      };
+
+      this.store.set(path, cache);
+    }
+
+    return cache;
+  };
+
+  get = (path, primary) => {
+    let cache = this.getOrInit(path);
+
+    if (process.DEBUG_MODE) {
+      console.log(cache.data !== undefined ? "cache" : "get", path);
+    }
+
+    let promise = new MultiPromise(Store._clone(cache.data));
+
+    if (primary !== undefined) {
+      cache.callbacks.set(primary, [promise, Store.SUBSCRIBED_DATA]);
+    }
+
+    if (primary === undefined) {
+      if (cache.data === undefined) {
+        Axios.get(root + path).then(result => {
+          promise.resolve(Store._clone(result.data));
+        });
+      }
+    } else if (
+      (cache.subscribed & Store.SUBSCRIBED_BODY) ===
+      Store.SUBSCRIBED_NONE
+    ) {
+      cache.subscribed |= Store.SUBSCRIBED_BOTH;
+
+      if (cache.data === undefined || cache.headers === undefined) {
+        this._update(path);
+      }
+
+      this._subscribe(path);
     }
 
     return promise;
   };
 
-  head = path => {
-    const broken = Store.pathBreaker(path);
+  head = (path, primary) => {
+    let cache = this.getOrInit(path);
 
-    Store.ensurePath(this.store, broken);
-    let container = Store.getPath(this.store, broken);
+    if (process.DEBUG_MODE) {
+      console.log(cache.data !== undefined ? "cache" : "head", path);
+    }
 
-    let promise;
+    let promise = new MultiPromise(Store._clone(cache.headers));
 
-    if (container._head === undefined) {
-      promise = new MultiPromise();
-      console.log(`head(${path})`);
-      Axios.head(path).then(result => {
-        container._head = result.headers;
+    if (primary !== undefined) {
+      cache.callbacks.set(primary, [promise, Store.SUBSCRIBED_HEADERS]);
+    }
 
-        promise.resolve(Store.clone(container._head));
-      });
-    } else {
-      promise = new MultiPromise(Store.clone(container._head));
-      console.log(`cache(${path})`);
+    if (primary === undefined) {
+      if (cache.headers === undefined) {
+        Axios.head(root + path).then(result => {
+          promise.resolve(Store._clone(result.headers));
+        });
+      }
+    } else if (
+      (cache.subscribed & Store.SUBSCRIBED_HEADERS) ===
+      Store.SUBSCRIBED_NONE
+    ) {
+      cache.subscribed |= Store.SUBSCRIBED_HEADERS;
+
+      if (cache.headers === undefined) {
+        this._update(path);
+      }
+
+      this._subscribe(path);
     }
 
     return promise;
   };
 }
 
-let store = new Store();
+Store.SUBSCRIBED_NONE = 0;
+Store.SUBSCRIBED_HEADERS = 1;
+Store.SUBSCRIBED_DATA = 2;
+Store.SUBSCRIBED_BOTH = 3;
 
-const root = "/api";
+let store = (global.store = new Store());
 
 class LinkBuilder {
-  path = "";
+  constructor(key) {
+    this.path = "";
+    this.key = key;
+  }
 
   log = () => {
     console.log(this.path);
@@ -182,18 +354,12 @@ class LinkBuilder {
     return fetch(this.path);
   };*/
 
-  get = () => store.get(this.path);
+  get = () => store.get(this.path, this.key);
 
-  head = () =>
-    store.head(
-      this.path,
-    ); /*{
-    console.error(`head({$this.path})`);
-    return Axios.head(this.path).then(x => x.headers);
-  }*/
+  head = () => store.head(this.path, this.key);
 
   count = () => {
-    let promise = store.head(this.path);
+    let promise = store.head(this.path, this.key);
 
     const promise_then = promise.then;
 
@@ -201,12 +367,7 @@ class LinkBuilder {
       promise_then(head => callback(head["x-total-count"]));
 
     return promise;
-  }; /*{
-    console.error(`count({$this.path})`);
-    return this.head()
-      .then(x => x["x-total-count"])
-      .catch(console.err);
-  }*/
+  };
 
   /*getFull = () => {
     console.error(`getFull({$this.path})`);
@@ -219,7 +380,7 @@ class LinkBuilder {
   };
 
   _resetPath() {
-    this.path = root;
+    this.path = "";
   }
 
   _final() {
@@ -238,9 +399,9 @@ class LinkBuilder {
 class ProblemBuilder extends LinkBuilder {
   stageSelected = false;
 
-  constructor(root, problemId) {
-    super();
-    this.path = root + "/problems/" + problemId;
+  constructor(key, problemId) {
+    super(key);
+    this.path = "/problems/" + problemId;
   }
 
   stages = () => {
@@ -276,9 +437,9 @@ class ProblemBuilder extends LinkBuilder {
 }
 
 class PublicationBuilder extends LinkBuilder {
-  constructor(root, pubId) {
-    super();
-    this.path = root + "/publications/" + pubId;
+  constructor(key, pubId) {
+    super(key);
+    this.path = "/publications/" + pubId;
   }
 
   resources = () => {
@@ -318,16 +479,16 @@ class PublicationBuilder extends LinkBuilder {
 }
 
 class UserBuilder extends LinkBuilder {
-  constructor(root, userId) {
-    super();
-    this.path = root + "/users/" + userId;
+  constructor(key, userId) {
+    super(key);
+    this.path = "/users/" + userId;
   }
 }
 
 class AuthenticationBuilder extends LinkBuilder {
-  constructor(root, userId) {
-    super();
-    this.path = root + "/oauth-flow";
+  constructor(key, userId) {
+    super(key);
+    this.path = "/oauth-flow";
   }
 
   state = () => {
@@ -342,18 +503,36 @@ class AuthenticationBuilder extends LinkBuilder {
 }
 
 class ApiBuilder extends LinkBuilder {
-  path = root;
+  constructor() {
+    super(undefined);
+  }
+
+  subscribeClass = (primary, secondary) => {
+    store.open(primary, secondary);
+
+    return this.subscribe(primary);
+  };
+
+  subscribe = primary => {
+    this.key = primary;
+
+    return this;
+  };
+
+  unsubscribeClass = (primary, secondary) => {
+    store.close(primary, secondary);
+  };
 
   publication = pubId => {
     this._checkNotFinal();
 
-    return new PublicationBuilder(root, pubId);
+    return new PublicationBuilder(this.key, pubId);
   };
 
   problem = problemId => {
     this._checkNotFinal();
 
-    return new ProblemBuilder(root, problemId);
+    return new ProblemBuilder(this.key, problemId);
   };
 
   problems = () => {
@@ -368,7 +547,7 @@ class ApiBuilder extends LinkBuilder {
   user = userId => {
     this._checkNotFinal();
 
-    return new UserBuilder(root, userId);
+    return new UserBuilder(this.key, userId);
   };
 
   feedback = () => {
@@ -392,7 +571,7 @@ class ApiBuilder extends LinkBuilder {
   authentication = () => {
     this._checkNotFinal();
 
-    return new AuthenticationBuilder(root);
+    return new AuthenticationBuilder(this.key);
   };
 }
 

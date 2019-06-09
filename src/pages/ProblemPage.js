@@ -7,6 +7,8 @@ import SummaryView from "../components/SummaryView";
 import EditPublicationView from "../components/EditPublicationView";
 import Api from "../api";
 
+const PROBLEM_KEY = "problem";
+
 class ProblemPage extends React.Component {
   constructor(props) {
     super(props);
@@ -14,7 +16,6 @@ class ProblemPage extends React.Component {
     this._isMounted = false;
     this._setStateTask = undefined;
 
-    //if (!this.props.location || !this.props.location.state) {
     this.state = {
       problem: undefined,
       stage: undefined,
@@ -26,16 +27,10 @@ class ProblemPage extends React.Component {
         loading: true,
       },
       open: true,
-      measurements: undefined,
+      measurements: global.measurements,
     };
-    //} else {
-    //  this.state = this.props.location.state;
-    //
-    //  this.initCheck(this.props, false, undefined, false);
-    //}
 
-    // TODO: Put measurements into global, non-history state
-    if (!this.props.location || !this.props.location.state) {
+    if (!this.state.measurements !== undefined) {
       this.initCheck(this.props, false, undefined, false);
     }
   }
@@ -53,6 +48,8 @@ class ProblemPage extends React.Component {
 
   componentWillUnmount() {
     this._isMounted = false;
+
+    Api().unsubscribeClass(PROBLEM_KEY);
   }
 
   setState(newState, callback) {
@@ -176,6 +173,7 @@ class ProblemPage extends React.Component {
 
   fetchProblem(boot) {
     Api()
+      .subscribeClass(PROBLEM_KEY, this.state.problem)
       .problem(this.state.problem)
       .get()
       .then(problem => {
@@ -187,6 +185,7 @@ class ProblemPage extends React.Component {
 
   fetchStages(boot) {
     Api()
+      .subscribe(PROBLEM_KEY)
       .problem(this.state.problem)
       .stages()
       .get()
@@ -220,6 +219,7 @@ class ProblemPage extends React.Component {
     let stage = this.state.content.stages[stageId];
 
     Api()
+      .subscribe(PROBLEM_KEY)
       .problem(this.state.problem)
       .stage(stage.id)
       .publications()
@@ -256,6 +256,7 @@ class ProblemPage extends React.Component {
 
     nextStagePubs.forEach(nextPub => {
       Api()
+        .subscribe(PROBLEM_KEY)
         .publication(nextPub.id)
         .linksBefore()
         .get()
@@ -423,6 +424,7 @@ class ProblemPage extends React.Component {
     }
 
     Api()
+      .subscribe(PROBLEM_KEY)
       .publication(this.state.publication)
       .reviews()
       .get()
@@ -534,16 +536,18 @@ class ProblemPage extends React.Component {
           let heider = derheider.bottom - derheider.top;
           let tainer = container.bottom - container.top + margin * 2;
 
+          global.measurements = {
+            offset: offset,
+            height: height,
+            margin: margin,
+            siding: siding,
+            heider: heider,
+            tainer: tainer,
+          };
+
           this.setState(
             {
-              measurements: {
-                offset: offset,
-                height: height,
-                margin: margin,
-                siding: siding,
-                heider: heider,
-                tainer: tainer,
-              },
+              measurements: global.measurements,
             },
             () => this.initCheck(this.props, false, undefined, true),
           );

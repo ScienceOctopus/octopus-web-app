@@ -3,10 +3,17 @@ import PDFImagePreviewRenderer from "./PDFImagePreviewRenderer";
 import styled from "styled-components";
 import Api from "../api";
 
+// Cache under the same scope as the ProblemPage
+const PROBLEM_KEY = "problem";
+
 class SummaryView extends Component {
   constructor(props) {
     super(props);
     //console.log("constructor(SummaryView)");
+
+    this._isMounted = false;
+    this._setStateTask = undefined;
+
     this.state = {
       publication: undefined,
       collaborators: [],
@@ -18,10 +25,45 @@ class SummaryView extends Component {
     this.fetchPublicationData();
   }
 
+  componentDidMount() {
+    this._isMounted = true;
+
+    if (this._setStateTask !== undefined) {
+      let task = this._setStateTask;
+      this._setStateTask = undefined;
+
+      task();
+    }
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
+
+    Api().unsubscribeClass(PROBLEM_KEY);
+  }
+
+  setState(newState, callback) {
+    let task = () => super.setState(newState, callback);
+
+    if (this._isMounted) {
+      task();
+    } else if (this._setStateTask === undefined) {
+      this._setStateTask = task;
+    } else if (callback !== undefined) {
+      let oldTask = this._setStateTask;
+
+      this._setStateTask = () => {
+        oldTask();
+        task();
+      };
+    }
+  }
+
   fetchPublicationData() {
     this.setState({ publication: undefined, collaborators: [] });
 
     Api()
+      .subscribe(PROBLEM_KEY)
       .publication(this.props.publicationId)
       .get()
       .then(publication => {
@@ -33,6 +75,7 @@ class SummaryView extends Component {
           },
           () => {
             Api()
+              .subscribe(PROBLEM_KEY)
               .problem(this.state.publication.problem)
               .stage(this.state.publication.stage)
               .get()
@@ -47,6 +90,7 @@ class SummaryView extends Component {
       });
 
     Api()
+      .subscribe(PROBLEM_KEY)
       .publication(this.props.publicationId)
       .resources()
       .get()
@@ -57,6 +101,7 @@ class SummaryView extends Component {
       });
 
     Api()
+      .subscribe(PROBLEM_KEY)
       .publication(this.props.publicationId)
       .collaborators()
       .get()

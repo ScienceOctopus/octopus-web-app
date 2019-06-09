@@ -8,7 +8,6 @@ class IndexPage extends Component {
   render() {
     return (
       <div>
-        {process.DEBUG_MODE && <LocalizedRedirect to="/search" />}
         <main
           className="ui middle aligned two column centered stackable grid"
           style={styles.main}
