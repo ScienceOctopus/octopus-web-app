@@ -88,7 +88,11 @@ class Store {
   }
 
   _connect = () => {
-    this.ws = new WebSocket(`ws://${window.location.hostname}${port}${root}`);
+    this.ws = new WebSocket(
+      `{window.location.protocol === "https:" ? "wss:" : "ws:"}//${
+        window.location.hostname
+      }${port}${root}`,
+    );
 
     this.ws.onopen = event => {
       if (process.DEBUG_MODE) {
@@ -519,8 +523,8 @@ class ApiBuilder extends LinkBuilder {
     return this;
   };
 
-  unsubscribeClass = (primary, secondary) => {
-    store.close(primary, secondary);
+  unsubscribeClass = primary => {
+    store.close(primary);
   };
 
   publication = pubId => {
