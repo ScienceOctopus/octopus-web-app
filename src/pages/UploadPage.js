@@ -97,7 +97,7 @@ class UploadPage extends Component {
     ).params;
 
     let isReview =
-      review !== undefined || props.review === true || this.state.review;
+      review !== undefined || props.review === true || this.state.isReview;
 
     if (problem !== this.state.selectedProblemId) {
       let callback = undefined;

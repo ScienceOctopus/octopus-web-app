@@ -215,6 +215,7 @@ const postPublicationToProblemAndStage = async (req, res) => {
     req.body.funding,
     req.body.review,
     JSON.stringify(data),
+    false,
   );
 
   await db.insertPublicationCollaborator(
@@ -240,7 +241,6 @@ const postPublicationToProblemAndStage = async (req, res) => {
     );
   }
 
-  broadcast(`/publications/${publications[0].id}`);
   broadcast(
     `/problems/${req.params.id}/stages/${req.params.stage}/publications`,
   );
