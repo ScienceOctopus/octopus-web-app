@@ -89,7 +89,7 @@ class Store {
 
   _connect = () => {
     this.ws = new WebSocket(
-      `{window.location.protocol === "https:" ? "wss:" : "ws:"}//${
+      `${window.location.protocol === "https:" ? "wss:" : "ws:"}//${
         window.location.hostname
       }${port}${root}`,
     );
