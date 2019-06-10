@@ -24,8 +24,8 @@ function LogoutInvitation() {
             Api()
               .authentication()
               .discard()
-              .get();
-            window.location.href = "/";
+              .get()
+              .then(() => (window.location.href = "/"));
           }}
         >
           <i className="ui sign out icon" />
