@@ -235,7 +235,7 @@ class Store {
       let callback = cache.callbacks.get(primary);
 
       if (callback !== undefined) {
-        cache.callbacks.delete(primary);
+        cache.callbacks.set(primary, [Store.CALLBACK_DUMMY, callback[1]]);
       }
     });
   };
@@ -332,6 +332,8 @@ Store.SUBSCRIBED_NONE = 0;
 Store.SUBSCRIBED_HEADERS = 1;
 Store.SUBSCRIBED_DATA = 2;
 Store.SUBSCRIBED_BOTH = 3;
+
+Store.CALLBACK_DUMMY = { resolve: data => {} };
 
 let store = (global.store = new Store());
 
