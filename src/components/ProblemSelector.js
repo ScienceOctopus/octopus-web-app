@@ -1,6 +1,7 @@
 import React, { Component } from "react";
-import SimpleSelector from "./SimpleSelector";
+import { withRouter } from "react-router-dom";
 import WebURI, { LocalizedLink } from "../urls/WebsiteURIs";
+import SimpleSelector from "./SimpleSelector";
 
 class ProblemSelector extends Component {
   constructor(props) {
@@ -17,7 +18,12 @@ class ProblemSelector extends Component {
           {...this.props}
         />
         {"No suitable problem? "}
-        <LocalizedLink to={WebURI.ProblemCreation}>
+        <LocalizedLink
+          to={{
+            pathname: WebURI.ProblemCreation,
+            state: { redirectOnCreation: this.props.location.pathname },
+          }}
+        >
           {"Create a new one!"}
         </LocalizedLink>
       </div>
@@ -31,4 +37,4 @@ const styles = {
   },
 };
 
-export default ProblemSelector;
+export default withRouter(ProblemSelector);

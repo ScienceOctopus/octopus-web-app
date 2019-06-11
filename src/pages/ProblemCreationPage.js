@@ -3,6 +3,8 @@ import Api from "../api";
 import TitledForm from "../components/TitledForm";
 import { loginRequired } from "./LogInRequiredPage";
 
+const INFO_TIMEOUT = 1000;
+
 class ProblemCreationPage extends Component {
   constructor(props) {
     super(props);
@@ -22,14 +24,41 @@ class ProblemCreationPage extends Component {
     Api()
       .problems()
       .post({
+        __DEBUG__: process.SHOW_DEBUG_SWITCH,
         title,
         description,
-        user: 1,
-      });
+        user: global.session.user.id,
+      })
+      .then(this.handleProblemCreated);
+  };
+
+  handleProblemCreated = () => {
+    this.setState({ creationSuccessful: true }, () =>
+      setTimeout(this.afterCreationInfoTimeout, INFO_TIMEOUT),
+    );
+  };
+
+  afterCreationInfoTimeout = () => {
+    if (this.props.location.state.redirectOnCreation) {
+      this.props.history.push(this.props.location.state.redirectOnCreation);
+    }
   };
 
   submitEnabled() {
-    return this.state.title && this.state.description;
+    return (
+      this.state.title &&
+      this.state.description &&
+      !this.state.creationSuccessful
+    );
+  }
+
+  renderSuccessfulCreated() {
+    return (
+      <h2>
+        {"Problem Successfully created! "}
+        {this.props.location.state.redirectOnCreation && "Going back..."}
+      </h2>
+    );
   }
 
   render() {
@@ -52,6 +81,7 @@ class ProblemCreationPage extends Component {
         >
           Submit
         </button>
+        {this.state.creationSuccessful && this.renderSuccessfulCreated()}
       </div>
     );
   }

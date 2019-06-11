@@ -129,6 +129,11 @@ const getPublicationCountByProblem = async (req, res) => {
 };
 
 const postPublicationToProblemAndStage = async (req, res) => {
+  if (req.body.__DEBUG__) {
+    res.status(200).end();
+    return;
+  }
+
   if (
     !isNumber(req.body.user) ||
     (await db.selectUsers(req.body.user)).length <= 0
@@ -253,6 +258,11 @@ const postPublicationToProblemAndStage = async (req, res) => {
 };
 
 const postProblem = async (req, res) => {
+  if (req.body.__DEBUG__ === true) {
+    res.status(200).end();
+    return;
+  }
+
   if (
     !req.body.title ||
     !isNumber(req.body.user) ||
