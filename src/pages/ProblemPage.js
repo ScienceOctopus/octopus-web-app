@@ -300,8 +300,14 @@ class ProblemPage extends React.Component {
 
     this.setState(
       state => {
-        console.log(JSON.parse(JSON.stringify(state)));
-        let stageId = state.content.publications.get(state.publication).stage;
+        let publication = state.content.publications.get(state.publication);
+        
+        // Publication was just added but has not been loaded into cached data yet
+        if (publication === undefined) {
+          return;
+        }
+        
+        let stageId = publication.stage;
         stageId = state.content.stages.findIndex(x => x.id === stageId);
 
         let stage = state.content.stages[stageId];
