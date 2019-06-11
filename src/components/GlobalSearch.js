@@ -6,7 +6,8 @@ import WebURI, { generateLocalizedPath, RouterURI } from "../urls/WebsiteURIs";
 class GlobalSearch extends Component {
   constructor(props) {
     super(props);
-    this.state = { value: "" };
+    let value = new URLSearchParams(this.props.location.search).get("q") || "";
+    this.state = { value };
   }
 
   handleChange = event => {

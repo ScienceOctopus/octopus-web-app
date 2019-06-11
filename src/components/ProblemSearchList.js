@@ -51,15 +51,15 @@ class ProblemSearchList extends Component {
   }
 
   renderNothingFound() {
-    return <h1>Nothing found for query {this.props.query} !</h1>;
+    return <h1>Nothing found for query "{this.props.query}"!</h1>;
   }
 
   renderProblems() {
     if (!this.state.problems.length) {
       return this.renderNothingFound();
     }
-    return this.state.problems.map((x, i) => (
-      <ProblemSearchDescription id={x} key={i} />
+    return this.state.problems.map(x => (
+      <ProblemSearchDescription id={x} key={x} />
     ));
   }
 

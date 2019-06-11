@@ -9,8 +9,7 @@ class SearchPage extends Component {
   }
 
   getQuery() {
-    let params = new URLSearchParams(this.props.location.search);
-    return params.get("q");
+    return new URLSearchParams(this.props.location.search).get("q");
   }
 
   render() {
