@@ -15,7 +15,7 @@ class SimpleSelector extends Component {
 
   render() {
     return (
-      <div className="field">
+      <div className="field" style={this.props.style}>
         <label>{this.props.title}</label>
         <select
           value={(this.props.value || "").toString()}
