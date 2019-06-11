@@ -17,6 +17,7 @@ test("getProblems calls selectAllProblems and returns results", async () => {
     const res = {};
     res.send = jest.fn().mockReturnValue(res);
     res.status = jest.fn().mockReturnValue(res);
+    res.sendStatus = jest.fn().mockReturnValue(res);
     res.json = jest.fn().mockReturnValue(res);
     return res;
   };
@@ -44,6 +45,7 @@ test("getProblemsByID 404s on no results", async () => {
     const res = {};
     res.send = jest.fn().mockReturnValue(res);
     res.status = jest.fn().mockReturnValue(res);
+    res.sendStatus = jest.fn().mockReturnValue(res);
     res.json = jest.fn().mockReturnValue(res);
     return res;
   };
@@ -54,7 +56,7 @@ test("getProblemsByID 404s on no results", async () => {
   await problems.getProblemByID(req, res);
 
   expect(queries.selectProblemsByID).toHaveBeenCalledWith(req.params.id);
-  expect(res.status).toHaveBeenCalledWith(404);
+  expect(res.sendStatus).toHaveBeenCalledWith(404);
   expect(res.json).not.toHaveBeenCalled();
 });
 
@@ -72,6 +74,7 @@ test("getProblemByID returns single result", async () => {
     const res = {};
     res.send = jest.fn().mockReturnValue(res);
     res.status = jest.fn().mockReturnValue(res);
+    res.sendStatus = jest.fn().mockReturnValue(res);
     res.json = jest.fn().mockReturnValue(res);
     return res;
   };
@@ -100,6 +103,7 @@ test("getProblemByID errors on multiple results", async () => {
     const res = {};
     res.send = jest.fn().mockReturnValue(res);
     res.status = jest.fn().mockReturnValue(res);
+    res.sendStatus = jest.fn().mockReturnValue(res);
     res.json = jest.fn().mockReturnValue(res);
     return res;
   };
@@ -110,7 +114,7 @@ test("getProblemByID errors on multiple results", async () => {
   await problems.getProblemByID(req, res);
 
   expect(queries.selectProblemsByID).toHaveBeenCalledWith(req.params.id);
-  expect(res.status).toHaveBeenCalledWith(500);
+  expect(res.sendStatus).toHaveBeenCalledWith(500);
   expect(res.json).not.toHaveBeenCalled();
 });
 
@@ -128,6 +132,7 @@ test("getStagesByProblem returns results", async () => {
     const res = {};
     res.send = jest.fn().mockReturnValue(res);
     res.status = jest.fn().mockReturnValue(res);
+    res.sendStatus = jest.fn().mockReturnValue(res);
     res.json = jest.fn().mockReturnValue(res);
     return res;
   };
@@ -144,7 +149,7 @@ test("getStagesByProblem returns results", async () => {
 test("getPublicationsByProblemAndStage returns results", async () => {
   const testPublications = [{ id: 1 }, { id: 2 }];
   queries.selectOriginalPublicationsByProblemAndStage.mockResolvedValue(
-    testPublications,
+    testPublications
   );
   queries.selectStagesByID.mockResolvedValue([{ id: 1 }]);
   queries.selectProblemsByID.mockResolvedValue([{ id: 1 }]);
@@ -162,6 +167,7 @@ test("getPublicationsByProblemAndStage returns results", async () => {
     const res = {};
     res.send = jest.fn().mockReturnValue(res);
     res.status = jest.fn().mockReturnValue(res);
+    res.sendStatus = jest.fn().mockReturnValue(res);
     res.json = jest.fn().mockReturnValue(res);
     return res;
   };
@@ -172,7 +178,7 @@ test("getPublicationsByProblemAndStage returns results", async () => {
   await problems.getPublicationsByProblemAndStage(req, res);
 
   expect(
-    queries.selectOriginalPublicationsByProblemAndStage,
+    queries.selectOriginalPublicationsByProblemAndStage
   ).toHaveBeenCalledWith(req.params.id, req.params.stage);
   expect(res.status).toHaveBeenCalledWith(200);
   expect(res.json).toHaveBeenCalledWith(testPublications);
@@ -192,7 +198,7 @@ test("getPublicationsByProblemAndStage returns results", async () => {
   const mockResponse = () => {
     const res = {};
     res.send = jest.fn().mockReturnValue(res);
-    res.status = jest.fn().mockReturnValue(res);
+    res.status = jest.fn().mockReturnValue(res); res.sendStatus = jest.fn().mockReturnValue(res);
     res.json = jest.fn().mockReturnValue(res);
     return res;
   };

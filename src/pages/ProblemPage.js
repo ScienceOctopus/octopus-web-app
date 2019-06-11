@@ -78,18 +78,21 @@ class ProblemPage extends React.Component {
           .publication(id)
           .get()
           .then(publication => {
-            let content = { ...this.state.content };
+            this.setState(
+              state => {
+                let content = { ...state.content };
 
-            content.publications.set(id, publication);
-
-            this.setState({ content: content }, () =>
-              this.initProblem(
-                publication.problem,
-                id,
-                selection,
-                review,
-                boot,
-              ),
+                content.publications.set(id, publication);
+                return { content: content };
+              },
+              () =>
+                this.initProblem(
+                  publication.problem,
+                  id,
+                  selection,
+                  review,
+                  boot,
+                ),
             );
           });
       } else {
@@ -171,9 +174,14 @@ class ProblemPage extends React.Component {
       .problem(this.state.problem)
       .get()
       .then(problem => {
-        let content = { ...this.state.content };
-        content.problem = problem;
-        this.setState({ content: content }, () => this.fetchStages(boot));
+        this.setState(
+          state => {
+            let content = { ...state.content };
+            content.problem = problem;
+            return { content: content };
+          },
+          () => this.fetchStages(boot),
+        );
       });
   }
 
@@ -195,13 +203,17 @@ class ProblemPage extends React.Component {
           stage.loading = true;
         });
 
-        let content = { ...this.state.content };
+        this.setState(
+          state => {
+            let content = { ...state.content };
 
-        content.publications = new Map();
-        content.stages = stages;
-        content.loading = false;
-
-        this.setState({ content: content }, () => this.fetchStage(0, boot));
+            content.publications = new Map();
+            content.stages = stages;
+            content.loading = false;
+            return { content: content };
+          },
+          () => this.fetchStage(0, boot),
+        );
       });
   }
 
@@ -219,16 +231,18 @@ class ProblemPage extends React.Component {
       .publications()
       .get()
       .then(publications => {
-        let content = { ...this.state.content };
-        publications.forEach(publication => {
-          content.publications.set(publication.id, publication);
-          publication.reviews = undefined;
-        });
-        content.stages[stageId].publications = publications;
-        content.stages[stageId].loading = false;
-
-        this.setState({ content: content }, () =>
-          this.fetchStage(stageId + 1, boot),
+        this.setState(
+          state => {
+            let content = { ...state.content };
+            publications.forEach(publication => {
+              content.publications.set(publication.id, publication);
+              publication.reviews = undefined;
+            });
+            content.stages[stageId].publications = publications;
+            content.stages[stageId].loading = false;
+            return { content: content };
+          },
+          () => this.fetchStage(stageId + 1, boot),
         );
       });
   }
@@ -266,10 +280,13 @@ class ProblemPage extends React.Component {
           });
 
           if (++counter >= nextStagePubs.length) {
-            let content = { ...this.state.content };
-            content.stages[stageId - 1].links = links;
-            this.setState({ content: content }, () =>
-              this.fetchLinks(stageId + 1, boot),
+            this.setState(
+              state => {
+                let content = { ...state.content };
+                content.stages[stageId - 1].links = links;
+                return { content: content };
+              },
+              () => this.fetchLinks(stageId + 1, boot),
             );
           }
         });
@@ -281,123 +298,131 @@ class ProblemPage extends React.Component {
       return;
     }
 
-    let stageId = this.state.content.publications.get(this.state.publication)
-      .stage;
-    stageId = this.state.content.stages.findIndex(x => x.id === stageId);
+    this.setState(
+      state => {
+        let stageId = state.content.publications.get(state.publication).stage;
+        stageId = state.content.stages.findIndex(x => x.id === stageId);
 
-    let stage = this.state.content.stages[stageId];
+        let stage = state.content.stages[stageId];
 
-    let publicationId = stage.publications.findIndex(
-      x => x.id === this.state.publication,
-    );
-
-    let reachable = [];
-    reachable[stageId] = new Map([[publicationId, 0]]);
-
-    let content = { ...this.state.content };
-
-    // Generate graph of pubs linked to selected one and accumulate their degrees
-    for (let prev = stageId - 1; prev >= 0; prev--) {
-      let next_reachable = reachable[prev + 1];
-      let prev_reachable = new Map();
-
-      content.stages[prev].links.forEach(([prev, next]) => {
-        if (next_reachable.has(next)) {
-          prev_reachable.set(prev, (prev_reachable.get(prev) || 0) + 1);
-          next_reachable.set(next, (next_reachable.get(next) || 0) + 1);
-        }
-      });
-
-      reachable[prev] = prev_reachable;
-    }
-
-    for (let next = stageId + 1; next < content.stages.length; next++) {
-      let prev_reachable = reachable[next - 1];
-      let next_reachable = new Map();
-
-      content.stages[next - 1].links.forEach(([prev, next]) => {
-        if (prev_reachable.has(prev)) {
-          prev_reachable.set(prev, (prev_reachable.get(prev) || 0) + 1);
-          next_reachable.set(next, (next_reachable.get(next) || 0) + 1);
-        }
-      });
-
-      reachable[next] = next_reachable;
-    }
-
-    let sizes = reachable.map(stage => stage.size);
-
-    // Start from first stage and select the three pubs with the highest degree
-    if (content.stages.length) {
-      reachable[0] = new Map(
-        [...reachable[0].entries()].sort((a, b) => b[1] - a[1]).slice(0, 3),
-      );
-    }
-
-    const linkFromPrevStageExistsToPub = (pub, stageId) =>
-      content.stages[stageId - 1].links.find(
-        ([prev, next]) => next === pub && reachable[stageId - 1].has(prev),
-      ) !== undefined;
-
-    for (let i = 1; i < content.stages.length; i++) {
-      let ok_reachable = [];
-      let no_reachable = [];
-
-      // Partition next stage's pubs into still reachable ones and now unreachable ones
-      for (let [pub, degree] of reachable[i]) {
-        if (linkFromPrevStageExistsToPub(pub, i)) {
-          ok_reachable.push([pub, degree]);
-        } else {
-          no_reachable.push([pub, degree]);
-        }
-      }
-
-      // Select the three pubs with the highest degree from the reachable ones, fill up with now unreachable ones
-      ok_reachable = ok_reachable.sort((a, b) => b[1] - a[1]).slice(0, 3);
-
-      if (ok_reachable.length < 3) {
-        ok_reachable.concat(
-          no_reachable
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 3 - ok_reachable.length),
+        let publicationId = stage.publications.findIndex(
+          x => x.id === state.publication,
         );
-      }
 
-      reachable[i] = new Map(ok_reachable);
-    }
+        let reachable = [];
+        reachable[stageId] = new Map([[publicationId, 0]]);
 
-    let links = [];
+        let content = { ...state.content };
 
-    const retainLinksWhichConnectReachablePubs = (links, stageId) =>
-      links.filter(([prev, next]) => {
-        return reachable[stageId - 1].has(prev) && reachable[stageId].has(next);
-      });
+        // Generate graph of pubs linked to selected one and accumulate their degrees
+        for (let prev = stageId - 1; prev >= 0; prev--) {
+          let next_reachable = reachable[prev + 1];
+          let prev_reachable = new Map();
 
-    for (let i = 1; i < content.stages.length; i++) {
-      links.push(
-        retainLinksWhichConnectReachablePubs(content.stages[i - 1].links, i),
-      );
-    }
+          content.stages[prev].links.forEach(([prev, next]) => {
+            if (next_reachable.has(next)) {
+              prev_reachable.set(prev, (prev_reachable.get(prev) || 0) + 1);
+              next_reachable.set(next, (next_reachable.get(next) || 0) + 1);
+            }
+          });
 
-    reachable = reachable.map(map =>
-      [...map].sort((a, b) => b[1] - a[1]).map(pub => pub[0]),
+          reachable[prev] = prev_reachable;
+        }
+
+        for (let next = stageId + 1; next < content.stages.length; next++) {
+          let prev_reachable = reachable[next - 1];
+          let next_reachable = new Map();
+
+          content.stages[next - 1].links.forEach(([prev, next]) => {
+            if (prev_reachable.has(prev)) {
+              prev_reachable.set(prev, (prev_reachable.get(prev) || 0) + 1);
+              next_reachable.set(next, (next_reachable.get(next) || 0) + 1);
+            }
+          });
+
+          reachable[next] = next_reachable;
+        }
+
+        let sizes = reachable.map(stage => stage.size);
+
+        // Start from first stage and select the three pubs with the highest degree
+        if (content.stages.length) {
+          reachable[0] = new Map(
+            [...reachable[0].entries()].sort((a, b) => b[1] - a[1]).slice(0, 3),
+          );
+        }
+
+        const linkFromPrevStageExistsToPub = (pub, stageId) =>
+          content.stages[stageId - 1].links.find(
+            ([prev, next]) => next === pub && reachable[stageId - 1].has(prev),
+          ) !== undefined;
+
+        for (let i = 1; i < content.stages.length; i++) {
+          let ok_reachable = [];
+          let no_reachable = [];
+
+          // Partition next stage's pubs into still reachable ones and now unreachable ones
+          for (let [pub, degree] of reachable[i]) {
+            if (linkFromPrevStageExistsToPub(pub, i)) {
+              ok_reachable.push([pub, degree]);
+            } else {
+              no_reachable.push([pub, degree]);
+            }
+          }
+
+          // Select the three pubs with the highest degree from the reachable ones, fill up with now unreachable ones
+          ok_reachable = ok_reachable.sort((a, b) => b[1] - a[1]).slice(0, 3);
+
+          if (ok_reachable.length < 3) {
+            ok_reachable.concat(
+              no_reachable
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 3 - ok_reachable.length),
+            );
+          }
+
+          reachable[i] = new Map(ok_reachable);
+        }
+
+        let links = [];
+
+        const retainLinksWhichConnectReachablePubs = (links, stageId) =>
+          links.filter(([prev, next]) => {
+            return (
+              reachable[stageId - 1].has(prev) && reachable[stageId].has(next)
+            );
+          });
+
+        for (let i = 1; i < content.stages.length; i++) {
+          links.push(
+            retainLinksWhichConnectReachablePubs(
+              content.stages[i - 1].links,
+              i,
+            ),
+          );
+        }
+
+        reachable = reachable.map(map =>
+          [...map].sort((a, b) => b[1] - a[1]).map(pub => pub[0]),
+        );
+        links = links.map((links, stageId) =>
+          links.map(([prev, next]) => [
+            reachable[stageId].findIndex(x => x === prev),
+            reachable[stageId + 1].findIndex(x => x === next),
+          ]),
+        );
+
+        content.stages.forEach((stage, stageId) => {
+          stage.selection = {
+            publications: reachable[stageId],
+            links: links[stageId] || [],
+            size: sizes[stageId],
+          };
+        });
+        return { content: content };
+      },
+      () => this.fetchReviews(boot),
     );
-    links = links.map((links, stageId) =>
-      links.map(([prev, next]) => [
-        reachable[stageId].findIndex(x => x === prev),
-        reachable[stageId + 1].findIndex(x => x === next),
-      ]),
-    );
-
-    content.stages.forEach((stage, stageId) => {
-      stage.selection = {
-        publications: reachable[stageId],
-        links: links[stageId] || [],
-        size: sizes[stageId],
-      };
-    });
-
-    this.setState({ content: content }, () => this.fetchReviews(boot));
   }
 
   fetchReviews(boot) {
@@ -419,26 +444,29 @@ class ProblemPage extends React.Component {
       .reviews()
       .get()
       .then(reviews => {
-        let content = { ...this.state.content };
+        this.setState(state => {
+          let content = { ...state.content };
 
-        reviews.forEach(review => content.publications.set(review.id, review));
+          reviews.forEach(review =>
+            content.publications.set(review.id, review),
+          );
 
-        if (boot && this.state.review !== undefined) {
-          let review = reviews.splice(
-            reviews.findIndex(x => x.id === this.state.review),
-            1,
-          )[0];
+          if (boot && this.state.review !== undefined) {
+            let review = reviews.splice(
+              reviews.findIndex(x => x.id === this.state.review),
+              1,
+            )[0];
 
-          reviews.unshift(review);
-        }
+            reviews.unshift(review);
+          }
 
-        content.stages
-          .find(stage => stage.id === publication.stage)
-          .publications.find(
-            pub => pub.id === publication.id,
-          ).reviews = reviews;
-
-        this.setState({ content: content });
+          content.stages
+            .find(stage => stage.id === publication.stage)
+            .publications.find(
+              pub => pub.id === publication.id,
+            ).reviews = reviews;
+          return { content: content };
+        });
       });
   }
 
