@@ -16,7 +16,9 @@ class GlobalSearch extends Component {
   handleSubmit = event => {
     event.target.firstChild.firstChild.blur();
 
-    this.props.history.push(generateLocalizedPath(WebURI.Search));
+    this.props.history.push(
+      generateLocalizedPath(WebURI.Search(this.state.value)),
+    );
 
     event.preventDefault();
   };

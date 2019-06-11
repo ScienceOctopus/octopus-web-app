@@ -9,11 +9,33 @@ class ProblemSearchList extends Component {
   }
 
   componentDidMount() {
-    if (this.props.allProblems) {
+    this.fetchQuery();
+  }
+
+  componentDidUpdate(oldProps) {
+    if (oldProps.query !== this.props.query) {
+      this.fetchQuery();
+    }
+  }
+
+  fetchQuery() {
+    if (!this.props.query) {
       this.fetchAllProblems();
     } else {
-      this.props.problemIDs.forEach(id => this.fetchProblem(id));
+      this.fetchQueryProblems();
     }
+  }
+
+  fetchQueryProblems() {
+    Api()
+      .problems()
+      .getQuery(this.props.query)
+      .then(problems => {
+        this.setState({
+          loaded: true,
+          problems: problems.map(x => x.id),
+        });
+      });
   }
 
   fetchAllProblems() {
@@ -28,7 +50,14 @@ class ProblemSearchList extends Component {
       });
   }
 
+  renderNothingFound() {
+    return <h1>Nothing found for query {this.props.query} !</h1>;
+  }
+
   renderProblems() {
+    if (!this.state.problems.length) {
+      return this.renderNothingFound();
+    }
     return this.state.problems.map((x, i) => (
       <ProblemSearchDescription id={x} key={i} />
     ));

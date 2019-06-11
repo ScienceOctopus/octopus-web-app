@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { withRouter } from "react-router-dom";
 import ProblemSearchList from "../components/ProblemSearchList";
 
 class SearchPage extends Component {
@@ -7,13 +8,18 @@ class SearchPage extends Component {
     this.state = {};
   }
 
+  getQuery() {
+    let params = new URLSearchParams(this.props.location.search);
+    return params.get("q");
+  }
+
   render() {
     return (
-      <div>
-        <ProblemSearchList allProblems />
+      <div className="ui main container">
+        <ProblemSearchList allProblems query={this.getQuery()} />
       </div>
     );
   }
 }
 
-export default SearchPage;
+export default withRouter(SearchPage);
