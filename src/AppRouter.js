@@ -10,6 +10,7 @@ import ProblemPage from "./pages/ProblemPage";
 import UploadPage from "./pages/UploadPage";
 import WebURI, { RouterPath, RouterURI } from "./urls/WebsiteURIs";
 import SearchPage from "./pages/SearchPage";
+import ProblemCreationPage from "./pages/ProblemCreationPage";
 
 function AppRouter() {
   return (
@@ -102,6 +103,12 @@ function AppRouter() {
         name="search"
         path={RouterPath(WebURI.Search(""))}
         component={SearchPage}
+      />
+
+      <Route
+        name="newProblem"
+        path={RouterPath(WebURI.ProblemCreation)}
+        component={ProblemCreationPage}
       />
 
       <Route name="notFound" path="/*" component={NotFoundPage} />
