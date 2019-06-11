@@ -100,8 +100,7 @@ function AppRouter() {
 
       <Route
         name="search"
-        path={RouterPath(WebURI.Search)}
-        exact
+        path={RouterPath(WebURI.Search(""))}
         component={SearchPage}
       />
 

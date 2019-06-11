@@ -16,7 +16,18 @@ function catchAsyncErrors(fn) {
   };
 }
 
+const getProblemsByQuery = async (req, res) => {
+  const problems = await db.selectProblemsBySearch(req.query.q);
+
+  res.status(200).json(problems);
+};
+
 const getProblems = async (req, res) => {
+  if (req.query.q) {
+    getProblemsByQuery(req, res);
+    return;
+  }
+
   const problems = await db.selectAllProblems();
 
   res.status(200).json(problems);

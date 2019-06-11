@@ -361,6 +361,8 @@ class LinkBuilder {
 
   get = () => store.get(this.path, this.key);
 
+  getQuery = q => Axios.get(root + this.path + "?q=" + q).then(x => x.data);
+
   head = () => store.head(this.path, this.key);
 
   count = () => {

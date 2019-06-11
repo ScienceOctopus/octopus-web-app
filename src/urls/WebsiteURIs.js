@@ -50,7 +50,7 @@ const WebURI = {
   Explore: "/explore",
   Upload: "/publish",
   Login: "/login",
-  Search: "/search",
+  Search: q => (q === "" ? "/search" : `/search?q=${q}`),
   OrcidLogin: (state, returnPath) =>
     `https://orcid.org/oauth/authorize?state=${state}&client_id=${GOBLINID_OAUTH_CLIENT_ID}&response_type=code&scope=/authenticate&redirect_uri=${REDIRECT_URI}?return_path=${returnPath}`,
 };
