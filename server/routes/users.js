@@ -16,19 +16,11 @@ function catchAsyncErrors(fn) {
   };
 }
 
-const notFound = res => {
-  res.status(404).send("404 Not Found");
-};
-
-const requestInvalid = res => {
-  res.status(400).send("400 Bad Request");
-};
-
 const getUserByID = async (req, res) => {
   const users = await db.selectUsers(req.params.id);
 
   if (!users.length) {
-    return notFound(res);
+    return res.sendStatus(404);
   }
 
   if (users.length > 1) {
@@ -49,7 +41,7 @@ const getUserAvatar = async (req, res) => {
   const users = await db.selectUsers(req.params.id);
 
   if (!users.length) {
-    return notFound(res);
+    return res.sendStatus(404);
   }
 
   if (users.length > 1) {
@@ -70,7 +62,7 @@ const getUserAvatar = async (req, res) => {
         request({
           qs: req.query,
           uri: `https://gravatar.com/avatar/${email_hash}`,
-        }),
+        })
       )
       .pipe(res);
   }

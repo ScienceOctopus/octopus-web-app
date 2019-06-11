@@ -50,7 +50,7 @@ app.use(cookieParser());
 app.use(
   bodyParser.urlencoded({
     extended: true,
-  }),
+  })
 );
 
 app.get("/api", (req, res) => {
@@ -67,7 +67,7 @@ app.post("/api/feedback", fb.postFeedback);
 app.post(
   "/api/image",
   upload(blobService.AZURE_FEEDBACK_IMAGE_CONTAINER).single("image"),
-  fb.postImage,
+  fb.postImage
 );
 
 app.use(function(err, req, res, next) {
@@ -76,7 +76,7 @@ app.use(function(err, req, res, next) {
 });
 
 app.use(function(req, res, next) {
-  res.status(404).send("404 Not Found");
+  res.sendStatus(404);
 });
 
 app.listen(port, () => {
