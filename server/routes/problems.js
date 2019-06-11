@@ -74,7 +74,7 @@ const getPublicationsByProblemAndStage = async (req, res) => {
 
   let publications = await db.selectOriginalPublicationsByProblemAndStage(
     req.params.id,
-    req.params.stage
+    req.params.stage,
   );
 
   // TODO: refactor session cookie name into environmental waste
@@ -83,7 +83,7 @@ const getPublicationsByProblemAndStage = async (req, res) => {
     const additionalPublications = await db.selectOriginalDraftPublicationsByProblemAndStageAndUser(
       req.params.id,
       req.params.stage,
-      sessionUser
+      sessionUser,
     );
 
     publications = publications.concat(additionalPublications);
@@ -99,7 +99,7 @@ const getPublicationsByProblem = async (req, res) => {
   }
 
   const publications = await db.selectCompletedPublicationsByProblem(
-    req.params.id
+    req.params.id,
   );
 
   res
@@ -181,7 +181,7 @@ const postPublicationToProblemAndStage = async (req, res) => {
         case "file":
           content = (await db.insertResource(
             "azureBlob",
-            req.files[content].url
+            req.files[content].url,
           ))[0];
           resources.push(content);
           break;
@@ -207,13 +207,13 @@ const postPublicationToProblemAndStage = async (req, res) => {
     req.body.funding,
     req.body.review,
     JSON.stringify(data),
-    false
+    false,
   );
 
   await db.insertPublicationCollaborator(
     publications[0],
     req.body.user,
-    "author"
+    "author",
   );
 
   if (req.body.basedOn !== undefined) {
@@ -222,19 +222,19 @@ const postPublicationToProblemAndStage = async (req, res) => {
   }
 
   resources.unshift(
-    (await db.insertResource("azureBlob", req.files[0].url))[0]
+    (await db.insertResource("azureBlob", req.files[0].url))[0],
   );
 
   for (let i = 0; i < resources.length; i++) {
     await db.insertPublicationResource(
       publications[0],
       resources[i],
-      i <= 0 ? "main" : "meta"
+      i <= 0 ? "main" : "meta",
     );
   }
 
   broadcast(
-    `/problems/${req.params.id}/stages/${req.params.stage}/publications`
+    `/problems/${req.params.id}/stages/${req.params.stage}/publications`,
   );
 
   res.status(200).json(publications[0]);
@@ -259,13 +259,8 @@ const postProblem = async (req, res) => {
   let problem = (await db.insertProblem(
     req.body.title,
     req.body.description,
-<<<<<<< HEAD
     req.body.user,
   ))[0];
-=======
-    req.body.user
-  );
->>>>>>> 8144bd303b79b88099465972d5a35c2f7b555415
 
   for (let i = 0; i < stages.length; i++) {
     await db.insertProblemStage(problem, stages[i], i);
@@ -282,27 +277,27 @@ router.get("/", catchAsyncErrors(getProblems));
 router.post("/", catchAsyncErrors(postProblem));
 router.get(
   "/:id(\\d+)/publications",
-  catchAsyncErrors(getPublicationsByProblem)
+  catchAsyncErrors(getPublicationsByProblem),
 );
 router.head(
   "/:id(\\d+)/publications",
-  catchAsyncErrors(getPublicationCountByProblem)
+  catchAsyncErrors(getPublicationCountByProblem),
 );
 router.get("/:id", catchAsyncErrors(getProblemByID));
 router.get("/:id(\\d+)/stages", catchAsyncErrors(getStagesByProblem));
 router.get(
   "/:id(\\d+)/stages/:stage(\\d+)",
-  catchAsyncErrors(getStageByProblem)
+  catchAsyncErrors(getStageByProblem),
 );
 router.get(
   "/:id(\\d+)/stages/:stage(\\d+)/publications",
-  catchAsyncErrors(getPublicationsByProblemAndStage)
+  catchAsyncErrors(getPublicationsByProblemAndStage),
 );
 
 router.post(
   "/:id(\\d+)/stages/:stage(\\d+)/publications",
   upload(blobService.AZURE_PUBLICATION_CONTAINER).array("file"),
-  catchAsyncErrors(postPublicationToProblemAndStage)
+  catchAsyncErrors(postPublicationToProblemAndStage),
 );
 
 module.exports = {
