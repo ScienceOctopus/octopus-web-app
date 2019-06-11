@@ -258,7 +258,7 @@ const postProblem = async (req, res) => {
   let problem = await db.insertProblem(
     req.body.title,
     req.body.description,
-    req.body.user,
+    req.body.user
   );
 
   for (let i = 0; i < stages.length; i++) {
@@ -273,7 +273,7 @@ const isNumber = x => Number(x) !== NaN;
 var router = express.Router();
 
 router.get("/", catchAsyncErrors(getProblems));
-router.post("/", catchAsyncErrors(po));
+router.post("/", catchAsyncErrors(postProblem));
 router.get(
   "/:id(\\d+)/publications",
   catchAsyncErrors(getPublicationsByProblem)
