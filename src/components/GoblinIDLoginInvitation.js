@@ -3,19 +3,20 @@ import WebURI from "../urls/WebsiteURIs";
 
 function GoblinIDLoginInvitation(props) {
   return (
-    <div className="right item">
-      <a href={WebURI.OrcidLogin(global.session.OAuthState, props.returnPath)}>
-        {props.showAvatar && (
-          <img
-            src="/images/avatar.jpg"
-            className="ui avatar image"
-            alt="Generic avatar"
-            title="Log in"
-          />
-        )}
-      </a>
+    <a
+      className="right item"
+      href={WebURI.OrcidLogin(global.session.OAuthState, props.returnPath)}
+    >
+      {props.showAvatar && (
+        <img
+          src="/images/avatar.jpg"
+          className="ui avatar image"
+          alt="Generic avatar"
+          title="Log in"
+        />
+      )}
       <span>Log in via ORCiD</span>
-    </div>
+    </a>
   );
 }
 
