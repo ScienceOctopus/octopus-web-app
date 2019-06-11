@@ -75,7 +75,7 @@ class MultiPromise {
 const root = "/api";
 const port = process.env.NODE_ENV === "development" ? ":3001" : "";
 
-const promise_dummy = { resolve: value => {} };
+//const promise_dummy = { resolve: value => {} };
 
 class Store {
   constructor() {
@@ -239,7 +239,7 @@ class Store {
       let callback = cache.callbacks.get(primary);
 
       if (callback !== undefined) {
-        cache.callbacks.set(primary, [promise_dummy, callback[1]]);
+        cache.callbacks.delete(primary);//set(primary, [promise_dummy, callback[1]]);
       }
     });
   };
@@ -271,6 +271,7 @@ class Store {
     let promise = new MultiPromise(Store._clone(cache.data));
 
     if (primary !== undefined) {
+      console.log(this.store.get(path).callbacks.get(primary));
       cache.callbacks.set(primary, [promise, Store.SUBSCRIBED_DATA]);
       console.log(this.store.get(path).callbacks.get(primary));
     }
