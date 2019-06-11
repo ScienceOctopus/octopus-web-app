@@ -101,12 +101,14 @@ function AppRouter() {
 
       <Route
         name="search"
+        exact
         path={RouterPath(WebURI.Search(""))}
         component={SearchPage}
       />
 
       <Route
         name="newProblem"
+        exact
         path={RouterPath(WebURI.ProblemCreation)}
         component={ProblemCreationPage}
       />
