@@ -31,6 +31,7 @@ class UploadPage extends Component {
       title: "",
       summary: "",
       funding: "",
+      conflict: "",
       data: {},
       selectedFile: undefined,
 
@@ -256,6 +257,7 @@ class UploadPage extends Component {
     data.set("title", this.state.title);
     data.set("summary", this.state.summary);
     data.set("funding", this.state.funding);
+    data.set("conflict", this.state.conflict);
     data.set("user", global.session.user.id);
     data.set("review", this.state.isReview);
 
@@ -374,6 +376,12 @@ class UploadPage extends Component {
     });
   };
 
+  handleConflictChange = e => {
+    this.setState({
+      conflict: e.target.value,
+    });
+  };
+
   handleDataChange = key => e => {
     let field = this.state.stages
       .find(stage => stage.id === Number(this.state.selectedStageId))
@@ -444,6 +452,7 @@ class UploadPage extends Component {
       this.state.title &&
       this.state.summary &&
       this.state.funding &&
+      this.state.conflict &&
       (this.isReview ||
         this.state.stages
           .find(stage => stage.id === Number(this.state.selectedStageId))
@@ -518,7 +527,11 @@ class UploadPage extends Component {
         stage => stage.id === Number(this.state.selectedStageId),
       );
 
-      if (stage !== undefined && this.state.data !== undefined) {
+      if (
+        stage !== undefined &&
+        this.state.data !== undefined &&
+        stage.schema.length > 0
+      ) {
         metaData = (
           <>
             {stage.schema.map(([key, type, title, description, id]) => {
@@ -637,6 +650,11 @@ class UploadPage extends Component {
               title="Funding Statement"
               value={this.state.funding}
               onChange={this.handleFundingChange}
+            />
+            <TitledForm
+              title="Conflict of Interest Declaration"
+              value={this.state.conflict}
+              onChange={this.handleConflictChange}
             />
             <FileUploadSelector
               title="Publication Document"

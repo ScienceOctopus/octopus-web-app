@@ -248,6 +248,16 @@ class SummaryView extends Component {
               <div className="ui divider" />
               {this.state.publication.summary}
             </section>
+            <section className="ui segment">
+              <h3>Funding Statement</h3>
+              <div className="ui divider" />
+              {this.state.publication.funding}
+            </section>
+            <section className="ui segment">
+              <h3>Conflict of Interest Declaration</h3>
+              <div className="ui divider" />
+              {this.state.publication.conflict}
+            </section>
 
             {metadata}
 
