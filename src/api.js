@@ -272,6 +272,7 @@ class Store {
 
     if (primary !== undefined) {
       cache.callbacks.set(primary, [promise, Store.SUBSCRIBED_DATA]);
+      console.log(this.store.get(path).callbacks.get(primary));
     }
 
     if (primary === undefined) {

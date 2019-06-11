@@ -29,7 +29,7 @@ class ProblemPage extends React.Component {
     };
 
     if (this.state.measurements !== undefined) {
-      this.initCheck(this.props, false, undefined, false);
+      this.initCheck(this.props, false, undefined, true);
     }
   }
 
