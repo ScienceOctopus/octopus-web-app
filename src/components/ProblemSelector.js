@@ -2,6 +2,9 @@ import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import WebURI, { LocalizedLink } from "../urls/WebsiteURIs";
 import SimpleSelector from "./SimpleSelector";
+import Modal from "./Modal";
+import ProblemSearchList from "./ProblemSearchList";
+import GlobalSearch from "./GlobalSearch";
 
 class ProblemSelector extends Component {
   constructor(props) {
@@ -12,11 +15,15 @@ class ProblemSelector extends Component {
   render() {
     return (
       <div className="field container">
-        <SimpleSelector
+        {/* <SimpleSelector
           title="Select a Problem"
           style={styles.selector}
           {...this.props}
-        />
+        /> */}
+        <Modal show onClose={() => {}}>
+          <GlobalSearch />
+          <ProblemSearchList />
+        </Modal>
         {"No suitable problem? "}
         <LocalizedLink
           to={{

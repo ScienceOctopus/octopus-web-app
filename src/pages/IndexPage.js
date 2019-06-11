@@ -4,11 +4,12 @@ import { withRouter } from "react-router-dom";
 import graph from "../assets/images/graph.png";
 import Footer from "../components/Footer";
 import ProblemCreationPage from "./ProblemCreationPage";
+import ProblemSelector from "../components/ProblemSelector";
 
 class IndexPage extends Component {
   render() {
     if (process.DEBUG_MODE) {
-      return <ProblemCreationPage />;
+      return <ProblemSelector />;
     }
 
     return (
