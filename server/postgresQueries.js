@@ -57,6 +57,12 @@ const queries = {
       .select()
       .where("id", id),
 
+  selectProblemsBySearch: searchPhrase =>
+    knex("problems")
+      .select()
+      .where("title", "like", `%${searchPhrase}%`)
+      .orWhere("description", "like", `%${searchPhrase}%`),
+
   insertProblem: (title, description, creator) =>
     knex("problems")
       .insert({
@@ -71,10 +77,7 @@ const queries = {
       .insert({ problem, stage, order })
       .returning("id"),
 
-  selectAllStagesIds: () =>
-    knex()
-      .select("id")
-      .from("stages"),
+  selectAllStagesIds: () => knex("stages").select("id"),
 
   selectStagesByID: id =>
     knex("stages")

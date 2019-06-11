@@ -3,9 +3,14 @@ import WebURI, { LocalizedLink, LocalizedRedirect } from "../urls/WebsiteURIs";
 import { withRouter } from "react-router-dom";
 import graph from "../assets/images/graph.png";
 import Footer from "../components/Footer";
+import ProblemCreationPage from "./ProblemCreationPage";
 
 class IndexPage extends Component {
   render() {
+    if (process.DEBUG_MODE) {
+      return <ProblemCreationPage />;
+    }
+
     return (
       <div>
         <main

@@ -143,11 +143,7 @@ class Store {
   _update = path => {
     let cache = this.store.get(path);
 
-    if (
-      cache === undefined &&
-      cache.callbacks.size > 0 &&
-      cache.subscribed !== Store.SUBSCRIBED_NONE
-    ) {
+    if (cache === undefined) {
       return;
     }
 
@@ -302,7 +298,7 @@ class Store {
     let cache = this.getOrInit(path);
 
     if (process.DEBUG_MODE) {
-      console.log(cache.data !== undefined ? "cache" : "head", path);
+      console.log(cache.data !== undefined ? "cache" : "head", path, primary);
     }
 
     let promise = new MultiPromise(Store._clone(cache.headers));
