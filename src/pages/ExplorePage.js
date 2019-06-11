@@ -7,7 +7,7 @@ import WebURI, {
 
 class ExplorePage extends Component {
   render() {
-    return <LocalizedRedirect to={generateLocalizedPath(WebURI.Search)} />;
+    return <LocalizedRedirect to={generateLocalizedPath(WebURI.Search(""))} />;
   }
 }
 
