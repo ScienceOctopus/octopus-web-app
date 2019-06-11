@@ -174,7 +174,7 @@ class Stage extends Component {
               }}
             >
               <i
-                class="ui pencil alternate icon"
+                className="ui pencil alternate icon"
                 style={{ marginRight: "0.5em", color: "white" }}
               />
             </div>
@@ -239,7 +239,7 @@ class Stage extends Component {
             }}
           >
             <i
-              class="ui pencil alternate icon"
+              className="ui pencil alternate icon"
               style={{ marginRight: "0.5em", color: "white" }}
             />
           </div>

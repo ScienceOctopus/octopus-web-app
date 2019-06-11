@@ -241,7 +241,7 @@ class Store {
       let callback = cache.callbacks.get(primary);
 
       if (callback !== undefined) {
-        cache.callbacks.set(primary, promise_dummy);
+        cache.callbacks.set(primary, [promise_dummy, callback[1]]);
       }
     });
   };
