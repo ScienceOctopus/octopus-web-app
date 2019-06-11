@@ -188,7 +188,12 @@ class SummaryView extends Component {
           case "bool":
             content = (
               <div className="ui checkbox">
-                <input type="checkbox" checked={datum} disabled />
+                <input
+                  type="checkbox"
+                  checked={datum}
+                  style={{ cursor: "default" }}
+                  disabled
+                />
                 <label> </label>
               </div>
             );

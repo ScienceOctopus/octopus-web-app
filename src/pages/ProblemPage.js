@@ -300,6 +300,7 @@ class ProblemPage extends React.Component {
 
     this.setState(
       state => {
+        console.log(JSON.parse(JSON.stringify(state)));
         let stageId = state.content.publications.get(state.publication).stage;
         stageId = state.content.stages.findIndex(x => x.id === stageId);
 
