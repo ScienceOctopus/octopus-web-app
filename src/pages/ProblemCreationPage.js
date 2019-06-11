@@ -29,7 +29,7 @@ class ProblemCreationPage extends Component {
   };
 
   submitEnabled() {
-    return this.state.title;
+    return this.state.title && this.state.description;
   }
 
   render() {
