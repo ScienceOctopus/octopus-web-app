@@ -301,12 +301,12 @@ class ProblemPage extends React.Component {
     this.setState(
       state => {
         let publication = state.content.publications.get(state.publication);
-        
+
         // Publication was just added but has not been loaded into cached data yet
         if (publication === undefined) {
           return;
         }
-        
+
         let stageId = publication.stage;
         stageId = state.content.stages.findIndex(x => x.id === stageId);
 
@@ -440,7 +440,7 @@ class ProblemPage extends React.Component {
     let publication = this.state.content.publications.get(
       this.state.publication,
     );
-    
+
     // Publication was just added but has not been loaded into cached data yet
     if (publication === undefined) {
       return;

@@ -38,8 +38,6 @@ class SummaryView extends Component {
 
   componentWillUnmount() {
     this._isMounted = false;
-
-    Api().unsubscribeClass(PROBLEM_KEY);
   }
 
   setState(newState, callback) {

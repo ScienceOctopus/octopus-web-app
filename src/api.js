@@ -75,8 +75,6 @@ class MultiPromise {
 const root = "/api";
 const port = process.env.NODE_ENV === "development" ? ":3001" : "";
 
-//const promise_dummy = { resolve: value => {} };
-
 class Store {
   constructor() {
     this.store = new Map();
@@ -108,8 +106,6 @@ class Store {
       if (process.DEBUG_MODE) {
         console.log(`Notified of update on ${event.data}`);
       }
-      
-      console.log("Received update on", event.data, JSON.parse(JSON.stringify(this.store.get(event.data))), this.store.get(event.data).callbacks.size);
 
       this._update(event.data);
     };
@@ -239,7 +235,7 @@ class Store {
       let callback = cache.callbacks.get(primary);
 
       if (callback !== undefined) {
-        cache.callbacks.delete(primary);//set(primary, [promise_dummy, callback[1]]);
+        cache.callbacks.delete(primary);
       }
     });
   };
@@ -264,16 +260,14 @@ class Store {
   get = (path, primary) => {
     let cache = this.getOrInit(path);
 
-    //if (process.DEBUG_MODE) {
-      console.log(cache.data !== undefined ? "cache" : "get", path, primary);
-    //}
+    if (process.DEBUG_MODE) {
+      console.log(primary, cache.data !== undefined ? "cache" : "get", path);
+    }
 
     let promise = new MultiPromise(Store._clone(cache.data));
 
     if (primary !== undefined) {
-      console.log(this.store.get(path).callbacks.get(primary));
       cache.callbacks.set(primary, [promise, Store.SUBSCRIBED_DATA]);
-      console.log(this.store.get(path).callbacks.get(primary));
     }
 
     if (primary === undefined) {
@@ -302,7 +296,7 @@ class Store {
     let cache = this.getOrInit(path);
 
     if (process.DEBUG_MODE) {
-      console.log(cache.data !== undefined ? "cache" : "head", path, primary);
+      console.log(primary, cache.data !== undefined ? "cache" : "head", path);
     }
 
     let promise = new MultiPromise(Store._clone(cache.headers));
