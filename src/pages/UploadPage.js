@@ -14,7 +14,7 @@ import {
 import { generatePath } from "react-router";
 import uniqueId from "lodash/uniqueId";
 import ProblemSelector from "../components/ProblemSelector";
-import LogInRequiredPage from "./LogInRequiredPage";
+import { loginRequired } from "./LogInRequiredPage";
 
 class UploadPage extends Component {
   constructor(props) {
@@ -508,10 +508,6 @@ class UploadPage extends Component {
   }
 
   render() {
-    if (global.session.user === undefined) {
-      return <LogInRequiredPage />;
-    }
-
     let metaData = null;
 
     if (
@@ -704,4 +700,4 @@ class UploadPage extends Component {
   }
 }
 
-export default withRouter(UploadPage);
+export default loginRequired(withRouter(UploadPage));

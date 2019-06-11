@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import Api from "../api";
 import TitledForm from "../components/TitledForm";
+import { loginRequired } from "./LogInRequiredPage";
 
 class ProblemCreationPage extends Component {
   constructor(props) {
@@ -56,4 +57,4 @@ class ProblemCreationPage extends Component {
   }
 }
 
-export default ProblemCreationPage;
+export default loginRequired(ProblemCreationPage);

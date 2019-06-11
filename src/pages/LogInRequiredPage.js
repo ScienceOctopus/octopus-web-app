@@ -1,7 +1,7 @@
 import React from "react";
 import WebURI, { LocalizedLink } from "../urls/WebsiteURIs";
 
-const LogInRequiredPage = props => {
+const LogInRequiredPage = () => {
   return (
     <div className="ui main text container">
       <div className="ui negative icon message">
@@ -15,6 +15,14 @@ const LogInRequiredPage = props => {
       </div>
     </div>
   );
+};
+
+export const loginRequired = Child => props => {
+  if (global.session.user === undefined) {
+    return <LogInRequiredPage />;
+  }
+
+  return <Child {...props} />;
 };
 
 export default LogInRequiredPage;
