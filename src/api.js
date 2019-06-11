@@ -108,6 +108,8 @@ class Store {
       if (process.DEBUG_MODE) {
         console.log(`Notified of update on ${event.data}`);
       }
+      
+      console.log("Received update on", event.data, JSON.parse(JSON.stringify(this.store.get(event.data))), this.store.get(event.data).callbacks.size);
 
       this._update(event.data);
     };
@@ -262,9 +264,9 @@ class Store {
   get = (path, primary) => {
     let cache = this.getOrInit(path);
 
-    if (process.DEBUG_MODE) {
+    //if (process.DEBUG_MODE) {
       console.log(cache.data !== undefined ? "cache" : "get", path, primary);
-    }
+    //}
 
     let promise = new MultiPromise(Store._clone(cache.data));
 
