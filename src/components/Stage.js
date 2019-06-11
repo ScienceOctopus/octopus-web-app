@@ -162,46 +162,28 @@ class Stage extends Component {
             textOverflow: "ellipsis",
           }}
         >
-          <div style={{ float: "left" }}>
-            <div
-              className="ui icon button teal disabled"
-              style={{
-                padding: "0.5rem",
-                position: "absolute",
-                top: "0.7rem",
-                height: "2rem",
-                marginLeft: "-0.25rem",
-              }}
-            >
-              <i
-                className="ui pencil alternate icon"
-                style={{ marginRight: "0.5em", color: "white" }}
-              />
-            </div>
-            <div
-              className="ui icon button"
-              style={{
-                padding: "0.5rem",
-                margin: "-0.5rem 0.5rem -0.5rem -0.25rem",
-                opacity: 0,
-                pointerEvents: "none",
-              }}
-              hidden
-            >
-              <i
-                className="ui pencil alternate icon"
-                style={{
-                  marginRight: "0.5em",
-                  opacity: 0,
-                }}
-                hidden
-              />
-            </div>
-            &#x200b;
+          <div
+            className="ui icon button teal disabled"
+            style={{
+              padding: "0.5rem",
+              position: "absolute",
+              top: "calc(13px - (1.07142857rem * 1.28571429 - 13px) / 2)",
+              marginLeft: "-0.25rem",
+            }}
+          >
+            <i
+              className="ui pencil alternate icon"
+              style={{ color: "white" }}
+            />
           </div>
+          <span style={{ float: "left" }}>&#x200b;</span>
           <div
             className="ui placeholder"
-            style={{ marginRight: "1.5em", height: "1.2em" }}
+            style={{
+              marginLeft: "2.5rem",
+              marginRight: "1.5em",
+              height: "1.2em",
+            }}
           >
             <div className="long line" style={{ backgroundColor: "initial" }} />
           </div>
@@ -224,8 +206,7 @@ class Stage extends Component {
             style={{
               padding: "0.5rem",
               position: "absolute",
-              top: "0.7rem",
-              height: "2rem",
+              top: "calc(13px - (1.07142857rem * 1.28571429 - 13px) / 2)",
               marginLeft: "-0.25rem",
             }}
             onClick={event => {
@@ -240,7 +221,7 @@ class Stage extends Component {
           >
             <i
               className="ui pencil alternate icon"
-              style={{ marginRight: "0.5em", color: "white" }}
+              style={{ color: "white" }}
             />
           </div>
           <div

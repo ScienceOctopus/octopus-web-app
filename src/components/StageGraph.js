@@ -163,7 +163,10 @@ const GraphMiddler = styled.div`
   position: absolute;
   width: 1rem;
   height: 1rem;
-  inset: 0;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
 `;
 
 const GraphHider = styled.i`
