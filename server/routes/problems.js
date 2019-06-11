@@ -273,7 +273,7 @@ const isNumber = x => Number(x) !== NaN;
 var router = express.Router();
 
 router.get("/", catchAsyncErrors(getProblems));
-router.post("/", catchAsyncErrors(po));
+router.post("/", catchAsyncErrors(postProblem));
 router.get(
   "/:id(\\d+)/publications",
   catchAsyncErrors(getPublicationsByProblem)
