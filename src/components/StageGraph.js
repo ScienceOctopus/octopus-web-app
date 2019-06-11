@@ -35,6 +35,7 @@ class StageGraph extends Component {
           className="ui fluid placeholder"
           style={{ marginTop: "0.05em", height: "1.28571429rem" }}
         >
+          &#x200b;
           <div
             className="line"
             style={{ backgroundColor: "initial", marginBottom: 0 }}
@@ -103,6 +104,7 @@ class StageGraph extends Component {
                   this.props.content.publication !== undefined
                     ? "pointer"
                     : "default",
+                minHeight: "calc(1.28571429em + 2 * (0.785714rem + 1px))",
               }}
             >
               <span style={{ marginRight: "0.5em", float: "left" }}>

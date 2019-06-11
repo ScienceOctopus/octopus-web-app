@@ -267,7 +267,7 @@ class Store {
     let cache = this.getOrInit(path);
 
     if (process.DEBUG_MODE) {
-      console.log(cache.data !== undefined ? "cache" : "get", path);
+      console.log(cache.data !== undefined ? "cache" : "get", path, primary);
     }
 
     let promise = new MultiPromise(Store._clone(cache.data));

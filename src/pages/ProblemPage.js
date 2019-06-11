@@ -1,7 +1,5 @@
 import React from "react";
 
-import { withRouter } from "react-router-dom";
-
 import StageGraph from "../components/StageGraph";
 import SummaryView from "../components/SummaryView";
 import EditPublicationView from "../components/EditPublicationView";
@@ -30,7 +28,7 @@ class ProblemPage extends React.Component {
       measurements: global.measurements,
     };
 
-    if (!this.state.measurements !== undefined) {
+    if (this.state.measurements !== undefined) {
       this.initCheck(this.props, false, undefined, false);
     }
   }
@@ -70,11 +68,7 @@ class ProblemPage extends React.Component {
   }
 
   initCheck(props, selection, review, boot) {
-    // id should be in params as soon as proper start page exists
-    let id = Number(
-      (props.match ? props.match.params.id : props.params.id) ||
-        props.params.id,
-    );
+    let id = Number(props.match ? props.match.params.id : props.params.id);
 
     if (props.publication) {
       let publication = this.state.content.publications.get(id);
@@ -284,10 +278,6 @@ class ProblemPage extends React.Component {
 
   generateSelection(boot) {
     if (this.state.publication === undefined) {
-      if (boot) {
-        this.props.history.replace(this.props.location.pathname, this.state);
-      }
-
       return;
     }
 
@@ -448,21 +438,24 @@ class ProblemPage extends React.Component {
             pub => pub.id === publication.id,
           ).reviews = reviews;
 
-        this.setState(
-          { content: content },
-          boot
-            ? () =>
-                this.props.history.replace(
-                  this.props.location.pathname,
-                  this.state,
-                )
-            : undefined,
-        );
+        this.setState({ content: content });
       });
   }
 
   componentWillReceiveProps(nextProps) {
-    this.initCheck(nextProps, true, undefined, false);
+    let new_id = nextProps.match
+      ? nextProps.match.params.id
+      : nextProps.params.id;
+    let new_pub = nextProps.publication;
+
+    let cur_id = this.props.match
+      ? this.props.match.params.id
+      : this.props.params.id;
+    let cur_pub = this.props.publication;
+
+    if (new_id !== cur_id || new_pub !== cur_pub) {
+      this.initCheck(nextProps, true, undefined, false);
+    }
   }
 
   render() {
@@ -474,7 +467,11 @@ class ProblemPage extends React.Component {
 
     let publication = null;
 
-    if (this.state.publication !== undefined) {
+    if (
+      this.state.publication !== undefined &&
+      this.state.problem !== undefined &&
+      this.state.content.problem.id === this.state.problem
+    ) {
       let pub = this.state.content.publications.get(this.state.publication);
 
       if (pub && pub.draft) {
@@ -619,4 +616,4 @@ class ProblemPage extends React.Component {
   }
 }
 
-export default withRouter(ProblemPage);
+export default ProblemPage;

@@ -160,8 +160,9 @@ class Publication extends Component {
         <BgDiv
           className="ui segment"
           onClick={onClick}
+          highlight={this.props.highlight}
           review={this.props.content.review !== undefined}
-          {...this.props}
+          pointer={this.props.pointer}
         >
           <Title>{this.props.publication.title}</Title>
           <div className="meta">

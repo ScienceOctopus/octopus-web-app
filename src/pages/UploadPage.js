@@ -39,6 +39,8 @@ class UploadPage extends Component {
       publications: undefined,
     };
 
+    console.log(JSON.parse(JSON.stringify(this.props)));
+
     Api()
       .problems()
       .get()
@@ -48,7 +50,10 @@ class UploadPage extends Component {
           //  this.props.location.pathname,
           //  this.state,
           //),
-          this.initCheck(this.props),
+          {
+            console.log("constructor");
+            this.initCheck(this.props);
+          },
         ),
       );
     //} else {
@@ -97,7 +102,11 @@ class UploadPage extends Component {
     ).params;
 
     let isReview =
-      review !== undefined || props.review === true || this.state.isReview;
+      review !== undefined ||
+      props.review === true ||
+      ((problem === undefined || stage === undefined) && this.state.isReview);
+
+    console.log(problem, stage, review, isReview);
 
     if (problem !== this.state.selectedProblemId) {
       let callback = undefined;
@@ -466,20 +475,52 @@ class UploadPage extends Component {
   }
 
   handleReviewChange = e => {
-    this.props.history.replace(
-      UploadPage.uploadURLBuilder(
-        this.state.selectedProblemId,
-        this.state.selectedStageId,
-        e.target.checked || undefined,
-      ),
-    );
+    const isReview = e.target.checked;
+
+    if (
+      this.state.selectedProblemId !== undefined &&
+      this.state.selectedStageId !== undefined
+    ) {
+      this.props.history.replace(
+        UploadPage.uploadURLBuilder(
+          this.state.selectedProblemId,
+          this.state.selectedStageId,
+          isReview || undefined,
+        ),
+      );
+    } else {
+      this.setState({ isReview: isReview });
+    }
   };
 
   componentWillReceiveProps(nextProps) {
-    this.initCheck(nextProps);
+    let {
+      id: new_problem,
+      stage: new_stage,
+      review: new_review,
+    } = (nextProps.match ? nextProps.match : nextProps).params;
+    let new_revall = nextProps.review;
+
+    let { id: cur_problem, stage: cur_stage, review: cur_review } = (this.props
+      .match
+      ? this.props.match
+      : this.props
+    ).params;
+    let cur_revall = this.props.review;
+
+    if (
+      new_problem !== cur_problem ||
+      new_stage !== cur_stage ||
+      new_review !== cur_review ||
+      new_revall !== cur_revall
+    ) {
+      this.initCheck(nextProps);
+    }
   }
 
   render() {
+    global.session.user = { display_name: "Anonymimus" };
+
     if (global.session.user === undefined) {
       return (
         <div className="ui main text container">

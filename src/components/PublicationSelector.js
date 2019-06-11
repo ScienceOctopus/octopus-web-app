@@ -38,7 +38,9 @@ class PublicationSelector extends Component {
                   publication={publication}
                   highlight={this.props.selection[i]}
                   onClick={this.handleProblemClick(i)}
-                  pointer={!this.props.singleSelection}
+                  pointer={
+                    !this.props.selection[i] || !this.props.singleSelection
+                  }
                 />
               </div>
             ))}

@@ -152,20 +152,49 @@ class Stage extends Component {
 
     let titleCard;
 
-    if (this.props.content.content.loading) {
+    if (this.props.stage.loading) {
       titleCard = (
-        <>
+        <h4
+          style={{
+            marginBottom: 0,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
           <div style={{ float: "left" }}>
             <div
               className="ui icon button teal disabled"
               style={{
                 padding: "0.5rem",
-                margin: "-0.5rem 0.5rem -0.5rem -0.25rem",
+                position: "absolute",
+                top: "0.7rem",
+                height: "2rem",
+                marginLeft: "-0.25rem",
               }}
             >
               <i
-                className="ui pencil alternate icon"
+                class="ui pencil alternate icon"
                 style={{ marginRight: "0.5em", color: "white" }}
+              />
+            </div>
+            <div
+              className="ui icon button"
+              style={{
+                padding: "0.5rem",
+                margin: "-0.5rem 0.5rem -0.5rem -0.25rem",
+                opacity: 0,
+                pointerEvents: "none",
+              }}
+              hidden
+            >
+              <i
+                className="ui pencil alternate icon"
+                style={{
+                  marginRight: "0.5em",
+                  opacity: 0,
+                }}
+                hidden
               />
             </div>
             &#x200b;
@@ -178,16 +207,26 @@ class Stage extends Component {
           </div>
           <div style={{ clear: "both" }} />
           {pubsNumber}
-        </>
+        </h4>
       );
     } else {
       titleCard = (
-        <>
+        <h4
+          style={{
+            marginBottom: 0,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
           <div
             className="ui icon button teal"
             style={{
               padding: "0.5rem",
-              margin: "-0.5rem 0.5rem -0.5rem -0.25rem",
+              position: "absolute",
+              top: "0.7rem",
+              height: "2rem",
+              marginLeft: "-0.25rem",
             }}
             onClick={event => {
               this.props.history.push(
@@ -200,17 +239,32 @@ class Stage extends Component {
             }}
           >
             <i
+              class="ui pencil alternate icon"
+              style={{ marginRight: "0.5em", color: "white" }}
+            />
+          </div>
+          <div
+            className="ui icon button"
+            style={{
+              padding: "0.5rem",
+              margin: "-0.5rem 0.5rem -0.5rem -0.25rem",
+              opacity: 0,
+              pointerEvents: "none",
+            }}
+            hidden
+          >
+            <i
               className="ui pencil alternate icon"
               style={{
                 marginRight: "0.5em",
-                color: "white",
-                cursor: "pointer",
+                opacity: 0,
               }}
+              hidden
             />
           </div>
           {this.props.stage.name}
           {pubsNumber}
-        </>
+        </h4>
       );
     }
 
@@ -231,7 +285,7 @@ class Stage extends Component {
           tainer={tainer}
           onClick={event => event.stopPropagation()}
         >
-          <h4 style={{ marginBottom: 0 }}>{titleCard}</h4>
+          {titleCard}
           <PublicationCollapser
             className={this.props.open ? "opened" : "collapsed"}
             height={height}
