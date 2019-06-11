@@ -20,7 +20,6 @@ class UploadPage extends Component {
     this._isMounted = false;
     this._setStateTask = undefined;
 
-    //if (!this.props.location || !this.props.location.state) {
     this.state = {
       selectedProblemId: undefined,
       selectedStageId: undefined,
@@ -39,28 +38,12 @@ class UploadPage extends Component {
       publications: undefined,
     };
 
-    console.log(JSON.parse(JSON.stringify(this.props)));
-
     Api()
       .problems()
       .get()
       .then(problems =>
-        this.setState({ problems: problems }, () =>
-          //this.props.history.replace(
-          //  this.props.location.pathname,
-          //  this.state,
-          //),
-          {
-            console.log("constructor");
-            this.initCheck(this.props);
-          },
-        ),
+        this.setState({ problems: problems }, () = this.initCheck(this.props))
       );
-    //} else {
-    //  this.state = this.props.location.state;
-    //
-    //  this.initCheck(this.props);
-    //}
   }
 
   componentDidMount() {
@@ -105,8 +88,6 @@ class UploadPage extends Component {
       review !== undefined ||
       props.review === true ||
       ((problem === undefined || stage === undefined) && this.state.isReview);
-
-    console.log(problem, stage, review, isReview);
 
     if (problem !== this.state.selectedProblemId) {
       let callback = undefined;
@@ -519,8 +500,6 @@ class UploadPage extends Component {
   }
 
   render() {
-    global.session.user = { display_name: "Anonymimus" };
-
     if (global.session.user === undefined) {
       return (
         <div className="ui main text container">
