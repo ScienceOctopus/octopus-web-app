@@ -440,6 +440,11 @@ class ProblemPage extends React.Component {
     let publication = this.state.content.publications.get(
       this.state.publication,
     );
+    
+    // Publication was just added but has not been loaded into cached data yet
+    if (publication === undefined) {
+      return;
+    }
 
     if (publication.reviews !== undefined) {
       return;
