@@ -127,7 +127,7 @@ const getPublicationCountByProblem = async (req, res) => {
 
 const postPublicationToProblemAndStage = async (req, res) => {
   if (
-    Number(req.body.user) === NaN ||
+    !isNumber(req.body.user) ||
     (await db.selectUsers(req.body.user)).length <= 0
   ) {
     return requestInvalid(res);
@@ -248,9 +248,40 @@ const postPublicationToProblemAndStage = async (req, res) => {
   res.status(200).json(publications[0]);
 };
 
+const postProblem = async (req, res) => {
+  if (
+    !req.body.title ||
+    !isNumber(req.body.user) ||
+    (await db.selectUsers(req.body.user)).length <= 0
+  ) {
+    return requestInvalid(res);
+  }
+
+  // If no stages were provided, just link all of them
+  let stages = req.body.stages || (await db.selectAllStagesIds());
+  if (!stages.length || stages.some(x => !isNumber(x))) {
+    return requestInvalid(res);
+  }
+
+  let problem = await db.insertProblem(
+    req.body.title,
+    req.body.description,
+    req.body.user,
+  );
+
+  for (let i = 0; i < stages.length; i++) {
+    await db.insertProblemStage(problem, stages[i], i);
+  }
+
+  res.status(200).json(problem);
+};
+
+const isNumber = x => Number(x) !== NaN;
+
 var router = express.Router();
 
 router.get("/", catchAsyncErrors(getProblems));
+router.post("/", catchAsyncErrors(po));
 router.get(
   "/:id(\\d+)/publications",
   catchAsyncErrors(getPublicationsByProblem),
