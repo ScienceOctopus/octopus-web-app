@@ -6,7 +6,7 @@ const TitledCheckbox = props => {
       <label>{props.title}</label>
       <div className="ui checkbox">
         <input type="checkbox" {...props} />
-        <label>{props.description || " "}</label>
+        <label htmlFor={props.id}>{props.description || " "}</label>
       </div>
     </div>
   );
