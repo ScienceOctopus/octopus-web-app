@@ -258,16 +258,17 @@ const postProblem = async (req, res) => {
   }
 
   // If no stages were provided, just link all of them
-  let stages = req.body.stages || (await db.selectAllStagesIds());
+  let stages =
+    req.body.stages || (await db.selectAllStagesIds().map(x => x.id));
   if (!stages.length || stages.some(x => !isNumber(x))) {
     return requestInvalid(res);
   }
 
-  let problem = await db.insertProblem(
+  let problem = (await db.insertProblem(
     req.body.title,
     req.body.description,
     req.body.user,
-  );
+  ))[0];
 
   for (let i = 0; i < stages.length; i++) {
     await db.insertProblemStage(problem, stages[i], i);
@@ -281,7 +282,7 @@ const isNumber = x => Number(x) !== NaN;
 var router = express.Router();
 
 router.get("/", catchAsyncErrors(getProblems));
-router.post("/", catchAsyncErrors(po));
+router.post("/", catchAsyncErrors(postProblem));
 router.get(
   "/:id(\\d+)/publications",
   catchAsyncErrors(getPublicationsByProblem),

@@ -71,10 +71,7 @@ const queries = {
       .insert({ problem, stage, order })
       .returning("id"),
 
-  selectAllStagesIds: () =>
-    knex()
-      .select("id")
-      .from("stages"),
+  selectAllStagesIds: () => knex("stages").select("id"),
 
   selectStagesByID: id =>
     knex("stages")
