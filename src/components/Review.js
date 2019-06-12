@@ -7,8 +7,8 @@ class Review extends Component {
   render() {
     return (
       <BgDiv
-        className="ui segment"
-        {...this.props}
+        className={"ui segment octopus-theme review" + (this.props.highlight ? " inverted highlight" : "")}
+        highlight={this.props.highlight}
         onClick={event => {
           this.props.history.push(
             generateLocalizedPath(RouterURI.Publication, {
@@ -32,8 +32,7 @@ class Review extends Component {
 }
 
 const BgDiv = styled.div`
-  &&& {
-    background-color: ${props => (props.highlight ? "#ffe499" : "white")};
+  &&&& {
     cursor: ${props => (props.highlight ? "default" : "pointer")};
 
     padding: 1em 1em;
@@ -74,10 +73,10 @@ const Summary = styled.div`
     background: linear-gradient(
       to bottom,
       ${props =>
-          props.highlight ? "rgba(255, 228, 153, 0)" : "rgba(255, 255, 255, 0)"}
+          props.highlight ? "var(--octopus-theme-review-highlight-transparent)" : "rgba(255, 255, 255, 0)"}
         0%,
       ${props =>
-          props.highlight ? "rgba(255, 228, 153, 1)" : "rgba(255, 255, 255, 1)"}
+          props.highlight ? "var(--octopus-theme-review-highlight)" : "rgba(255, 255, 255, 1)"}
         100%
     );
   }

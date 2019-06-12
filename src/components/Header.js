@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Trans } from "react-i18next";
 import { withRouter } from "react-router-dom";
-import "../App.css";
 import WebURI, { LocalizedLink } from "../urls/WebsiteURIs";
 import GlobalSearch from "./GlobalSearch";
 import GoblinIDLoginInvitation from "./GoblinIDLoginInvitation";
@@ -15,7 +14,7 @@ class Header extends Component {
     const loggedIn = global.session.user !== undefined;
 
     return (
-      <header className="ui teal inverted menu" style={styles.header}>
+      <header className="ui inverted octopus-theme accent menu" style={styles.header}>
         <div className="ui container" style={{ display: "block" }}>
           <HeaderItem>
             <LocalizedLink to={WebURI.Home} className="header item">
@@ -71,7 +70,6 @@ const styles = {
 
 const HeaderItem = styled.div`
   display: inline-block;
-  border: 2px solid #009991;
   margin: 0 -1px -2px -1px;
   vertical-align: top;
   line-height: 32px;

@@ -37,7 +37,8 @@ export default class ProblemSearchDescription extends Component {
     return (
       <div
         onClick={() => this.props.onSelect(this.state.problem)}
-        style={styles.link}
+        style={props.style}
+		className={props.className}
       >
         {props.children}
       </div>
@@ -48,7 +49,8 @@ export default class ProblemSearchDescription extends Component {
     return (
       <LocalizedLink
         to={path(RouterURI.Problem, { id: this.props.id })}
-        style={styles.link}
+        style={props.style}
+		className={props.className}
       >
         {props.children}
       </LocalizedLink>
@@ -57,19 +59,17 @@ export default class ProblemSearchDescription extends Component {
 
   Clickable = props => {
     if (this.props.onSelect === undefined) {
-      return <this.ClickableLink children={props.children} />;
+      return <this.ClickableLink className={props.className} style={props.style} children={props.children} />;
     } else {
-      return <this.ClickableSelect children={props.children} />;
+      return <this.ClickableSelect className={props.className} style={props.style} children={props.children} />;
     }
   };
 
   renderPublicationCount() {
     return (
-      <this.Clickable>
-        <div className="ui button icon teal" style={styles.countLabel}>
+      <this.Clickable className="ui button icon octopus-theme accent" style={styles.countLabel}>
           <i className="ui icon file alternate outline computer tablet only" />
           {" " + this.publicationCountString()}
-        </div>
       </this.Clickable>
     );
   }
@@ -85,7 +85,7 @@ export default class ProblemSearchDescription extends Component {
       <div>
         <div className="ui grid" style={styles.container}>
           <div className="fourteen wide column">
-            <this.Clickable>{title}</this.Clickable>
+            <this.Clickable style={styles.link}>{title}</this.Clickable>
           </div>
           <div className="two wide column">{this.renderPublicationCount()}</div>
         </div>

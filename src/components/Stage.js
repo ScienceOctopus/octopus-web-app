@@ -144,7 +144,7 @@ class Stage extends Component {
       );
     } else {
       pubsNumber = (
-        <div className={"floating ui " + (active ? "teal " : "") + "label"}>
+        <div className={"floating ui " + (active ? "octopus-theme accent " : "") + "label"}>
           {this.props.stage.publications.length}
         </div>
       );
@@ -163,7 +163,7 @@ class Stage extends Component {
           }}
         >
           <div
-            className="ui icon button teal disabled"
+            className="ui icon button octopus-theme publication disabled"
             style={{
               padding: "0.5rem",
               position: "absolute",
@@ -202,7 +202,7 @@ class Stage extends Component {
           }}
         >
           <div
-            className="ui icon button teal"
+            className="ui icon button octopus-theme publication"
             style={{
               padding: "0.5rem",
               position: "absolute",
@@ -252,7 +252,7 @@ class Stage extends Component {
     return (
       <div
         className="column"
-        style={{ backgroundColor: "#dcf8ec", minWidth: "30ch" }}
+        style={{ minWidth: "30ch" }}
       >
         <PublicationSegment
           className={

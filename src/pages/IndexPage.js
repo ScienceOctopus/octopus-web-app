@@ -14,7 +14,7 @@ class IndexPage extends Component {
     return (
       <div>
         <main
-          className="ui middle aligned two column centered stackable grid"
+          className="ui middle aligned two column centered stackable inverted octopus-theme background grid"
           style={styles.main}
         >
           <div className="seven wide column">
@@ -41,7 +41,7 @@ class IndexPage extends Component {
               <div className="column" style={styles.explore}>
                 <LocalizedLink
                   to={WebURI.Explore}
-                  className="ui teal large right labeled icon button"
+                  className="ui octopus-theme explore large right labeled icon button"
                 >
                   <i className="search icon" />
                   Explore Science
@@ -49,7 +49,7 @@ class IndexPage extends Component {
               </div>
               <div className="column" style={styles.publish}>
                 <a
-                  className="ui olive large right labeled icon button"
+                  className="ui octopus-theme publish large right labeled icon button"
                   href={WebURI.OrcidLogin(
                     global.session.OAuthState,
                     WebURI.Upload,
@@ -62,7 +62,7 @@ class IndexPage extends Component {
               <div className="column" style={styles.more}>
                 <LocalizedLink
                   to={WebURI.More}
-                  className="ui purple large right labeled icon button"
+                  className="ui octopus-theme moar large right labeled icon button"
                 >
                   <i className="exclamation icon" />
                   Learn more
@@ -71,7 +71,7 @@ class IndexPage extends Component {
               <div className="column" style={styles.faq}>
                 <LocalizedLink
                   to={WebURI.FAQ}
-                  className="ui violet large right labeled icon button"
+                  className="ui octopus-theme questionable large right labeled icon button"
                 >
                   <i className="question icon" />
                   FAQ
@@ -99,7 +99,6 @@ class IndexPage extends Component {
 const styles = {
   main: {
     padding: "2em 0",
-    backgroundColor: "teal",
     minHeight: "94vh",
   },
   heading: {
@@ -113,7 +112,7 @@ const styles = {
     marginTop: 0,
   },
   explanation: {
-    color: "lightgray",
+    color: "white",
     lineHeight: "1.5em",
     fontSize: "1.4em",
   },

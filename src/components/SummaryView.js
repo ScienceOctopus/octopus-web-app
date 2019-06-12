@@ -281,11 +281,11 @@ class SummaryView extends Component {
 }
 
 const StageTitle = styled.span`
-  color: #00b5ad;
+  color: var(--octopus-theme-publication);
 `;
 
 const ReviewTitle = styled.span`
-  color: #9eb300;
+  color: var(--octopus-theme-review);
 `;
 
 export default SummaryView;

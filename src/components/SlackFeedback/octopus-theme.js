@@ -23,7 +23,7 @@ export default {
   colors: {
     border: "#d0d8e1",
     primary: "#0088ff",
-    secondary: "#30947e",
+    secondary: "var(--octopus-theme-accent)",
     background: "#f4f4f7",
     success: "#3dc86f",
     error: "#ec3c3c",
@@ -35,12 +35,12 @@ export default {
     borderRadius: "4px",
     fontSize: "14px",
     fontWeight: 500,
-    boxShadow: `0 6px 30px 2px ${rgba("#30947e", 0.3)}`,
+    boxShadow: `0 6px 30px 2px ${rgba("var(--octopus-theme-accent)", 0.3)}`,
   },
   header: {
     color: "white",
     fontWeight: 400,
-    backgroundColor: "#30947e",
+    backgroundColor: "var(--octopus-theme-accent)",
   },
   loader: {
     color: "#ffffff",
@@ -55,7 +55,7 @@ export default {
   trigger: {
     color: "#ffffff",
     hoverColor: "#ffffff",
-    backgroundColor: "#30947e",
+    backgroundColor: "var(--octopus-theme-accent)",
     border: "none",
     padding: "12px 1.25em",
     borderRadius: "6px",
@@ -63,7 +63,7 @@ export default {
     fontWeight: "400",
     boxShadow: "0 3px 12px 1px rgba(34, 44, 79, 0.1)",
     hoverBoxShadow: "0 6px 16px 2px rgba(0, 0, 0, 0.2)",
-    hoverBackgroundColor: "inherit",
+    hoverBackgroundColor: "var(--octopus-theme-accent)",
   },
   input: {
     backgroundColor: "white",
@@ -75,7 +75,7 @@ export default {
     boxShadow: `0 0 8px ${rgba("#0087ff", 0.3)}`,
   },
   label: {
-    color: "#30947e",
+    color: "var(--octopus-theme-accent)",
     fontSize: "12px",
   },
   tab: {
@@ -99,6 +99,6 @@ export default {
     border: "1px solid #d0d8e1",
   },
   overlay: {
-    backgroundColor: rgba("#30947e", 0.4),
+    backgroundColor: rgba("var(--octopus-theme-accent)", 0.4),
   },
 };
