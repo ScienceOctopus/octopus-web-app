@@ -1,9 +1,8 @@
 import React, { Component } from "react";
-import WebURI, { LocalizedLink, LocalizedRedirect } from "../urls/WebsiteURIs";
+import WebURI, { LocalizedLink } from "../urls/WebsiteURIs";
 import { withRouter } from "react-router-dom";
 import graph from "../assets/images/graph.png";
 import Footer from "../components/Footer";
-import ProblemCreationPage from "./ProblemCreationPage";
 import ProblemSelector from "../components/ProblemSelector";
 
 class IndexPage extends Component {

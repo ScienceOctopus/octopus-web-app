@@ -1,10 +1,8 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import WebURI, { LocalizedLink } from "../urls/WebsiteURIs";
-import SimpleSelector from "./SimpleSelector";
 import Modal from "./Modal";
 import ProblemSearchList from "./ProblemSearchList";
-import GlobalSearch from "./GlobalSearch";
 import SearchField from "./SearchField";
 
 class ProblemSelector extends Component {
@@ -48,7 +46,7 @@ class ProblemSelector extends Component {
 
   renderProblem() {
     const title = this.props.problems.find(
-      x => x.id == this.props.selectedProblem,
+      x => x.id === Number(this.props.selectedProblem),
     ).title;
     return <h2>{title}</h2>;
   }
@@ -84,9 +82,13 @@ class ProblemSelector extends Component {
         {this.props.selectedProblem &&
           this.props.problems &&
           this.renderProblem()}
-        <a style={styles.link} onClick={this.setModalVisible(true)}>
+        <div
+          className="ui button"
+          style={styles.link}
+          onClick={this.setModalVisible(true)}
+        >
           {"Search for problems"}
-        </a>
+        </div>
         {" | "}
         <LocalizedLink
           to={{
@@ -97,6 +99,7 @@ class ProblemSelector extends Component {
               appendProblemId: true,
             },
           }}
+          className="ui button"
         >
           {"Create a new one"}
         </LocalizedLink>

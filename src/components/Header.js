@@ -5,8 +5,10 @@ import "../App.css";
 import WebURI, { LocalizedLink } from "../urls/WebsiteURIs";
 import GlobalSearch from "./GlobalSearch";
 import GoblinIDLoginInvitation from "./GoblinIDLoginInvitation";
+import UserIconName from "./UserIconName";
 import LogoutInvitation from "./LogoutInvitation";
 import OctopusLogo from "./OctopusLogo";
+import styled from "styled-components";
 
 class Header extends Component {
   render() {
@@ -14,25 +16,40 @@ class Header extends Component {
 
     return (
       <header className="ui teal inverted menu" style={styles.header}>
-        <div className="ui container">
-          <LocalizedLink to={WebURI.Home} className="header item">
-            <OctopusLogo style={styles.logo} className="logo" />
-            <Trans>octopus</Trans>
-          </LocalizedLink>
-          {loggedIn && (
-            <LocalizedLink to={WebURI.Upload} className="item">
-              <i className="ui pencil alternate icon" />
-              Publish your work
+        <div className="ui container" style={{ display: "block" }}>
+          <HeaderItem>
+            <LocalizedLink to={WebURI.Home} className="header item">
+              <OctopusLogo style={styles.logo} className="logo" />
+              <Trans>octopus</Trans>
             </LocalizedLink>
+          </HeaderItem>
+          {loggedIn && (
+            <HeaderItem>
+              <LocalizedLink to={WebURI.Upload} className="item">
+                <i className="ui pencil alternate icon" />
+                Publish your work
+              </LocalizedLink>
+            </HeaderItem>
           )}
-          <GlobalSearch />
+          <HeaderItem>
+            <GlobalSearch />
+          </HeaderItem>
           {loggedIn ? (
-            <LogoutInvitation />
+            <>
+              <HeaderItem>
+                <UserIconName />
+              </HeaderItem>
+              <HeaderItem>
+                <LogoutInvitation />
+              </HeaderItem>
+            </>
           ) : (
-            <GoblinIDLoginInvitation
-              showAvatar
-              returnPath={this.props.location.pathname}
-            />
+            <HeaderItem>
+              <GoblinIDLoginInvitation
+                showAvatar
+                returnPath={this.props.location.pathname}
+              />
+            </HeaderItem>
           )}
         </div>
       </header>
@@ -43,10 +60,29 @@ class Header extends Component {
 const styles = {
   header: {
     borderRadius: 0,
+    paddingBottom: "2px",
+    textAlign: "center",
+    display: "block",
   },
   logo: {
     marginRight: 1.5 + "em",
   },
 };
+
+const HeaderItem = styled.div`
+  display: inline-block;
+  border: 2px solid #009991;
+  margin: 0 -1px -2px -1px;
+  vertical-align: top;
+  line-height: 32px;
+
+  & > :first-child {
+    height: 64px;
+  }
+
+  & > :first-child::before {
+    width: 0 !important;
+  }
+`;
 
 export default withRouter(Header);
