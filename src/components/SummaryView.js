@@ -234,6 +234,9 @@ class SummaryView extends Component {
               <p key={user.id}>
                 <strong>Author: </strong>
                 {user.display_name}
+                {" ("}
+                {<a href={`https://orcid.org/${user.orcid}`}>{user.orcid}</a>}
+                {")"}
               </p>
             ))}
 

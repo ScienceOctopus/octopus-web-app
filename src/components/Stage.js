@@ -60,7 +60,7 @@ class Stage extends Component {
                 x2="100"
                 y2={(100 * (offset + margin)) / (offset * 2)}
                 style={{
-                  stroke: "#00726c",
+                  stroke: "var(--octopus-theme-publication)",
                   strokeWidth: 4,
                   fill: "transparent",
                 }}
@@ -312,7 +312,7 @@ const LinksContainer = styled.div`
 `;
 
 const StyledPath = styled.path`
-  stroke: #00726c;
+  stroke: var(--octopus-theme-publication);
   stroke-width: 2;
   fill: transparent;
 `;

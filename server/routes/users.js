@@ -34,6 +34,7 @@ const getUserByID = async (req, res) => {
   return res.status(200).json({
     id: user.id,
     display_name: user.display_name,
+    orcid: user.orcid,
   });
 };
 
