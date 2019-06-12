@@ -9,11 +9,12 @@ class Modal extends React.Component {
 
     return (
       <div style={styles.backdrop}>
-        <button className="ui button" style={styles.button} onClick={this.props.onClose}>
-          <i
-            className="close icon"
-            style={styles.icon}
-          />
+        <button
+          className="ui button"
+          style={styles.button}
+          onClick={this.props.onClose}
+        >
+          <i className="close icon" style={styles.icon} />
         </button>
         <div style={styles.modal}>{this.props.children}</div>
       </div>

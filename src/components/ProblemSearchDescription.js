@@ -38,7 +38,7 @@ export default class ProblemSearchDescription extends Component {
       <div
         onClick={() => this.props.onSelect(this.state.problem)}
         style={props.style}
-		className={props.className}
+        className={props.className}
       >
         {props.children}
       </div>
@@ -50,7 +50,7 @@ export default class ProblemSearchDescription extends Component {
       <LocalizedLink
         to={path(RouterURI.Problem, { id: this.props.id })}
         style={props.style}
-		className={props.className}
+        className={props.className}
       >
         {props.children}
       </LocalizedLink>
@@ -59,17 +59,32 @@ export default class ProblemSearchDescription extends Component {
 
   Clickable = props => {
     if (this.props.onSelect === undefined) {
-      return <this.ClickableLink className={props.className} style={props.style} children={props.children} />;
+      return (
+        <this.ClickableLink
+          className={props.className}
+          style={props.style}
+          children={props.children}
+        />
+      );
     } else {
-      return <this.ClickableSelect className={props.className} style={props.style} children={props.children} />;
+      return (
+        <this.ClickableSelect
+          className={props.className}
+          style={props.style}
+          children={props.children}
+        />
+      );
     }
   };
 
   renderPublicationCount() {
     return (
-      <this.Clickable className="ui button icon octopus-theme accent" style={styles.countLabel}>
-          <i className="ui icon file alternate outline computer tablet only" />
-          {" " + this.publicationCountString()}
+      <this.Clickable
+        className="ui button icon octopus-theme accent"
+        style={styles.countLabel}
+      >
+        <i className="ui icon file alternate outline computer tablet only" />
+        {" " + this.publicationCountString()}
       </this.Clickable>
     );
   }

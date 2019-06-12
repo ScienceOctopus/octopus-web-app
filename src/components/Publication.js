@@ -158,7 +158,10 @@ class Publication extends Component {
 
       publicationView = (
         <BgDiv
-          className={"ui segment octopus-theme publication" + (this.props.highlight ? " inverted highlight" : "")}
+          className={
+            "ui segment octopus-theme publication" +
+            (this.props.highlight ? " inverted highlight" : "")
+          }
           onClick={onClick}
           highlight={this.props.highlight}
           review={this.props.content.review !== undefined}
@@ -174,7 +177,10 @@ class Publication extends Component {
     } else {
       publicationView = (
         <BgDiv
-          className={"ui segment octopus-theme publication" + (this.props.highlight ? " inverted highlight" : "")}
+          className={
+            "ui segment octopus-theme publication" +
+            (this.props.highlight ? " inverted highlight" : "")
+          }
           onClick={onClick}
           highlight={this.props.highlight}
           review={this.props.review}
@@ -240,10 +246,14 @@ const Summary = styled.div`
     background: linear-gradient(
       to bottom,
       ${props =>
-          props.highlight ? "var(--octopus-theme-publication-highlight-transparent)" : "rgba(255, 255, 255, 0)"}
+          props.highlight
+            ? "var(--octopus-theme-publication-highlight-transparent)"
+            : "rgba(255, 255, 255, 0)"}
         0%,
       ${props =>
-          props.highlight ? "var(--octopus-theme-publication-highlight)" : "rgba(255, 255, 255, 1)"}
+          props.highlight
+            ? "var(--octopus-theme-publication-highlight)"
+            : "rgba(255, 255, 255, 1)"}
         100%
     );
   }

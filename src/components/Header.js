@@ -14,7 +14,10 @@ class Header extends Component {
     const loggedIn = global.session.user !== undefined;
 
     return (
-      <header className="ui inverted octopus-theme accent menu" style={styles.header}>
+      <header
+        className="ui inverted octopus-theme accent menu"
+        style={styles.header}
+      >
         <div className="ui container" style={{ display: "block" }}>
           <HeaderItem>
             <LocalizedLink to={WebURI.Home} className="header item">

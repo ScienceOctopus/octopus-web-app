@@ -7,7 +7,10 @@ class Review extends Component {
   render() {
     return (
       <BgDiv
-        className={"ui segment octopus-theme review" + (this.props.highlight ? " inverted highlight" : "")}
+        className={
+          "ui segment octopus-theme review" +
+          (this.props.highlight ? " inverted highlight" : "")
+        }
         highlight={this.props.highlight}
         onClick={event => {
           this.props.history.push(
@@ -73,10 +76,14 @@ const Summary = styled.div`
     background: linear-gradient(
       to bottom,
       ${props =>
-          props.highlight ? "var(--octopus-theme-review-highlight-transparent)" : "rgba(255, 255, 255, 0)"}
+          props.highlight
+            ? "var(--octopus-theme-review-highlight-transparent)"
+            : "rgba(255, 255, 255, 0)"}
         0%,
       ${props =>
-          props.highlight ? "var(--octopus-theme-review-highlight)" : "rgba(255, 255, 255, 1)"}
+          props.highlight
+            ? "var(--octopus-theme-review-highlight)"
+            : "rgba(255, 255, 255, 1)"}
         100%
     );
   }

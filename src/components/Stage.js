@@ -144,7 +144,11 @@ class Stage extends Component {
       );
     } else {
       pubsNumber = (
-        <div className={"floating ui " + (active ? "octopus-theme accent " : "") + "label"}>
+        <div
+          className={
+            "floating ui " + (active ? "octopus-theme accent " : "") + "label"
+          }
+        >
           {this.props.stage.publications.length}
         </div>
       );
@@ -250,10 +254,7 @@ class Stage extends Component {
     }
 
     return (
-      <div
-        className="column"
-        style={{ minWidth: "30ch" }}
-      >
+      <div className="column" style={{ minWidth: "30ch" }}>
         <PublicationSegment
           className={
             "ui " +
