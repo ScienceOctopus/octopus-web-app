@@ -196,7 +196,7 @@ class Publication extends Component {
 }
 
 const BgDiv = styled.div`
-  &.segment {
+  &&& {
     background-color: ${props => (props.highlight ? "#99ffd3" : "white")};
     cursor: ${props =>
       (props.highlight && !props.review && !props.pointer) ||
@@ -211,7 +211,7 @@ const BgDiv = styled.div`
     padding-bottom: 0;
   }
 
-  &:last-child {
+  &&&:last-child {
     margin-bottom: 0;
   }
 `;

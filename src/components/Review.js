@@ -32,7 +32,7 @@ class Review extends Component {
 }
 
 const BgDiv = styled.div`
-  &.segment {
+  &&& {
     background-color: ${props => (props.highlight ? "#ffe499" : "white")};
     cursor: ${props => (props.highlight ? "default" : "pointer")};
 
@@ -44,7 +44,7 @@ const BgDiv = styled.div`
     margin-bottom: 1rem;
   }
 
-  &:last-child {
+  &&&:last-child {
     margin-bottom: 0;
   }
 `;
