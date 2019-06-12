@@ -47,7 +47,6 @@ class ProblemSelector extends Component {
   };
 
   renderProblem() {
-    console.log(this.props);
     const title = this.props.problems.find(
       x => x.id == this.props.selectedProblem,
     ).title;
@@ -92,7 +91,11 @@ class ProblemSelector extends Component {
         <LocalizedLink
           to={{
             pathname: WebURI.ProblemCreation,
-            state: { redirectOnCreation: this.props.location.pathname },
+            state: {
+              redirectOnCreation:
+                this.props.location.pathname + (this.props.appendPath || ""),
+              appendProblemId: true,
+            },
           }}
         >
           {"Create a new one"}

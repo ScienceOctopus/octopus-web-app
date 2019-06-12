@@ -259,7 +259,7 @@ const postPublicationToProblemAndStage = async (req, res) => {
 
 const postProblem = async (req, res) => {
   if (req.body.__DEBUG__ === true) {
-    res.status(200).end();
+    res.status(200).json(1);
     return;
   }
 

@@ -6,6 +6,7 @@ import { loginRequired } from "./LogInRequiredPage";
 const INFO_TIMEOUT = 1000;
 
 class ProblemCreationPage extends Component {
+  createdProblemId = undefined;
   constructor(props) {
     super(props);
     this.state = { title: "", description: "", stages: undefined };
@@ -32,7 +33,8 @@ class ProblemCreationPage extends Component {
       .then(this.handleProblemCreated);
   };
 
-  handleProblemCreated = () => {
+  handleProblemCreated = response => {
+    this.createdProblemId = response.data;
     this.setState({ creationSuccessful: true }, () =>
       setTimeout(this.afterCreationInfoTimeout, INFO_TIMEOUT),
     );
@@ -40,7 +42,11 @@ class ProblemCreationPage extends Component {
 
   afterCreationInfoTimeout = () => {
     if (this.props.location.state.redirectOnCreation) {
-      this.props.history.push(this.props.location.state.redirectOnCreation);
+      let link = this.props.location.state.redirectOnCreation;
+      if (this.props.location.state.appendProblemId && this.createdProblemId) {
+        link += "/" + this.createdProblemId;
+      }
+      this.props.history.push(link);
     }
   };
 
