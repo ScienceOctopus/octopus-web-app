@@ -10,7 +10,11 @@ import SearchField from "./SearchField";
 class ProblemSelector extends Component {
   constructor(props) {
     super(props);
-    this.state = { query: undefined, modalVisible: true };
+    this.state = {
+      selectedProblem: undefined,
+      query: undefined,
+      modalVisible: false,
+    };
   }
 
   handleSearchChange = event => {
@@ -27,11 +31,48 @@ class ProblemSelector extends Component {
     event.preventDefault();
   };
 
+  handleProblemSelect = problem => {
+    this.setState({
+      modalVisible: false,
+    });
+    if (this.props.onSelect) {
+      this.props.onSelect(problem);
+    }
+  };
+
   setModalVisible = visible => () => {
     this.setState({
       modalVisible: visible,
     });
   };
+
+  renderProblem() {
+    console.log(this.props);
+    const title = this.props.problems.find(
+      x => x.id == this.props.selectedProblem,
+    ).title;
+    return <h2>{title}</h2>;
+  }
+
+  renderModal() {
+    return (
+      <Modal
+        show={this.state.modalVisible}
+        onClose={this.setModalVisible(false)}
+      >
+        <SearchField
+          placeholder="Search for problems"
+          onChange={this.handleSearchChange}
+          onSubmit={this.handleSearchSubmit}
+          value={this.state.query}
+        />
+        <ProblemSearchList
+          query={this.state.submittedQuery}
+          onSelect={this.handleProblemSelect}
+        />
+      </Modal>
+    );
+  }
 
   render() {
     return (
@@ -41,27 +82,23 @@ class ProblemSelector extends Component {
           style={styles.selector}
           {...this.props}
         /> */}
-        <Modal
-          show={this.state.modalVisible}
-          onClose={this.setModalVisible(false)}
-        >
-          <SearchField
-            placeholder="Search for problems"
-            onChange={this.handleSearchChange}
-            onSubmit={this.handleSearchSubmit}
-            value={this.state.query}
-          />
-          <ProblemSearchList query={this.state.submittedQuery} />
-        </Modal>
-        {"No suitable problem? "}
+        {this.props.selectedProblem &&
+          this.props.problems &&
+          this.renderProblem()}
+        <a style={styles.link} onClick={this.setModalVisible(true)}>
+          {"Search for problems"}
+        </a>
+        {" | "}
         <LocalizedLink
           to={{
             pathname: WebURI.ProblemCreation,
             state: { redirectOnCreation: this.props.location.pathname },
           }}
         >
-          {"Create a new one!"}
+          {"Create a new one"}
         </LocalizedLink>
+
+        {this.renderModal()}
       </div>
     );
   }
@@ -70,6 +107,9 @@ class ProblemSelector extends Component {
 const styles = {
   selector: {
     paddingBottom: "1rem",
+  },
+  link: {
+    cursor: "pointer",
   },
 };
 

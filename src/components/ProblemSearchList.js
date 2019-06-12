@@ -59,7 +59,7 @@ class ProblemSearchList extends Component {
       return this.renderNothingFound();
     }
     return this.state.problems.map(x => (
-      <ProblemSearchDescription id={x} key={x} />
+      <ProblemSearchDescription id={x} key={x} onSelect={this.props.onSelect} />
     ));
   }
 

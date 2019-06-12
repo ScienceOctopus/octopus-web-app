@@ -338,10 +338,10 @@ class UploadPage extends Component {
     return url;
   }
 
-  handleProblemSelect = problemId => {
+  handleProblemSelect = problem => {
     this.props.history.replace(
       UploadPage.uploadURLBuilder(
-        problemId,
+        problem.id,
         undefined,
         this.state.isReview || undefined,
       ),
@@ -606,8 +606,8 @@ class UploadPage extends Component {
             <div className="two fields">
               <div className="field">
                 <ProblemSelector
-                  value={this.state.selectedProblemId}
-                  data={this.state.problems}
+                  selectedProblem={this.state.selectedProblemId}
+                  problems={this.state.problems}
                   accessor={x => [x.title, x.id]}
                   onSelect={this.handleProblemSelect}
                 />

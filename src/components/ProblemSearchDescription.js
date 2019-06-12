@@ -33,14 +33,44 @@ export default class ProblemSearchDescription extends Component {
     return this.state.pubCountLoaded ? this.state.pubCount : "...";
   }
 
+  ClickableSelect = props => {
+    return (
+      <div
+        onClick={() => this.props.onSelect(this.state.problem)}
+        style={styles.link}
+      >
+        {props.children}
+      </div>
+    );
+  };
+
+  ClickableLink = props => {
+    return (
+      <LocalizedLink
+        to={path(RouterURI.Problem, { id: this.props.id })}
+        style={styles.link}
+      >
+        {props.children}
+      </LocalizedLink>
+    );
+  };
+
+  Clickable = props => {
+    if (this.props.onSelect === undefined) {
+      return <this.ClickableLink children={props.children} />;
+    } else {
+      return <this.ClickableSelect children={props.children} />;
+    }
+  };
+
   renderPublicationCount() {
     return (
-      <LocalizedLink to={path(RouterURI.Problem, { id: this.props.id })}>
+      <this.Clickable>
         <div className="ui button icon teal" style={styles.countLabel}>
           <i className="ui icon file alternate outline computer tablet only" />
           {" " + this.publicationCountString()}
         </div>
-      </LocalizedLink>
+      </this.Clickable>
     );
   }
 
@@ -55,12 +85,7 @@ export default class ProblemSearchDescription extends Component {
       <div>
         <div className="ui grid" style={styles.container}>
           <div className="fourteen wide column">
-            <LocalizedLink
-              style={styles.link}
-              to={path(RouterURI.Problem, { id: this.props.id })}
-            >
-              {title}
-            </LocalizedLink>
+            <this.Clickable>{title}</this.Clickable>
           </div>
           <div className="two wide column">{this.renderPublicationCount()}</div>
         </div>
@@ -98,6 +123,7 @@ const styles = {
   },
   link: {
     fontSize: "1.5rem",
+    cursor: "pointer",
   },
   description: {
     marginTop: "0.4rem",
