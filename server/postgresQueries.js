@@ -208,7 +208,13 @@ const queries = {
         data: data,
         draft: draft,
       })
-      .returning("id"),
+      .returning(["id", "updated_at"])
+      .then(([{ id, updated_at }]) => {
+        return knex("problems")
+          .update({ updated_at: updated_at })
+          .where("id", problem)
+          .then(() => [id]);
+      }),
 
   finalisePublication: publication =>
     knex("publications")

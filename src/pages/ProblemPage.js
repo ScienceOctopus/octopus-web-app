@@ -132,16 +132,25 @@ class ProblemPage extends React.Component {
               review.publication_after = links[0].publication_after;
 
               this.setState(
-                { content: content },
-                this.initCheck(
-                  {
-                    publication: true,
-                    params: { id: review.publication_before },
-                  },
-                  selection,
-                  review.id,
-                  boot,
-                ),
+                state => {
+                  let content = { ...state.content };
+
+                  review = content.publications.get(publication);
+                  review.publication_before = links[0].publication_before;
+                  review.publication_after = links[0].publication_after;
+
+                  return { content: content };
+                },
+                () =>
+                  this.initCheck(
+                    {
+                      publication: true,
+                      params: { id: review.publication_before },
+                    },
+                    selection,
+                    review.id,
+                    boot,
+                  ),
               );
             });
         }
