@@ -129,6 +129,18 @@ const getCollaboratorsByPublication = async (req, res) => {
   res.status(200).json(resources);
 };
 
+const getCollaboratorsBackwardsFromPublication = async (req, res) => {
+  const publication = await getAndValidatePublication(req.params.id, req);
+  if (!publication) {
+    return res.sendStatus(404);
+  }
+
+  const resources = await db.selectCollaboratorsBackwardsFromPublication(
+    req.params.id,
+  );
+  res.status(200).json(resources);
+};
+
 const postCollaboratorToPublication = async (req, res) => {
   const publication = await getAndValidatePublication(req.params.id, req);
   if (!publication) {
@@ -234,6 +246,10 @@ router.get("/:id(\\d+)/resources", catchAsyncErrors(getResourcesByPublication));
 router.get(
   "/:id(\\d+)/collaborators",
   catchAsyncErrors(getCollaboratorsByPublication),
+);
+router.get(
+  "/:id(\\d+)/allCollaborators",
+  catchAsyncErrors(getCollaboratorsBackwardsFromPublication),
 );
 router.post(
   "/:id(\\d+)/collaborators",

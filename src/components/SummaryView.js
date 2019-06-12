@@ -3,8 +3,7 @@ import PDFImagePreviewRenderer from "./PDFImagePreviewRenderer";
 import styled from "styled-components";
 import Api from "../api";
 
-// Cache under the same scope as the ProblemPage
-const PROBLEM_KEY = "problem";
+const SUMMARY_KEY = "summary";
 
 class SummaryView extends Component {
   constructor(props) {
@@ -16,7 +15,9 @@ class SummaryView extends Component {
 
     this.state = {
       publication: undefined,
-      collaborators: [],
+      collaborators: new Map(),
+      allCollaborators: new Map(),
+      users: new Map(),
       resources: undefined,
       stage: undefined,
       schema: undefined,
@@ -38,6 +39,8 @@ class SummaryView extends Component {
 
   componentWillUnmount() {
     this._isMounted = false;
+
+    Api().unsubscribeClass(SUMMARY_KEY);
   }
 
   setState(newState, callback) {
@@ -57,66 +60,145 @@ class SummaryView extends Component {
     }
   }
 
+  static getContributions = collaborators => {
+    return collaborators.reduce((map, collaborator) => {
+      return map.set(collaborator.user, (map.get(collaborator.user) || 0) + 1);
+    }, new Map());
+  };
+
+  static sortByLastName = (contributions, users) => {
+    let knownUsers = [];
+
+    contributions.forEach((amount, id) => {
+      let user = users.get(id);
+
+      if (user !== undefined) {
+        knownUsers.push({ contributions: amount, ...user });
+      }
+    });
+
+    knownUsers.sort((a, b) => {
+      if (a.contributions !== b.contributions) {
+        return a.contributions - b.contributions;
+      }
+
+      a = a.display_name.split(" ");
+      b = b.display_name.split(" ");
+
+      a = a[a.length - 1];
+      b = b[b.length - 1];
+
+      return a.localeCompare(b);
+    });
+
+    return knownUsers;
+  };
+
   fetchPublicationData() {
-    this.setState({ publication: undefined, collaborators: [] });
+    this.setState(
+      {
+        publication: undefined,
+        collaborators: new Map(),
+        allCollaborators: new Map(),
+        users: new Map(),
+      },
+      () => {
+        // Cache under a similar scope as the ProblemPage
+        Api()
+          .subscribeClass(SUMMARY_KEY, this.props.problemId)
+          .publication(this.props.publicationId)
+          .get()
+          .then(publication => {
+            publication.data = JSON.parse(publication.data);
 
-    Api()
-      .subscribe(PROBLEM_KEY)
-      .publication(this.props.publicationId)
-      .get()
-      .then(publication => {
-        publication.data = JSON.parse(publication.data);
+            this.setState(
+              {
+                publication: publication,
+              },
+              () => {
+                Api()
+                  .subscribe(SUMMARY_KEY)
+                  .problem(this.state.publication.problem)
+                  .stage(this.state.publication.stage)
+                  .get()
+                  .then(stage =>
+                    this.setState({
+                      stage: stage,
+                      schema: JSON.parse(stage.schema),
+                    }),
+                  );
+              },
+            );
+          });
 
-        this.setState(
-          {
-            publication: publication,
-          },
-          () => {
-            Api()
-              .subscribe(PROBLEM_KEY)
-              .problem(this.state.publication.problem)
-              .stage(this.state.publication.stage)
-              .get()
-              .then(stage =>
-                this.setState({
-                  stage: stage,
-                  schema: JSON.parse(stage.schema),
-                }),
-              );
-          },
-        );
-      });
-
-    Api()
-      .subscribe(PROBLEM_KEY)
-      .publication(this.props.publicationId)
-      .resources()
-      .get()
-      .then(resources => {
-        this.setState({
-          resources: resources,
-        });
-      });
-
-    Api()
-      .subscribe(PROBLEM_KEY)
-      .publication(this.props.publicationId)
-      .collaborators()
-      .get()
-      .then(collaborators => {
-        collaborators.forEach(collaborator => {
-          Api()
-            .user(collaborator.user)
-            .get()
-            .then(user => {
-              this.setState(state => {
-                var augmented = state;
-                augmented.collaborators.push(user);
-                return augmented;
-              });
+        Api()
+          .subscribe(SUMMARY_KEY)
+          .publication(this.props.publicationId)
+          .resources()
+          .get()
+          .then(resources => {
+            this.setState({
+              resources: resources,
             });
-        });
-      });
+          });
+
+        Api()
+          .subscribe(SUMMARY_KEY)
+          .publication(this.props.publicationId)
+          .collaborators()
+          .get()
+          .then(collaborators => {
+            this.setState(
+              { collaborators: SummaryView.getContributions(collaborators) },
+              () => {
+                this.state.collaborators.forEach((contributions, id) => {
+                  Api()
+                    .subscribe(SUMMARY_KEY)
+                    .user(id)
+                    .get()
+                    .then(user =>
+                      this.setState(state => {
+                        let users = state.users;
+                        users.set(id, user);
+                        return { users: users };
+                      }),
+                    );
+                });
+              },
+            );
+          });
+
+        Api()
+          .subscribe(SUMMARY_KEY)
+          .publication(this.props.publicationId)
+          .allCollaborators()
+          .get()
+          .then(allCollaborators => {
+            this.setState(
+              {
+                allCollaborators: SummaryView.getContributions(
+                  allCollaborators,
+                ),
+              },
+              () => {
+                this.state.allCollaborators.forEach((contributions, id) => {
+                  Api()
+                    .subscribe(SUMMARY_KEY)
+                    .user(id)
+                    .get()
+                    .then(user =>
+                      this.setState(state => {
+                        let users = state.users;
+                        users.set(id, user);
+                        return { users: users };
+                      }),
+                    );
+                });
+              },
+            );
+          });
+      },
+    );
   }
 
   componentDidUpdate(oldProps) {
@@ -213,6 +295,11 @@ class SummaryView extends Component {
       });
     }
 
+    let allCollaborators = SummaryView.sortByLastName(
+      this.state.allCollaborators,
+      this.state.users,
+    );
+
     return (
       <div>
         <div className="ui divider" />
@@ -230,13 +317,15 @@ class SummaryView extends Component {
               <strong>Date added: </strong>
               {new Date(this.state.publication.created_at).toLocaleDateString()}
             </p>
-            {this.state.collaborators.map(user => (
+            {SummaryView.sortByLastName(
+              this.state.collaborators,
+              this.state.users,
+            ).map(user => (
               <p key={user.id}>
                 <strong>Author: </strong>
-                {user.display_name}
-                {" ("}
-                {<a href={`https://orcid.org/${user.orcid}`}>{user.orcid}</a>}
-                {")"}
+                <a href={`https://orcid.org/${user.orcid}`}>
+                  {user.display_name}
+                </a>
               </p>
             ))}
 
@@ -276,7 +365,22 @@ class SummaryView extends Component {
                 </div>
               </section>
             )}
+
+            <section className="ui segment">
+              <h3>Collaborating authors in this line of research</h3>
+              <div className="ui divider" />
+              {allCollaborators.map((user, i) => (
+                <span key={user.id}>
+                  <a href={`https://orcid.org/${user.orcid}`}>
+                    {user.display_name}
+                  </a>
+                  {user.contributions > 1 ? `(${user.contributions})` : null}
+                  {i + 1 < allCollaborators.length ? ", " : null}
+                </span>
+              ))}
+            </section>
           </article>
+          <br />
         </main>
       </div>
     );

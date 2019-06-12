@@ -220,9 +220,17 @@ class Store {
     this.keys.set(primary, secondary);
 
     this.store.forEach((cache, path, store) => {
-      const changed = cache.callbacks.delete(primary);
+      let callback = cache.callbacks.has(primary);
 
-      if (purge && changed && cache.callbacks.size <= 0) {
+      if (callback !== undefined) {
+        if (callback[0] !== Store.CALLBACK_DUMMY) {
+          cache.count -= 1;
+        }
+
+        cache.callbacks.set(primary, [Store.CALLBACK_DUMMY, callback[1]]);
+      }
+
+      if (purge && callback !== undefined && cache.count <= 0) {
         this._unsubscribe(path);
 
         store.delete(path);
@@ -235,6 +243,10 @@ class Store {
       let callback = cache.callbacks.get(primary);
 
       if (callback !== undefined) {
+        if (callback[0] !== Store.CALLBACK_DUMMY) {
+          cache.count -= 1;
+        }
+
         cache.callbacks.set(primary, [Store.CALLBACK_DUMMY, callback[1]]);
       }
     });
@@ -249,6 +261,7 @@ class Store {
         data: undefined,
         headers: undefined,
         callbacks: new Map(),
+        count: 0,
       };
 
       this.store.set(path, cache);
@@ -267,6 +280,12 @@ class Store {
     let promise = new MultiPromise(Store._clone(cache.data));
 
     if (primary !== undefined) {
+      let callback = cache.callbacks.get(primary);
+
+      if (callback !== undefined && callback[0] === Store.CALLBACK_DUMMY) {
+        cache.count += 1;
+      }
+
       cache.callbacks.set(primary, [promise, Store.SUBSCRIBED_DATA]);
     }
 
@@ -302,6 +321,12 @@ class Store {
     let promise = new MultiPromise(Store._clone(cache.headers));
 
     if (primary !== undefined) {
+      let callback = cache.callbacks.get(primary);
+
+      if (callback !== undefined && callback[0] === Store.CALLBACK_DUMMY) {
+        cache.count += 1;
+      }
+
       cache.callbacks.set(primary, [promise, Store.SUBSCRIBED_HEADERS]);
     }
 
@@ -476,6 +501,11 @@ class PublicationBuilder extends LinkBuilder {
 
   collaborators = () => {
     this.path += "/collaborators";
+    return this;
+  };
+
+  allCollaborators = () => {
+    this.path += "/allCollaborators";
     return this;
   };
 }

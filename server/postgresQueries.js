@@ -372,6 +372,38 @@ const queries = {
       })
       .onConflictUpdate("orcid", "display_name", "email")
       .returning("id"),
+  selectCollaboratorsBackwardsFromPublication: publication =>
+    knex
+      .withRecursive("ancestors", qb => {
+        qb.select("publication_before", "publication_after")
+          .from("publication_links")
+          .where("publication_after", publication)
+          .union(qb => {
+            qb.select(
+              "publication_links.publication_before",
+              "publication_links.publication_after",
+            )
+              .from("publication_links")
+              .join(
+                "ancestors",
+                "ancestors.publication_before",
+                "publication_links.publication_after",
+              );
+          });
+      })
+      .with("ancestor_publications", qb =>
+        qb
+          .select("publication_before as publication")
+          .from("ancestors")
+          .union(qb => qb.select("publication_after").from("ancestors")),
+      )
+      .select()
+      .from("ancestor_publications")
+      .join(
+        "publication_collaborators",
+        "ancestor_publications.publication",
+        "publication_collaborators.publication",
+      ),
 };
 
 module.exports = {

@@ -530,6 +530,7 @@ class ProblemPage extends React.Component {
       } else {
         publication = (
           <SummaryView
+            problemId={this.state.problem}
             publicationId={
               this.state.review !== undefined
                 ? this.state.review
