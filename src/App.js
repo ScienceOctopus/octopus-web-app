@@ -1,4 +1,4 @@
-import 'core-js/stable';
+import "core-js/stable";
 import React, { Component } from "react";
 import Api from "./api";
 import AppRouter from "./AppRouter";
