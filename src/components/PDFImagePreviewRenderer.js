@@ -2,9 +2,9 @@ import React from "react";
 
 import { pdfjs, Document, Page } from "react-pdf";
 
-// eslint-disable-next-line import/no-webpack-loader-syntax
 pdfjs.GlobalWorkerOptions.workerSrc =
   process.env.NODE_ENV === "production" &&
+  // eslint-disable-next-line import/no-webpack-loader-syntax
   require("file-loader!../../node_modules/pdfjs-dist/build/pdf.worker.min.js");
 
 const PDFImagePreviewRenderer = props => {
