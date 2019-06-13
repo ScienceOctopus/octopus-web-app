@@ -6,10 +6,11 @@ import PublicationSelector from "../components/PublicationSelector";
 import SimpleSelector from "../components/SimpleSelector";
 import TitledCheckbox from "../components/TitledCheckbox";
 import TitledForm from "../components/TitledForm";
-import {
+import WebURI, {
   LocalizedRedirect,
   RouterURI,
   localizeLink,
+  LocalizedLink,
 } from "../urls/WebsiteURIs";
 import { generatePath } from "react-router";
 import uniqueId from "lodash/uniqueId";
@@ -612,6 +613,37 @@ class UploadPage extends Component {
               <i className="ui pencil icon" />
               Publish your work
             </h2>
+            <p>
+              Octopus currently accepts{" "}
+              <LocalizedLink to={WebURI.More}>
+                8 types of publication
+              </LocalizedLink>
+              , and every new publication must be linked to an existing one.
+              Problems are the top of the publication chain. Reviews can be
+              linked to any other kind of publication and should be treated as
+              the same as any other kind of publication.
+            </p>
+            <p>
+              Currently, you should upload your publication in pdf format
+              (though .doc and .docx will be supported soon). There are no rules
+              on style and layout, but healthcare researchers should be guided
+              by the relevant{" "}
+              <a href="https://www.equator-network.org">
+                EQUATOR reporting guidelines
+              </a>
+              . You will no longer need to structure your publications like a
+              paper, with an abstract and introduction as the publications above
+              yours in the chain should serve this role.
+            </p>
+            <p>
+              References should no longer be listed at the bottom, but instead
+              should be live URL links within the text to DOIs.
+            </p>
+            <p>
+              Publications will go live as soon as all authors have agreedto
+              publication.
+            </p>
+            <div className="ui divider" />
             <div className="two fields">
               <div className="field">
                 <ProblemSelector
@@ -625,7 +657,11 @@ class UploadPage extends Component {
               {this.state.selectedProblemId !== undefined && (
                 <div className="field">
                   <SimpleSelector
-                    title="Select a Publication Type"
+                    title={
+                      this.state.isReview
+                        ? "Select the type of work you are reviewing"
+                        : "Select the type of work you are publishing"
+                    }
                     value={this.state.selectedStageId}
                     data={this.state.stages}
                     accessor={x => [x.singular, x.id]}
@@ -697,6 +733,7 @@ class UploadPage extends Component {
             )}
           </div>
         </div>
+        <br />
       </div>
     );
   }
