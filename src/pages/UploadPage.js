@@ -45,7 +45,7 @@ class UploadPage extends Component {
     };
 
     Api()
-      .subscribeClass(UPLOAD_KEY)
+      .subscribeClass(UPLOAD_KEY, this.state.problems)
       .problems()
       .get()
       .then(problems =>

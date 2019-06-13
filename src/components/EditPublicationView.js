@@ -24,7 +24,7 @@ class EditPublicationView extends Component {
     this.setState({ publication: undefined, collaborators: [] });
 
     Api()
-      .subscribeClass(EDIT_KEY)
+      .subscribeClass(EDIT_KEY, this.props.publicationId)
       .publication(this.props.publicationId)
       .get()
       .then(publication => {
