@@ -34,7 +34,7 @@ class UploadPage extends Component {
       summary: "",
       funding: "",
       conflict: "",
-      data: {},
+      data: undefined,
       selectedFile: undefined,
 
       linkedProblemsSelected: false,
@@ -210,7 +210,7 @@ class UploadPage extends Component {
             // No-op
           }
         });
-
+      console.log(data);
       this.setState({ data: data });
     }
 
@@ -416,7 +416,7 @@ class UploadPage extends Component {
     }
 
     data[key] = content;
-
+    console.log(data);
     this.setState({ data: data });
   };
 
@@ -461,13 +461,14 @@ class UploadPage extends Component {
       this.state.summary &&
       this.state.funding &&
       this.state.conflict &&
-      (this.isReview ||
-        this.state.stages
-          .find(stage => stage.id === Number(this.state.selectedStageId))
-          .schema.every(field => {
-            let content = this.state.data[field[0]];
-            return content !== undefined && content !== "";
-          }))
+      (this.state.isReview ||
+        (this.state.data !== undefined &&
+          this.state.stages
+            .find(stage => stage.id === Number(this.state.selectedStageId))
+            .schema.every(field => {
+              let content = this.state.data[field[0]];
+              return content !== undefined && content !== "";
+            })))
     );
   }
 

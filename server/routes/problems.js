@@ -152,6 +152,13 @@ const postPublicationToProblemAndStage = async (req, res) => {
     return requestInvalid(res);
   }
 
+  if (
+    req.body.review === "true" &&
+    (req.body.basedOn === undefined || JSON.parse(req.body.basedOn).length <= 0)
+  ) {
+    return requestInvalid(res);
+  }
+
   let data;
   let resources = [];
 
@@ -250,9 +257,31 @@ const postPublicationToProblemAndStage = async (req, res) => {
     );
   }
 
+  // Problem updated_at changed
+  broadcast(`/problems`);
+  broadcast(`/problems/${req.params.id}`);
+
+  // Problem publications changed
+  broadcast(`/problems/${req.params.id}/publications`);
   broadcast(
     `/problems/${req.params.id}/stages/${req.params.stage}/publications`,
   );
+
+  // Reviews of linked publication changed
+  if (req.body.review === "true") {
+    let publication = JSON.parse(req.body.basedOn)[0];
+
+    broadcast(`/publications/${publication}/reviews`);
+  }
+
+  // linksAfter of linked publications have changed
+  if (req.body.basedOn !== undefined) {
+    let basedArray = JSON.parse(req.body.basedOn);
+
+    basedArray.forEach(publication =>
+      broadcast(`/publications/${publication}/linksAfter`),
+    );
+  }
 
   res.status(200).json(publications[0]);
 };
