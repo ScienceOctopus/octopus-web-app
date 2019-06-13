@@ -3,6 +3,8 @@ import PDFImagePreviewRenderer from "./PDFImagePreviewRenderer";
 import styled from "styled-components";
 import Api from "../api";
 
+const EDIT_KEY = "edit";
+
 class EditPublicationView extends Component {
   constructor(props) {
     super(props);
@@ -22,6 +24,7 @@ class EditPublicationView extends Component {
     this.setState({ publication: undefined, collaborators: [] });
 
     Api()
+      .subscribeClass(EDIT_KEY)
       .publication(this.props.publicationId)
       .get()
       .then(publication => {
@@ -33,6 +36,7 @@ class EditPublicationView extends Component {
           },
           () => {
             Api()
+              .subscribe(EDIT_KEY)
               .problem(this.state.publication.problem)
               .stage(this.state.publication.stage)
               .get()
@@ -47,6 +51,7 @@ class EditPublicationView extends Component {
       });
 
     Api()
+      .subscribe(EDIT_KEY)
       .publication(this.props.publicationId)
       .resources()
       .get()
@@ -57,12 +62,14 @@ class EditPublicationView extends Component {
       });
 
     Api()
+      .subscribe(EDIT_KEY)
       .publication(this.props.publicationId)
       .collaborators()
       .get()
       .then(collaborators => {
         collaborators.forEach(collaborator => {
           Api()
+            .subscribe(EDIT_KEY)
             .user(collaborator.user)
             .get()
             .then(user => {
@@ -74,6 +81,10 @@ class EditPublicationView extends Component {
             });
         });
       });
+  }
+
+  componentWillUnmount() {
+    Api().unsubscribeClass(EDIT_KEY);
   }
 
   componentDidUpdate(oldProps) {

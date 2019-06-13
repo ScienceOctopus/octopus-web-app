@@ -16,6 +16,8 @@ import uniqueId from "lodash/uniqueId";
 import ProblemSelector from "../components/ProblemSelector";
 import { loginRequired } from "./LogInRequiredPage";
 
+const UPLOAD_KEY = "upload";
+
 class UploadPage extends Component {
   constructor(props) {
     super(props);
@@ -43,6 +45,7 @@ class UploadPage extends Component {
     };
 
     Api()
+      .subscribeClass(UPLOAD_KEY)
       .problems()
       .get()
       .then(problems =>
@@ -62,6 +65,7 @@ class UploadPage extends Component {
   }
 
   componentWillUnmount() {
+    Api().unsubscribeClass(UPLOAD_KEY);
     this._isMounted = false;
   }
 
@@ -157,6 +161,7 @@ class UploadPage extends Component {
 
   fetchStages(review) {
     Api()
+      .subscribe(UPLOAD_KEY)
       .problem(this.state.selectedProblemId)
       .stages()
       .get()
@@ -216,6 +221,7 @@ class UploadPage extends Component {
       this.state.selectedStageId - (this.state.isReview ? 0 : 1);
 
     Api()
+      .subscribe(UPLOAD_KEY)
       .problem(this.state.selectedProblemId)
       .stage(stageToReview)
       .publications()
@@ -305,6 +311,7 @@ class UploadPage extends Component {
     await this.setState({ uploading: true });
 
     Api()
+      .subscribe(UPLOAD_KEY)
       .problem(this.state.selectedProblemId)
       .stage(this.state.selectedStageId)
       .publications()
