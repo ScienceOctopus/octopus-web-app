@@ -128,8 +128,22 @@ class EditPublicationView extends Component {
       .signoffs()
       .get()
       .then(signoffs => {
-        console.log(signoffs);
-        this.setState({ signoffs: signoffs }, () => {});
+        signoffs.forEach(signoff => {
+          Api()
+            .subscribe(EDIT_KEY)
+            .user(signoff.user)
+            .get()
+            .then(user => {
+              this.setState(
+                state => {
+                  var augmented = state;
+                  augmented.signoffs.push(user);
+                  return augmented;
+                },
+                () => {}
+              );
+            });
+        });
       });
 
     Api()
@@ -138,7 +152,22 @@ class EditPublicationView extends Component {
       .signoffsRemaining()
       .get()
       .then(signoffsRemaining => {
-        this.setState({ signoffsRemaining: signoffsRemaining }, () => {});
+        signoffsRemaining.forEach(signoff => {
+          Api()
+            .subscribe(EDIT_KEY)
+            .user(signoff.user)
+            .get()
+            .then(user => {
+              this.setState(
+                state => {
+                  var augmented = state;
+                  augmented.signoffsRemaining.push(user);
+                  return augmented;
+                },
+                () => {}
+              );
+            });
+        });
       });
   }
 
@@ -243,6 +272,7 @@ class EditPublicationView extends Component {
           <article>
             <h1 className="ui header">
               <StageTitle>
+                <DraftTitle>Draft </DraftTitle>
                 {stagePresent && this.state.stage.singular}
                 <ReviewTitle>{reviewPresent ? " Review" : ""}</ReviewTitle>
                 {(stagePresent || reviewPresent) && ": "}
@@ -297,25 +327,53 @@ class EditPublicationView extends Component {
                   .then(() => (window.location.href = "/"));
               }}
             >
-              Finalise Publication
+              Finalise Publication And Request Signoffs
             </button>
 
-            <p>Signoffs Awaiting</p>
+            <h3>Signoffs Awaiting</h3>
 
             {this.state.signoffsRemaining.length ? (
-              this.state.signoffsRemaining.map(signoff => {
-                return <p key={signoff.user}>{signoff.user}</p>;
-              })
+              <ul>
+                {this.state.signoffsRemaining.map(signoff => {
+                  let submitSignoffButton =
+                    signoff.id === global.session.user.id ? (
+                      <button
+                        className="ui green button"
+                        onClick={() =>
+                          Api()
+                            .publication(this.state.publication.id)
+                            .signoffs()
+                            .post({ revision: this.state.publication.revision })
+                            .then(() => (window.location.href = "/"))
+                        }
+                      >
+                        Sign Off
+                      </button>
+                    ) : (
+                      <></>
+                    );
+                  return (
+                    <li key={signoff.display_name}>
+                      {signoff.display_name}
+                      {submitSignoffButton}
+                    </li>
+                  );
+                })}
+              </ul>
             ) : (
-              <p>No signoffs remain, this publication is ready to finalise.</p>
+              <p>No signoffs remain, this publication has been published!.</p>
             )}
 
-            <p>Signoffs Complete</p>
-            {console.log(this.state.signoffs, this.state.signoffsRemaining)}
+            <h3>Signoffs Complete</h3>
+
             {this.state.signoffs.length ? (
-              this.state.signoffs.map(signoff => {
-                return <p key={signoff.user}>{signoff.user}</p>;
-              })
+              <ul>
+                {this.state.signoffs.map(signoff => {
+                  return (
+                    <li key={signoff.display_name}>{signoff.display_name}</li>
+                  );
+                })}
+              </ul>
             ) : (
               <p>No signoffs have yet been completed.</p>
             )}
@@ -332,6 +390,10 @@ const StageTitle = styled.span`
 
 const ReviewTitle = styled.span`
   color: var(--octopus-theme-review);
+`;
+
+const DraftTitle = styled.span`
+  color: var(--octopus-theme-draft);
 `;
 
 export default EditPublicationView;
