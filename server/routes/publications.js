@@ -75,6 +75,18 @@ const getLinksBeforeByPublication = async (req, res) => {
   res.status(200).json(publications);
 };
 
+const getAllLinksBeforeByPublication = async (req, res) => {
+  const publication = await getAndValidatePublication(req.params.id, req);
+  if (!publication) {
+    return res.sendStatus(404);
+  }
+
+  const resources = await db.selectPublicationsByAllLinksBeforePublication(
+    req.params.id,
+  );
+  res.status(200).json(resources);
+};
+
 const getLinksAfterByPublication = async (req, res) => {
   const publication = await getAndValidatePublication(req.params.id, req);
   if (!publication) {
@@ -231,6 +243,10 @@ router.post("/:id(\\d+)", catchAsyncErrors(postPublicationToID));
 router.get(
   "/:id(\\d+)/linksBefore",
   catchAsyncErrors(getLinksBeforeByPublication),
+);
+router.get(
+  "/:id(\\d+)/linksBeforeAll",
+  catchAsyncErrors(getAllLinksBeforeByPublication),
 );
 router.get(
   "/:id(\\d+)/linksAfter",

@@ -379,6 +379,12 @@ class SummaryView extends Component {
                 </span>
               ))}
             </section>
+
+            <section className="ui segment">
+              <h3>Publications in this line of research</h3>
+              <div className="ui divider" />
+              {/* TODO: use publications/:id/linksBeforeAll to get all linked publications, sort by stages and provide anchors for three dots to it */}
+            </section>
           </article>
           <br />
         </main>

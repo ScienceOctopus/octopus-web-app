@@ -404,6 +404,28 @@ const queries = {
         "ancestor_publications.publication",
         "publication_collaborators.publication",
       ),
+  selectPublicationsByAllLinksBeforePublication: publication =>
+    knex
+      .withRecursive("ancestors", qb => {
+        qb.select("publication_before", "publication_after")
+          .from("publication_links")
+          .where("publication_after", publication)
+          .union(qb => {
+            qb.select(
+              "publication_links.publication_before",
+              "publication_links.publication_after",
+            )
+              .from("publication_links")
+              .join(
+                "ancestors",
+                "ancestors.publication_before",
+                "publication_links.publication_after",
+              );
+          });
+      })
+      .select()
+      .from("ancestors")
+      .join("publications", "publications.id", "ancestors.publication_before"),
 };
 
 module.exports = {
