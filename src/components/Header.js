@@ -11,7 +11,6 @@ import styled from "styled-components";
 
 class Header extends Component {
   render() {
-    global.session.user = { display_name: "Tiger", id: 2, orcid: "muhaha" };
     const loggedIn = global.session.user !== undefined;
 
     return (
