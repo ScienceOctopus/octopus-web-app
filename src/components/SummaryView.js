@@ -374,7 +374,7 @@ class SummaryView extends Component {
                   <a href={`https://orcid.org/${user.orcid}`}>
                     {user.display_name}
                   </a>
-                  {user.contributions > 1 ? `(${user.contributions})` : null}
+                  {user.contributions > 1 ? ` (${user.contributions})` : null}
                   {i + 1 < allCollaborators.length ? ", " : null}
                 </span>
               ))}

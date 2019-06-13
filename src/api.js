@@ -220,7 +220,7 @@ class Store {
     this.keys.set(primary, secondary);
 
     this.store.forEach((cache, path, store) => {
-      let callback = cache.callbacks.has(primary);
+      let callback = cache.callbacks.get(primary);
 
       if (callback !== undefined) {
         if (callback[0] !== Store.CALLBACK_DUMMY) {
