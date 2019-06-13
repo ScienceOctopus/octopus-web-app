@@ -364,6 +364,11 @@ const queries = {
       .select()
       .where("id", id),
 
+  selectUsersByEmail: email =>
+    knex("users")
+      .select()
+      .where("email", email),
+
   selectUsersByGoblinID: orc =>
     knex("users")
       .select()

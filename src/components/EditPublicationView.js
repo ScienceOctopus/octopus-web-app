@@ -340,6 +340,44 @@ class EditPublicationView extends Component {
       );
     }
 
+    let addCollaboratorButton = (
+      <>
+        <h3>Add new Collaborator</h3>
+
+        <div className="ui form">
+          <div className="inline field">
+            <label>Email Address</label>
+            <input
+              type="text"
+              placeholder="example@example.com"
+              onChange={e =>
+                console.log(e) ||
+                this.setState(
+                  {
+                    newCollaborator: e.target.value,
+                  },
+                  () => {}
+                )
+              }
+            />
+            <button
+              className="ui button"
+              type="submit"
+              onClick={() => {
+                Api()
+                  .publication(this.state.publication.id)
+                  .collaborators()
+                  .post({ email: this.state.newCollaborator })
+                  .then(() => (window.location.href = "/"));
+              }}
+            >
+              Add New Collaborator
+            </button>
+          </div>
+        </div>
+      </>
+    );
+
     return (
       <div>
         <div className="ui divider" />
@@ -364,6 +402,8 @@ class EditPublicationView extends Component {
                 {user.display_name}
               </p>
             ))}
+
+            {addCollaboratorButton}
 
             {mainResourcePresent && (
               <a className="ui button" href={this.state.resources[0].uri}>

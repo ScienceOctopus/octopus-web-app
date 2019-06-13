@@ -258,7 +258,7 @@ const postPublicationToProblemAndStage = async (req, res) => {
   }
 
   // Problem updated_at changed
-  broadcast(`/problems`);
+  broadcast("/problems");
   broadcast(`/problems/${req.params.id}`);
 
   // Problem publications changed
@@ -316,6 +316,8 @@ const postProblem = async (req, res) => {
   for (let i = 0; i < stages.length; i++) {
     await db.insertProblemStage(problem, stages[i], stages[i]);
   }
+
+  broadcast("/problems");
 
   res.status(200).json(problem);
 };
