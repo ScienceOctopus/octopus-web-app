@@ -14,76 +14,43 @@ class Header extends Component {
     const loggedIn = global.session.user !== undefined;
 
     return (
-      <header
+      <nav
         className="ui inverted octopus-theme accent menu"
-        style={styles.header}
+        id="octopus-navigation"
       >
-        <div className="ui container" style={{ display: "block" }}>
-          <HeaderItem>
-            <LocalizedLink to={WebURI.Home} className="header item">
-              <OctopusLogo style={styles.logo} className="logo" />
-              <Trans>octopus</Trans>
-            </LocalizedLink>
-          </HeaderItem>
+        <div className="ui container" id="octopus-navigation-container">
+          <LocalizedLink to={WebURI.Home} className="navigation item">
+            <OctopusLogo style={styles.logo} className="logo" />
+            <Trans>octopus</Trans>
+          </LocalizedLink>
           {loggedIn && (
-            <HeaderItem>
-              <LocalizedLink to={WebURI.Upload} className="item">
-                <i className="ui pencil alternate icon" />
-                Publish your work
-              </LocalizedLink>
-            </HeaderItem>
+            <LocalizedLink to={WebURI.Upload} className="item">
+              <i className="ui pencil alternate icon" />
+              Publish your work
+            </LocalizedLink>
           )}
-          <HeaderItem>
-            <GlobalSearch />
-          </HeaderItem>
+          <GlobalSearch />
           {loggedIn ? (
-            <>
-              <HeaderItem>
-                <UserIconName />
-              </HeaderItem>
-              <HeaderItem>
-                <LogoutInvitation />
-              </HeaderItem>
-            </>
+            <div className="right menu" id="octopus-navigation-login-items">
+              <UserIconName />
+              <LogoutInvitation />
+            </div>
           ) : (
-            <HeaderItem>
-              <GoblinIDLoginInvitation
-                showAvatar
-                returnPath={this.props.location.pathname}
-              />
-            </HeaderItem>
+            <GoblinIDLoginInvitation
+              showAvatar
+              returnPath={this.props.location.pathname}
+            />
           )}
         </div>
-      </header>
+      </nav>
     );
   }
 }
 
 const styles = {
-  header: {
-    borderRadius: 0,
-    paddingBottom: "2px",
-    textAlign: "center",
-    display: "block",
-  },
   logo: {
     marginRight: 1.5 + "em",
   },
 };
-
-const HeaderItem = styled.div`
-  display: inline-block;
-  margin: 0 -1px -2px -1px;
-  vertical-align: top;
-  line-height: 32px;
-
-  & > :first-child {
-    height: 64px;
-  }
-
-  & > :first-child::before {
-    width: 0 !important;
-  }
-`;
 
 export default withRouter(Header);
