@@ -32,7 +32,9 @@ class Header extends Component {
           <GlobalSearch />
           {loggedIn ? (
             <div className="right menu" id="octopus-navigation-login-items">
-              <UserIconName />
+              <LocalizedLink to={WebURI.Profile} className="item">
+                <UserIconName />
+              </LocalizedLink>
               <LogoutInvitation />
             </div>
           ) : (

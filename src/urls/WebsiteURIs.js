@@ -50,6 +50,7 @@ const WebURI = {
   Explore: "/explore",
   Upload: "/publish",
   Login: "/login",
+  Profile: "/profile",
   ProblemCreation: "/newProblem",
   Search: q => (q === "" ? "/search" : `/search?q=${q}`),
   OrcidLogin: (state, returnPath) =>

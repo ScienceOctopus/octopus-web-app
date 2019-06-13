@@ -11,6 +11,7 @@ import UploadPage from "./pages/UploadPage";
 import WebURI, { RouterPath, RouterURI } from "./urls/WebsiteURIs";
 import SearchPage from "./pages/SearchPage";
 import ProblemCreationPage from "./pages/ProblemCreationPage";
+import UserPage from "./pages/UserPage";
 
 function AppRouter() {
   return (
@@ -104,6 +105,13 @@ function AppRouter() {
         exact
         path={RouterPath(WebURI.Search(""))}
         component={SearchPage}
+      />
+
+      <Route
+        name="profile"
+        exact
+        path={RouterPath(WebURI.Profile)}
+        component={UserPage}
       />
 
       <Route
