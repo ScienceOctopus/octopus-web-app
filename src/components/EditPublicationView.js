@@ -142,10 +142,6 @@ class EditPublicationView extends Component {
       });
   }
 
-  componentWillUnmount() {
-    Api().unsubscribeClass(EDIT_KEY);
-  }
-
   componentDidUpdate(oldProps) {
     if (oldProps.publicationId !== this.props.publicationId) {
       this.fetchPublicationData();
@@ -331,11 +327,11 @@ class EditPublicationView extends Component {
 }
 
 const StageTitle = styled.span`
-  color: #00b5ad;
+  color: var(--octopus-theme-publication);
 `;
 
 const ReviewTitle = styled.span`
-  color: #9eb300;
+  color: var(--octopus-theme-review);
 `;
 
 export default EditPublicationView;
