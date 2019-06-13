@@ -490,11 +490,6 @@ class PublicationBuilder extends LinkBuilder {
     return this;
   };
 
-  finalise = () => {
-    this.path += "/finalise";
-    return this;
-  };
-
   linksAfter = () => {
     this.path += "/linksAfter";
     return this;
@@ -512,6 +507,11 @@ class PublicationBuilder extends LinkBuilder {
 
   resources = () => {
     this.path += "/resources";
+    return this;
+  };
+
+  requestSignoff = () => {
+    this.path += "/request_signoff";
     return this;
   };
 

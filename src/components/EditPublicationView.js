@@ -265,6 +265,81 @@ class EditPublicationView extends Component {
       });
     }
 
+    let signoffInvitation = null;
+    if (this.state.publication.signoff_requested) {
+      signoffInvitation = (
+        <>
+          <p>
+            Signoff has been requested on this publication, and once all
+            contributors have signed off, it will be published.
+          </p>
+
+          <h3>Signoffs Awaiting</h3>
+
+          {this.state.signoffsRemaining.length ? (
+            <ul>
+              {this.state.signoffsRemaining.map(signoff => {
+                let submitSignoffButton =
+                  signoff.id === global.session.user.id ? (
+                    <button
+                      className="ui green button"
+                      onClick={() =>
+                        Api()
+                          .publication(this.state.publication.id)
+                          .signoffs()
+                          .post({ revision: this.state.publication.revision })
+                          .then(() => (window.location.href = "/"))
+                      }
+                    >
+                      Sign Off
+                    </button>
+                  ) : (
+                    <></>
+                  );
+                return (
+                  <li key={signoff.display_name}>
+                    {signoff.display_name}
+                    {submitSignoffButton}
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <p>No signoffs remain, this publication has been published!.</p>
+          )}
+
+          <h3>Signoffs Complete</h3>
+
+          {this.state.signoffs.length ? (
+            <ul>
+              {this.state.signoffs.map(signoff => {
+                return (
+                  <li key={signoff.display_name}>{signoff.display_name}</li>
+                );
+              })}
+            </ul>
+          ) : (
+            <p>No signoffs have yet been completed.</p>
+          )}
+        </>
+      );
+    } else {
+      signoffInvitation = (
+        <button
+          className="ui green button"
+          onClick={() => {
+            Api()
+              .publication(this.state.publication.id)
+              .requestSignoff()
+              .post()
+              .then(() => (window.location.href = "/"));
+          }}
+        >
+          Finalise Publication And Request Signoffs
+        </button>
+      );
+    }
+
     return (
       <div>
         <div className="ui divider" />
@@ -317,66 +392,7 @@ class EditPublicationView extends Component {
               </section>
             )}
 
-            <button
-              className="ui green button"
-              onClick={() => {
-                Api()
-                  .publication(this.state.publication.id)
-                  .finalise()
-                  .post()
-                  .then(() => (window.location.href = "/"));
-              }}
-            >
-              Finalise Publication And Request Signoffs
-            </button>
-
-            <h3>Signoffs Awaiting</h3>
-
-            {this.state.signoffsRemaining.length ? (
-              <ul>
-                {this.state.signoffsRemaining.map(signoff => {
-                  let submitSignoffButton =
-                    signoff.id === global.session.user.id ? (
-                      <button
-                        className="ui green button"
-                        onClick={() =>
-                          Api()
-                            .publication(this.state.publication.id)
-                            .signoffs()
-                            .post({ revision: this.state.publication.revision })
-                            .then(() => (window.location.href = "/"))
-                        }
-                      >
-                        Sign Off
-                      </button>
-                    ) : (
-                      <></>
-                    );
-                  return (
-                    <li key={signoff.display_name}>
-                      {signoff.display_name}
-                      {submitSignoffButton}
-                    </li>
-                  );
-                })}
-              </ul>
-            ) : (
-              <p>No signoffs remain, this publication has been published!.</p>
-            )}
-
-            <h3>Signoffs Complete</h3>
-
-            {this.state.signoffs.length ? (
-              <ul>
-                {this.state.signoffs.map(signoff => {
-                  return (
-                    <li key={signoff.display_name}>{signoff.display_name}</li>
-                  );
-                })}
-              </ul>
-            ) : (
-              <p>No signoffs have yet been completed.</p>
-            )}
+            {signoffInvitation}
           </article>
         </main>
       </div>

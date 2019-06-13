@@ -210,10 +210,7 @@ const postSignoffToPublication = async (req, res) => {
       0
   );
 
-  console.log(collaborators, signoffs);
-
   if (collaborators.length === 0) {
-    console.log("FINALISEING");
     await db.finalisePublication(publication.id, publication.revision);
   }
 
@@ -245,16 +242,14 @@ const getSignoffsRemainingByPublication = async (req, res) => {
   res.status(200).json(collaborators);
 };
 
-const postFinaliseToPublication = async (req, res) => {
+const postRequestSignoffToPublication = async (req, res) => {
   const publication = await getAndValidatePublication(req.params.id, req);
   if (!publication) {
     return res.sendStatus(404);
   }
 
-  // TODO: validate draft and correct user permissions
-
-  // TODO: validate that the publication does has no signoffs awaiting
-  await db.finalisePublication(req.params.id);
+  // TODO: validate that the publication has no signoffs awaiting
+  await db.updatePublicationRequestSignoff(req.params.id);
 
   res.sendStatus(204);
 };
@@ -300,7 +295,10 @@ router.get(
   "/:id(\\d+)/signoffs_remaining",
   catchAsyncErrors(getSignoffsRemainingByPublication)
 );
-router.post("/:id(\\d+)/finalise", catchAsyncErrors(postFinaliseToPublication));
+router.post(
+  "/:id(\\d+)/request_signoff",
+  catchAsyncErrors(postRequestSignoffToPublication)
+);
 
 module.exports = {
   router,
