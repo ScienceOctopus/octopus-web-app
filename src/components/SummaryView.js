@@ -127,9 +127,9 @@ class SummaryView extends Component {
                     this.setState({
                       stage: stage,
                       schema: JSON.parse(stage.schema),
-                    }),
+                    })
                   );
-              },
+              }
             );
           });
 
@@ -163,10 +163,10 @@ class SummaryView extends Component {
                         let users = state.users;
                         users.set(id, user);
                         return { users: users };
-                      }),
+                      })
                     );
                 });
-              },
+              }
             );
           });
 
@@ -179,7 +179,7 @@ class SummaryView extends Component {
             this.setState(
               {
                 allCollaborators: SummaryView.getContributions(
-                  allCollaborators,
+                  allCollaborators
                 ),
               },
               () => {
@@ -193,10 +193,10 @@ class SummaryView extends Component {
                         let users = state.users;
                         users.set(id, user);
                         return { users: users };
-                      }),
+                      })
                     );
                 });
-              },
+              }
             );
           });
 
@@ -210,7 +210,7 @@ class SummaryView extends Component {
             this.setState({
               stageNames: stages.reduce(
                 (map, stage) => map.set(stage.id, stage.name),
-                new Map(),
+                new Map()
               ),
             });
           });
@@ -225,12 +225,12 @@ class SummaryView extends Component {
 
             publications = publications.filter(
               publication =>
-                !unique.has(publication.id) && unique.add(publication.id),
+                !unique.has(publication.id) && unique.add(publication.id)
             );
 
             this.setState({ allPublications: publications });
           });
-      },
+      }
     );
   }
 
@@ -270,7 +270,7 @@ class SummaryView extends Component {
         switch (type) {
           case "file":
             datum = this.state.resources.find(
-              resource => resource.id === datum,
+              resource => resource.id === datum
             );
 
             if (datum === undefined) {
@@ -286,7 +286,7 @@ class SummaryView extends Component {
             break;
           case "uri":
             datum = this.state.resources.find(
-              resource => resource.id === datum,
+              resource => resource.id === datum
             );
 
             if (datum === undefined) {
@@ -344,7 +344,7 @@ class SummaryView extends Component {
 
       this.state.stageNames.forEach((name, stage) => {
         let publications = this.state.allPublications.filter(
-          publication => publication.stage === stage,
+          publication => publication.stage === stage
         );
 
         if (publications.length <= 0) {
@@ -402,7 +402,7 @@ class SummaryView extends Component {
             {this.state.collaborators &&
               SummaryView.sortByLastName(
                 this.state.collaborators,
-                this.state.users,
+                this.state.users
               ).map(user => (
                 <p key={user.id}>
                   <strong>Author: </strong>

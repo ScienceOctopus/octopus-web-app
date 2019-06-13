@@ -89,7 +89,7 @@ class Store {
     this.ws = new WebSocket(
       `${window.location.protocol === "https:" ? "wss:" : "ws:"}//${
         window.location.hostname
-      }${port}${root}`,
+      }${port}${root}`
     );
 
     this.ws.onopen = event => {
@@ -160,7 +160,7 @@ class Store {
             if (subscribed === Store.SUBSCRIBED_HEADERS) {
               callback.resolve(Store._clone(cache.headers));
             }
-          },
+          }
         );
       });
     } else if (cache.subscribed === Store.SUBSCRIBED_BOTH) {
@@ -190,7 +190,7 @@ class Store {
             } else if (subscribed === Store.SUBSCRIBED_DATA) {
               callback.resolve(Store._clone(cache.data));
             }
-          },
+          }
         );
       });
     }
@@ -281,7 +281,7 @@ class Store {
           : cache.subscribed !== Store.SUBSCRIBED_NONE
           ? "use"
           : "get",
-        path,
+        path
       );
     }
 
@@ -330,7 +330,7 @@ class Store {
           : cache.subscribed !== Store.SUBSCRIBED_NONE
           ? "use"
           : "head",
-        path,
+        path
       );
     }
 
@@ -485,8 +485,18 @@ class PublicationBuilder extends LinkBuilder {
     this.path = "/publications/" + pubId;
   }
 
-  resources = () => {
-    this.path += "/resources";
+  collaborators = () => {
+    this.path += "/collaborators";
+    return this;
+  };
+
+  linksAfter = () => {
+    this.path += "/linksAfter";
+    return this;
+  };
+
+  linksBefore = () => {
+    this.path += "/linksBefore";
     return this;
   };
 
@@ -495,13 +505,13 @@ class PublicationBuilder extends LinkBuilder {
     return this;
   };
 
-  /* referencedBy = () => {
-    this.path += "/referencedBy";
+  resources = () => {
+    this.path += "/resources";
     return this;
-    }; */
+  };
 
-  linksBefore = () => {
-    this.path += "/linksBefore";
+  requestSignoff = () => {
+    this.path += "/request_signoff";
     return this;
   };
 
@@ -520,10 +530,20 @@ class PublicationBuilder extends LinkBuilder {
     return this;
   };
 
-  collaborators = () => {
-    this.path += "/collaborators";
+  signoffs = () => {
+    this.path += "/signoffs";
     return this;
   };
+
+  signoffsRemaining = () => {
+    this.path += "/signoffs_remaining";
+    return this;
+  };
+
+  /* referencedBy = () => {
+    this.path += "/referencedBy";
+    return this;
+    }; */
 
   allCollaborators = () => {
     this.path += "/allCollaborators";

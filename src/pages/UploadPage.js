@@ -6,10 +6,11 @@ import PublicationSelector from "../components/PublicationSelector";
 import SimpleSelector from "../components/SimpleSelector";
 import TitledCheckbox from "../components/TitledCheckbox";
 import TitledForm from "../components/TitledForm";
-import {
+import WebURI, {
   LocalizedRedirect,
   RouterURI,
   localizeLink,
+  LocalizedLink,
 } from "../urls/WebsiteURIs";
 import { generatePath } from "react-router";
 import uniqueId from "lodash/uniqueId";
@@ -50,7 +51,7 @@ class UploadPage extends Component {
       .problems()
       .get()
       .then(problems =>
-        this.setState({ problems: problems }, () => this.initCheck(this.props)),
+        this.setState({ problems: problems }, () => this.initCheck(this.props))
       );
   }
 
@@ -115,7 +116,7 @@ class UploadPage extends Component {
           linkedProblemsSelected: false,
           data: undefined,
         },
-        callback,
+        callback
       );
     } else if (stage !== this.state.selectedStageId) {
       let callback = undefined;
@@ -133,7 +134,7 @@ class UploadPage extends Component {
           linkedProblemsSelected: false,
           data: undefined,
         },
-        callback,
+        callback
       );
     } else if (isReview !== this.state.isReview) {
       this.setState(
@@ -143,18 +144,18 @@ class UploadPage extends Component {
           publicationsToLink: [],
           linkedProblemsSelected: false,
         },
-        () => this.fetchPublications(review),
+        () => this.fetchPublications(review)
       );
     } else if (isReview) {
       review = Number(review);
 
       this.setState({
         publicationsToLink: this.state.publications.map(
-          publication => publication.id === review,
+          publication => publication.id === review
         ),
         linkedProblemsSelected:
           this.state.publications.find(
-            publication => publication.id === review,
+            publication => publication.id === review
           ) !== undefined,
       });
     }
@@ -231,12 +232,12 @@ class UploadPage extends Component {
         this.setState({
           publications: publications,
           publicationsToLink: publications.map(
-            publication => publication.id === review,
+            publication => publication.id === review
           ),
           linkedProblemsSelected:
             publications.find(publication => publication.id === review) !==
             undefined,
-        }),
+        })
       );
   }
 
@@ -257,7 +258,7 @@ class UploadPage extends Component {
     let linkedPublications = undefined;
     this.state.publications &&
       (linkedPublications = this.state.publications.filter(
-        (_, i) => this.state.publicationsToLink[i],
+        (_, i) => this.state.publicationsToLink[i]
       ));
 
     const data = new FormData();
@@ -280,7 +281,7 @@ class UploadPage extends Component {
       data.set("data", "[]");
     } else {
       let schema = this.state.stages.find(
-        stage => stage.id === Number(this.state.selectedStageId),
+        stage => stage.id === Number(this.state.selectedStageId)
       ).schema;
 
       let ddata = [];
@@ -351,8 +352,8 @@ class UploadPage extends Component {
       UploadPage.uploadURLBuilder(
         problem.id,
         undefined,
-        this.state.isReview || undefined,
-      ),
+        this.state.isReview || undefined
+      )
     );
   };
 
@@ -361,8 +362,8 @@ class UploadPage extends Component {
       UploadPage.uploadURLBuilder(
         this.state.selectedProblemId,
         stageId,
-        this.state.isReview || undefined,
-      ),
+        this.state.isReview || undefined
+      )
     );
   };
 
@@ -430,8 +431,8 @@ class UploadPage extends Component {
             this.state.publications.find((publication, i) => selection[i]) || {
               id: true,
             }
-          ).id,
-        ),
+          ).id
+        )
       );
     } else {
       this.setState({
@@ -492,8 +493,8 @@ class UploadPage extends Component {
         UploadPage.uploadURLBuilder(
           this.state.selectedProblemId,
           this.state.selectedStageId,
-          isReview || undefined,
-        ),
+          isReview || undefined
+        )
       );
     } else {
       this.setState({ isReview: isReview });
@@ -533,7 +534,7 @@ class UploadPage extends Component {
       this.state.selectedStageId !== undefined
     ) {
       let stage = this.state.stages.find(
-        stage => stage.id === Number(this.state.selectedStageId),
+        stage => stage.id === Number(this.state.selectedStageId)
       );
 
       if (
@@ -612,6 +613,37 @@ class UploadPage extends Component {
               <i className="ui pencil icon" />
               Publish your work
             </h2>
+            <p>
+              Octopus currently accepts{" "}
+              <LocalizedLink to={WebURI.More}>
+                8 types of publication
+              </LocalizedLink>
+              , and every new publication must be linked to an existing one.
+              Problems are the top of the publication chain. Reviews can be
+              linked to any other kind of publication and should be treated as
+              the same as any other kind of publication.
+            </p>
+            <p>
+              Currently, you should upload your publication in pdf format
+              (though .doc and .docx will be supported soon). There are no rules
+              on style and layout, but healthcare researchers should be guided
+              by the relevant{" "}
+              <a href="https://www.equator-network.org">
+                EQUATOR reporting guidelines
+              </a>
+              . You will no longer need to structure your publications like a
+              paper, with an abstract and introduction as the publications above
+              yours in the chain should serve this role.
+            </p>
+            <p>
+              References should no longer be listed at the bottom, but instead
+              should be live URL links within the text to DOIs.
+            </p>
+            <p>
+              Publications will go live as soon as all authors have agreed to
+              publication.
+            </p>
+            <div className="ui divider" />
             <div className="two fields">
               <div className="field">
                 <ProblemSelector
@@ -625,7 +657,11 @@ class UploadPage extends Component {
               {this.state.selectedProblemId !== undefined && (
                 <div className="field">
                   <SimpleSelector
-                    title="Select a Publication Type"
+                    title={
+                      this.state.isReview
+                        ? "Select the type of work you are reviewing"
+                        : "Select the type of work you are publishing"
+                    }
                     value={this.state.selectedStageId}
                     data={this.state.stages}
                     accessor={x => [x.singular, x.id]}
@@ -697,6 +733,7 @@ class UploadPage extends Component {
             )}
           </div>
         </div>
+        <br />
       </div>
     );
   }

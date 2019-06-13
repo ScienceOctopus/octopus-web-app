@@ -9,15 +9,55 @@ class EditPublicationView extends Component {
   constructor(props) {
     super(props);
     //console.log("constructor(SummaryView)");
+
+    this._isMounted = false;
+    this._setStateTask = undefined;
+
     this.state = {
       publication: undefined,
       collaborators: [],
       resources: undefined,
       stage: undefined,
       schema: undefined,
+      signoffs: [],
+      signoffsRemaining: [],
     };
 
     this.fetchPublicationData();
+  }
+
+  componentDidMount() {
+    this._isMounted = true;
+
+    if (this._setStateTask !== undefined) {
+      let task = this._setStateTask;
+      this._setStateTask = undefined;
+
+      task();
+    }
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
+
+    Api().unsubscribeClass(EDIT_KEY);
+  }
+
+  setState(newState, callback) {
+    let task = () => super.setState(newState, callback);
+
+    if (this._isMounted) {
+      task();
+    } else if (this._setStateTask === undefined) {
+      this._setStateTask = task;
+    } else if (callback !== undefined) {
+      let oldTask = this._setStateTask;
+
+      this._setStateTask = () => {
+        oldTask();
+        task();
+      };
+    }
   }
 
   fetchPublicationData() {
@@ -44,9 +84,9 @@ class EditPublicationView extends Component {
                 this.setState({
                   stage: stage,
                   schema: JSON.parse(stage.schema),
-                }),
+                })
               );
-          },
+          }
         );
       });
 
@@ -81,10 +121,54 @@ class EditPublicationView extends Component {
             });
         });
       });
-  }
 
-  componentWillUnmount() {
-    Api().unsubscribeClass(EDIT_KEY);
+    Api()
+      .subscribe(EDIT_KEY)
+      .publication(this.props.publicationId)
+      .signoffs()
+      .get()
+      .then(signoffs => {
+        signoffs.forEach(signoff => {
+          Api()
+            .subscribe(EDIT_KEY)
+            .user(signoff.user)
+            .get()
+            .then(user => {
+              this.setState(
+                state => {
+                  var augmented = state;
+                  augmented.signoffs.push(user);
+                  return augmented;
+                },
+                () => {}
+              );
+            });
+        });
+      });
+
+    Api()
+      .subscribe(EDIT_KEY)
+      .publication(this.props.publicationId)
+      .signoffsRemaining()
+      .get()
+      .then(signoffsRemaining => {
+        signoffsRemaining.forEach(signoff => {
+          Api()
+            .subscribe(EDIT_KEY)
+            .user(signoff.user)
+            .get()
+            .then(user => {
+              this.setState(
+                state => {
+                  var augmented = state;
+                  augmented.signoffsRemaining.push(user);
+                  return augmented;
+                },
+                () => {}
+              );
+            });
+        });
+      });
   }
 
   componentDidUpdate(oldProps) {
@@ -123,7 +207,7 @@ class EditPublicationView extends Component {
         switch (type) {
           case "file":
             datum = this.state.resources.find(
-              resource => resource.id === datum,
+              resource => resource.id === datum
             );
 
             if (datum === undefined) {
@@ -139,7 +223,7 @@ class EditPublicationView extends Component {
             break;
           case "uri":
             datum = this.state.resources.find(
-              resource => resource.id === datum,
+              resource => resource.id === datum
             );
 
             if (datum === undefined) {
@@ -154,7 +238,12 @@ class EditPublicationView extends Component {
           case "bool":
             content = (
               <div className="ui checkbox">
-                <input type="checkbox" checked={datum} disabled />
+                <input
+                  type="checkbox"
+                  checked={datum}
+                  style={{ cursor: "default" }}
+                  disabled
+                />
                 <label> </label>
               </div>
             );
@@ -176,6 +265,119 @@ class EditPublicationView extends Component {
       });
     }
 
+    let signoffInvitation = null;
+    if (this.state.publication.signoff_requested) {
+      signoffInvitation = (
+        <>
+          <p>
+            Signoff has been requested on this publication, and once all
+            contributors have signed off, it will be published.
+          </p>
+
+          <h3>Signoffs Awaiting</h3>
+
+          {this.state.signoffsRemaining.length ? (
+            <ul>
+              {this.state.signoffsRemaining.map(signoff => {
+                let submitSignoffButton =
+                  signoff.id === global.session.user.id ? (
+                    <button
+                      className="ui green button"
+                      onClick={() =>
+                        Api()
+                          .publication(this.state.publication.id)
+                          .signoffs()
+                          .post({ revision: this.state.publication.revision })
+                          .then(() => (window.location.href = "/"))
+                      }
+                    >
+                      Sign Off
+                    </button>
+                  ) : (
+                    <></>
+                  );
+                return (
+                  <li key={signoff.display_name}>
+                    {signoff.display_name}
+                    {submitSignoffButton}
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <p>No signoffs remain, this publication has been published!.</p>
+          )}
+
+          <h3>Signoffs Complete</h3>
+
+          {this.state.signoffs.length ? (
+            <ul>
+              {this.state.signoffs.map(signoff => {
+                return (
+                  <li key={signoff.display_name}>{signoff.display_name}</li>
+                );
+              })}
+            </ul>
+          ) : (
+            <p>No signoffs have yet been completed.</p>
+          )}
+        </>
+      );
+    } else {
+      signoffInvitation = (
+        <button
+          className="ui green button"
+          onClick={() => {
+            Api()
+              .publication(this.state.publication.id)
+              .requestSignoff()
+              .post({ revision: this.state.publication.revision })
+              .then(() => (window.location.href = "/"));
+          }}
+        >
+          Finalise Publication And Request Signoffs
+        </button>
+      );
+    }
+
+    let addCollaboratorButton = (
+      <>
+        <h3>Add new Collaborator</h3>
+
+        <div className="ui form">
+          <div className="inline field">
+            <label>Email Address</label>
+            <input
+              type="text"
+              placeholder="example@example.com"
+              onChange={e =>
+                console.log(e) ||
+                this.setState(
+                  {
+                    newCollaborator: e.target.value,
+                  },
+                  () => {}
+                )
+              }
+            />
+            <button
+              className="ui button"
+              type="submit"
+              onClick={() => {
+                Api()
+                  .publication(this.state.publication.id)
+                  .collaborators()
+                  .post({ email: this.state.newCollaborator })
+                  .then(() => (window.location.href = "/"));
+              }}
+            >
+              Add New Collaborator
+            </button>
+          </div>
+        </div>
+      </>
+    );
+
     return (
       <div>
         <div className="ui divider" />
@@ -183,6 +385,7 @@ class EditPublicationView extends Component {
           <article>
             <h1 className="ui header">
               <StageTitle>
+                <DraftTitle>Draft </DraftTitle>
                 {stagePresent && this.state.stage.singular}
                 <ReviewTitle>{reviewPresent ? " Review" : ""}</ReviewTitle>
                 {(stagePresent || reviewPresent) && ": "}
@@ -190,7 +393,7 @@ class EditPublicationView extends Component {
               {this.state.publication.title}
             </h1>
             <p>
-              <strong>DRAFT PUBLICATION!!! Date added: </strong>
+              <strong>Date added: </strong>
               {new Date(this.state.publication.created_at).toLocaleDateString()}
             </p>
             {this.state.collaborators.map(user => (
@@ -199,6 +402,8 @@ class EditPublicationView extends Component {
                 {user.display_name}
               </p>
             ))}
+
+            {addCollaboratorButton}
 
             {mainResourcePresent && (
               <a className="ui button" href={this.state.resources[0].uri}>
@@ -226,6 +431,8 @@ class EditPublicationView extends Component {
                 </div>
               </section>
             )}
+
+            {signoffInvitation}
           </article>
         </main>
       </div>
@@ -234,11 +441,15 @@ class EditPublicationView extends Component {
 }
 
 const StageTitle = styled.span`
-  color: #00b5ad;
+  color: var(--octopus-theme-publication);
 `;
 
 const ReviewTitle = styled.span`
-  color: #9eb300;
+  color: var(--octopus-theme-review);
+`;
+
+const DraftTitle = styled.span`
+  color: var(--octopus-theme-draft);
 `;
 
 export default EditPublicationView;
