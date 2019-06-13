@@ -1,7 +1,7 @@
-import React, { useRef } from "react";
+import React from "react";
 
 import { pdfjs, Document, Page } from "react-pdf";
-pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.js";
+pdfjs.GlobalWorkerOptions.workerSrc = "/static/js/pdf.worker.min.js";
 
 const PDFImagePreviewRenderer = props => {
   return (
