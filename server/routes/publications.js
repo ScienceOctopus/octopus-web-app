@@ -1,6 +1,7 @@
 const db = require("../postgresQueries.js").queries;
 const express = require("express");
 const getUserFromSession = require("../userSessions.js").getUserFromSession;
+const broadcast = require("../webSocket.js").broadcast;
 
 function catchAsyncErrors(fn) {
   return (req, res, next) => {
@@ -60,6 +61,12 @@ const postPublicationToID = async (req, res) => {
     req.body.summary,
     req.body.funding,
     req.body.data
+  );
+
+  broadcast(`/publications/${req.params.id}`);
+  broadcast(`/problems/${publication.problem}/publications`);
+  broadcast(
+    `/problems/${publication.problem}/stages/${publication.stage}/publications`
   );
 };
 
@@ -170,6 +177,9 @@ const postCollaboratorToPublication = async (req, res) => {
     "author"
   );
 
+  broadcast(`/publications/${req.params.id}/collaborators`);
+  broadcast(`/publications/${req.params.id}/allCollaborators`);
+
   res.sendStatus(200);
 };
 
@@ -217,7 +227,16 @@ const postSignoffToPublication = async (req, res) => {
 
   if (collaborators.length === 0) {
     await db.finalisePublication(publication.id, publication.revision);
+    broadcast(`/publications/${publication.id}`);
+    broadcast(`/problems/${publication.problem}/publications`);
+    broadcast(
+      `/problems/${publication.problem}/stages/${
+        publication.stage
+      }/publications`
+    );
   }
+
+  broadcast(`/publications/${req.params.id}/signoffs`);
 
   res.sendStatus(204);
 };
@@ -255,6 +274,12 @@ const postRequestSignoffToPublication = async (req, res) => {
 
   // TODO: validate that the publication has no signoffs awaiting
   await db.updatePublicationRequestSignoff(req.params.id, req.body.revision);
+
+  broadcast(`/publications/${req.params.id}`);
+  broadcast(`/problems/${publication.problem}/publications`);
+  broadcast(
+    `/problems/${publication.problem}/stages/${publication.stage}/publications`
+  );
 
   return await postSignoffToPublication(req, res);
 };
