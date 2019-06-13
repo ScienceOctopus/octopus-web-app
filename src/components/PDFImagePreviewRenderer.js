@@ -11,7 +11,17 @@ const PDFImagePreviewRenderer = props => {
   return (
     <div>
       <Document file={props.document.uri}>
-        <Page pageNumber={1} renderTextLayer={false} />
+        <Page
+          inputRef={ref => {
+            if (ref) {
+              ref.firstChild.style.width = "100%";
+              ref.firstChild.style.height = "";
+            }
+          }}
+          pageNumber={1}
+          renderAnnotationLayer={false}
+          renderTextLayer={false}
+        />
       </Document>
     </div>
   );

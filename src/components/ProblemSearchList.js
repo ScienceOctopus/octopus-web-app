@@ -2,14 +2,23 @@ import React, { Component } from "react";
 import Api from "../api";
 import ProblemSearchDescription from "./ProblemSearchDescription";
 
+const SEARCH_KEY = "search";
+
 class ProblemSearchList extends Component {
   constructor(props) {
     super(props);
     this.state = { loaded: false, problems: [] };
+
+    // Always start a new cache when the search page is loaded
+    Api().subscribeClass(SEARCH_KEY, Math.random());
   }
 
   componentDidMount() {
     this.fetchQuery();
+  }
+
+  componentWillUnmount() {
+    Api().unsubscribeClass(SEARCH_KEY);
   }
 
   componentDidUpdate(oldProps) {

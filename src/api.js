@@ -323,7 +323,15 @@ class Store {
     let cache = this.getOrInit(path);
 
     if (process.DEBUG_MODE) {
-      console.log(primary, cache.data !== undefined ? "cache" : "head", path);
+      console.log(
+        primary,
+        cache.headers !== undefined
+          ? "cache"
+          : cache.subscribed !== Store.SUBSCRIBED_NONE
+          ? "use"
+          : "head",
+        path,
+      );
     }
 
     let promise = new MultiPromise(Store._clone(cache.headers));

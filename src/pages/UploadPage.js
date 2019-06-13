@@ -44,8 +44,9 @@ class UploadPage extends Component {
       publications: undefined,
     };
 
+    // Always start a new cache when the upload page is loaded
     Api()
-      .subscribeClass(UPLOAD_KEY, this.state.problems)
+      .subscribeClass(UPLOAD_KEY, Math.random())
       .problems()
       .get()
       .then(problems =>

@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import Api from "../api";
 import { LocalizedLink, path, RouterURI } from "../urls/WebsiteURIs";
 
+const SEARCH_KEY = "search";
+
 const DESC_MAX_LENGTH = 200;
 
 export default class ProblemSearchDescription extends Component {
@@ -15,7 +17,9 @@ export default class ProblemSearchDescription extends Component {
   }
 
   fetchProblem() {
+    // Cache under the same scope as the ProblemSearchList
     Api()
+      .subscribe(SEARCH_KEY)
       .problem(this.props.id)
       .get()
       .then(problem => {
@@ -23,6 +27,7 @@ export default class ProblemSearchDescription extends Component {
       });
 
     Api()
+      .subscribe(SEARCH_KEY)
       .problem(this.props.id)
       .publications()
       .count()
