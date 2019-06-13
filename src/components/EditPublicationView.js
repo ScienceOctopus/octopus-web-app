@@ -331,7 +331,7 @@ class EditPublicationView extends Component {
             Api()
               .publication(this.state.publication.id)
               .requestSignoff()
-              .post()
+              .post({ revision: this.state.publication.revision })
               .then(() => (window.location.href = "/"));
           }}
         >

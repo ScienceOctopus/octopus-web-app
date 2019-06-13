@@ -222,10 +222,11 @@ const queries = {
       .where("id", publication)
       .where("revision", revision),
 
-  updatePublicationRequestSignoff: publication =>
+  updatePublicationRequestSignoff: (publication, revision) =>
     knex("publications")
       .update({ signoff_requested: true })
-      .where("id", publication),
+      .where("id", publication)
+      .where("revision", revision),
 
   updatePublication: (publication, revision, title, summary, funding, data) =>
     knex("publications")

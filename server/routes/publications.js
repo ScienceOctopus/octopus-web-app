@@ -214,7 +214,7 @@ const postSignoffToPublication = async (req, res) => {
     await db.finalisePublication(publication.id, publication.revision);
   }
 
-  res.sendStatus(200);
+  res.sendStatus(204);
 };
 
 const getSignoffsRemainingByPublication = async (req, res) => {
@@ -249,9 +249,9 @@ const postRequestSignoffToPublication = async (req, res) => {
   }
 
   // TODO: validate that the publication has no signoffs awaiting
-  await db.updatePublicationRequestSignoff(req.params.id);
+  await db.updatePublicationRequestSignoff(req.params.id, req.body.revision);
 
-  res.sendStatus(204);
+  return await postSignoffToPublication(req, res);
 };
 
 var router = express.Router();
