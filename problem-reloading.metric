@@ -1,0 +1,26 @@
+2136
+1614
+1431
+1418
+1419
+1463
+1606
+1369
+
+average 1557 ms
+
+23 requests each time
+
+=====================
+
+(2251)
+331
+322
+322
+294
+336
+313
+
+average 320 ms
+
+23 request the first time, 0 request after that
