@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useRef } from "react";
 
 import { pdfjs, Document, Page } from "react-pdf";
-pdfjs.GlobalWorkerOptions.workerSrc = "/static/js/pdf.worker.min.js";
+// eslint-disable-next-line import/no-webpack-loader-syntax
+pdfjs.GlobalWorkerOptions.workerSrc = require("file-loader!../../node_modules/pdfjs-dist/build/pdf.worker.min.js");
 
 const PDFImagePreviewRenderer = props => {
   return (
