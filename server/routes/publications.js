@@ -210,6 +210,8 @@ const postFinaliseToPublication = async (req, res) => {
 
   // TODO: validate that the publication does has no signoffs awaiting
   await db.finalisePublication(req.params.id);
+
+  res.sendStatus(204);
 };
 
 var router = express.Router();

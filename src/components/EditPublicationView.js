@@ -3,25 +3,67 @@ import PDFImagePreviewRenderer from "./PDFImagePreviewRenderer";
 import styled from "styled-components";
 import Api from "../api";
 
+// Cache under the same scope as the ProblemPage
+const PROBLEM_KEY = "problem";
+
 class EditPublicationView extends Component {
   constructor(props) {
     super(props);
     //console.log("constructor(SummaryView)");
+
+    this._isMounted = false;
+    this._setStateTask = undefined;
+
     this.state = {
       publication: undefined,
       collaborators: [],
       resources: undefined,
       stage: undefined,
       schema: undefined,
+      signoffs: [],
+      signoffsRemaining: [],
     };
 
     this.fetchPublicationData();
+  }
+
+  componentDidMount() {
+    this._isMounted = true;
+
+    if (this._setStateTask !== undefined) {
+      let task = this._setStateTask;
+      this._setStateTask = undefined;
+
+      task();
+    }
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
+  setState(newState, callback) {
+    let task = () => super.setState(newState, callback);
+
+    if (this._isMounted) {
+      task();
+    } else if (this._setStateTask === undefined) {
+      this._setStateTask = task;
+    } else if (callback !== undefined) {
+      let oldTask = this._setStateTask;
+
+      this._setStateTask = () => {
+        oldTask();
+        task();
+      };
+    }
   }
 
   fetchPublicationData() {
     this.setState({ publication: undefined, collaborators: [] });
 
     Api()
+      .subscribe(PROBLEM_KEY)
       .publication(this.props.publicationId)
       .get()
       .then(publication => {
@@ -33,6 +75,7 @@ class EditPublicationView extends Component {
           },
           () => {
             Api()
+              .subscribe(PROBLEM_KEY)
               .problem(this.state.publication.problem)
               .stage(this.state.publication.stage)
               .get()
@@ -40,13 +83,14 @@ class EditPublicationView extends Component {
                 this.setState({
                   stage: stage,
                   schema: JSON.parse(stage.schema),
-                }),
+                })
               );
-          },
+          }
         );
       });
 
     Api()
+      .subscribe(PROBLEM_KEY)
       .publication(this.props.publicationId)
       .resources()
       .get()
@@ -57,6 +101,7 @@ class EditPublicationView extends Component {
       });
 
     Api()
+      .subscribe(PROBLEM_KEY)
       .publication(this.props.publicationId)
       .collaborators()
       .get()
@@ -73,6 +118,25 @@ class EditPublicationView extends Component {
               });
             });
         });
+      });
+
+    Api()
+      .subscribe(PROBLEM_KEY)
+      .publication(this.props.publicationId)
+      .signoffs()
+      .get()
+      .then(signoffs => {
+        console.log(signoffs);
+        this.setState({ signoffs: signoffs }, () => {});
+      });
+
+    Api()
+      .subscribe(PROBLEM_KEY)
+      .publication(this.props.publicationId)
+      .signoffsRemaining()
+      .get()
+      .then(signoffsRemaining => {
+        this.setState({ signoffsRemaining: signoffsRemaining }, () => {});
       });
   }
 
@@ -112,7 +176,7 @@ class EditPublicationView extends Component {
         switch (type) {
           case "file":
             datum = this.state.resources.find(
-              resource => resource.id === datum,
+              resource => resource.id === datum
             );
 
             if (datum === undefined) {
@@ -128,7 +192,7 @@ class EditPublicationView extends Component {
             break;
           case "uri":
             datum = this.state.resources.find(
-              resource => resource.id === datum,
+              resource => resource.id === datum
             );
 
             if (datum === undefined) {
@@ -143,7 +207,12 @@ class EditPublicationView extends Component {
           case "bool":
             content = (
               <div className="ui checkbox">
-                <input type="checkbox" checked={datum} disabled />
+                <input
+                  type="checkbox"
+                  checked={datum}
+                  style={{ cursor: "default" }}
+                  disabled
+                />
                 <label> </label>
               </div>
             );
@@ -179,7 +248,7 @@ class EditPublicationView extends Component {
               {this.state.publication.title}
             </h1>
             <p>
-              <strong>DRAFT PUBLICATION!!! Date added: </strong>
+              <strong>Date added: </strong>
               {new Date(this.state.publication.created_at).toLocaleDateString()}
             </p>
             {this.state.collaborators.map(user => (
@@ -214,6 +283,39 @@ class EditPublicationView extends Component {
                   No resources were uploaded for this publication.
                 </div>
               </section>
+            )}
+
+            <button
+              className="ui green button"
+              onClick={() => {
+                Api()
+                  .publication(this.state.publication.id)
+                  .finalise()
+                  .post()
+                  .then(() => (window.location.href = "/"));
+              }}
+            >
+              Finalise Publication
+            </button>
+
+            <p>Signoffs Awaiting</p>
+
+            {this.state.signoffsRemaining.length ? (
+              this.state.signoffsRemaining.map(signoff => {
+                return <p key={signoff.user}>{signoff.user}</p>;
+              })
+            ) : (
+              <p>No signoffs remain, this publication is ready to finalise.</p>
+            )}
+
+            <p>Signoffs Complete</p>
+            {console.log(this.state.signoffs, this.state.signoffsRemaining)}
+            {this.state.signoffs.length ? (
+              this.state.signoffs.map(signoff => {
+                return <p key={signoff.user}>{signoff.user}</p>;
+              })
+            ) : (
+              <p>No signoffs have yet been completed.</p>
             )}
           </article>
         </main>

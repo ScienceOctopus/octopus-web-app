@@ -81,9 +81,9 @@ class SummaryView extends Component {
                 this.setState({
                   stage: stage,
                   schema: JSON.parse(stage.schema),
-                }),
+                })
               );
-          },
+          }
         );
       });
 
@@ -155,7 +155,7 @@ class SummaryView extends Component {
         switch (type) {
           case "file":
             datum = this.state.resources.find(
-              resource => resource.id === datum,
+              resource => resource.id === datum
             );
 
             if (datum === undefined) {
@@ -171,7 +171,7 @@ class SummaryView extends Component {
             break;
           case "uri":
             datum = this.state.resources.find(
-              resource => resource.id === datum,
+              resource => resource.id === datum
             );
 
             if (datum === undefined) {
