@@ -1,6 +1,11 @@
 import React, { Component } from "react";
 import PDFImagePreviewRenderer from "./PDFImagePreviewRenderer";
 import styled from "styled-components";
+import WebURI, {
+  LocalizedLink,
+  generateLocalizedPath,
+  RouterURI,
+} from "../urls/WebsiteURIs";
 import Api from "../api";
 
 const SUMMARY_KEY = "summary";
@@ -13,15 +18,7 @@ class SummaryView extends Component {
     this._isMounted = false;
     this._setStateTask = undefined;
 
-    this.state = {
-      publication: undefined,
-      collaborators: new Map(),
-      allCollaborators: new Map(),
-      users: new Map(),
-      resources: undefined,
-      stage: undefined,
-      schema: undefined,
-    };
+    this.state = {};
 
     this.fetchPublicationData();
   }
@@ -98,9 +95,14 @@ class SummaryView extends Component {
     this.setState(
       {
         publication: undefined,
-        collaborators: new Map(),
-        allCollaborators: new Map(),
+        collaborators: undefined,
+        allCollaborators: undefined,
         users: new Map(),
+        resources: undefined,
+        stage: undefined,
+        schema: undefined,
+        stageNames: undefined,
+        allPublications: undefined,
       },
       () => {
         // Cache under a similar scope as the ProblemPage
@@ -196,6 +198,37 @@ class SummaryView extends Component {
                 });
               },
             );
+          });
+
+        Api()
+          .subscribe(SUMMARY_KEY)
+          .problem(this.props.problemId)
+          .stages()
+          .get()
+          .then(stages => {
+            stages.sort((a, b) => a.order - b.order);
+            this.setState({
+              stageNames: stages.reduce(
+                (map, stage) => map.set(stage.id, stage.name),
+                new Map(),
+              ),
+            });
+          });
+
+        Api()
+          .subscribe(SUMMARY_KEY)
+          .publication(this.props.publicationId)
+          .allLinksBefore()
+          .get()
+          .then(publications => {
+            let unique = new Set();
+
+            publications = publications.filter(
+              publication =>
+                !unique.has(publication.id) && unique.add(publication.id),
+            );
+
+            this.setState({ allPublications: publications });
           });
       },
     );
@@ -295,10 +328,59 @@ class SummaryView extends Component {
       });
     }
 
-    let allCollaborators = SummaryView.sortByLastName(
-      this.state.allCollaborators,
-      this.state.users,
-    );
+    let allCollaborators =
+      this.state.allCollaborators &&
+      SummaryView.sortByLastName(this.state.allCollaborators, this.state.users);
+
+    let stagedPublications = null;
+
+    if (
+      this.state.allPublications !== undefined &&
+      this.state.stageNames !== undefined
+    ) {
+      stagedPublications = [];
+
+      let first = true;
+
+      this.state.stageNames.forEach((name, stage) => {
+        let publications = this.state.allPublications.filter(
+          publication => publication.stage === stage,
+        );
+
+        if (publications.length <= 0) {
+          return;
+        }
+
+        publications.sort((a, b) => a.title.localeCompare(b.title));
+
+        let stagePublications = (
+          <div key={stage} id={`/stages/${stage}`}>
+            {!first ? <span /> : null}
+            <h4>
+              {name}
+              {" ("}
+              {publications.length}
+              {")"}
+            </h4>
+            {publications.map(publication => (
+              <p key={publication.id}>
+                <LocalizedLink
+                  to={generateLocalizedPath(RouterURI.Publication, {
+                    id: publication.id,
+                  })}
+                >
+                  {publication.title}
+                </LocalizedLink>
+              </p>
+            ))}
+          </div>
+        );
+
+        stagedPublications.push(stagePublications);
+
+        first = false;
+      });
+    }
 
     return (
       <div>
@@ -317,17 +399,18 @@ class SummaryView extends Component {
               <strong>Date added: </strong>
               {new Date(this.state.publication.created_at).toLocaleDateString()}
             </p>
-            {SummaryView.sortByLastName(
-              this.state.collaborators,
-              this.state.users,
-            ).map(user => (
-              <p key={user.id}>
-                <strong>Author: </strong>
-                <a href={`https://orcid.org/${user.orcid}`}>
-                  {user.display_name}
-                </a>
-              </p>
-            ))}
+            {this.state.collaborators &&
+              SummaryView.sortByLastName(
+                this.state.collaborators,
+                this.state.users,
+              ).map(user => (
+                <p key={user.id}>
+                  <strong>Author: </strong>
+                  <a href={`https://orcid.org/${user.orcid}`}>
+                    {user.display_name}
+                  </a>
+                </p>
+              ))}
 
             {mainResourcePresent && (
               <a className="ui button" href={this.state.resources[0].uri}>
@@ -367,23 +450,24 @@ class SummaryView extends Component {
             )}
 
             <section className="ui segment">
-              <h3>Collaborating authors in this line of research</h3>
+              <h3>All collaborating authors in this line of research</h3>
               <div className="ui divider" />
-              {allCollaborators.map((user, i) => (
-                <span key={user.id}>
-                  <a href={`https://orcid.org/${user.orcid}`}>
-                    {user.display_name}
-                  </a>
-                  {user.contributions > 1 ? ` (${user.contributions})` : null}
-                  {i + 1 < allCollaborators.length ? ", " : null}
-                </span>
-              ))}
+              {this.state.allCollaborators &&
+                allCollaborators.map((user, i) => (
+                  <span key={user.id}>
+                    <a href={`https://orcid.org/${user.orcid}`}>
+                      {user.display_name}
+                    </a>
+                    {user.contributions > 1 ? ` (${user.contributions})` : null}
+                    {i + 1 < allCollaborators.length ? ", " : null}
+                  </span>
+                ))}
             </section>
 
             <section className="ui segment">
-              <h3>Publications in this line of research</h3>
+              <h3>Earlier publications in this line of research</h3>
               <div className="ui divider" />
-              {/* TODO: use publications/:id/linksBeforeAll to get all linked publications, sort by stages and provide anchors for three dots to it */}
+              {stagedPublications}
             </section>
           </article>
           <br />

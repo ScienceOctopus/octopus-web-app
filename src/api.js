@@ -274,7 +274,15 @@ class Store {
     let cache = this.getOrInit(path);
 
     if (process.DEBUG_MODE) {
-      console.log(primary, cache.data !== undefined ? "cache" : "get", path);
+      console.log(
+        primary,
+        cache.data !== undefined
+          ? "cache"
+          : cache.subscribed !== Store.SUBSCRIBED_NONE
+          ? "use"
+          : "get",
+        path,
+      );
     }
 
     let promise = new MultiPromise(Store._clone(cache.data));
@@ -296,7 +304,7 @@ class Store {
         });
       }
     } else if (
-      (cache.subscribed & Store.SUBSCRIBED_BODY) ===
+      (cache.subscribed & Store.SUBSCRIBED_DATA) ===
       Store.SUBSCRIBED_NONE
     ) {
       cache.subscribed |= Store.SUBSCRIBED_BOTH;
@@ -486,6 +494,11 @@ class PublicationBuilder extends LinkBuilder {
 
   linksBefore = () => {
     this.path += "/linksBefore";
+    return this;
+  };
+
+  allLinksBefore = () => {
+    this.path += "/linksBeforeAll";
     return this;
   };
 

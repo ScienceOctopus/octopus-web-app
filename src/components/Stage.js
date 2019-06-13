@@ -93,13 +93,15 @@ class Stage extends Component {
       this.props.stage.selection.size > 3
     ) {
       dots = (
-        <DotContainer>
-          {Array(3)
-            .fill(null)
-            .map((_, i) => (
-              <Dot key={i} />
-            ))}
-        </DotContainer>
+        <a href={`#/stages/${this.props.stage.id}`}>
+          <DotContainer>
+            {Array(3)
+              .fill(null)
+              .map((_, i) => (
+                <Dot key={i} />
+              ))}
+          </DotContainer>
+        </a>
       );
     }
 
