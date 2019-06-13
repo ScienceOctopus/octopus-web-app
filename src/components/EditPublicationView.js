@@ -96,9 +96,12 @@ class EditPublicationView extends Component {
       .resources()
       .get()
       .then(resources => {
-        this.setState({
-          resources: resources,
-        });
+        this.setState(
+          {
+            resources: resources,
+          },
+          () => {}
+        );
       });
 
     Api()
@@ -113,11 +116,14 @@ class EditPublicationView extends Component {
             .user(collaborator.user)
             .get()
             .then(user => {
-              this.setState(state => {
-                var augmented = state;
-                augmented.collaborators.push(user);
-                return augmented;
-              });
+              this.setState(
+                state => {
+                  var augmented = state;
+                  augmented.collaborators.push(user);
+                  return augmented;
+                },
+                () => {}
+              );
             });
         });
       });
@@ -351,7 +357,6 @@ class EditPublicationView extends Component {
               type="text"
               placeholder="example@example.com"
               onChange={e =>
-                console.log(e) ||
                 this.setState(
                   {
                     newCollaborator: e.target.value,
@@ -396,12 +401,12 @@ class EditPublicationView extends Component {
               <strong>Date added: </strong>
               {new Date(this.state.publication.created_at).toLocaleDateString()}
             </p>
-            {this.state.collaborators.map(user => (
-              <p key={user.id}>
-                <strong>Author: </strong>
-                {user.display_name}
-              </p>
-            ))}
+            <p>
+              <strong>Collaborators: </strong>
+              {this.state.collaborators.map(user => (
+                <span key={user.id}>{user.display_name} </span>
+              ))}
+            </p>
 
             {addCollaboratorButton}
 
