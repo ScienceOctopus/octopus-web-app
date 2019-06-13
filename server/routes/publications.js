@@ -179,6 +179,7 @@ const postCollaboratorToPublication = async (req, res) => {
 
   broadcast(`/publications/${req.params.id}/collaborators`);
   broadcast(`/publications/${req.params.id}/allCollaborators`);
+  broadcast(`/publications/${req.params.id}/signoffs_remaining`);
 
   res.sendStatus(200);
 };
@@ -236,6 +237,7 @@ const postSignoffToPublication = async (req, res) => {
     );
   }
 
+  broadcast(`/publications/${req.params.id}/signoffs_remaining`);
   broadcast(`/publications/${req.params.id}/signoffs`);
 
   res.sendStatus(204);
