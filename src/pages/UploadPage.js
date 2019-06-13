@@ -6,15 +6,18 @@ import PublicationSelector from "../components/PublicationSelector";
 import SimpleSelector from "../components/SimpleSelector";
 import TitledCheckbox from "../components/TitledCheckbox";
 import TitledForm from "../components/TitledForm";
-import {
+import WebURI, {
   LocalizedRedirect,
   RouterURI,
   localizeLink,
+  LocalizedLink,
 } from "../urls/WebsiteURIs";
 import { generatePath } from "react-router";
 import uniqueId from "lodash/uniqueId";
 import ProblemSelector from "../components/ProblemSelector";
 import { loginRequired } from "./LogInRequiredPage";
+
+const UPLOAD_KEY = "upload";
 
 class UploadPage extends Component {
   constructor(props) {
@@ -31,7 +34,8 @@ class UploadPage extends Component {
       title: "",
       summary: "",
       funding: "",
-      data: {},
+      conflict: "",
+      data: undefined,
       selectedFile: undefined,
 
       linkedProblemsSelected: false,
@@ -41,7 +45,9 @@ class UploadPage extends Component {
       publications: undefined,
     };
 
+    // Always start a new cache when the upload page is loaded
     Api()
+      .subscribeClass(UPLOAD_KEY, Math.random())
       .problems()
       .get()
       .then(problems =>
@@ -61,6 +67,7 @@ class UploadPage extends Component {
   }
 
   componentWillUnmount() {
+    Api().unsubscribeClass(UPLOAD_KEY);
     this._isMounted = false;
   }
 
@@ -156,6 +163,7 @@ class UploadPage extends Component {
 
   fetchStages(review) {
     Api()
+      .subscribe(UPLOAD_KEY)
       .problem(this.state.selectedProblemId)
       .stages()
       .get()
@@ -203,7 +211,7 @@ class UploadPage extends Component {
             // No-op
           }
         });
-
+      console.log(data);
       this.setState({ data: data });
     }
 
@@ -215,6 +223,7 @@ class UploadPage extends Component {
       this.state.selectedStageId - (this.state.isReview ? 0 : 1);
 
     Api()
+      .subscribe(UPLOAD_KEY)
       .problem(this.state.selectedProblemId)
       .stage(stageToReview)
       .publications()
@@ -256,6 +265,7 @@ class UploadPage extends Component {
     data.set("title", this.state.title);
     data.set("summary", this.state.summary);
     data.set("funding", this.state.funding);
+    data.set("conflict", this.state.conflict);
     data.set("user", global.session.user.id);
     data.set("review", this.state.isReview);
 
@@ -303,6 +313,7 @@ class UploadPage extends Component {
     await this.setState({ uploading: true });
 
     Api()
+      .subscribe(UPLOAD_KEY)
       .problem(this.state.selectedProblemId)
       .stage(this.state.selectedStageId)
       .publications()
@@ -336,10 +347,10 @@ class UploadPage extends Component {
     return url;
   }
 
-  handleProblemSelect = problemId => {
+  handleProblemSelect = problem => {
     this.props.history.replace(
       UploadPage.uploadURLBuilder(
-        problemId,
+        problem.id,
         undefined,
         this.state.isReview || undefined,
       ),
@@ -374,6 +385,12 @@ class UploadPage extends Component {
     });
   };
 
+  handleConflictChange = e => {
+    this.setState({
+      conflict: e.target.value,
+    });
+  };
+
   handleDataChange = key => e => {
     let field = this.state.stages
       .find(stage => stage.id === Number(this.state.selectedStageId))
@@ -400,7 +417,7 @@ class UploadPage extends Component {
     }
 
     data[key] = content;
-
+    console.log(data);
     this.setState({ data: data });
   };
 
@@ -444,13 +461,15 @@ class UploadPage extends Component {
       this.state.title &&
       this.state.summary &&
       this.state.funding &&
-      (this.isReview ||
-        this.state.stages
-          .find(stage => stage.id === Number(this.state.selectedStageId))
-          .schema.every(field => {
-            let content = this.state.data[field[0]];
-            return content !== undefined && content !== "";
-          }))
+      this.state.conflict &&
+      (this.state.isReview ||
+        (this.state.data !== undefined &&
+          this.state.stages
+            .find(stage => stage.id === Number(this.state.selectedStageId))
+            .schema.every(field => {
+              let content = this.state.data[field[0]];
+              return content !== undefined && content !== "";
+            })))
     );
   }
 
@@ -518,7 +537,11 @@ class UploadPage extends Component {
         stage => stage.id === Number(this.state.selectedStageId),
       );
 
-      if (stage !== undefined && this.state.data !== undefined) {
+      if (
+        stage !== undefined &&
+        this.state.data !== undefined &&
+        stage.schema.length > 0
+      ) {
         metaData = (
           <>
             {stage.schema.map(([key, type, title, description, id]) => {
@@ -590,19 +613,55 @@ class UploadPage extends Component {
               <i className="ui pencil icon" />
               Publish your work
             </h2>
+            <p>
+              Octopus currently accepts{" "}
+              <LocalizedLink to={WebURI.More}>
+                8 types of publication
+              </LocalizedLink>
+              , and every new publication must be linked to an existing one.
+              Problems are the top of the publication chain. Reviews can be
+              linked to any other kind of publication and should be treated as
+              the same as any other kind of publication.
+            </p>
+            <p>
+              Currently, you should upload your publication in pdf format
+              (though .doc and .docx will be supported soon). There are no rules
+              on style and layout, but healthcare researchers should be guided
+              by the relevant{" "}
+              <a href="https://www.equator-network.org">
+                EQUATOR reporting guidelines
+              </a>
+              . You will no longer need to structure your publications like a
+              paper, with an abstract and introduction as the publications above
+              yours in the chain should serve this role.
+            </p>
+            <p>
+              References should no longer be listed at the bottom, but instead
+              should be live URL links within the text to DOIs.
+            </p>
+            <p>
+              Publications will go live as soon as all authors have agreedto
+              publication.
+            </p>
+            <div className="ui divider" />
             <div className="two fields">
               <div className="field">
                 <ProblemSelector
-                  value={this.state.selectedProblemId}
-                  data={this.state.problems}
+                  selectedProblem={this.state.selectedProblemId}
+                  problems={this.state.problems}
                   accessor={x => [x.title, x.id]}
+                  appendPath={"/problems"}
                   onSelect={this.handleProblemSelect}
                 />
               </div>
               {this.state.selectedProblemId !== undefined && (
                 <div className="field">
                   <SimpleSelector
-                    title="Select a Publication Type"
+                    title={
+                      this.state.isReview
+                        ? "Select the type of work you are reviewing"
+                        : "Select the type of work you are publishing"
+                    }
                     value={this.state.selectedStageId}
                     data={this.state.stages}
                     accessor={x => [x.singular, x.id]}
@@ -638,6 +697,11 @@ class UploadPage extends Component {
               value={this.state.funding}
               onChange={this.handleFundingChange}
             />
+            <TitledForm
+              title="Conflict of Interest Declaration"
+              value={this.state.conflict}
+              onChange={this.handleConflictChange}
+            />
             <FileUploadSelector
               title="Publication Document"
               onSelect={this.handleFileSelect}
@@ -652,7 +716,14 @@ class UploadPage extends Component {
               Submit
             </button>{" "}
             as publication author{" "}
-            <strong>{global.session.user.display_name}</strong>.
+            <strong>{global.session.user.display_name}</strong>
+            {" ("}
+            {
+              <a href={`https://orcid.org/${global.session.user.orcid}`}>
+                {global.session.user.orcid}
+              </a>
+            }
+            {")"}.
             {this.state.uploadSuccessful && (
               <LocalizedRedirect
                 to={generatePath(RouterURI.Publication, {
@@ -662,6 +733,7 @@ class UploadPage extends Component {
             )}
           </div>
         </div>
+        <br />
       </div>
     );
   }

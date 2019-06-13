@@ -3,7 +3,10 @@ import Api from "../api";
 import TitledForm from "../components/TitledForm";
 import { loginRequired } from "./LogInRequiredPage";
 
+const INFO_TIMEOUT = 1000;
+
 class ProblemCreationPage extends Component {
+  createdProblemId = undefined;
   constructor(props) {
     super(props);
     this.state = { title: "", description: "", stages: undefined };
@@ -22,14 +25,46 @@ class ProblemCreationPage extends Component {
     Api()
       .problems()
       .post({
+        __DEBUG__: process.SHOW_DEBUG_SWITCH,
         title,
         description,
-        user: 1,
-      });
+        user: global.session.user.id,
+      })
+      .then(this.handleProblemCreated);
+  };
+
+  handleProblemCreated = response => {
+    this.createdProblemId = response.data;
+    this.setState({ creationSuccessful: true }, () =>
+      setTimeout(this.afterCreationInfoTimeout, INFO_TIMEOUT),
+    );
+  };
+
+  afterCreationInfoTimeout = () => {
+    if (this.props.location.state.redirectOnCreation) {
+      let link = this.props.location.state.redirectOnCreation;
+      if (this.props.location.state.appendProblemId && this.createdProblemId) {
+        link += "/" + this.createdProblemId;
+      }
+      this.props.history.push(link);
+    }
   };
 
   submitEnabled() {
-    return this.state.title;
+    return (
+      this.state.title &&
+      this.state.description &&
+      !this.state.creationSuccessful
+    );
+  }
+
+  renderSuccessfulCreated() {
+    return (
+      <h2>
+        {"Problem Successfully created! "}
+        {this.props.location.state.redirectOnCreation && "Going back..."}
+      </h2>
+    );
   }
 
   render() {
@@ -52,6 +87,7 @@ class ProblemCreationPage extends Component {
         >
           Submit
         </button>
+        {this.state.creationSuccessful && this.renderSuccessfulCreated()}
       </div>
     );
   }

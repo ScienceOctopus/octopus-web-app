@@ -220,9 +220,17 @@ class Store {
     this.keys.set(primary, secondary);
 
     this.store.forEach((cache, path, store) => {
-      const changed = cache.callbacks.delete(primary);
+      let callback = cache.callbacks.get(primary);
 
-      if (purge && changed && cache.callbacks.size <= 0) {
+      if (callback !== undefined) {
+        if (callback[0] !== Store.CALLBACK_DUMMY) {
+          cache.count -= 1;
+        }
+
+        cache.callbacks.set(primary, [Store.CALLBACK_DUMMY, callback[1]]);
+      }
+
+      if (purge && callback !== undefined && cache.count <= 0) {
         this._unsubscribe(path);
 
         store.delete(path);
@@ -235,7 +243,11 @@ class Store {
       let callback = cache.callbacks.get(primary);
 
       if (callback !== undefined) {
-        cache.callbacks.delete(primary);
+        if (callback[0] !== Store.CALLBACK_DUMMY) {
+          cache.count -= 1;
+        }
+
+        cache.callbacks.set(primary, [Store.CALLBACK_DUMMY, callback[1]]);
       }
     });
   };
@@ -249,6 +261,7 @@ class Store {
         data: undefined,
         headers: undefined,
         callbacks: new Map(),
+        count: 0,
       };
 
       this.store.set(path, cache);
@@ -261,12 +274,26 @@ class Store {
     let cache = this.getOrInit(path);
 
     if (process.DEBUG_MODE) {
-      console.log(primary, cache.data !== undefined ? "cache" : "get", path);
+      console.log(
+        primary,
+        cache.data !== undefined
+          ? "cache"
+          : cache.subscribed !== Store.SUBSCRIBED_NONE
+          ? "use"
+          : "get",
+        path
+      );
     }
 
     let promise = new MultiPromise(Store._clone(cache.data));
 
     if (primary !== undefined) {
+      let callback = cache.callbacks.get(primary);
+
+      if (callback !== undefined && callback[0] === Store.CALLBACK_DUMMY) {
+        cache.count += 1;
+      }
+
       cache.callbacks.set(primary, [promise, Store.SUBSCRIBED_DATA]);
     }
 
@@ -277,7 +304,7 @@ class Store {
         });
       }
     } else if (
-      (cache.subscribed & Store.SUBSCRIBED_BODY) ===
+      (cache.subscribed & Store.SUBSCRIBED_DATA) ===
       Store.SUBSCRIBED_NONE
     ) {
       cache.subscribed |= Store.SUBSCRIBED_BOTH;
@@ -296,12 +323,26 @@ class Store {
     let cache = this.getOrInit(path);
 
     if (process.DEBUG_MODE) {
-      console.log(primary, cache.data !== undefined ? "cache" : "head", path);
+      console.log(
+        primary,
+        cache.headers !== undefined
+          ? "cache"
+          : cache.subscribed !== Store.SUBSCRIBED_NONE
+          ? "use"
+          : "head",
+        path
+      );
     }
 
     let promise = new MultiPromise(Store._clone(cache.headers));
 
     if (primary !== undefined) {
+      let callback = cache.callbacks.get(primary);
+
+      if (callback !== undefined && callback[0] === Store.CALLBACK_DUMMY) {
+        cache.count += 1;
+      }
+
       cache.callbacks.set(primary, [promise, Store.SUBSCRIBED_HEADERS]);
     }
 
@@ -332,6 +373,8 @@ Store.SUBSCRIBED_NONE = 0;
 Store.SUBSCRIBED_HEADERS = 1;
 Store.SUBSCRIBED_DATA = 2;
 Store.SUBSCRIBED_BOTH = 3;
+
+Store.CALLBACK_DUMMY = { resolve: data => {} };
 
 let store = (global.store = new Store());
 
@@ -472,6 +515,16 @@ class PublicationBuilder extends LinkBuilder {
     return this;
   };
 
+  allLinksBefore = () => {
+    this.path += "/linksBeforeAll";
+    return this;
+  };
+
+  linksAfter = () => {
+    this.path += "/linksAfter";
+    return this;
+  };
+
   reviews = () => {
     this.path += "/reviews";
     return this;
@@ -491,6 +544,11 @@ class PublicationBuilder extends LinkBuilder {
     this.path += "/referencedBy";
     return this;
     }; */
+
+  allCollaborators = () => {
+    this.path += "/allCollaborators";
+    return this;
+  };
 }
 
 class UserBuilder extends LinkBuilder {

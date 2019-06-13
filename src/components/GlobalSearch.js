@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import SearchField from "./SearchField";
-import WebURI, { generateLocalizedPath, RouterURI } from "../urls/WebsiteURIs";
+import WebURI, { generateLocalizedPath } from "../urls/WebsiteURIs";
 
 class GlobalSearch extends Component {
   constructor(props) {

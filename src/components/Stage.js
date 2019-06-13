@@ -60,7 +60,7 @@ class Stage extends Component {
                 x2="100"
                 y2={(100 * (offset + margin)) / (offset * 2)}
                 style={{
-                  stroke: "#00726c",
+                  stroke: "var(--octopus-theme-publication)",
                   strokeWidth: 4,
                   fill: "transparent",
                 }}
@@ -93,13 +93,15 @@ class Stage extends Component {
       this.props.stage.selection.size > 3
     ) {
       dots = (
-        <DotContainer>
-          {Array(3)
-            .fill(null)
-            .map((_, i) => (
-              <Dot key={i} />
-            ))}
-        </DotContainer>
+        <a href={`#/stages/${this.props.stage.id}`}>
+          <DotContainer>
+            {Array(3)
+              .fill(null)
+              .map((_, i) => (
+                <Dot key={i} />
+              ))}
+          </DotContainer>
+        </a>
       );
     }
 
@@ -144,7 +146,11 @@ class Stage extends Component {
       );
     } else {
       pubsNumber = (
-        <div className={"floating ui " + (active ? "teal " : "") + "label"}>
+        <div
+          className={
+            "floating ui " + (active ? "octopus-theme accent " : "") + "label"
+          }
+        >
           {this.props.stage.publications.length}
         </div>
       );
@@ -162,46 +168,28 @@ class Stage extends Component {
             textOverflow: "ellipsis",
           }}
         >
-          <div style={{ float: "left" }}>
-            <div
-              className="ui icon button teal disabled"
-              style={{
-                padding: "0.5rem",
-                position: "absolute",
-                top: "0.7rem",
-                height: "2rem",
-                marginLeft: "-0.25rem",
-              }}
-            >
-              <i
-                className="ui pencil alternate icon"
-                style={{ marginRight: "0.5em", color: "white" }}
-              />
-            </div>
-            <div
-              className="ui icon button"
-              style={{
-                padding: "0.5rem",
-                margin: "-0.5rem 0.5rem -0.5rem -0.25rem",
-                opacity: 0,
-                pointerEvents: "none",
-              }}
-              hidden
-            >
-              <i
-                className="ui pencil alternate icon"
-                style={{
-                  marginRight: "0.5em",
-                  opacity: 0,
-                }}
-                hidden
-              />
-            </div>
-            &#x200b;
+          <div
+            className="ui icon button octopus-theme publication disabled"
+            style={{
+              padding: "0.5rem",
+              position: "absolute",
+              top: "calc(13px - (1.07142857rem * 1.28571429 - 13px) / 2)",
+              marginLeft: "-0.25rem",
+            }}
+          >
+            <i
+              className="ui pencil alternate icon"
+              style={{ color: "white" }}
+            />
           </div>
+          <span style={{ float: "left" }}>&#x200b;</span>
           <div
             className="ui placeholder"
-            style={{ marginRight: "1.5em", height: "1.2em" }}
+            style={{
+              marginLeft: "2.5rem",
+              marginRight: "1.5em",
+              height: "1.2em",
+            }}
           >
             <div className="long line" style={{ backgroundColor: "initial" }} />
           </div>
@@ -220,12 +208,11 @@ class Stage extends Component {
           }}
         >
           <div
-            className="ui icon button teal"
+            className="ui icon button octopus-theme publication"
             style={{
               padding: "0.5rem",
               position: "absolute",
-              top: "0.7rem",
-              height: "2rem",
+              top: "calc(13px - (1.07142857rem * 1.28571429 - 13px) / 2)",
               marginLeft: "-0.25rem",
             }}
             onClick={event => {
@@ -240,7 +227,7 @@ class Stage extends Component {
           >
             <i
               className="ui pencil alternate icon"
-              style={{ marginRight: "0.5em", color: "white" }}
+              style={{ color: "white" }}
             />
           </div>
           <div
@@ -269,10 +256,7 @@ class Stage extends Component {
     }
 
     return (
-      <div
-        className="column"
-        style={{ backgroundColor: "#dcf8ec", minWidth: "30ch" }}
-      >
+      <div className="column" style={{ minWidth: "30ch" }}>
         <PublicationSegment
           className={
             "ui " +
@@ -330,7 +314,7 @@ const LinksContainer = styled.div`
 `;
 
 const StyledPath = styled.path`
-  stroke: #00726c;
+  stroke: var(--octopus-theme-publication);
   stroke-width: 2;
   fill: transparent;
 `;

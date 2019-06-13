@@ -191,6 +191,7 @@ const queries = {
     title,
     summary,
     funding,
+    conflict,
     review,
     data,
     draft,
@@ -202,11 +203,18 @@ const queries = {
         title: title,
         summary: summary,
         funding: funding,
+        conflict: conflict,
         review: review,
         data: data,
         draft: draft,
       })
-      .returning("id"),
+      .returning(["id", "updated_at"])
+      .then(([{ id, updated_at }]) => {
+        return knex("problems")
+          .update({ updated_at: updated_at })
+          .where("id", problem)
+          .then(() => [id]);
+      }),
 
   finalisePublication: publication =>
     knex("publications")
@@ -364,6 +372,60 @@ const queries = {
       })
       .onConflictUpdate("orcid", "display_name", "email")
       .returning("id"),
+  selectCollaboratorsBackwardsFromPublication: publication =>
+    knex
+      .withRecursive("ancestors", qb => {
+        qb.select("publication_before", "publication_after")
+          .from("publication_links")
+          .where("publication_after", publication)
+          .union(qb => {
+            qb.select(
+              "publication_links.publication_before",
+              "publication_links.publication_after",
+            )
+              .from("publication_links")
+              .join(
+                "ancestors",
+                "ancestors.publication_before",
+                "publication_links.publication_after",
+              );
+          });
+      })
+      .with("ancestor_publications", qb =>
+        qb
+          .select("publication_before as publication")
+          .from("ancestors")
+          .union(qb => qb.select("publication_after").from("ancestors")),
+      )
+      .select()
+      .from("ancestor_publications")
+      .join(
+        "publication_collaborators",
+        "ancestor_publications.publication",
+        "publication_collaborators.publication",
+      ),
+  selectPublicationsByAllLinksBeforePublication: publication =>
+    knex
+      .withRecursive("ancestors", qb => {
+        qb.select("publication_before", "publication_after")
+          .from("publication_links")
+          .where("publication_after", publication)
+          .union(qb => {
+            qb.select(
+              "publication_links.publication_before",
+              "publication_links.publication_after",
+            )
+              .from("publication_links")
+              .join(
+                "ancestors",
+                "ancestors.publication_before",
+                "publication_links.publication_after",
+              );
+          });
+      })
+      .select()
+      .from("ancestors")
+      .join("publications", "publications.id", "ancestors.publication_before"),
 };
 
 module.exports = {

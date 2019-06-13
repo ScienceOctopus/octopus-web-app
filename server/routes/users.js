@@ -34,6 +34,7 @@ const getUserByID = async (req, res) => {
   return res.status(200).json({
     id: user.id,
     display_name: user.display_name,
+    orcid: user.orcid,
   });
 };
 
@@ -62,7 +63,7 @@ const getUserAvatar = async (req, res) => {
         request({
           qs: req.query,
           uri: `https://gravatar.com/avatar/${email_hash}`,
-        })
+        }),
       )
       .pipe(res);
   }

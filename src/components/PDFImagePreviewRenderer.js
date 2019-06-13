@@ -1,25 +1,28 @@
-import React, { useRef } from "react";
-import { usePdf } from "react-pdf-js";
+import React from "react";
+
+import { pdfjs, Document, Page } from "react-pdf";
+
+pdfjs.GlobalWorkerOptions.workerSrc =
+  process.env.NODE_ENV !== "test" &&
+  // eslint-disable-next-line import/no-webpack-loader-syntax
+  require("file-loader!../../node_modules/pdfjs-dist/build/pdf.worker.min.js");
 
 const PDFImagePreviewRenderer = props => {
-  const canvasEl = useRef(null);
-
-  const [loading] = usePdf({
-    file: props.document.uri,
-    page: 1,
-    canvasEl,
-  });
-
   return (
     <div>
-      {loading && (
-        <div className="ui active dimmer">
-          <div className="ui text loader">
-            Loading image preview: hang tight!
-          </div>
-        </div>
-      )}
-      <canvas ref={canvasEl} />
+      <Document file={props.document.uri}>
+        <Page
+          inputRef={ref => {
+            if (ref) {
+              ref.firstChild.style.width = "100%";
+              ref.firstChild.style.height = "";
+            }
+          }}
+          pageNumber={1}
+          renderAnnotationLayer={false}
+          renderTextLayer={false}
+        />
+      </Document>
     </div>
   );
 };

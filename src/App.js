@@ -1,3 +1,4 @@
+import "core-js/stable";
 import React, { Component } from "react";
 import Api from "./api";
 import AppRouter from "./AppRouter";
@@ -6,7 +7,8 @@ import OctopusSlackFeedback from "./components/SlackFeedback/OctopusSlackFeedbac
 
 // TODO: Can change this to be a dynamic import
 import DebugReloadButton from "./components/DebugReloadButton";
-
+import "semantic-ui-css/semantic.min.css";
+import "./App.css";
 import "./i18n";
 
 class App extends Component {

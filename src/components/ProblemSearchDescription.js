@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import Api from "../api";
 import { LocalizedLink, path, RouterURI } from "../urls/WebsiteURIs";
 
+const SEARCH_KEY = "search";
+
 const DESC_MAX_LENGTH = 200;
 
 export default class ProblemSearchDescription extends Component {
@@ -15,7 +17,9 @@ export default class ProblemSearchDescription extends Component {
   }
 
   fetchProblem() {
+    // Cache under the same scope as the ProblemSearchList
     Api()
+      .subscribe(SEARCH_KEY)
       .problem(this.props.id)
       .get()
       .then(problem => {
@@ -23,6 +27,7 @@ export default class ProblemSearchDescription extends Component {
       });
 
     Api()
+      .subscribe(SEARCH_KEY)
       .problem(this.props.id)
       .publications()
       .count()
@@ -33,14 +38,59 @@ export default class ProblemSearchDescription extends Component {
     return this.state.pubCountLoaded ? this.state.pubCount : "...";
   }
 
+  ClickableSelect = props => {
+    return (
+      <div
+        onClick={() => this.props.onSelect(this.state.problem)}
+        style={props.style}
+        className={props.className}
+      >
+        {props.children}
+      </div>
+    );
+  };
+
+  ClickableLink = props => {
+    return (
+      <LocalizedLink
+        to={path(RouterURI.Problem, { id: this.props.id })}
+        style={props.style}
+        className={props.className}
+      >
+        {props.children}
+      </LocalizedLink>
+    );
+  };
+
+  Clickable = props => {
+    if (this.props.onSelect === undefined) {
+      return (
+        <this.ClickableLink
+          className={props.className}
+          style={props.style}
+          children={props.children}
+        />
+      );
+    } else {
+      return (
+        <this.ClickableSelect
+          className={props.className}
+          style={props.style}
+          children={props.children}
+        />
+      );
+    }
+  };
+
   renderPublicationCount() {
     return (
-      <LocalizedLink to={path(RouterURI.Problem, { id: this.props.id })}>
-        <div className="ui button icon teal" style={styles.countLabel}>
-          <i className="ui icon file alternate outline computer tablet only" />
-          {" " + this.publicationCountString()}
-        </div>
-      </LocalizedLink>
+      <this.Clickable
+        className="ui button icon octopus-theme accent"
+        style={styles.countLabel}
+      >
+        <i className="ui icon file alternate outline computer tablet only" />
+        {" " + this.publicationCountString()}
+      </this.Clickable>
     );
   }
 
@@ -55,12 +105,7 @@ export default class ProblemSearchDescription extends Component {
       <div>
         <div className="ui grid" style={styles.container}>
           <div className="fourteen wide column">
-            <LocalizedLink
-              style={styles.link}
-              to={path(RouterURI.Problem, { id: this.props.id })}
-            >
-              {title}
-            </LocalizedLink>
+            <this.Clickable style={styles.link}>{title}</this.Clickable>
           </div>
           <div className="two wide column">{this.renderPublicationCount()}</div>
         </div>
@@ -98,6 +143,7 @@ const styles = {
   },
   link: {
     fontSize: "1.5rem",
+    cursor: "pointer",
   },
   description: {
     marginTop: "0.4rem",

@@ -120,7 +120,7 @@ class Publication extends Component {
           >
             <h4 style={{ fontSize: "1rem", position: "absolute", bottom: 0 }}>
               <div
-                className="ui icon button yellow"
+                className="ui icon button octopus-theme review"
                 style={{
                   padding: "0.5rem",
                   margin: "-0.5rem 0.5rem -0.5rem 0",
@@ -158,7 +158,10 @@ class Publication extends Component {
 
       publicationView = (
         <BgDiv
-          className="ui segment"
+          className={
+            "ui segment octopus-theme publication" +
+            (this.props.highlight ? " inverted highlight" : "")
+          }
           onClick={onClick}
           highlight={this.props.highlight}
           review={this.props.content.review !== undefined}
@@ -174,7 +177,10 @@ class Publication extends Component {
     } else {
       publicationView = (
         <BgDiv
-          className="ui segment"
+          className={
+            "ui segment octopus-theme publication" +
+            (this.props.highlight ? " inverted highlight" : "")
+          }
           onClick={onClick}
           highlight={this.props.highlight}
           review={this.props.review}
@@ -196,8 +202,7 @@ class Publication extends Component {
 }
 
 const BgDiv = styled.div`
-  &.segment {
-    background-color: ${props => (props.highlight ? "#99ffd3" : "white")};
+  &&&& {
     cursor: ${props =>
       (props.highlight && !props.review && !props.pointer) ||
       props.pointer === false
@@ -211,7 +216,7 @@ const BgDiv = styled.div`
     padding-bottom: 0;
   }
 
-  &:last-child {
+  &&&:last-child {
     margin-bottom: 0;
   }
 `;
@@ -241,10 +246,14 @@ const Summary = styled.div`
     background: linear-gradient(
       to bottom,
       ${props =>
-          props.highlight ? "rgba(159, 255, 214, 0)" : "rgba(255, 255, 255, 0)"}
+          props.highlight
+            ? "var(--octopus-theme-publication-highlight-transparent)"
+            : "rgba(255, 255, 255, 0)"}
         0%,
       ${props =>
-          props.highlight ? "rgba(159, 255, 214, 1)" : "rgba(255, 255, 255, 1)"}
+          props.highlight
+            ? "var(--octopus-theme-publication-highlight)"
+            : "rgba(255, 255, 255, 1)"}
         100%
     );
   }

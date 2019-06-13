@@ -30,13 +30,6 @@ export default class OctopusSlackFeedback extends Component {
   render() {
     return (
       <SlackFeedback
-        ref={ref =>
-          ref &&
-          ref.SlackFeedback.current.children[1].style.setProperty(
-            "background-color",
-            "#30947e",
-          )
-        }
         theme={OctopusTheme}
         showChannel="false"
         user="Slim"

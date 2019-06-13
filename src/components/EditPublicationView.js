@@ -3,8 +3,7 @@ import PDFImagePreviewRenderer from "./PDFImagePreviewRenderer";
 import styled from "styled-components";
 import Api from "../api";
 
-// Cache under the same scope as the ProblemPage
-const PROBLEM_KEY = "problem";
+const EDIT_KEY = "edit";
 
 class EditPublicationView extends Component {
   constructor(props) {
@@ -40,6 +39,8 @@ class EditPublicationView extends Component {
 
   componentWillUnmount() {
     this._isMounted = false;
+
+    Api().unsubscribeClass(EDIT_KEY);
   }
 
   setState(newState, callback) {
@@ -63,7 +64,7 @@ class EditPublicationView extends Component {
     this.setState({ publication: undefined, collaborators: [] });
 
     Api()
-      .subscribe(PROBLEM_KEY)
+      .subscribeClass(EDIT_KEY, this.props.publicationId)
       .publication(this.props.publicationId)
       .get()
       .then(publication => {
@@ -75,7 +76,7 @@ class EditPublicationView extends Component {
           },
           () => {
             Api()
-              .subscribe(PROBLEM_KEY)
+              .subscribe(EDIT_KEY)
               .problem(this.state.publication.problem)
               .stage(this.state.publication.stage)
               .get()
@@ -90,7 +91,7 @@ class EditPublicationView extends Component {
       });
 
     Api()
-      .subscribe(PROBLEM_KEY)
+      .subscribe(EDIT_KEY)
       .publication(this.props.publicationId)
       .resources()
       .get()
@@ -101,13 +102,14 @@ class EditPublicationView extends Component {
       });
 
     Api()
-      .subscribe(PROBLEM_KEY)
+      .subscribe(EDIT_KEY)
       .publication(this.props.publicationId)
       .collaborators()
       .get()
       .then(collaborators => {
         collaborators.forEach(collaborator => {
           Api()
+            .subscribe(EDIT_KEY)
             .user(collaborator.user)
             .get()
             .then(user => {
@@ -121,7 +123,7 @@ class EditPublicationView extends Component {
       });
 
     Api()
-      .subscribe(PROBLEM_KEY)
+      .subscribe(EDIT_KEY)
       .publication(this.props.publicationId)
       .signoffs()
       .get()
@@ -131,13 +133,17 @@ class EditPublicationView extends Component {
       });
 
     Api()
-      .subscribe(PROBLEM_KEY)
+      .subscribe(EDIT_KEY)
       .publication(this.props.publicationId)
       .signoffsRemaining()
       .get()
       .then(signoffsRemaining => {
         this.setState({ signoffsRemaining: signoffsRemaining }, () => {});
       });
+  }
+
+  componentWillUnmount() {
+    Api().unsubscribeClass(EDIT_KEY);
   }
 
   componentDidUpdate(oldProps) {

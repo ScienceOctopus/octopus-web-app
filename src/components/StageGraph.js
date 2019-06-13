@@ -92,8 +92,7 @@ class StageGraph extends Component {
           }
           event.stopPropagation();
         }}
-        className="ui one column grid"
-        style={{ backgroundColor: "#dcf8ec" }}
+        className="ui one column inverted octopus-theme background grid"
       >
         <div className="column">
           <div className="ui container">
@@ -127,7 +126,7 @@ class StageGraph extends Component {
               }}
             >
               <GraphButton
-                className="ui icon button teal"
+                className="ui icon button octopus-theme accent"
                 onClick={event => {
                   this.props.toggleOpen();
                   event.stopPropagation();
@@ -163,7 +162,10 @@ const GraphMiddler = styled.div`
   position: absolute;
   width: 1rem;
   height: 1rem;
-  inset: 0;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
 `;
 
 const GraphHider = styled.i`

@@ -1,10 +1,14 @@
 import React, { Component } from "react";
 import PDFImagePreviewRenderer from "./PDFImagePreviewRenderer";
 import styled from "styled-components";
+import WebURI, {
+  LocalizedLink,
+  generateLocalizedPath,
+  RouterURI,
+} from "../urls/WebsiteURIs";
 import Api from "../api";
 
-// Cache under the same scope as the ProblemPage
-const PROBLEM_KEY = "problem";
+const SUMMARY_KEY = "summary";
 
 class SummaryView extends Component {
   constructor(props) {
@@ -14,13 +18,7 @@ class SummaryView extends Component {
     this._isMounted = false;
     this._setStateTask = undefined;
 
-    this.state = {
-      publication: undefined,
-      collaborators: [],
-      resources: undefined,
-      stage: undefined,
-      schema: undefined,
-    };
+    this.state = {};
 
     this.fetchPublicationData();
   }
@@ -38,6 +36,8 @@ class SummaryView extends Component {
 
   componentWillUnmount() {
     this._isMounted = false;
+
+    Api().unsubscribeClass(SUMMARY_KEY);
   }
 
   setState(newState, callback) {
@@ -57,66 +57,181 @@ class SummaryView extends Component {
     }
   }
 
+  static getContributions = collaborators => {
+    return collaborators.reduce((map, collaborator) => {
+      return map.set(collaborator.user, (map.get(collaborator.user) || 0) + 1);
+    }, new Map());
+  };
+
+  static sortByLastName = (contributions, users) => {
+    let knownUsers = [];
+
+    contributions.forEach((amount, id) => {
+      let user = users.get(id);
+
+      if (user !== undefined) {
+        knownUsers.push({ contributions: amount, ...user });
+      }
+    });
+
+    knownUsers.sort((a, b) => {
+      if (a.contributions !== b.contributions) {
+        return a.contributions - b.contributions;
+      }
+
+      a = a.display_name.split(" ");
+      b = b.display_name.split(" ");
+
+      a = a[a.length - 1];
+      b = b[b.length - 1];
+
+      return a.localeCompare(b);
+    });
+
+    return knownUsers;
+  };
+
   fetchPublicationData() {
-    this.setState({ publication: undefined, collaborators: [] });
+    this.setState(
+      {
+        publication: undefined,
+        collaborators: undefined,
+        allCollaborators: undefined,
+        users: new Map(),
+        resources: undefined,
+        stage: undefined,
+        schema: undefined,
+        stageNames: undefined,
+        allPublications: undefined,
+      },
+      () => {
+        // Cache under a similar scope as the ProblemPage
+        Api()
+          .subscribeClass(SUMMARY_KEY, this.props.problemId)
+          .publication(this.props.publicationId)
+          .get()
+          .then(publication => {
+            publication.data = JSON.parse(publication.data);
 
-    Api()
-      .subscribe(PROBLEM_KEY)
-      .publication(this.props.publicationId)
-      .get()
-      .then(publication => {
-        publication.data = JSON.parse(publication.data);
+            this.setState(
+              {
+                publication: publication,
+              },
+              () => {
+                Api()
+                  .subscribe(SUMMARY_KEY)
+                  .problem(this.state.publication.problem)
+                  .stage(this.state.publication.stage)
+                  .get()
+                  .then(stage =>
+                    this.setState({
+                      stage: stage,
+                      schema: JSON.parse(stage.schema),
+                    })
+                  );
+              }
+            );
+          });
 
-        this.setState(
-          {
-            publication: publication,
-          },
-          () => {
-            Api()
-              .subscribe(PROBLEM_KEY)
-              .problem(this.state.publication.problem)
-              .stage(this.state.publication.stage)
-              .get()
-              .then(stage =>
-                this.setState({
-                  stage: stage,
-                  schema: JSON.parse(stage.schema),
-                })
-              );
-          }
-        );
-      });
-
-    Api()
-      .subscribe(PROBLEM_KEY)
-      .publication(this.props.publicationId)
-      .resources()
-      .get()
-      .then(resources => {
-        this.setState({
-          resources: resources,
-        });
-      });
-
-    Api()
-      .subscribe(PROBLEM_KEY)
-      .publication(this.props.publicationId)
-      .collaborators()
-      .get()
-      .then(collaborators => {
-        collaborators.forEach(collaborator => {
-          Api()
-            .user(collaborator.user)
-            .get()
-            .then(user => {
-              this.setState(state => {
-                var augmented = state;
-                augmented.collaborators.push(user);
-                return augmented;
-              });
+        Api()
+          .subscribe(SUMMARY_KEY)
+          .publication(this.props.publicationId)
+          .resources()
+          .get()
+          .then(resources => {
+            this.setState({
+              resources: resources,
             });
-        });
-      });
+          });
+
+        Api()
+          .subscribe(SUMMARY_KEY)
+          .publication(this.props.publicationId)
+          .collaborators()
+          .get()
+          .then(collaborators => {
+            this.setState(
+              { collaborators: SummaryView.getContributions(collaborators) },
+              () => {
+                this.state.collaborators.forEach((contributions, id) => {
+                  Api()
+                    .subscribe(SUMMARY_KEY)
+                    .user(id)
+                    .get()
+                    .then(user =>
+                      this.setState(state => {
+                        let users = state.users;
+                        users.set(id, user);
+                        return { users: users };
+                      })
+                    );
+                });
+              }
+            );
+          });
+
+        Api()
+          .subscribe(SUMMARY_KEY)
+          .publication(this.props.publicationId)
+          .allCollaborators()
+          .get()
+          .then(allCollaborators => {
+            this.setState(
+              {
+                allCollaborators: SummaryView.getContributions(
+                  allCollaborators
+                ),
+              },
+              () => {
+                this.state.allCollaborators.forEach((contributions, id) => {
+                  Api()
+                    .subscribe(SUMMARY_KEY)
+                    .user(id)
+                    .get()
+                    .then(user =>
+                      this.setState(state => {
+                        let users = state.users;
+                        users.set(id, user);
+                        return { users: users };
+                      })
+                    );
+                });
+              }
+            );
+          });
+
+        Api()
+          .subscribe(SUMMARY_KEY)
+          .problem(this.props.problemId)
+          .stages()
+          .get()
+          .then(stages => {
+            stages.sort((a, b) => a.order - b.order);
+            this.setState({
+              stageNames: stages.reduce(
+                (map, stage) => map.set(stage.id, stage.name),
+                new Map()
+              ),
+            });
+          });
+
+        Api()
+          .subscribe(SUMMARY_KEY)
+          .publication(this.props.publicationId)
+          .allLinksBefore()
+          .get()
+          .then(publications => {
+            let unique = new Set();
+
+            publications = publications.filter(
+              publication =>
+                !unique.has(publication.id) && unique.add(publication.id)
+            );
+
+            this.setState({ allPublications: publications });
+          });
+      }
+    );
   }
 
   componentDidUpdate(oldProps) {
@@ -213,6 +328,60 @@ class SummaryView extends Component {
       });
     }
 
+    let allCollaborators =
+      this.state.allCollaborators &&
+      SummaryView.sortByLastName(this.state.allCollaborators, this.state.users);
+
+    let stagedPublications = null;
+
+    if (
+      this.state.allPublications !== undefined &&
+      this.state.stageNames !== undefined
+    ) {
+      stagedPublications = [];
+
+      let first = true;
+
+      this.state.stageNames.forEach((name, stage) => {
+        let publications = this.state.allPublications.filter(
+          publication => publication.stage === stage
+        );
+
+        if (publications.length <= 0) {
+          return;
+        }
+
+        publications.sort((a, b) => a.title.localeCompare(b.title));
+
+        let stagePublications = (
+          <div key={stage} id={`/stages/${stage}`}>
+            {!first ? <span /> : null}
+            <h4>
+              {name}
+              {" ("}
+              {publications.length}
+              {")"}
+            </h4>
+            {publications.map(publication => (
+              <p key={publication.id}>
+                <LocalizedLink
+                  to={generateLocalizedPath(RouterURI.Publication, {
+                    id: publication.id,
+                  })}
+                >
+                  {publication.title}
+                </LocalizedLink>
+              </p>
+            ))}
+          </div>
+        );
+
+        stagedPublications.push(stagePublications);
+
+        first = false;
+      });
+    }
+
     return (
       <div>
         <div className="ui divider" />
@@ -230,12 +399,18 @@ class SummaryView extends Component {
               <strong>Date added: </strong>
               {new Date(this.state.publication.created_at).toLocaleDateString()}
             </p>
-            {this.state.collaborators.map(user => (
-              <p key={user.id}>
-                <strong>Author: </strong>
-                {user.display_name}
-              </p>
-            ))}
+            {this.state.collaborators &&
+              SummaryView.sortByLastName(
+                this.state.collaborators,
+                this.state.users
+              ).map(user => (
+                <p key={user.id}>
+                  <strong>Author: </strong>
+                  <a href={`https://orcid.org/${user.orcid}`}>
+                    {user.display_name}
+                  </a>
+                </p>
+              ))}
 
             {mainResourcePresent && (
               <a className="ui button" href={this.state.resources[0].uri}>
@@ -247,6 +422,16 @@ class SummaryView extends Component {
               <h3>Summary</h3>
               <div className="ui divider" />
               {this.state.publication.summary}
+            </section>
+            <section className="ui segment">
+              <h3>Funding Statement</h3>
+              <div className="ui divider" />
+              {this.state.publication.funding}
+            </section>
+            <section className="ui segment">
+              <h3>Conflict of Interest Declaration</h3>
+              <div className="ui divider" />
+              {this.state.publication.conflict}
             </section>
 
             {metadata}
@@ -263,7 +448,29 @@ class SummaryView extends Component {
                 </div>
               </section>
             )}
+
+            <section className="ui segment">
+              <h3>All collaborating authors in this line of research</h3>
+              <div className="ui divider" />
+              {this.state.allCollaborators &&
+                allCollaborators.map((user, i) => (
+                  <span key={user.id}>
+                    <a href={`https://orcid.org/${user.orcid}`}>
+                      {user.display_name}
+                    </a>
+                    {user.contributions > 1 ? ` (${user.contributions})` : null}
+                    {i + 1 < allCollaborators.length ? ", " : null}
+                  </span>
+                ))}
+            </section>
+
+            <section className="ui segment">
+              <h3>Earlier publications in this line of research</h3>
+              <div className="ui divider" />
+              {stagedPublications}
+            </section>
           </article>
+          <br />
         </main>
       </div>
     );
@@ -271,11 +478,11 @@ class SummaryView extends Component {
 }
 
 const StageTitle = styled.span`
-  color: #00b5ad;
+  color: var(--octopus-theme-publication);
 `;
 
 const ReviewTitle = styled.span`
-  color: #9eb300;
+  color: var(--octopus-theme-review);
 `;
 
 export default SummaryView;

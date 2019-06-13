@@ -1,0 +1,17 @@
+14.88s
+16.04s
+16.70s
+
+Not in list:
+43.32s
+
+========
+
+Search includes description:
+
+5.61s
+5.32s
+5.33s
+
+Not in list:
+20.32s
