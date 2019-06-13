@@ -288,7 +288,7 @@ class EditPublicationView extends Component {
                           .publication(this.state.publication.id)
                           .signoffs()
                           .post({ revision: this.state.publication.revision })
-                          .then(() => (window.location.href = "/"))
+                          .then()
                       }
                     >
                       Sign Off
@@ -332,7 +332,7 @@ class EditPublicationView extends Component {
               .publication(this.state.publication.id)
               .requestSignoff()
               .post({ revision: this.state.publication.revision })
-              .then(() => (window.location.href = "/"));
+              .then();
           }}
         >
           Finalise Publication And Request Signoffs
@@ -368,7 +368,7 @@ class EditPublicationView extends Component {
                   .publication(this.state.publication.id)
                   .collaborators()
                   .post({ email: this.state.newCollaborator })
-                  .then(() => (window.location.href = "/"));
+                  .then();
               }}
             >
               Add New Collaborator
