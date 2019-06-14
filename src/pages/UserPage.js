@@ -13,7 +13,13 @@ class UserPage extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { problems: undefined };
+    this.state = {
+      problems: undefined,
+      finalizedPublications: [],
+      finalizedReviews: [],
+      draftPublications: [],
+      draftReviews: [],
+    };
 
     this.fetchUserPublications();
   }
@@ -28,10 +34,7 @@ class UserPage extends Component {
       .publications()
       .getByUser(global.session.user.id)
       .then(publications => {
-        this.setState({
-          finalPubs: publications.filter(p => !p.draft),
-          draftPubs: publications.filter(p => p.draft),
-        });
+        this.setState(splitPublications(publications));
       });
   }
 
@@ -72,11 +75,14 @@ class UserPage extends Component {
         {this.renderTitle()}
 
         <div className="ui segment">
-          {this.renderPublications(this.state.finalPubs, "finalized")}
+          {this.renderPublications(
+            this.state.finalizedPublications,
+            "finalized",
+          )}
         </div>
 
         <div className="ui segment">
-          {this.renderPublications(this.state.draftPubs, "draft")}
+          {this.renderPublications(this.state.draftPublications, "draft")}
         </div>
       </div>
     );
@@ -85,6 +91,28 @@ class UserPage extends Component {
 
 const capitalizeFirst = string => {
   return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
+const splitPublications = pubs => {
+  let splitted = {
+    finalizedPublications: [],
+    finalizedReviews: [],
+    draftPublications: [],
+    draftReviews: [],
+  };
+
+  pubs.forEach(p => {
+    let key = "";
+    if (p.draft) {
+      key = p.review ? "draftReviews" : "draftPublications";
+    } else {
+      key = p.review ? "finalizedReviews" : "finalizedPublications";
+    }
+
+    splitted[key].push(p);
+  });
+
+  return splitted;
 };
 
 export default loginRequired(withState(UserPage));
