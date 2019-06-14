@@ -70,9 +70,19 @@ const getUserAvatar = async (req, res) => {
   }
 };
 
+const getNotificationsForUser = async (req, res) => {
+  const notifications = db.selectNotificationsForUser(req.params.user);
+
+  res.status(200).json(notifications);
+};
+
 var router = express.Router();
 
 router.get("/:id(\\d+)", catchAsyncErrors(getUserByID));
+router.get(
+  "/:id(\\d+)/notifications",
+  catchAsyncErrors(getNotificationsForUser),
+);
 router.get("/:id(\\d+)/avatar", catchAsyncErrors(getUserAvatar));
 
 module.exports = {
