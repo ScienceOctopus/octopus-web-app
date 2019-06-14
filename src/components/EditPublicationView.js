@@ -359,7 +359,7 @@ class EditPublicationView extends Component {
             <label>Summary</label>
             <textarea
               value={this.state.newSummary || this.state.publication.summary}
-              onChange={e => this.setSTate({ newSummary: e.target.value })}
+              onChange={e => this.setState({ newSummary: e.target.value })}
             />
           </div>
           <button
