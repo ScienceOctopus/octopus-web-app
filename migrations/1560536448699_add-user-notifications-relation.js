@@ -3,7 +3,7 @@ exports.shorthands = undefined;
 exports.up = pgm => {
   pgm.createTable("user_notifications", {
     id: "id",
-    usee: {
+    user: {
       type: "integer",
       notNull: true,
       references: "users",
@@ -14,11 +14,6 @@ exports.up = pgm => {
       notNull: true,
       references: "publications",
       onDelete: "cascade",
-    },
-    notified: {
-      type: "boolean",
-      default: false,
-      notNull: true,
     },
   });
 };
