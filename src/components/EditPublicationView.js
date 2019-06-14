@@ -119,6 +119,9 @@ class EditPublicationView extends Component {
               this.setState(
                 state => {
                   var augmented = state;
+                  augmented.collaborators = augmented.collaborators.filter(
+                    collaborator => collaborator.id !== user.id
+                  );
                   augmented.collaborators.push(user);
                   return augmented;
                 },
