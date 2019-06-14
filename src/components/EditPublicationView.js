@@ -52,9 +52,9 @@ class EditPublicationView extends Component {
                 this.setState({
                   stage: stage,
                   schema: JSON.parse(stage.schema),
-                })
+                }),
               );
-          }
+          },
         );
       });
 
@@ -83,7 +83,7 @@ class EditPublicationView extends Component {
               this.setState(state => {
                 var augmented = state;
                 augmented.collaborators = augmented.collaborators.filter(
-                  collaborator => collaborator.id !== user.id
+                  collaborator => collaborator.id !== user.id,
                 );
                 augmented.collaborators.push(user);
                 return augmented;
@@ -106,7 +106,7 @@ class EditPublicationView extends Component {
               this.setState(state => {
                 var augmented = state;
                 augmented.signoffs = augmented.signoffs.filter(
-                  signoff => signoff.id !== user.id
+                  signoff => signoff.id !== user.id,
                 );
                 augmented.signoffs.push(user);
                 return augmented;
@@ -130,7 +130,7 @@ class EditPublicationView extends Component {
                 this.setState(state => {
                   var augmented = state;
                   augmented.signoffsRemaining = augmented.signoffsRemaining.filter(
-                    signoff => signoff.id !== user.id
+                    signoff => signoff.id !== user.id,
                   );
                   augmented.signoffsRemaining.push(user);
                   return augmented;
@@ -177,7 +177,7 @@ class EditPublicationView extends Component {
         switch (type) {
           case "file":
             datum = this.state.resources.find(
-              resource => resource.id === datum
+              resource => resource.id === datum,
             );
 
             if (datum === undefined) {
@@ -193,7 +193,7 @@ class EditPublicationView extends Component {
             break;
           case "uri":
             datum = this.state.resources.find(
-              resource => resource.id === datum
+              resource => resource.id === datum,
             );
 
             if (datum === undefined) {
@@ -381,7 +381,7 @@ class EditPublicationView extends Component {
                     newTitle: undefined,
                     newFunding: undefined,
                     newData: undefined,
-                  })
+                  }),
                 );
             }}
           >
