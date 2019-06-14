@@ -115,7 +115,7 @@ function AppRouter() {
       />
 
       <Route
-        name="newProblem"
+        name="create"
         exact
         path={RouterPath(WebURI.ProblemCreation)}
         component={ProblemCreationPage}

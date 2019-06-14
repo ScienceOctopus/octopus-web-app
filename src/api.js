@@ -225,6 +225,12 @@ class Store {
       if (callback !== undefined) {
         if (callback[0] !== Store.CALLBACK_DUMMY) {
           cache.count -= 1;
+
+          // DEBUG CHECK
+          if (cache.count < 0) {
+            console.log("open", path, primary, cache.count, callback[0]);
+            console.log(undefined[0]);
+          }
         }
 
         cache.callbacks.set(primary, [Store.CALLBACK_DUMMY, callback[1]]);
@@ -245,6 +251,12 @@ class Store {
       if (callback !== undefined) {
         if (callback[0] !== Store.CALLBACK_DUMMY) {
           cache.count -= 1;
+
+          // DEBUG CHECK
+          if (cache.count < 0) {
+            console.log("close", path, primary, cache.count, callback[0]);
+            console.log(undefined[0]);
+          }
         }
 
         cache.callbacks.set(primary, [Store.CALLBACK_DUMMY, callback[1]]);
@@ -290,7 +302,7 @@ class Store {
     if (primary !== undefined) {
       let callback = cache.callbacks.get(primary);
 
-      if (callback !== undefined && callback[0] === Store.CALLBACK_DUMMY) {
+      if (callback === undefined || callback[0] === Store.CALLBACK_DUMMY) {
         cache.count += 1;
       }
 
@@ -339,7 +351,7 @@ class Store {
     if (primary !== undefined) {
       let callback = cache.callbacks.get(primary);
 
-      if (callback !== undefined && callback[0] === Store.CALLBACK_DUMMY) {
+      if (callback === undefined || callback[0] === Store.CALLBACK_DUMMY) {
         cache.count += 1;
       }
 
