@@ -60,8 +60,11 @@ const queries = {
   selectProblemsBySearch: searchPhrase =>
     knex("problems")
       .select()
-      .whereRaw(`lower(title) like '%${searchPhrase.toLowerCase()}%'`)
-      .orWhereRaw(`lower(description) like '%${searchPhrase.toLowerCase()}%'`),
+      .whereRaw("lower(title) like ?", `%${searchPhrase.toLowerCase()}%`)
+      .orWhereRaw(
+        "lower(description) like ?",
+        `%${searchPhrase.toLowerCase()}%`,
+      ),
 
   insertProblem: (title, description, creator) =>
     knex("problems")

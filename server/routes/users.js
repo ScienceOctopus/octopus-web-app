@@ -64,7 +64,7 @@ const getUserAvatar = async (req, res) => {
         request({
           qs: req.query,
           uri: `https://gravatar.com/avatar/${email_hash}`,
-        })
+        }),
       )
       .pipe(res);
   }

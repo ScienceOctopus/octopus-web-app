@@ -26,6 +26,8 @@ const publicationVisibleForCurrentUser = async (publication, req) => {
       collaborator => collaborator.user === user,
     );
 
+    console.log(user, collaborators);
+
     if (!collaborators.length) {
       return false;
     }
@@ -41,7 +43,8 @@ const getAndValidatePublication = async (id, req) => {
 
   let publication = publications[0];
 
-  return publicationVisibleForCurrentUser(publication, req)
+  console.log(publication.id);
+  return (await publicationVisibleForCurrentUser(publication, req))
     ? publication
     : undefined;
 };
@@ -211,7 +214,7 @@ const postCollaboratorToPublication = async (req, res) => {
 
   broadcast(`/problems/${publication.problem}/publications`);
   broadcast(
-    `/problems/${publication.problem}/stages/${publication.stage}/publications`
+    `/problems/${publication.problem}/stages/${publication.stage}/publications`,
   );
   broadcast(`/publications/${req.params.id}/collaborators`);
   broadcast(`/publications/${req.params.id}/allCollaborators`);
