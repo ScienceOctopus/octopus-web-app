@@ -121,20 +121,22 @@ class EditPublicationView extends Component {
       .signoffsRemaining()
       .get()
       .then(signoffsRemaining => {
-        signoffsRemaining.forEach(signoff => {
-          Api()
-            .user(signoff.user)
-            .get()
-            .then(user => {
-              this.setState(state => {
-                var augmented = state;
-                augmented.signoffsRemaining = augmented.signoffsRemaining.filter(
-                  signoff => signoff.id !== user.id
-                );
-                augmented.signoffsRemaining.push(user);
-                return augmented;
+        this.setState({ signoffsRemaining: [] }, () => {
+          signoffsRemaining.forEach(signoff => {
+            Api()
+              .user(signoff.user)
+              .get()
+              .then(user => {
+                this.setState(state => {
+                  var augmented = state;
+                  augmented.signoffsRemaining = augmented.signoffsRemaining.filter(
+                    signoff => signoff.id !== user.id
+                  );
+                  augmented.signoffsRemaining.push(user);
+                  return augmented;
+                });
               });
-            });
+          });
         });
       });
   }

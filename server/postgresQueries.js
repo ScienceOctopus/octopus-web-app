@@ -219,7 +219,7 @@ const queries = {
 
   finalisePublication: (publication, revision) =>
     knex("publications")
-      .update({ draft: false })
+      .update({ draft: false, updated_at: new Date() })
       .where("id", publication)
       .where("revision", revision),
 
@@ -238,6 +238,7 @@ const queries = {
         data: data,
         revision: revision + 1,
         signoff_requested: false,
+        updated_at: new Date(),
       })
       .where("id", publication)
       .where("revision", revision),
