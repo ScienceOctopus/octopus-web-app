@@ -122,7 +122,10 @@ class Stage extends Component {
       publications = new Array(3)
         .fill(null)
         .map((_, i) => <Publication key={i} loading />);
-    } else if (this.props.content.publication !== undefined) {
+    } else if (
+      this.props.content.publication !== undefined &&
+      !this.props.stage.selection.loading
+    ) {
       publications = this.props.stage.selection.publications.map(
         publicationId => {
           let publication = this.props.stage.publications[publicationId];
