@@ -246,7 +246,10 @@ const postPublicationToProblemAndStage = async (req, res) => {
     let basedArray = JSON.parse(req.body.basedOn);
     await db.insertLink(publications[0], basedArray);
 
-    usersToNotify = db.selectAllCollaboratorsForListOfPublications(basedArray);
+    usersToNotify = await db
+      .selectAllCollaboratorsForListOfPublications(basedArray)
+      .map(x => x.user);
+
     for (let i = 0; i < usersToNotify.length; i++) {
       await db.insertUserNotification(usersToNotify[i], publications[0]);
     }

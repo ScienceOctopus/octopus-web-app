@@ -71,7 +71,7 @@ const getUserAvatar = async (req, res) => {
 };
 
 const getNotificationsForUser = async (req, res) => {
-  const notifications = db.selectNotificationsForUser(req.params.user);
+  const notifications = await db.selectNotificationsForUser(req.params.id);
 
   res.status(200).json(notifications);
 };

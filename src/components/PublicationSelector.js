@@ -59,11 +59,11 @@ class PublicationSelector extends Component {
 }
 
 PublicationSelector.propTypes = {
-  title: PropTypes.string.isRequired,
+  title: PropTypes.string,
   singleSelection: PropTypes.bool,
   publications: PropTypes.array.isRequired,
-  selection: PropTypes.array.isRequired,
-  onSelection: PropTypes.func.isRequired,
+  selection: PropTypes.array,
+  onSelection: PropTypes.func,
 };
 
 export default PublicationSelector;

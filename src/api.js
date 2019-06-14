@@ -571,6 +571,11 @@ class UserBuilder extends LinkBuilder {
     super(key);
     this.path = "/users/" + userId;
   }
+
+  notifications = () => {
+    this.path += "/notifications";
+    return this;
+  };
 }
 
 class AuthenticationBuilder extends LinkBuilder {
