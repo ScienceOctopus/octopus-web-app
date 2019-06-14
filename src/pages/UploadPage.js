@@ -650,7 +650,6 @@ class UploadPage extends Component {
                   selectedProblem={this.state.selectedProblemId}
                   problems={this.state.problems}
                   accessor={x => [x.title, x.id]}
-                  appendPath={"/problems"}
                   onSelect={this.handleProblemSelect}
                 />
               </div>
