@@ -313,8 +313,6 @@ class EditPublicationView extends Component {
 
     let addCollaboratorButton = (
       <>
-        <h3>Add new Collaborator</h3>
-
         <div className="ui form">
           <div className="inline field">
             <label>Email Address</label>
@@ -327,27 +325,43 @@ class EditPublicationView extends Component {
                 })
               }
             />
-            <button
-              className="ui button"
-              type="submit"
-              onClick={() => {
-                Api()
-                  .publication(this.state.publication.id)
-                  .collaborators()
-                  .post({ email: this.state.newCollaborator })
-                  .then();
-              }}
-            >
-              Add New Collaborator
-            </button>
           </div>
+          <button
+            className="ui button"
+            type="submit"
+            onClick={() => {
+              Api()
+                .publication(this.state.publication.id)
+                .collaborators()
+                .post({ email: this.state.newCollaborator })
+                .then();
+            }}
+          >
+            Add New Collaborator
+          </button>
         </div>
       </>
     );
 
-    let updateButton = (
+    let editForm = (
       <>
-        <p>
+        <div className="ui form">
+          <div className="inline field">
+            <label>Title</label>
+            <input
+              type="text"
+              value={this.state.newTitle || this.state.publication.title}
+              onChange={e => this.setState({ newTitle: e.target.value })}
+            />
+          </div>
+          <div className="ui divider" />
+          <div className="field">
+            <label>Summary</label>
+            <textarea
+              value={this.state.newSummary || this.state.publication.summary}
+              onChange={e => this.setSTate({ newSummary: e.target.value })}
+            />
+          </div>
           <button
             className="ui button"
             type="submit"
@@ -357,16 +371,25 @@ class EditPublicationView extends Component {
                 .post({
                   id: this.state.publication.id,
                   revision: this.state.publication.revision,
-                  title: this.state.publication.title,
-                  summary: this.state.publication.summary,
-                  funding: this.state.publication.funding,
-                  data: this.state.publication.data,
-                });
+                  title: this.state.newTitle,
+                  summary: this.state.newSummary,
+                  funding: this.state.newFunding,
+                  data: this.state.newData,
+                })
+                .then(() =>
+                  this.setState({
+                    newSummary: undefined,
+                    newTitle: undefined,
+                    newFunding: undefined,
+                    newData: undefined,
+                  })
+                );
             }}
           >
             Update Draft
           </button>
-        </p>
+        </div>
+        <p>(Current Revision: {this.state.publication.revision})</p>
       </>
     );
 
@@ -388,14 +411,18 @@ class EditPublicationView extends Component {
               <strong>Date added: </strong>
               {new Date(this.state.publication.created_at).toLocaleDateString()}
             </p>
-            <p>
-              <strong>Collaborators: </strong>
+            <h3>Collaborators</h3>
+            <ul>
               {this.state.collaborators.map(user => (
-                <span key={user.id}>{user.display_name} </span>
+                <li key={user.id}>{user.display_name}</li>
               ))}
-            </p>
+            </ul>
+
+            <div className="ui divider" />
 
             {addCollaboratorButton}
+
+            <div className="ui divider" />
 
             {mainResourcePresent && (
               <a className="ui button" href={this.state.resources[0].uri}>
@@ -403,13 +430,8 @@ class EditPublicationView extends Component {
                 Download document
               </a>
             )}
-            <section className="ui segment">
-              <h3>Summary</h3>
-              <div className="ui divider" />
-              {this.state.publication.summary}
-            </section>
 
-            {metadata}
+            {/*{metadata}
 
             {mainResourcePresent ? (
               <section className="ui segment">
@@ -422,11 +444,13 @@ class EditPublicationView extends Component {
                   No resources were uploaded for this publication.
                 </div>
               </section>
-            )}
+            )}*/}
 
-            {updateButton}
+            <div className="ui divider" />
 
-            <p>(Current Revision: {this.state.publication.revision})</p>
+            {editForm}
+
+            <div className="ui divider" />
 
             {signoffInvitation}
           </article>
