@@ -135,6 +135,7 @@ const queries = {
   ) =>
     queries
       .selectPublicationsByProblemAndCollaborator(problem, user)
+      .where("stage", stage)
       .where("review", false)
       .where("draft", true),
 
