@@ -74,11 +74,6 @@ class ProblemSelector extends Component {
   render() {
     return (
       <div className="field">
-        {/* <SimpleSelector
-          title="Select a Problem"
-          style={styles.selector}
-          {...this.props}
-        /> */}
         <div className="ui buttons">
           <div
             className="ui button positive"

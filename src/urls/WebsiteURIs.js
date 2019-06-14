@@ -51,7 +51,7 @@ const WebURI = {
   Upload: "/publish",
   Login: "/login",
   Profile: "/profile",
-  ProblemCreation: "/newProblem",
+  ProblemCreation: "/create",
   Search: q => (q === "" ? "/search" : `/search?q=${q}`),
   OrcidPage: orcid => `https://orcid.org/${orcid}`,
   OrcidLogin: (state, returnPath) =>
