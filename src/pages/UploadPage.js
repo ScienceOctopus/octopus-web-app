@@ -16,15 +16,13 @@ import { generatePath } from "react-router";
 import uniqueId from "lodash/uniqueId";
 import ProblemSelector from "../components/ProblemSelector";
 import { loginRequired } from "./LogInRequiredPage";
+import withState from "../withState";
 
 const UPLOAD_KEY = "upload";
 
 class UploadPage extends Component {
   constructor(props) {
     super(props);
-
-    this._isMounted = false;
-    this._setStateTask = undefined;
 
     this.state = {
       selectedProblemId: undefined,
@@ -51,41 +49,12 @@ class UploadPage extends Component {
       .problems()
       .get()
       .then(problems =>
-        this.setState({ problems: problems }, () => this.initCheck(this.props))
+        this.setState({ problems: problems }, () => this.initCheck(this.props)),
       );
-  }
-
-  componentDidMount() {
-    this._isMounted = true;
-
-    if (this._setStateTask !== undefined) {
-      let task = this._setStateTask;
-      this._setStateTask = undefined;
-
-      task();
-    }
   }
 
   componentWillUnmount() {
     Api().unsubscribeClass(UPLOAD_KEY);
-    this._isMounted = false;
-  }
-
-  setState(newState, callback) {
-    let task = () => super.setState(newState, callback);
-
-    if (this._isMounted) {
-      task();
-    } else if (this._setStateTask === undefined) {
-      this._setStateTask = task;
-    } else if (callback !== undefined) {
-      let oldTask = this._setStateTask;
-
-      this._setStateTask = () => {
-        oldTask();
-        task();
-      };
-    }
   }
 
   initCheck(props) {
@@ -116,7 +85,7 @@ class UploadPage extends Component {
           linkedProblemsSelected: false,
           data: undefined,
         },
-        callback
+        callback,
       );
     } else if (stage !== this.state.selectedStageId) {
       let callback = undefined;
@@ -134,7 +103,7 @@ class UploadPage extends Component {
           linkedProblemsSelected: false,
           data: undefined,
         },
-        callback
+        callback,
       );
     } else if (isReview !== this.state.isReview) {
       this.setState(
@@ -144,18 +113,18 @@ class UploadPage extends Component {
           publicationsToLink: [],
           linkedProblemsSelected: false,
         },
-        () => this.fetchPublications(review)
+        () => this.fetchPublications(review),
       );
     } else if (isReview) {
       review = Number(review);
 
       this.setState({
         publicationsToLink: this.state.publications.map(
-          publication => publication.id === review
+          publication => publication.id === review,
         ),
         linkedProblemsSelected:
           this.state.publications.find(
-            publication => publication.id === review
+            publication => publication.id === review,
           ) !== undefined,
       });
     }
@@ -232,12 +201,12 @@ class UploadPage extends Component {
         this.setState({
           publications: publications,
           publicationsToLink: publications.map(
-            publication => publication.id === review
+            publication => publication.id === review,
           ),
           linkedProblemsSelected:
             publications.find(publication => publication.id === review) !==
             undefined,
-        })
+        }),
       );
   }
 
@@ -258,7 +227,7 @@ class UploadPage extends Component {
     let linkedPublications = undefined;
     this.state.publications &&
       (linkedPublications = this.state.publications.filter(
-        (_, i) => this.state.publicationsToLink[i]
+        (_, i) => this.state.publicationsToLink[i],
       ));
 
     const data = new FormData();
@@ -281,7 +250,7 @@ class UploadPage extends Component {
       data.set("data", "[]");
     } else {
       let schema = this.state.stages.find(
-        stage => stage.id === Number(this.state.selectedStageId)
+        stage => stage.id === Number(this.state.selectedStageId),
       ).schema;
 
       let ddata = [];
@@ -352,8 +321,8 @@ class UploadPage extends Component {
       UploadPage.uploadURLBuilder(
         problem.id,
         undefined,
-        this.state.isReview || undefined
-      )
+        this.state.isReview || undefined,
+      ),
     );
   };
 
@@ -362,8 +331,8 @@ class UploadPage extends Component {
       UploadPage.uploadURLBuilder(
         this.state.selectedProblemId,
         stageId,
-        this.state.isReview || undefined
-      )
+        this.state.isReview || undefined,
+      ),
     );
   };
 
@@ -431,8 +400,8 @@ class UploadPage extends Component {
             this.state.publications.find((publication, i) => selection[i]) || {
               id: true,
             }
-          ).id
-        )
+          ).id,
+        ),
       );
     } else {
       this.setState({
@@ -493,8 +462,8 @@ class UploadPage extends Component {
         UploadPage.uploadURLBuilder(
           this.state.selectedProblemId,
           this.state.selectedStageId,
-          isReview || undefined
-        )
+          isReview || undefined,
+        ),
       );
     } else {
       this.setState({ isReview: isReview });
@@ -534,7 +503,7 @@ class UploadPage extends Component {
       this.state.selectedStageId !== undefined
     ) {
       let stage = this.state.stages.find(
-        stage => stage.id === Number(this.state.selectedStageId)
+        stage => stage.id === Number(this.state.selectedStageId),
       );
 
       if (
@@ -772,4 +741,4 @@ class UploadPage extends Component {
   }
 }
 
-export default loginRequired(withRouter(UploadPage));
+export default loginRequired(withRouter(withState(UploadPage)));

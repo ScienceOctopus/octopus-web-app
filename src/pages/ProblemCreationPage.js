@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Api from "../api";
 import TitledForm from "../components/TitledForm";
 import { loginRequired } from "./LogInRequiredPage";
+import { RouterURI, generateLocalizedPath } from "../urls/WebsiteURIs";
 
 const INFO_TIMEOUT = 1000;
 
@@ -41,13 +42,11 @@ class ProblemCreationPage extends Component {
   };
 
   afterCreationInfoTimeout = () => {
-    if (this.props.location.state.redirectOnCreation) {
-      let link = this.props.location.state.redirectOnCreation;
-      if (this.props.location.state.appendProblemId && this.createdProblemId) {
-        link += "/" + this.createdProblemId;
-      }
-      this.props.history.push(link);
-    }
+    this.props.history.push(
+      generateLocalizedPath(RouterURI.UploadToProblem, {
+        id: this.createdProblemId,
+      }),
+    );
   };
 
   submitEnabled() {
@@ -62,7 +61,7 @@ class ProblemCreationPage extends Component {
     return (
       <h2>
         {"Problem Successfully created! "}
-        {this.props.location.state.redirectOnCreation && "Going back..."}
+        {"Going back..."}
       </h2>
     );
   }

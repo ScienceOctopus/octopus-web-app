@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import PDFImagePreviewRenderer from "./PDFImagePreviewRenderer";
 import styled from "styled-components";
 import Api from "../api";
+import withState from "../withState";
 
 const EDIT_KEY = "edit";
 
@@ -9,9 +10,6 @@ class EditPublicationView extends Component {
   constructor(props) {
     super(props);
     //console.log("constructor(SummaryView)");
-
-    this._isMounted = false;
-    this._setStateTask = undefined;
 
     this.state = {
       publication: undefined,
@@ -26,38 +24,8 @@ class EditPublicationView extends Component {
     this.fetchPublicationData();
   }
 
-  componentDidMount() {
-    this._isMounted = true;
-
-    if (this._setStateTask !== undefined) {
-      let task = this._setStateTask;
-      this._setStateTask = undefined;
-
-      task();
-    }
-  }
-
   componentWillUnmount() {
-    this._isMounted = false;
-
     Api().unsubscribeClass(EDIT_KEY);
-  }
-
-  setState(newState, callback) {
-    let task = () => super.setState(newState, callback);
-
-    if (this._isMounted) {
-      task();
-    } else if (this._setStateTask === undefined) {
-      this._setStateTask = task;
-    } else if (callback !== undefined) {
-      let oldTask = this._setStateTask;
-
-      this._setStateTask = () => {
-        oldTask();
-        task();
-      };
-    }
   }
 
   fetchPublicationData() {
@@ -96,12 +64,9 @@ class EditPublicationView extends Component {
       .resources()
       .get()
       .then(resources => {
-        this.setState(
-          {
-            resources: resources,
-          },
-          () => {}
-        );
+        this.setState({
+          resources: resources,
+        });
       });
 
     Api()
@@ -143,14 +108,11 @@ class EditPublicationView extends Component {
             .user(signoff.user)
             .get()
             .then(user => {
-              this.setState(
-                state => {
-                  var augmented = state;
-                  augmented.signoffs.push(user);
-                  return augmented;
-                },
-                () => {}
-              );
+              this.setState(state => {
+                var augmented = state;
+                augmented.signoffs.push(user);
+                return augmented;
+              });
             });
         });
       });
@@ -167,14 +129,11 @@ class EditPublicationView extends Component {
             .user(signoff.user)
             .get()
             .then(user => {
-              this.setState(
-                state => {
-                  var augmented = state;
-                  augmented.signoffsRemaining.push(user);
-                  return augmented;
-                },
-                () => {}
-              );
+              this.setState(state => {
+                var augmented = state;
+                augmented.signoffsRemaining.push(user);
+                return augmented;
+              });
             });
         });
       });
@@ -360,12 +319,9 @@ class EditPublicationView extends Component {
               type="text"
               placeholder="example@example.com"
               onChange={e =>
-                this.setState(
-                  {
-                    newCollaborator: e.target.value,
-                  },
-                  () => {}
-                )
+                this.setState({
+                  newCollaborator: e.target.value,
+                })
               }
             />
             <button
@@ -460,4 +416,4 @@ const DraftTitle = styled.span`
   color: var(--octopus-theme-draft);
 `;
 
-export default EditPublicationView;
+export default withState(EditPublicationView);

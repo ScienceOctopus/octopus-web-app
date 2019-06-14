@@ -89,7 +89,7 @@ class Store {
     this.ws = new WebSocket(
       `${window.location.protocol === "https:" ? "wss:" : "ws:"}//${
         window.location.hostname
-      }${port}${root}`
+      }${port}${root}`,
     );
 
     this.ws.onopen = event => {
@@ -160,7 +160,7 @@ class Store {
             if (subscribed === Store.SUBSCRIBED_HEADERS) {
               callback.resolve(Store._clone(cache.headers));
             }
-          }
+          },
         );
       });
     } else if (cache.subscribed === Store.SUBSCRIBED_BOTH) {
@@ -190,7 +190,7 @@ class Store {
             } else if (subscribed === Store.SUBSCRIBED_DATA) {
               callback.resolve(Store._clone(cache.data));
             }
-          }
+          },
         );
       });
     }
@@ -281,7 +281,7 @@ class Store {
           : cache.subscribed !== Store.SUBSCRIBED_NONE
           ? "use"
           : "get",
-        path
+        path,
       );
     }
 
@@ -330,7 +330,7 @@ class Store {
           : cache.subscribed !== Store.SUBSCRIBED_NONE
           ? "use"
           : "head",
-        path
+        path,
       );
     }
 

@@ -19,7 +19,7 @@ class Header extends Component {
         id="octopus-navigation"
       >
         <div className="ui container" id="octopus-navigation-container">
-          <LocalizedLink to={WebURI.Home} className="navigation item">
+          <LocalizedLink to={WebURI.Home} className="header item">
             <OctopusLogo style={styles.logo} className="logo" />
             <Trans>octopus</Trans>
           </LocalizedLink>

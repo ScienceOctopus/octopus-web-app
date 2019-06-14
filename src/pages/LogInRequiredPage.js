@@ -15,7 +15,7 @@ const LogInRequiredPage = withRouter(props => {
         >
           <div className="content">
             <div className="header">Log-in required</div>
-            <p>Logging in via your ORCiD is required to post publications.</p>
+            <p>Logging in via your ORCiD is required to access this page.</p>
           </div>
         </a>
       </div>
