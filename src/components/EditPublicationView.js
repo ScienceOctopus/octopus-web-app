@@ -80,17 +80,14 @@ class EditPublicationView extends Component {
             .user(collaborator.user)
             .get()
             .then(user => {
-              this.setState(
-                state => {
-                  var augmented = state;
-                  augmented.collaborators = augmented.collaborators.filter(
-                    collaborator => collaborator.id !== user.id
-                  );
-                  augmented.collaborators.push(user);
-                  return augmented;
-                },
-                () => {}
-              );
+              this.setState(state => {
+                var augmented = state;
+                augmented.collaborators = augmented.collaborators.filter(
+                  collaborator => collaborator.id !== user.id
+                );
+                augmented.collaborators.push(user);
+                return augmented;
+              });
             });
         });
       });
