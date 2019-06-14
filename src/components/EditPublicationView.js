@@ -108,6 +108,9 @@ class EditPublicationView extends Component {
             .then(user => {
               this.setState(state => {
                 var augmented = state;
+                augmented.signoffs = augmented.signoffs.filter(
+                  signoff => signoff.id !== user.id
+                );
                 augmented.signoffs.push(user);
                 return augmented;
               });
@@ -128,6 +131,9 @@ class EditPublicationView extends Component {
             .then(user => {
               this.setState(state => {
                 var augmented = state;
+                augmented.signoffsRemaining = augmented.signoffsRemaining.filter(
+                  signoff => signoff.id !== user.id
+                );
                 augmented.signoffsRemaining.push(user);
                 return augmented;
               });
@@ -339,6 +345,31 @@ class EditPublicationView extends Component {
       </>
     );
 
+    let updateButton = (
+      <>
+        <p>
+          <button
+            className="ui button"
+            type="submit"
+            onClick={() => {
+              Api()
+                .publication(this.state.publication.id)
+                .post({
+                  id: this.state.publication.id,
+                  revision: this.state.publication.revision,
+                  title: this.state.publication.title,
+                  summary: this.state.publication.summary,
+                  funding: this.state.publication.funding,
+                  data: this.state.publication.data,
+                });
+            }}
+          >
+            Update Draft
+          </button>
+        </p>
+      </>
+    );
+
     return (
       <div>
         <div className="ui divider" />
@@ -392,6 +423,10 @@ class EditPublicationView extends Component {
                 </div>
               </section>
             )}
+
+            {updateButton}
+
+            <p>(Current Revision: {this.state.publication.revision})</p>
 
             {signoffInvitation}
           </article>
