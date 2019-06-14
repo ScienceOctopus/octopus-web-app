@@ -77,7 +77,6 @@ class EditPublicationView extends Component {
       .then(collaborators => {
         collaborators.forEach(collaborator => {
           Api()
-            .subscribe(EDIT_KEY)
             .user(collaborator.user)
             .get()
             .then(user => {
@@ -104,7 +103,6 @@ class EditPublicationView extends Component {
       .then(signoffs => {
         signoffs.forEach(signoff => {
           Api()
-            .subscribe(EDIT_KEY)
             .user(signoff.user)
             .get()
             .then(user => {
@@ -125,7 +123,6 @@ class EditPublicationView extends Component {
       .then(signoffsRemaining => {
         signoffsRemaining.forEach(signoff => {
           Api()
-            .subscribe(EDIT_KEY)
             .user(signoff.user)
             .get()
             .then(user => {
