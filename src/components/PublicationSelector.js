@@ -28,7 +28,7 @@ class PublicationSelector extends Component {
 
   render() {
     return (
-      <div className="ui field">
+      <div className="required field">
         <label>{this.props.title}</label>
         <div className="ui container" style={{ minHeight: "0.5rem" }}>
           <div className="ui stackable grid">

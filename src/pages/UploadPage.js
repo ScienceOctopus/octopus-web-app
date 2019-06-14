@@ -498,6 +498,24 @@ class UploadPage extends Component {
   render() {
     let metaData = null;
 
+    // Details of the currently selected stage, if any
+    // TODO: duplication
+    const selectedStage = this.state.stages.find(
+      stage => stage.id === Number(this.state.selectedStageId),
+    );
+
+    // Whether a problem was selected, data loaded correctly, and an appropriate stage selected
+    // Alternatively, whether the selected stage was the first in the publishing flow
+    // TODO: duplicated below in renderLinkingSelector
+    // TODO: clean up
+    const problemAcceptsPublications =
+      (this.state.publications !== undefined &&
+        this.state.publications.length > 0) ||
+      (selectedStage && selectedStage.order === 1);
+
+    // Whether any problem was selected, for fields not depending on stages
+    const problemSelected = this.state.selectedProblemId;
+
     if (
       this.state.isReview === false &&
       this.state.selectedStageId !== undefined
@@ -524,6 +542,7 @@ class UploadPage extends Component {
                     <FileUploadSelector
                       key={key}
                       title={title}
+                      disabled={!problemAcceptsPublications}
                       description={description}
                       files={[value]}
                       onSelect={onChange}
@@ -534,6 +553,7 @@ class UploadPage extends Component {
                     <TitledForm
                       key={key}
                       title={title}
+                      disabled={!problemAcceptsPublications}
                       description={description}
                       value={value}
                       onChange={onChange}
@@ -544,6 +564,7 @@ class UploadPage extends Component {
                     <TitledForm
                       key={key}
                       title={title}
+                      disabled={!problemAcceptsPublications}
                       description={description}
                       value={value}
                       onChange={onChange}
@@ -554,6 +575,7 @@ class UploadPage extends Component {
                     <TitledCheckbox
                       key={key}
                       title={title}
+                      disabled={!problemAcceptsPublications}
                       description={description}
                       checked={value}
                       onChange={onChange}
@@ -571,17 +593,14 @@ class UploadPage extends Component {
     }
 
     return (
-      <div className="ui main container">
-        <div className="ui segment">
-          <div
-            className={
-              "ui " + (this.state.uploading ? "loading " : "") + "form"
-            }
-          >
+      <>
+        <div className="ui text container">
+          <div className="ui segment">
             <h2 className="ui dividing header">
-              <i className="ui pencil icon" />
-              Publish your work
+              <i className="ui question icon" />
+              How does this work?
             </h2>
+
             <p>
               Octopus currently accepts{" "}
               <LocalizedLink to={WebURI.More}>
@@ -612,8 +631,20 @@ class UploadPage extends Component {
               Publications will go live as soon as all authors have agreed to
               publication.
             </p>
-            <div className="ui divider" />
-            <div className="two fields">
+          </div>
+        </div>
+        <div className="ui hidden divider" />
+        <div className="ui text container">
+          <div className="ui segment">
+            <div
+              className={`ui ${this.state.uploading ? "loading " : ""}${
+                !problemAcceptsPublications ? "warning " : ""
+              }form`}
+            >
+              <h2 className="ui dividing header">
+                <i className="ui pencil icon" />
+                Publish your work
+              </h2>
               <div className="field">
                 <ProblemSelector
                   selectedProblem={this.state.selectedProblemId}
@@ -623,7 +654,7 @@ class UploadPage extends Component {
                   onSelect={this.handleProblemSelect}
                 />
               </div>
-              {this.state.selectedProblemId !== undefined && (
+              {problemSelected && (
                 <div className="field">
                   <SimpleSelector
                     title={
@@ -638,72 +669,91 @@ class UploadPage extends Component {
                   />
                 </div>
               )}
-            </div>
-            <div className="inline field">
-              <div className="ui checkbox">
-                <input
-                  type="checkbox"
-                  onChange={this.handleReviewChange}
-                  checked={this.state.isReview}
-                  id="is-review"
-                />
-                <label htmlFor="is-review">This publication is a review</label>
+              <div
+                className={`inline ${!problemSelected ? "disabled" : ""} field`}
+              >
+                <div className="ui checkbox">
+                  <input
+                    type="checkbox"
+                    onChange={this.handleReviewChange}
+                    checked={this.state.isReview}
+                    id="is-review"
+                  />
+                  <label htmlFor="is-review">
+                    This publication is a review of a publication already on
+                    Octopus
+                  </label>
+                </div>
               </div>
-            </div>
-            {this.shouldRenderLinkingSelector() && this.renderLinkingSelector()}
-            <TitledForm
-              title="Publication Title"
-              value={this.state.title}
-              onChange={this.handleTitleChange}
-            />
-            <TitledForm
-              title="Publication Summary"
-              value={this.state.summary}
-              onChange={this.handleSummaryChange}
-            />
-            <TitledForm
-              title="Funding Statement"
-              value={this.state.funding}
-              onChange={this.handleFundingChange}
-            />
-            <TitledForm
-              title="Conflict of Interest Declaration"
-              value={this.state.conflict}
-              onChange={this.handleConflictChange}
-            />
-            <FileUploadSelector
-              title="Publication Document"
-              onSelect={this.handleFileSelect}
-            />
-            <div className="ui divider" />
-            {metaData}
-            <button
-              className="ui submit button"
-              onClick={this.handleSubmit}
-              disabled={!this.submitEnabled()}
-            >
-              Submit
-            </button>{" "}
-            as publication author{" "}
-            <strong>{global.session.user.display_name}</strong>
-            {" ("}
-            {
-              <a href={`https://orcid.org/${global.session.user.orcid}`}>
-                {global.session.user.orcid}
-              </a>
-            }
-            {")"}.
-            {this.state.uploadSuccessful && (
-              <LocalizedRedirect
-                to={generatePath(RouterURI.Publication, {
-                  id: this.state.insertedId,
-                })}
+              {this.shouldRenderLinkingSelector() &&
+                this.renderLinkingSelector()}
+              <div className="ui hidden divider" />
+              <TitledForm
+                title="Publication Title"
+                value={this.state.title}
+                disabled={!problemAcceptsPublications}
+                guidance="Okay! Now it's time to enter the details of the publication you wish to submit to Octopus. First, fill out the title and a brief summary of what the work is about."
+                onChange={this.handleTitleChange}
               />
-            )}
+              <TitledForm
+                title="Publication Summary"
+                rows="2"
+                value={this.state.summary}
+                disabled={!problemAcceptsPublications}
+                onChange={this.handleSummaryChange}
+              />
+              <TitledForm
+                title="Funding Statement"
+                value={this.state.funding}
+                disabled={!problemAcceptsPublications}
+                guidance='If this research has any funding sources you think readers should be aware of, add them here. If not, feel free to enter "None".'
+                placeholder="For example, funded by the British Council"
+                onChange={this.handleFundingChange}
+              />
+              <p />
+              <TitledForm
+                title="Conflict of Interest Declaration"
+                value={this.state.conflict}
+                disabled={!problemAcceptsPublications}
+                guidance='Declare any potential conflicts of interest this publication may have in the following box. If there aren&apos;t any, just type "No conflicts of interest".'
+                placeholder="For example, no conflicts of interest"
+                onChange={this.handleConflictChange}
+              />
+              <FileUploadSelector
+                title="Publication Document"
+                disabled={!problemAcceptsPublications}
+                onSelect={this.handleFileSelect}
+              />
+              <div className="ui divider" />
+              {metaData}
+              <p>Note: Fields marked with a red asterisk are required.</p>
+              <button
+                className="ui submit button"
+                onClick={this.handleSubmit}
+                disabled={!this.submitEnabled()}
+              >
+                Submit
+              </button>{" "}
+              as publication author{" "}
+              <strong>{global.session.user.display_name}</strong>
+              {" ("}
+              {
+                <a href={`https://orcid.org/${global.session.user.orcid}`}>
+                  {global.session.user.orcid}
+                </a>
+              }
+              {")"}.
+              {this.state.uploadSuccessful && (
+                <LocalizedRedirect
+                  to={generatePath(RouterURI.Publication, {
+                    id: this.state.insertedId,
+                  })}
+                />
+              )}
+            </div>
           </div>
         </div>
-        <br />
-      </div>
+      </>
     );
   }
 
@@ -714,13 +764,33 @@ class UploadPage extends Component {
       this.state.publications !== undefined &&
       this.state.publications.length <= 0
     ) {
+      const failureExplanation =
+        "Publications in Octopus are always based on and linked to another publication, except for Hypotheses. For reviews, this would be another publication in the same stage, and for publications, another in the previous stage.";
       if (this.state.isReview) {
-        title = "There are no publications to review in this stage";
+        return (
+          <div className="ui icon warning message">
+            <i className="info icon" />
+            <div className="content">
+              <div className="header">
+                There are no publications to review in this stage
+              </div>
+              <p>{failureExplanation}</p>
+            </div>
+          </div>
+        );
       } else {
-        title = "There are no publications from the previous stage to link to.";
+        return (
+          <div className="ui icon warning message">
+            <i className="info icon" />
+            <div className="content">
+              <div className="header">
+                There are no publications from the previous stage to link to
+              </div>
+              <p>{failureExplanation}</p>
+            </div>
+          </div>
+        );
       }
-
-      title = <span style={{ color: "red" }}>{title}</span>;
     } else {
       if (this.state.isReview) {
         title = "Which publication are you reviewing?";
