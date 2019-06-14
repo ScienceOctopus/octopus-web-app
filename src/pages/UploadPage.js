@@ -802,6 +802,7 @@ class UploadPage extends Component {
     return (
       <PublicationSelector
         title={title}
+        selectionEnabled
         singleSelection={this.state.isReview}
         publications={this.state.publications || []}
         selection={this.state.publicationsToLink}
