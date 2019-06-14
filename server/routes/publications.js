@@ -62,7 +62,7 @@ const getAllPublicationsByUser = async (req, res) => {
 };
 
 const getAllReviewsForUser = async (req, res) => {
-  let reviews = await db.selectReviewsForUser(req.query.user);
+  let reviews = await db.selectReviewsForUser(req.query.forUser);
   if (!reviews.length) {
     return res.sendStatus(404);
   }
