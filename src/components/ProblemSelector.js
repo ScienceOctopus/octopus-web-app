@@ -48,7 +48,7 @@ class ProblemSelector extends Component {
     const title = this.props.problems.find(
       x => x.id === Number(this.props.selectedProblem),
     ).title;
-    return <h2>{title}</h2>;
+    return <h1>{title}</h1>;
   }
 
   renderModal() {
@@ -73,26 +73,28 @@ class ProblemSelector extends Component {
 
   render() {
     return (
-      <div className="field container">
+      <div className="field">
         {/* <SimpleSelector
           title="Select a Problem"
           style={styles.selector}
           {...this.props}
         /> */}
+        <div className="ui buttons">
+          <div
+            className="ui button positive"
+            style={styles.link}
+            onClick={this.setModalVisible(true)}
+          >
+            {"Look for an area of research"}
+          </div>
+          <div className="or" />
+          <LocalizedLink to={WebURI.ProblemCreation} className="ui button">
+            {"Create a new one!"}
+          </LocalizedLink>
+        </div>
         {this.props.selectedProblem &&
           this.props.problems &&
           this.renderProblem()}
-        <div
-          className="ui button"
-          style={styles.link}
-          onClick={this.setModalVisible(true)}
-        >
-          {"Search for problems"}
-        </div>
-        {" | "}
-        <LocalizedLink to={WebURI.ProblemCreation} className="ui button">
-          {"Create a new one"}
-        </LocalizedLink>
 
         {this.renderModal()}
       </div>
