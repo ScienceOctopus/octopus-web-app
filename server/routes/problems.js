@@ -240,9 +240,16 @@ const postPublicationToProblemAndStage = async (req, res) => {
     "author",
   );
 
+  let usersToNotify = [];
+
   if (req.body.basedOn !== undefined) {
     let basedArray = JSON.parse(req.body.basedOn);
     await db.insertLink(publications[0], basedArray);
+
+    usersToNotify = db.selectAllCollaboratorsForListOfPublications(basedArray);
+    for (let i = 0; i < usersToNotify.length; i++) {
+      await db.insertUserNotification(usersToNotify[i], publications[0]);
+    }
   }
 
   resources.unshift(
@@ -277,6 +284,8 @@ const postPublicationToProblemAndStage = async (req, res) => {
     basedArray.forEach(publication =>
       broadcast(`/publications/${publication}/linksAfter`),
     );
+
+    usersToNotify.forEach(user => broadcast(`/users/${user}/notifications`));
   }
 
   res.status(200).json(publications[0]);

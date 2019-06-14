@@ -173,6 +173,17 @@ const queries = {
       )
       .where("review", true),
 
+  selectNotificationsForUser: user =>
+    knex("user_notifications").where("user", user),
+
+  selectAllCollaboratorsForListOfPublications: basedOnThese =>
+    knex("publication_collaborators")
+      .distinct("user")
+      .whereIn("publication", basedOnThese),
+
+  insertUserNotification: (user, publication) =>
+    knex("user_notifications").insert({ user, publication }),
+
   selectOriginalPublicationsByLinksBeforePublication: publication =>
     queries
       .selectPublicationsByLinksBeforePublication(publication)
@@ -203,6 +214,7 @@ const queries = {
     queries
       .selectPublicationsByLinksAfterPublication(publication)
       .where("review", true),
+
   selectCollaboratorsByPublication: publication =>
     knex("publication_collaborators")
       .select()
