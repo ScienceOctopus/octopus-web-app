@@ -64,7 +64,7 @@ class ProblemSelector extends Component {
           value={this.state.query}
         />
         <ProblemSearchList
-          query={this.state.submittedQuery}
+          query={this.state.query}
           onSelect={this.handleProblemSelect}
         />
       </Modal>

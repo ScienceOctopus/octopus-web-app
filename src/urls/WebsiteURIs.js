@@ -53,6 +53,7 @@ const WebURI = {
   Profile: "/profile",
   ProblemCreation: "/newProblem",
   Search: q => (q === "" ? "/search" : `/search?q=${q}`),
+  OrcidPage: orcid => `https://orcid.org/${orcid}`,
   OrcidLogin: (state, returnPath) =>
     `https://orcid.org/oauth/authorize?state=${state}&client_id=${GOBLINID_OAUTH_CLIENT_ID}&response_type=code&scope=/authenticate&redirect_uri=${REDIRECT_URI}?return_path=${returnPath}`,
 };

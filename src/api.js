@@ -400,6 +400,9 @@ class LinkBuilder {
 
   getQuery = q => Axios.get(root + this.path + "?q=" + q).then(x => x.data);
 
+  getByUser = user =>
+    Axios.get(root + this.path + "?user=" + user).then(x => x.data);
+
   head = () => store.head(this.path, this.key);
 
   count = () => {
@@ -600,6 +603,11 @@ class ApiBuilder extends LinkBuilder {
     this._checkNotFinal();
 
     return new PublicationBuilder(this.key, pubId);
+  };
+
+  publications = () => {
+    this.path += "/publications";
+    return this;
   };
 
   problem = problemId => {

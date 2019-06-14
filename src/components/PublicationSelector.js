@@ -26,22 +26,29 @@ class PublicationSelector extends Component {
     this.props.onSelection(selection);
   };
 
+  isSelected = i => {
+    return this.props.selection && this.props.selection[i];
+  };
+
   render() {
+    const selectionProps = i =>
+      this.props.selectionEnabled
+        ? {
+            highlight: this.isSelected(i),
+            onClick: this.handleProblemClick(i),
+            pointer: !this.isSelected(i) || !this.props.singleSelection,
+          }
+        : {};
+
     return (
       <div className="required field">
-        <label>{this.props.title}</label>
+        {this.props.title && <label>{this.props.title}</label>}
+
         <div className="ui container" style={{ minHeight: "0.5rem" }}>
           <div className="ui stackable grid">
             {this.props.publications.map((publication, i) => (
               <div className="four wide column" key={i}>
-                <Publication
-                  publication={publication}
-                  highlight={this.props.selection[i]}
-                  onClick={this.handleProblemClick(i)}
-                  pointer={
-                    !this.props.selection[i] || !this.props.singleSelection
-                  }
-                />
+                <Publication publication={publication} {...selectionProps(i)} />
               </div>
             ))}
           </div>
