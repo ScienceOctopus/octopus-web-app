@@ -20,11 +20,13 @@ const publicationVisibleForCurrentUser = async (publication, req) => {
     }
 
     let collaborators = await db.selectCollaboratorsByPublication(
-      publication.id,
+      publication.id
     );
     collaborators = collaborators.filter(
-      collaborator => collaborator.user === user,
+      collaborator => collaborator.user === user
     );
+
+    console.log(user, collaborators);
 
     if (!collaborators.length) {
       return false;
@@ -41,7 +43,8 @@ const getAndValidatePublication = async (id, req) => {
 
   let publication = publications[0];
 
-  return publicationVisibleForCurrentUser(publication, req)
+  console.log(publication.id);
+  return (await publicationVisibleForCurrentUser(publication, req))
     ? publication
     : undefined;
 };
@@ -49,7 +52,7 @@ const getAndValidatePublication = async (id, req) => {
 const getAllPublicationsByUser = async (req, res) => {
   let publications = await db.selectPublicationsByUserId(req.query.user);
   publications = publications.filter(p =>
-    publicationVisibleForCurrentUser(p, req),
+    publicationVisibleForCurrentUser(p, req)
   );
   if (!publications.length) {
     return res.sendStatus(404);
@@ -88,13 +91,13 @@ const postPublicationToID = async (req, res) => {
     req.body.title,
     req.body.summary,
     req.body.funding,
-    req.body.data,
+    req.body.data
   );
 
   broadcast(`/publications/${req.params.id}`);
   broadcast(`/problems/${publication.problem}/publications`);
   broadcast(
-    `/problems/${publication.problem}/stages/${publication.stage}/publications`,
+    `/problems/${publication.problem}/stages/${publication.stage}/publications`
   );
   broadcast(`/publications/${req.params.id}/signoffs`);
   broadcast(`/publications/${req.params.id}/signoffs_remaining`);
@@ -109,7 +112,7 @@ const getLinksBeforeByPublication = async (req, res) => {
   }
 
   const publications = await db.selectPublicationsByLinksAfterPublication(
-    req.params.id,
+    req.params.id
   );
   res.status(200).json(publications);
 };
@@ -121,7 +124,7 @@ const getAllLinksBeforeByPublication = async (req, res) => {
   }
 
   const resources = await db.selectPublicationsByAllLinksBeforePublication(
-    req.params.id,
+    req.params.id
   );
   res.status(200).json(resources);
 };
@@ -133,7 +136,7 @@ const getLinksAfterByPublication = async (req, res) => {
   }
 
   const publications = await db.selectPublicationsByLinksBeforePublication(
-    req.params.id,
+    req.params.id
   );
   res.status(200).json(publications);
 };
@@ -155,7 +158,7 @@ const getReviewsByPublication = async (req, res) => {
   }
 
   const publications = await db.selectReviewPublicationsByPublication(
-    req.params.id,
+    req.params.id
   );
   res.status(200).json(publications);
 };
@@ -187,7 +190,7 @@ const getCollaboratorsBackwardsFromPublication = async (req, res) => {
   }
 
   const resources = await db.selectCollaboratorsBackwardsFromPublication(
-    req.params.id,
+    req.params.id
   );
   res.status(200).json(resources);
 };
@@ -206,7 +209,7 @@ const postCollaboratorToPublication = async (req, res) => {
   const id = await db.insertPublicationCollaborator(
     req.params.id,
     users[0].id,
-    "author",
+    "author"
   );
 
   broadcast(`/problems/${publication.problem}/publications`);
@@ -228,7 +231,7 @@ const getSignoffsByPublication = async (req, res) => {
 
   const signoffs = await db.selectPublicationSignoffsForRevision(
     req.params.id,
-    publication.revision,
+    publication.revision
   );
 
   res.status(200).json(signoffs);
@@ -243,23 +246,23 @@ const postSignoffToPublication = async (req, res) => {
   const id = await db.insertPublicationSignoff(
     req.params.id,
     req.body.revision,
-    getUserFromSession(req),
+    getUserFromSession(req)
   );
 
   let collaborators = await db.selectCollaboratorsByPublication(req.params.id);
   collaborators = collaborators.filter(
-    collaborator => collaborator.role === "author",
+    collaborator => collaborator.role === "author"
   );
 
   const signoffs = await db.selectPublicationSignoffsForRevision(
     req.params.id,
-    publication.revision,
+    publication.revision
   );
 
   collaborators = collaborators.filter(
     collaborator =>
       signoffs.filter(signoff => signoff.user === collaborator.user).length ===
-      0,
+      0
   );
 
   if (collaborators.length === 0) {
@@ -269,7 +272,7 @@ const postSignoffToPublication = async (req, res) => {
     broadcast(
       `/problems/${publication.problem}/stages/${
         publication.stage
-      }/publications`,
+      }/publications`
     );
     broadcast("/problems");
     broadcast(`/problems/${publication.problem}`);
@@ -289,18 +292,18 @@ const getSignoffsRemainingByPublication = async (req, res) => {
 
   let collaborators = await db.selectCollaboratorsByPublication(req.params.id);
   collaborators = collaborators.filter(
-    collaborator => collaborator.role === "author",
+    collaborator => collaborator.role === "author"
   );
 
   const signoffs = await db.selectPublicationSignoffsForRevision(
     req.params.id,
-    publication.revision,
+    publication.revision
   );
 
   collaborators = collaborators.filter(
     collaborator =>
       signoffs.filter(signoff => signoff.user === collaborator.user).length ===
-      0,
+      0
   );
 
   res.status(200).json(collaborators);
@@ -318,7 +321,7 @@ const postRequestSignoffToPublication = async (req, res) => {
   broadcast(`/publications/${req.params.id}`);
   broadcast(`/problems/${publication.problem}/publications`);
   broadcast(
-    `/problems/${publication.problem}/stages/${publication.stage}/publications`,
+    `/problems/${publication.problem}/stages/${publication.stage}/publications`
   );
 
   return await postSignoffToPublication(req, res);
@@ -332,44 +335,44 @@ router.get("/:id(\\d+)", catchAsyncErrors(getPublicationByID));
 router.post("/:id(\\d+)", catchAsyncErrors(postPublicationToID));
 router.get(
   "/:id(\\d+)/linksBefore",
-  catchAsyncErrors(getLinksBeforeByPublication),
+  catchAsyncErrors(getLinksBeforeByPublication)
 );
 router.get(
   "/:id(\\d+)/linksBeforeAll",
-  catchAsyncErrors(getAllLinksBeforeByPublication),
+  catchAsyncErrors(getAllLinksBeforeByPublication)
 );
 router.get(
   "/:id(\\d+)/linksAfter",
-  catchAsyncErrors(getLinksAfterByPublication),
+  catchAsyncErrors(getLinksAfterByPublication)
 );
 router.get(
   "/:id(\\d+)/references",
-  catchAsyncErrors(getReferencesByPublication),
+  catchAsyncErrors(getReferencesByPublication)
 );
 //router.get("/:id(\\d+)/referencedBy", catchAsyncErrors(getReferencedByByPublication));
 router.get("/:id(\\d+)/reviews", catchAsyncErrors(getReviewsByPublication));
 router.get("/:id(\\d+)/resources", catchAsyncErrors(getResourcesByPublication));
 router.get(
   "/:id(\\d+)/collaborators",
-  catchAsyncErrors(getCollaboratorsByPublication),
+  catchAsyncErrors(getCollaboratorsByPublication)
 );
 router.get(
   "/:id(\\d+)/allCollaborators",
-  catchAsyncErrors(getCollaboratorsBackwardsFromPublication),
+  catchAsyncErrors(getCollaboratorsBackwardsFromPublication)
 );
 router.post(
   "/:id(\\d+)/collaborators",
-  catchAsyncErrors(postCollaboratorToPublication),
+  catchAsyncErrors(postCollaboratorToPublication)
 );
 router.get("/:id(\\d+)/signoffs", catchAsyncErrors(getSignoffsByPublication));
 router.post("/:id(\\d+)/signoffs", catchAsyncErrors(postSignoffToPublication));
 router.get(
   "/:id(\\d+)/signoffs_remaining",
-  catchAsyncErrors(getSignoffsRemainingByPublication),
+  catchAsyncErrors(getSignoffsRemainingByPublication)
 );
 router.post(
   "/:id(\\d+)/request_signoff",
-  catchAsyncErrors(postRequestSignoffToPublication),
+  catchAsyncErrors(postRequestSignoffToPublication)
 );
 
 module.exports = {
