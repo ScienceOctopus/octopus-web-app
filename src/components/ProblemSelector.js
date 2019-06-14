@@ -90,17 +90,7 @@ class ProblemSelector extends Component {
           {"Search for problems"}
         </div>
         {" | "}
-        <LocalizedLink
-          to={{
-            pathname: WebURI.ProblemCreation,
-            state: {
-              redirectOnCreation:
-                this.props.location.pathname + (this.props.appendPath || ""),
-              appendProblemId: true,
-            },
-          }}
-          className="ui button"
-        >
+        <LocalizedLink to={WebURI.ProblemCreation} className="ui button">
           {"Create a new one"}
         </LocalizedLink>
 

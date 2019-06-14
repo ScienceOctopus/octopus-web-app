@@ -3,26 +3,32 @@ import ProblemSearchDescription from "../components/ProblemSearchDescription";
 
 import Api from "../api";
 import { loginRequired } from "./LogInRequiredPage";
+import withState from "../withState";
 
-const SEARCH_KEY = "search";
+const USER_KEY = "user";
 
 class UserPage extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+
+    this.state = { problems: undefined };
+
+    this.fetchAllProblems();
   }
 
-  componentDidMount() {}
+  componentWillUnmount() {
+    Api().unsubscribeClass(USER_KEY);
+  }
 
   fetchAllProblems() {
     Api()
-      .subscribe(SEARCH_KEY)
+      .subscribeClass(USER_KEY, global.session.user.id)
       .problems()
       .get()
       .then(problems =>
         this.setState({
           problems: problems
-            .filter(x => x.creator === global.session.user)
+            .filter(x => x.creator === global.session.user.id)
             .map(x => x.id),
         }),
       );
@@ -35,9 +41,29 @@ class UserPage extends Component {
   }
 
   render() {
-    if (!this.state.problems) return null;
-    return this.renderProblems();
+    let problems = null;
+
+    if (this.state.problems !== undefined) {
+      problems = this.renderProblems();
+    }
+
+    return (
+      <>
+        <h2 style={{ textAlign: "center" }}>
+          User page of <strong>{global.session.user.display_name}</strong>
+          {" ("}
+          {
+            <a href={`https://orcid.org/${global.session.user.orcid}`}>
+              {global.session.user.orcid}
+            </a>
+          }
+          {")"}
+        </h2>
+
+        {problems}
+      </>
+    );
   }
 }
 
-export default loginRequired(UserPage);
+export default loginRequired(withState(UserPage));
