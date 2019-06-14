@@ -158,6 +158,21 @@ const queries = {
       )
       .select(),
 
+  selectReviewsForUser: user =>
+    knex("publication_links")
+      .where(
+        "publication_before",
+        "in",
+        queries.selectPublicationsByUserId(user).select("publications.id"),
+      )
+      .join(
+        "publications",
+        "publications.id",
+        "=",
+        "publication_links.publication_after",
+      )
+      .where("review", true),
+
   selectOriginalPublicationsByLinksBeforePublication: publication =>
     queries
       .selectPublicationsByLinksBeforePublication(publication)
