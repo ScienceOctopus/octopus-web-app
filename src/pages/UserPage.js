@@ -47,7 +47,7 @@ class UserPage extends Component {
     if (!publications.length) return `You have no ${name} publications yet`;
     return (
       <>
-        <h2>{`${capitalizeFirst(name)} publications`}</h2>
+        {name && <h2>{`${capitalizeFirst(name)} publications`}</h2>}
         <PublicationSelector
           publications={publications}
           selectionEnabled={false}
@@ -69,10 +69,31 @@ class UserPage extends Component {
     );
   }
 
+  renderAwaitingSignoff() {
+    let arr = Array(20).fill(this.state.draftPublications[0]);
+
+    if (!this.state.draftPublications[0]) return null;
+
+    return (
+      <div className="ui segment icon warning message">
+        <i className="exclamation icon" />
+        <div className="content" style={styles.signoffConent}>
+          <div className="header" style={styles.signoffHeader}>
+            {"You have publications awaiting your signoff"}
+          </div>
+
+          {this.renderPublications(arr)}
+        </div>
+      </div>
+    );
+  }
+
   render() {
     return (
       <div className="ui container main">
         {this.renderTitle()}
+
+        {this.renderAwaitingSignoff()}
 
         <div className="ui segment">
           {this.renderPublications(
@@ -113,6 +134,13 @@ const splitPublications = pubs => {
   });
 
   return splitted;
+};
+
+const styles = {
+  signoffConent: { maxWidth: "95%" },
+  signoffHeader: {
+    marginBottom: 15,
+  },
 };
 
 export default loginRequired(withState(UserPage));
