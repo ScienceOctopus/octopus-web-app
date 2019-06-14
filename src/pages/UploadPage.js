@@ -41,6 +41,9 @@ class UploadPage extends Component {
       problems: [],
       stages: [],
       publications: undefined,
+      
+      tags: [],
+      canDeleteTag: true,
     };
 
     // Always start a new cache when the upload page is loaded
@@ -494,6 +497,42 @@ class UploadPage extends Component {
       this.initCheck(nextProps);
     }
   }
+  
+  delimeter = new RegExp(/,|;/, 'g');
+  
+  handleTagsKeyDown = e => {
+    if (e.key === "Backspace" && e.target.value.length <= 0) {
+      let tags = [...this.state.tags];
+      e.target.value = tags.pop() || "";
+      this.setState({tags: tags, canDeleteTag: false});
+    } else if (e.key === "Enter" && e.target.value.replace(this.delimeter, "").trim().length > 0) {
+      let tags = new Set(this.state.tags);
+      tags.add(e.target.value.replace(this.delimeter, "").trim());
+      e.target.value = "";
+      this.setState({tags: [...tags]});
+    } else if ((e.key === "," || e.key === ";") && e.target.value.replace(this.delimeter, "").trim().length > 0) {
+      let tags = new Set(this.state.tags);
+      tags.add(e.target.value.replace(this.delimeter, "").trim());
+      e.target.value = "";
+      this.setState({tags: [...tags]});
+      e.preventDefault();
+    } else if (e.key === "Tab" && e.target.value.replace(this.delimeter, "").trim().length > 0) {
+      let tags = new Set(this.state.tags);
+      tags.add(e.target.value.replace(this.delimeter, "").trim());
+      e.target.value = "";
+      this.setState({tags: [...tags]});
+      e.preventDefault();
+    }
+  }
+  
+  handleTagsOnBlur = e => {
+    if (e.target.value.replace(this.delimeter, "").trim().length > 0) {
+      let tags = new Set(this.state.tags);
+      tags.add(e.target.value.replace(this.delimeter, "").trim());
+      e.target.value = "";
+      this.setState({tags: [...tags]});
+    }
+  }
 
   render() {
     let metaData = null;
@@ -701,6 +740,22 @@ class UploadPage extends Component {
                 disabled={!problemAcceptsPublications}
                 onChange={this.handleSummaryChange}
               />
+              <div style={{border: "1px solid #ccc", boxShadow: "inset 0 1px 1px rgba(0, 0, 0, 0.075)", paddingLeft: "0.5rem", paddingTop: "0.5rem", borderRadius: "4px", display: "flex", flexWrap: "wrap"}}>
+                {this.state.tags.map((tag, i) => (
+                  <div key={uniqueId("tag-")} className="ui horizontal label" style={{display: "flex", marginRight: "0.5rem", marginBottom: "0.5rem"}}>
+                    <span style={{overflow: "hidden", textOverflow: "ellipsis"}}>{tag}</span>
+                    <i className="delete icon" onClick={() => {
+                      let tags = [...this.state.tags];
+                      tags.splice(i, 1);
+                      this.setState({tags: tags});
+                    }}></i>
+                  </div>
+                ))}
+                <input type="text" style={{border: "none", boxShadow: "none", display: "flex", flexGrow: 1, width: "unset", padding: 0, marginRight: "0.5rem", marginBottom: "0.5rem"}} ref={ref => {if (ref) {
+                  ref.addEventListener("keydown", this.handleTagsKeyDown);
+                  ref.onblur = this.handleTagsOnBlur;
+                }}} disabled={!problemAcceptsPublications} />
+              </div>
               <TitledForm
                 title="Funding Statement"
                 value={this.state.funding}
