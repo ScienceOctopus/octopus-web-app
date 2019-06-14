@@ -176,6 +176,8 @@ class ProblemPage extends React.Component {
           stage.selection = {
             publications: [],
             links: [],
+            size: 0,
+            loading: true,
           };
           stage.loading = true;
         });
@@ -401,6 +403,7 @@ class ProblemPage extends React.Component {
             publications: reachable[stageId],
             links: links[stageId] || [],
             size: sizes[stageId],
+            loading: false,
           };
         });
         return { content: content };
