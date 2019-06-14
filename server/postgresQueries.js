@@ -407,7 +407,13 @@ const queries = {
         qb
           .select("publication_before as publication")
           .from("ancestors")
-          .union(qb => qb.select("publication_after").from("ancestors")),
+          .union(qb => qb.select("publication_after").from("ancestors"))
+          .union(qb =>
+            qb
+              .select("id")
+              .from("publications")
+              .where("id", publication),
+          ),
       )
       .select()
       .from("ancestor_publications")
