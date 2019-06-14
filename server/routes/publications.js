@@ -70,6 +70,8 @@ const postPublicationToID = async (req, res) => {
   );
   broadcast(`/publications/${req.params.id}/signoffs`);
   broadcast(`/publications/${req.params.id}/signoffs_remaining`);
+
+  res.sendStatus(204);
 };
 
 const getLinksBeforeByPublication = async (req, res) => {
