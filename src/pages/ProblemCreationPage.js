@@ -61,7 +61,7 @@ class ProblemCreationPage extends Component {
     return (
       <h2>
         {"Problem Successfully created! "}
-        {this.props.location.state.redirectOnCreation && "Going back..."}
+        {"Going back..."}
       </h2>
     );
   }
