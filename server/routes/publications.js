@@ -207,6 +207,10 @@ const postCollaboratorToPublication = async (req, res) => {
     "author",
   );
 
+  broadcast(`/problems/${publication.problem}/publications`);
+  broadcast(
+    `/problems/${publication.problem}/stages/${publication.stage}/publications`
+  );
   broadcast(`/publications/${req.params.id}/collaborators`);
   broadcast(`/publications/${req.params.id}/allCollaborators`);
   broadcast(`/publications/${req.params.id}/signoffs_remaining`);
@@ -265,6 +269,8 @@ const postSignoffToPublication = async (req, res) => {
         publication.stage
       }/publications`,
     );
+    broadcast("/problems");
+    broadcast(`/problems/${publication.problem}`);
   }
 
   broadcast(`/publications/${req.params.id}/signoffs_remaining`);

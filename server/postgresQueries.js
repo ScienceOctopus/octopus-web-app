@@ -213,19 +213,19 @@ const queries = {
         data: data,
         draft: draft,
       })
-      .returning(["id", "updated_at"])
-      .then(([{ id, updated_at }]) => {
-        return knex("problems")
-          .update({ updated_at: updated_at })
-          .where("id", problem)
-          .then(() => [id]);
-      }),
+      .returning("id"),
 
   finalisePublication: (publication, revision) =>
     knex("publications")
-      .update({ draft: false })
+      .update({ draft: false, updated_at: new Date() })
       .where("id", publication)
-      .where("revision", revision),
+      .where("revision", revision)
+      .returning(["problem", "updated_at"])
+      .then(([{ problem, updated_at }]) => {
+        return knex("problems")
+          .update({ updated_at: updated_at })
+          .where("id", problem);
+      }),
 
   updatePublicationRequestSignoff: (publication, revision) =>
     knex("publications")
@@ -242,6 +242,7 @@ const queries = {
         data: data,
         revision: revision + 1,
         signoff_requested: false,
+        updated_at: new Date(),
       })
       .where("id", publication)
       .where("revision", revision),

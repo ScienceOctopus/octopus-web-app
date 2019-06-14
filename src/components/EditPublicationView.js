@@ -80,17 +80,14 @@ class EditPublicationView extends Component {
             .user(collaborator.user)
             .get()
             .then(user => {
-              this.setState(
-                state => {
-                  var augmented = state;
-                  augmented.collaborators = augmented.collaborators.filter(
-                    collaborator => collaborator.id !== user.id
-                  );
-                  augmented.collaborators.push(user);
-                  return augmented;
-                },
-                () => {}
-              );
+              this.setState(state => {
+                var augmented = state;
+                augmented.collaborators = augmented.collaborators.filter(
+                  collaborator => collaborator.id !== user.id
+                );
+                augmented.collaborators.push(user);
+                return augmented;
+              });
             });
         });
       });
@@ -124,20 +121,22 @@ class EditPublicationView extends Component {
       .signoffsRemaining()
       .get()
       .then(signoffsRemaining => {
-        signoffsRemaining.forEach(signoff => {
-          Api()
-            .user(signoff.user)
-            .get()
-            .then(user => {
-              this.setState(state => {
-                var augmented = state;
-                augmented.signoffsRemaining = augmented.signoffsRemaining.filter(
-                  signoff => signoff.id !== user.id
-                );
-                augmented.signoffsRemaining.push(user);
-                return augmented;
+        this.setState({ signoffsRemaining: [] }, () => {
+          signoffsRemaining.forEach(signoff => {
+            Api()
+              .user(signoff.user)
+              .get()
+              .then(user => {
+                this.setState(state => {
+                  var augmented = state;
+                  augmented.signoffsRemaining = augmented.signoffsRemaining.filter(
+                    signoff => signoff.id !== user.id
+                  );
+                  augmented.signoffsRemaining.push(user);
+                  return augmented;
+                });
               });
-            });
+          });
         });
       });
   }
@@ -359,7 +358,7 @@ class EditPublicationView extends Component {
             <label>Summary</label>
             <textarea
               value={this.state.newSummary || this.state.publication.summary}
-              onChange={e => this.setSTate({ newSummary: e.target.value })}
+              onChange={e => this.setState({ newSummary: e.target.value })}
             />
           </div>
           <button
