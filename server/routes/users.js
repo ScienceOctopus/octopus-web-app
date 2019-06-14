@@ -50,6 +50,7 @@ const getUserAvatar = async (req, res) => {
     return res.status(500).send("500 Internal Server Error");
   }
 
+  // TODO: Change to use libravatar here
   let user = users[0];
   if (user.email === null) {
     res.redirect("/images/avatar.jpg");
@@ -63,7 +64,7 @@ const getUserAvatar = async (req, res) => {
         request({
           qs: req.query,
           uri: `https://gravatar.com/avatar/${email_hash}`,
-        }),
+        })
       )
       .pipe(res);
   }
