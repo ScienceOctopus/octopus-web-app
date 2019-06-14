@@ -76,12 +76,13 @@ class UserPage extends Component {
 
     return (
       <div className="ui segment icon warning message">
-        <i className="exclamation icon" />
         <div className="content" style={styles.signoffConent}>
-          <div className="header" style={styles.signoffHeader}>
-            {"You have publications awaiting your signoff"}
+          <div style={styles.signoffHeaderContainer}>
+            {/* <i className="exclamation icon" style={styles.signoffIcon} /> */}
+            <div className="header">
+              {"You have publications awaiting your signoff"}
+            </div>
           </div>
-
           {this.renderPublications(arr)}
         </div>
       </div>
@@ -137,9 +138,18 @@ const splitPublications = pubs => {
 };
 
 const styles = {
-  signoffConent: { maxWidth: "95%" },
-  signoffHeader: {
+  signoffConent: {
+    maxWidth: "100%",
+  },
+  signoffIcon: {
+    fontSize: "2em",
+  },
+
+  signoffHeaderContainer: {
+    fontSize: "1.5em",
+    lineHeight: "1.5em",
     marginBottom: 15,
+    display: "flex",
   },
 };
 
