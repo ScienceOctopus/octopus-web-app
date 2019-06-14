@@ -40,10 +40,13 @@ class ProblemSearchList extends Component {
       .problems()
       .getQuery(this.props.query)
       .then(problems => {
-        this.setState({
-          loaded: true,
-          problems: problems.map(x => x.id),
-        });
+        this.setState(
+          {
+            loaded: true,
+            problems: problems.map(x => x.id),
+          },
+          this.loadingComplete,
+        );
       });
   }
 
@@ -52,11 +55,18 @@ class ProblemSearchList extends Component {
       .problems()
       .get()
       .then(problems => {
-        this.setState({
-          loaded: true,
-          problems: problems.map(x => x.id),
-        });
+        this.setState(
+          {
+            loaded: true,
+            problems: problems.map(x => x.id),
+          },
+          this.loadingComplete,
+        );
       });
+  }
+
+  loadingComplete() {
+    if (this.props.onLoaded) this.props.onLoaded();
   }
 
   renderNothingFound() {

@@ -12,12 +12,14 @@ class ProblemSelector extends Component {
       selectedProblem: undefined,
       query: undefined,
       modalVisible: false,
+      searchLoading: true,
     };
   }
 
   handleSearchChange = event => {
     this.setState({
       query: event.target.value,
+      searchLoading: true,
     });
   };
 
@@ -51,6 +53,10 @@ class ProblemSelector extends Component {
     return <h1>{title}</h1>;
   }
 
+  handleProblemsLoaded = () => {
+    this.setState({ searchLoading: false });
+  };
+
   renderModal() {
     return (
       <Modal
@@ -61,11 +67,13 @@ class ProblemSelector extends Component {
           placeholder="Search for problems"
           onChange={this.handleSearchChange}
           onSubmit={this.handleSearchSubmit}
+          loading={this.state.searchLoading}
           value={this.state.query}
         />
         <ProblemSearchList
           query={this.state.query}
           onSelect={this.handleProblemSelect}
+          onLoaded={this.handleProblemsLoaded}
         />
       </Modal>
     );

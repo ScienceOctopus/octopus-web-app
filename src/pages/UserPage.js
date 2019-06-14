@@ -76,7 +76,7 @@ class UserPage extends Component {
 
     return (
       <div className="ui segment icon warning message">
-        <div className="content" style={styles.signoffConent}>
+        <div className="content" style={styles.signoffContent}>
           <div style={styles.signoffHeaderContainer}>
             {/* <i className="exclamation icon" style={styles.signoffIcon} /> */}
             <div className="header">
@@ -138,7 +138,7 @@ const splitPublications = pubs => {
 };
 
 const styles = {
-  signoffConent: {
+  signoffContent: {
     maxWidth: "100%",
   },
   signoffIcon: {

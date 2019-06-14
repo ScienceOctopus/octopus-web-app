@@ -1,8 +1,13 @@
 import React from "react";
 
 const SearchField = props => {
+  let containerClass = "ui search item ";
+  if (props.loading) {
+    containerClass += "loading";
+  }
+
   return (
-    <div className="ui search item">
+    <div className={containerClass}>
       <form onSubmit={props.onSubmit}>
         <div className="ui icon input">
           <input className="prompt" type="text" {...props} />
