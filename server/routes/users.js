@@ -1,8 +1,10 @@
 const express = require("express");
+const getUserFromSession = require("../userSessions.js").getUserFromSession;
 const request = require("request");
 const bodyParser = require("body-parser");
 const cryptography = require("crypto");
 
+const broadcast = require("../webSocket.js").broadcast;
 const db = require("../postgresQueries.js").queries;
 const blobService = require("../blobService.js");
 const upload = blobService.upload;
@@ -76,12 +78,31 @@ const getNotificationsForUser = async (req, res) => {
   res.status(200).json(notifications);
 };
 
+const removeUserNotification = async (req, res) => {
+  const user = getUserFromSession(req);
+
+  if (user.toString() !== req.params.id.toString()) {
+    return res.sendStatus(403);
+  }
+
+  let numDeleted = await db.deleteUserNotificationByUserAndID(
+    req.params.id,
+    req.params.notif,
+  );
+  broadcast(`/users/${req.params.id}/notifications`);
+  res.sendStatus(numDeleted ? 204 : 404);
+};
+
 var router = express.Router();
 
 router.get("/:id(\\d+)", catchAsyncErrors(getUserByID));
 router.get(
   "/:id(\\d+)/notifications",
   catchAsyncErrors(getNotificationsForUser),
+);
+router.delete(
+  "/:id(\\d+)/notifications/:notif(\\d+)",
+  catchAsyncErrors(removeUserNotification),
 );
 router.get("/:id(\\d+)/avatar", catchAsyncErrors(getUserAvatar));
 

@@ -26,8 +26,6 @@ const publicationVisibleForCurrentUser = async (publication, req) => {
       collaborator => collaborator.user === user,
     );
 
-    console.log(user, collaborators);
-
     if (!collaborators.length) {
       return false;
     }
@@ -43,7 +41,6 @@ const getAndValidatePublication = async (id, req) => {
 
   let publication = publications[0];
 
-  console.log(publication.id);
   return (await publicationVisibleForCurrentUser(publication, req))
     ? publication
     : undefined;
@@ -95,6 +92,21 @@ const getPublicationByID = async (req, res) => {
   }
 
   res.status(200).json(publication);
+};
+
+const notifyLinkedUsers = async publication => {
+  let basedOn = await db
+    .selectPublicationsByLinksAfterPublication(publication)
+    .map(x => x.id);
+
+  let usersToNotify = await db
+    .selectAllCollaboratorsForListOfPublications(basedOn)
+    .map(x => x.user);
+
+  for (let i = 0; i < usersToNotify.length; i++) {
+    await db.insertUserNotification(usersToNotify[i], publication);
+    broadcast(`/users/${usersToNotify[i]}/notifications`);
+  }
 };
 
 const postPublicationToID = async (req, res) => {
@@ -172,8 +184,14 @@ const postPublicationToID = async (req, res) => {
     req.body.title,
     req.body.summary,
     req.body.funding,
+<<<<<<< HEAD
+=======
+    req.body.conflict,
+>>>>>>> 457387af3979e1120ea0c2aec9ec859f83f29e9b
     JSON.stringify(data),
   );
+
+  await notifyLinkedUsers(req.params.id);
 
   broadcast(`/publications/${req.params.id}`);
   broadcast(`/problems/${publication.problem}/publications`);
@@ -348,6 +366,9 @@ const postSignoffToPublication = async (req, res) => {
 
   if (collaborators.length === 0) {
     await db.finalisePublication(publication.id, publication.revision);
+
+    await notifyLinkedUsers(req.params.id);
+
     broadcast(`/publications/${publication.id}`);
     broadcast(`/problems/${publication.problem}/publications`);
     broadcast(
