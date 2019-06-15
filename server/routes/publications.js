@@ -426,6 +426,43 @@ const postRequestSignoffToPublication = async (req, res) => {
   return await postSignoffToPublication(req, res);
 };
 
+const getTagsByPublication = async (req, res) => {
+  const publication = await getAndValidatePublication(req.params.id, req);
+  if (!publication) {
+    return res.sendStatus(404);
+  }
+
+  const tags = await db.selectTagsByPublication(req.params.id, req.params.tag);
+
+  res.status(200).json(tags);
+};
+
+/*const postTagToPublication = async (req, res) => {
+  const publication = await getAndValidatePublication(req.params.id, req);
+  if (!publication) {
+    return res.sendStatus(404);
+  }
+  
+  const tag = await db.insertOrSelectTag(req.body.tag);
+  
+  await db.insertTagToPublication(req.params.id, tag);
+  
+  res.sendStatus(204);
+};
+
+const deleteTagFromPublication = async (req, res) => {
+  const publication = await getAndValidatePublication(req.params.id, req);
+  if (!publication) {
+    return res.sendStatus(404);
+  }
+    
+  const tag = await db.insertOrSelectTag(req.body.tag);
+  
+  await db.deleteTagFromPublication(req.params.id, tag);
+    
+  res.sendStatus(204);
+}*/
+
 var router = express.Router();
 
 router.get("/", catchAsyncErrors(getPublications));
@@ -474,6 +511,9 @@ router.post(
   "/:id(\\d+)/request_signoff",
   catchAsyncErrors(postRequestSignoffToPublication)
 );
+router.get("/:id(\\d+)/tags", catchAsyncErrors(getTagsByPublication));
+//router.post("/:id(\\d+)/tags", catchAsyncErrors(postTagToPublication));
+//router.delete("/:id(\\d+)/tags", catchAsyncErrors(deleteTagFromPublication));
 
 module.exports = {
   router,

@@ -267,6 +267,12 @@ const postPublicationToProblemAndStage = async (req, res) => {
     );
   }
 
+  const tags = JSON.parse(req.body.tags);
+
+  for (let i = 0; i < tags.length; i++) {
+    await db.insertTagToPublication(publications[0], tags[i]);
+  }
+
   // Problem publications changed
   broadcast(`/problems/${req.params.id}/publications`);
   broadcast(

@@ -61,7 +61,7 @@ class EditPublicationView extends Component {
                   schema: schema,
                 });
               });
-          }
+          },
         );
       });
 
@@ -90,7 +90,7 @@ class EditPublicationView extends Component {
               this.setState(state => {
                 var augmented = state;
                 augmented.collaborators = augmented.collaborators.filter(
-                  collaborator => collaborator.id !== user.id
+                  collaborator => collaborator.id !== user.id,
                 );
                 augmented.collaborators.push(user);
                 return augmented;
@@ -113,7 +113,7 @@ class EditPublicationView extends Component {
               this.setState(state => {
                 var augmented = state;
                 augmented.signoffs = augmented.signoffs.filter(
-                  signoff => signoff.id !== user.id
+                  signoff => signoff.id !== user.id,
                 );
                 augmented.signoffs.push(user);
                 return augmented;
@@ -137,7 +137,7 @@ class EditPublicationView extends Component {
                 this.setState(state => {
                   var augmented = state;
                   augmented.signoffsRemaining = augmented.signoffsRemaining.filter(
-                    signoff => signoff.id !== user.id
+                    signoff => signoff.id !== user.id,
                   );
                   augmented.signoffsRemaining.push(user);
                   return augmented;
