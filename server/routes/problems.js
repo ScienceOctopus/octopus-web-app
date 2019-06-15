@@ -136,26 +136,26 @@ const postPublicationToProblemAndStage = async (req, res) => {
 
   let user = getUserFromSession(req);
 
-  if (!isNumber(req.body.user) || user !== req.body.user) {
-    return requestInvalid(res);
+  if (!isNumber(req.body.user) || !user || user !== Number(req.body.user)) {
+    return res.sendStatus(400);
   }
 
   const problems = await db.selectProblemsByID(req.params.id);
   if (!problems.length) {
-    return requestInvalid(res);
+    return res.sendStatus(400);
   }
 
   const stages = await db.selectStagesByID(req.params.stage);
 
   if (!stages.length) {
-    return requestInvalid(res);
+    return res.sendStatus(400);
   }
 
   if (
     req.body.review === "true" &&
     (req.body.basedOn === undefined || JSON.parse(req.body.basedOn).length <= 0)
   ) {
-    return requestInvalid(res);
+    return res.sendStatus(400);
   }
 
   let data;
@@ -168,7 +168,7 @@ const postPublicationToProblemAndStage = async (req, res) => {
     data = JSON.parse(req.body.data);
 
     if (schema.length !== data.length) {
-      return requestInvalid(res);
+      return res.sendStatus(400);
     }
 
     for (let i = 0; i < schema.length; i++) {
@@ -196,7 +196,7 @@ const postPublicationToProblemAndStage = async (req, res) => {
       }
 
       if (error) {
-        return requestInvalid(res);
+        return res.sendStatus(400);
       }
 
       switch (schema[i][1]) {
@@ -305,19 +305,17 @@ const postProblem = async (req, res) => {
     return;
   }
 
-  if (
-    !req.body.title ||
-    !isNumber(req.body.user) ||
-    (await db.selectUsers(req.body.user)).length <= 0
-  ) {
-    return requestInvalid(res);
+  let user = getUserFromSession(req);
+
+  if (!req.body.title || !user) {
+    return res.sendStatus(400);
   }
 
   // If no stages were provided, just link all of them
   let stages =
     req.body.stages || (await db.selectAllStagesIds().map(x => x.id));
   if (!stages.length || stages.some(x => !isNumber(x))) {
-    return requestInvalid(res);
+    return res.sendStatus(400);
   }
 
   let problem = (await db.insertProblem(

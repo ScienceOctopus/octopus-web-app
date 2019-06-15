@@ -219,6 +219,7 @@ class ProblemPage extends React.Component {
             });
             content.stages[stageId].publications = publications;
             content.stages[stageId].loading = false;
+            content.stages[stageId].selection.loading = true;
             return { content: content };
           },
           () => this.fetchStage(stageId + 1, boot),

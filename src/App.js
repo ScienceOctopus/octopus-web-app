@@ -16,10 +16,6 @@ class App extends Component {
   constructor() {
     super();
 
-    if (process.DEBUG_MODE) {
-      console.log(global.store);
-    }
-
     // Initialise global login state
     global.session = { user: undefined, OAuthState: undefined };
 

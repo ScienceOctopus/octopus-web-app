@@ -15,7 +15,6 @@ const SUMMARY_KEY = "summary";
 class SummaryView extends Component {
   constructor(props) {
     super(props);
-    //console.log("constructor(SummaryView)");
 
     this.state = {};
 

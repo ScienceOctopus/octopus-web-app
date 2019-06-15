@@ -183,7 +183,7 @@ class UploadPage extends Component {
             // No-op
           }
         });
-      console.log(data);
+
       this.setState({ data: data });
     }
 
@@ -365,7 +365,7 @@ class UploadPage extends Component {
   };
 
   handleConflictChange = e => {
-    let val = e.target.val;
+    let val = e.target.value;
     this.setState({
       conflict: val,
     });
@@ -543,7 +543,6 @@ class UploadPage extends Component {
         metaData = (
           <>
             {stage.schema.map(([key, type, title, description, id]) => {
-              console.log(id);
               let value = this.state.data[key];
               let onChange = this.handleDataChange(key);
 

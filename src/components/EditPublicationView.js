@@ -16,7 +16,6 @@ const EDIT_KEY = "edit";
 class EditPublicationView extends Component {
   constructor(props) {
     super(props);
-    //console.log("constructor(SummaryView)");
 
     this.state = {
       publication: undefined,
@@ -65,14 +64,14 @@ class EditPublicationView extends Component {
                   .then(stage => {
                     let schema = JSON.parse(stage.schema);
                     schema.forEach(scheme =>
-                      scheme.push(uniqueId("metadata-"))
+                      scheme.push(uniqueId("metadata-")),
                     );
                     this.setState({
                       stage: stage,
                       schema: schema,
                     });
                   });
-              }
+              },
             );
           });
 
@@ -101,7 +100,7 @@ class EditPublicationView extends Component {
                   this.setState(state => {
                     var augmented = state;
                     augmented.collaborators = augmented.collaborators.filter(
-                      collaborator => collaborator.id !== user.id
+                      collaborator => collaborator.id !== user.id,
                     );
                     augmented.collaborators.push(user);
                     return augmented;
@@ -124,7 +123,7 @@ class EditPublicationView extends Component {
                   this.setState(state => {
                     var augmented = state;
                     augmented.signoffs = augmented.signoffs.filter(
-                      signoff => signoff.id !== user.id
+                      signoff => signoff.id !== user.id,
                     );
                     augmented.signoffs.push(user);
                     return augmented;
@@ -148,7 +147,7 @@ class EditPublicationView extends Component {
                     this.setState(state => {
                       var augmented = state;
                       augmented.signoffsRemaining = augmented.signoffsRemaining.filter(
-                        signoff => signoff.id !== user.id
+                        signoff => signoff.id !== user.id,
                       );
                       augmented.signoffsRemaining.push(user);
                       return augmented;
@@ -176,14 +175,14 @@ class EditPublicationView extends Component {
             let newState = TagSelector.updateFromExternal(
               this.state.tags,
               this.state.tagsIndex,
-              tags
+              tags,
             );
 
             if (newState !== null) {
               this.setState({ tags: newState.tags, tagsIndex: newState.index });
             }
           });
-      }
+      },
     );
   }
 
