@@ -55,7 +55,7 @@ class UserPage extends Component {
       .then(notifications => {
         this.notifications = notifications;
 
-        let unseenPublications = notifications.map(x =>
+        notifications.forEach(x =>
           Api()
             .subscribe(USER_KEY)
             .publication(x.publication)
@@ -73,10 +73,6 @@ class UserPage extends Component {
               }
             }),
         );
-
-        console.log(unseenPublications);
-
-        this.setState({ unseenPublications });
       });
   }
 
