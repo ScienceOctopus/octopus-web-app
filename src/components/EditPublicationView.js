@@ -3,6 +3,11 @@ import PDFImagePreviewRenderer from "./PDFImagePreviewRenderer";
 import styled from "styled-components";
 import Api from "../api";
 import withState from "../withState";
+import FileUploadSelector from "../components/FileUploadSelector";
+import TitledForm from "../components/TitledForm";
+import TitledCheckbox from "../components/TitledCheckbox";
+
+import uniqueId from "lodash/uniqueId";
 
 const EDIT_KEY = "edit";
 
@@ -48,13 +53,15 @@ class EditPublicationView extends Component {
               .problem(this.state.publication.problem)
               .stage(this.state.publication.stage)
               .get()
-              .then(stage =>
+              .then(stage => {
+                let schema = JSON.parse(stage.schema);
+                schema.forEach(scheme => scheme.push(uniqueId("metadata-")));
                 this.setState({
                   stage: stage,
-                  schema: JSON.parse(stage.schema),
-                }),
-              );
-          },
+                  schema: schema,
+                });
+              });
+          }
         );
       });
 
@@ -83,7 +90,7 @@ class EditPublicationView extends Component {
               this.setState(state => {
                 var augmented = state;
                 augmented.collaborators = augmented.collaborators.filter(
-                  collaborator => collaborator.id !== user.id,
+                  collaborator => collaborator.id !== user.id
                 );
                 augmented.collaborators.push(user);
                 return augmented;
@@ -106,7 +113,7 @@ class EditPublicationView extends Component {
               this.setState(state => {
                 var augmented = state;
                 augmented.signoffs = augmented.signoffs.filter(
-                  signoff => signoff.id !== user.id,
+                  signoff => signoff.id !== user.id
                 );
                 augmented.signoffs.push(user);
                 return augmented;
@@ -130,7 +137,7 @@ class EditPublicationView extends Component {
                 this.setState(state => {
                   var augmented = state;
                   augmented.signoffsRemaining = augmented.signoffsRemaining.filter(
-                    signoff => signoff.id !== user.id,
+                    signoff => signoff.id !== user.id
                   );
                   augmented.signoffsRemaining.push(user);
                   return augmented;
@@ -146,6 +153,73 @@ class EditPublicationView extends Component {
       this.fetchPublicationData();
     }
   }
+
+  handleTitleChange = e => {
+    let val = e.target.value;
+    this.setState(state => {
+      let publication = { ...state.publication };
+      publication.title = val;
+      return { publication: publication };
+    });
+  };
+
+  handleSummaryChange = e => {
+    let val = e.target.value;
+    this.setState(state => {
+      let publication = { ...state.publication };
+      publication.summary = val;
+      return { publication: publication };
+    });
+  };
+
+  handleFundingChange = e => {
+    let val = e.target.value;
+    this.setState(state => {
+      let publication = { ...state.publication };
+      publication.funding = val;
+      return { publication: publication };
+    });
+  };
+
+  handleConflictChange = e => {
+    let val = e.target.value;
+    this.setState(state => {
+      let publication = { ...state.publication };
+      publication.conflict = val;
+      return { publication: publication };
+    });
+  };
+
+  handleDataChange = idx => e => {
+    let field = this.state.schema[idx];
+    let data = [...this.state.publication.data];
+
+    let content = e.target;
+
+    switch (field[1]) {
+      case "file":
+        content = content.files[0];
+        break;
+      case "uri":
+        content = content.value;
+        break;
+      case "text":
+        content = content.value;
+        break;
+      case "bool":
+        content = content.checked;
+        break;
+      default:
+        return;
+    }
+
+    data[idx] = content;
+    this.setState(state => {
+      let publication = { ...state.publication };
+      publication.data = data;
+      return { publication: publication };
+    });
+  };
 
   render() {
     // TODO: handle cases where publication may not have loaded?
@@ -165,74 +239,129 @@ class EditPublicationView extends Component {
       stagePresent &&
       this.state.resources !== undefined
     ) {
-      metadata = this.state.schema.map(([key, type, title, description], i) => {
-        let datum = this.state.publication.data[i];
+      // metadata = this.state.schema.map(([key, type, title, description], i) => {
+      //   let datum = this.state.publication.data[i];
+      //
+      //   if (datum === undefined) {
+      //     return null;
+      //   }
+      //
+      //   let content;
+      //
+      //   switch (type) {
+      //     case "file":
+      //       datum = this.state.resources.find(
+      //         resource => resource.id === datum,
+      //       );
+      //
+      //       if (datum === undefined) {
+      //         return null;
+      //       }
+      //
+      //       content = (
+      //         <a className="ui button" href={datum.uri}>
+      //           <i className="ui download icon" />
+      //           Download document
+      //         </a>
+      //       );
+      //       break;
+      //     case "uri":
+      //       datum = this.state.resources.find(
+      //         resource => resource.id === datum,
+      //       );
+      //
+      //       if (datum === undefined) {
+      //         return null;
+      //       }
+      //
+      //       content = <a href={datum.uri}>{datum.uri}</a>;
+      //       break;
+      //     case "text":
+      //       content = datum;
+      //       break;
+      //     case "bool":
+      //       content = (
+      //         <div className="ui checkbox">
+      //           <input
+      //             type="checkbox"
+      //             checked={datum}
+      //             style={{ cursor: "default" }}
+      //             disabled
+      //           />
+      //           <label> </label>
+      //         </div>
+      //       );
+      //       break;
+      //     default:
+      //       return null;
+      //   }
+      //
+      //   return (
+      //     <section key={key} className="ui segment">
+      //       <h3>{title}</h3>
+      //       {description ? (
+      //         <div style={{ marginTop: "-0.5rem" }}>{description}</div>
+      //       ) : null}
+      //       <div className="ui divider" />
+      //       {content}
+      //     </section>
+      //   );
+      // });
+      metadata = (
+        <>
+          {this.state.schema.map(([key, type, title, description, id], i) => {
+            let value = this.state.publication.data[i];
+            let onChange = this.handleDataChange(i);
 
-        if (datum === undefined) {
-          return null;
-        }
-
-        let content;
-
-        switch (type) {
-          case "file":
-            datum = this.state.resources.find(
-              resource => resource.id === datum,
-            );
-
-            if (datum === undefined) {
-              return null;
+            switch (type) {
+              case "file":
+                return (
+                  <FileUploadSelector
+                    key={key}
+                    title={title}
+                    description={description}
+                    files={[value]}
+                    onSelect={onChange}
+                  />
+                );
+              case "uri":
+                return (
+                  <TitledForm
+                    key={key}
+                    title={title}
+                    description={description}
+                    value={value}
+                    onChange={onChange}
+                  />
+                );
+              case "text":
+                return (
+                  <TitledForm
+                    key={key}
+                    title={title}
+                    description={description}
+                    value={value}
+                    onChange={onChange}
+                  />
+                );
+              case "bool":
+                return (
+                  <TitledCheckbox
+                    key={key}
+                    title={title}
+                    description={description}
+                    checked={value}
+                    onChange={onChange}
+                    id={id}
+                  />
+                );
+              default:
+                return null;
             }
-
-            content = (
-              <a className="ui button" href={datum.uri}>
-                <i className="ui download icon" />
-                Download document
-              </a>
-            );
-            break;
-          case "uri":
-            datum = this.state.resources.find(
-              resource => resource.id === datum,
-            );
-
-            if (datum === undefined) {
-              return null;
-            }
-
-            content = <a href={datum.uri}>{datum.uri}</a>;
-            break;
-          case "text":
-            content = datum;
-            break;
-          case "bool":
-            content = (
-              <div className="ui checkbox">
-                <input
-                  type="checkbox"
-                  checked={datum}
-                  style={{ cursor: "default" }}
-                  disabled
-                />
-                <label> </label>
-              </div>
-            );
-            break;
-          default:
-            return null;
-        }
-
-        return (
-          <section key={key} className="ui segment">
-            <h3>{title}</h3>
-            {description ? (
-              <div style={{ marginTop: "-0.5rem" }}>{description}</div>
-            ) : null}
-            <div className="ui divider" />
-            {content}
-          </section>
-        );
-      });
+          })}
+          <div className="ui divider" />
+        </>
+      );
     }
 
     let signoffInvitation = null;
@@ -349,46 +478,81 @@ class EditPublicationView extends Component {
             <label>Title</label>
             <input
               type="text"
-              value={this.state.newTitle || this.state.publication.title}
-              onChange={e => this.setState({ newTitle: e.target.value })}
+              value={this.state.publication.title}
+              onChange={this.handleTitleChange}
             />
           </div>
           <div className="ui divider" />
           <div className="field">
             <label>Summary</label>
             <textarea
-              value={this.state.newSummary || this.state.publication.summary}
-              onChange={e => this.setState({ newSummary: e.target.value })}
+              value={this.state.publication.summary}
+              onChange={this.handleSummaryChange}
             />
           </div>
+          <TitledForm
+            title="Funding Statement"
+            value={this.state.publication.funding}
+            guidance='If this research has any funding sources you think readers should be aware of, add them here. If not, feel free to enter "None".'
+            placeholder="For example, funded by the British Council"
+            onChange={this.handleFundingChange}
+          />
+          <p />
+          <TitledForm
+            title="Conflict of Interest Declaration"
+            value={this.state.publication.conflict}
+            guidance='Declare any potential conflicts of interest this publication may have in the following box. If there aren&apos;t any, just type "No conflicts of interest".'
+            placeholder="For example, no conflicts of interest"
+            onChange={this.handleConflictChange}
+          />
+          {metadata}
           <button
             className="ui button"
             type="submit"
             onClick={() => {
+              let ddata = [];
+              let schema = JSON.parse(this.state.stage.schema);
+              schema.forEach(([key, type, title, description], i) => {
+                let content = this.state.publication.data[i];
+
+                switch (type) {
+                  case "file":
+                    //data.append("file", content);
+                    //content = fileIdx++;
+                    break;
+                  case "uri":
+                    break;
+                  case "text":
+                    break;
+                  case "bool":
+                    break;
+                  default:
+                    return;
+                }
+
+                ddata.push(content);
+              });
               Api()
                 .publication(this.state.publication.id)
                 .post({
                   id: this.state.publication.id,
                   revision: this.state.publication.revision,
-                  title: this.state.newTitle,
-                  summary: this.state.newSummary,
-                  funding: this.state.newFunding,
-                  data: this.state.newData,
+                  title: this.state.publication.title,
+                  summary: this.state.publication.summary,
+                  funding: this.state.publication.funding,
+                  conflict: this.state.publication.conflict,
+                  data: JSON.stringify(ddata),
                 })
-                .then(() =>
-                  this.setState({
-                    newSummary: undefined,
-                    newTitle: undefined,
-                    newFunding: undefined,
-                    newData: undefined,
-                  }),
-                );
+                .then();
             }}
           >
             Update Draft
           </button>
         </div>
-        <p>(Current Revision: {this.state.publication.revision})</p>
+        <p>
+          (Current Revision: {this.state.publication.revision}, last updated:{" "}
+          {new Date(this.state.publication.updated_at).toLocaleString()})
+        </p>
       </>
     );
 
