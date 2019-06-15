@@ -26,8 +26,6 @@ const publicationVisibleForCurrentUser = async (publication, req) => {
       collaborator => collaborator.user === user
     );
 
-    console.log(user, collaborators);
-
     if (!collaborators.length) {
       return false;
     }
@@ -43,7 +41,6 @@ const getAndValidatePublication = async (id, req) => {
 
   let publication = publications[0];
 
-  console.log(publication.id);
   return (await publicationVisibleForCurrentUser(publication, req))
     ? publication
     : undefined;
@@ -172,6 +169,7 @@ const postPublicationToID = async (req, res) => {
     req.body.title,
     req.body.summary,
     req.body.funding,
+    req.body.conflict,
     JSON.stringify(data)
   );
 
