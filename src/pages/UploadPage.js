@@ -500,8 +500,6 @@ class UploadPage extends Component {
 
   delimeter = new RegExp(/,|;/, "g");
 
-  // TODO split on cursor postion: front (add after), middle (add before + continue second part), end (add before)
-
   removeTagToEdit = input => {
     if (input.value.length > 0 || this.state.tagsEditIndex <= 0) {
       return false;
@@ -514,21 +512,46 @@ class UploadPage extends Component {
     return true;
   };
 
-  addTagToList = input => {
-    let value = input.value.replace(this.delimeter, "").trim();
-
-    if (value.length <= 0) {
-      return false;
-    }
+  addTagToList = (input, cursor) => {
+    let [left, right] = [
+      input.value
+        .slice(0, cursor)
+        .replace(this.delimeter, "")
+        .trim(),
+      input.value
+        .slice(cursor, input.value.length)
+        .replace(this.delimeter, "")
+        .trim(),
+    ];
 
     input.value = "";
 
-    if (this.state.tags.includes(value)) {
+    setTimeout(() => (input.selectionStart = input.selectionEnd = 0), 0);
+
+    if (left.length <= 0 && right.length <= 0) {
+      return false;
+    }
+
+    if (left.length <= 0) {
+      if (this.state.tags.includes(right)) {
+        return true;
+      }
+
+      let tags = [...this.state.tags];
+      tags.splice(this.state.tagsEditIndex, 0, right);
+      this.setState({ tags: tags });
+
+      return true;
+    }
+
+    input.value = right;
+
+    if (this.state.tags.includes(left)) {
       return true;
     }
 
     let tags = [...this.state.tags];
-    tags.splice(this.state.tagsEditIndex, 0, value);
+    tags.splice(this.state.tagsEditIndex, 0, left);
     this.setState({ tags: tags, tagsEditIndex: this.state.tagsEditIndex + 1 });
 
     return true;
@@ -543,13 +566,13 @@ class UploadPage extends Component {
     if (e.key === "Backspace") {
       this.removeTagToEdit(e.target);
     } else if (e.key === "Enter") {
-      this.addTagToList(e.target);
+      this.addTagToList(e.target, cursor);
     } else if (e.key === "," || e.key === ";") {
-      this.addTagToList(e.target);
+      this.addTagToList(e.target, cursor);
 
       e.preventDefault();
     } else if (e.key === "Tab") {
-      if (this.addTagToList(e.target)) {
+      if (this.addTagToList(e.target, cursor)) {
         e.preventDefault();
       } else {
         this.setState({ tagsEditIndex: this.state.tags.length });
@@ -596,20 +619,6 @@ class UploadPage extends Component {
         tagsEditIndex: this.state.tagsEditIndex + 1,
       });
     }
-  };
-
-  handleTagsOnBlur = e => {
-    let value = e.target.value.replace(this.delimeter, "").trim();
-
-    e.target.value = "";
-
-    let tags = [...this.state.tags];
-
-    if (value.length > 0 && !this.state.tags.includes(value)) {
-      tags.splice(this.state.tagsEditIndex, 0, value);
-    }
-
-    this.setState({ tags: tags, tagsEditIndex: tags.length });
   };
 
   render() {
@@ -833,14 +842,34 @@ class UploadPage extends Component {
                   .slice(0, this.state.tagsEditIndex)
                   .map((tag, i) => (
                     <div
-                      key={uniqueId("tag-")}
+                      key={i}
                       className="ui horizontal label"
                       style={{
                         display: "flex",
                         marginRight: "0.5rem",
                         marginBottom: "0.5rem",
                       }}
-                      onClick={() => console.log("Edit me")}
+                      onClick={e => {
+                        let value = this.tagRef.value
+                          .replace(this.delimeter, "")
+                          .trim();
+
+                        let tags = [...this.state.tags];
+
+                        if (
+                          value.length > 0 &&
+                          !this.state.tags.includes(value)
+                        ) {
+                          tags.splice(this.state.tagsEditIndex, 0, value);
+                        }
+
+                        this.tagRef.value = tags[i];
+                        tags.splice(i, 1);
+
+                        this.setState({ tags: tags, tagsEditIndex: i }, () =>
+                          this.tagRef.focus(),
+                        );
+                      }}
                     >
                       <span
                         style={{ overflow: "hidden", textOverflow: "ellipsis" }}
@@ -852,8 +881,11 @@ class UploadPage extends Component {
                         onClick={e => {
                           let tags = [...this.state.tags];
                           tags.splice(i, 1);
-                          this.setState({ tags: tags });
-                          e.preventDefault();
+                          this.setState({
+                            tags: tags,
+                            tagsEditIndex: this.state.tagsEditIndex - 1,
+                          });
+                          e.stopPropagation();
                         }}
                       />
                     </div>
@@ -872,24 +904,48 @@ class UploadPage extends Component {
                   }}
                   ref={ref => {
                     if (ref) {
+                      this.tagRef = ref;
                       ref.addEventListener("keydown", this.handleTagsKeyDown);
-                      ref.onblur = this.handleTagsOnBlur;
                     }
                   }}
                   disabled={!problemAcceptsPublications}
                 />
                 {this.state.tags
                   .slice(this.state.tagsEditIndex, this.state.tags.length)
-                  .map((tag, i) => (
+                  .map((tag, j) => (
                     <div
-                      key={uniqueId("tag-")}
+                      key={this.state.tagsEditIndex + j}
                       className="ui horizontal label"
                       style={{
                         display: "flex",
                         marginRight: "0.5rem",
                         marginBottom: "0.5rem",
                       }}
-                      onClick={() => console.log("Edit me")}
+                      onClick={() => {
+                        let value = this.tagRef.value
+                          .replace(this.delimeter, "")
+                          .trim();
+
+                        let tags = [...this.state.tags];
+
+                        this.tagRef.value = tags[this.state.tagsEditIndex + j];
+                        tags.splice(this.state.tagsEditIndex + j, 1);
+
+                        let tagsEditIndex = this.state.tagsEditIndex + j;
+
+                        if (
+                          value.length > 0 &&
+                          !this.state.tags.includes(value)
+                        ) {
+                          tags.splice(this.state.tagsEditIndex, 0, value);
+                          tagsEditIndex += 1;
+                        }
+
+                        this.setState(
+                          { tags: tags, tagsEditIndex: tagsEditIndex },
+                          () => this.tagRef.focus(),
+                        );
+                      }}
                     >
                       <span
                         style={{ overflow: "hidden", textOverflow: "ellipsis" }}
@@ -900,15 +956,11 @@ class UploadPage extends Component {
                         className="delete icon"
                         onClick={e => {
                           let tags = [...this.state.tags];
-                          tags.splice(i, 1);
+                          tags.splice(this.state.tagsEditIndex + j, 1);
                           this.setState({
                             tags: tags,
-                            tagsEditIndex:
-                              this.state.tagsEditIndex <= i
-                                ? this.state.tagsEditIndex - 1
-                                : this.state.tagsEditIndex,
                           });
-                          e.preventDefault();
+                          e.stopPropagation();
                         }}
                       />
                     </div>
