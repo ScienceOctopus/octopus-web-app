@@ -221,6 +221,44 @@ class EditPublicationView extends Component {
     });
   };
 
+  handleEditSubmit = () => {
+    let ddata = [];
+    let schema = JSON.parse(this.state.stage.schema);
+    schema.forEach(([key, type, title, description], i) => {
+      let content = this.state.publication.data[i];
+
+      switch (type) {
+        case "file":
+          //data.append("file", content);
+          //content = fileIdx++;
+          break;
+        case "uri":
+          break;
+        case "text":
+          break;
+        case "bool":
+          break;
+        default:
+          return;
+      }
+
+      ddata.push(content);
+    });
+
+    Api()
+      .publication(this.state.publication.id)
+      .post({
+        id: this.state.publication.id,
+        revision: this.state.publication.revision,
+        title: this.state.publication.title,
+        summary: this.state.publication.summary,
+        funding: this.state.publication.funding,
+        conflict: this.state.publication.conflict,
+        data: JSON.stringify(ddata),
+      })
+      .then();
+  };
+
   render() {
     // TODO: handle cases where publication may not have loaded?
     if (this.state.publication === undefined) {
@@ -239,74 +277,6 @@ class EditPublicationView extends Component {
       stagePresent &&
       this.state.resources !== undefined
     ) {
-      // metadata = this.state.schema.map(([key, type, title, description], i) => {
-      //   let datum = this.state.publication.data[i];
-      //
-      //   if (datum === undefined) {
-      //     return null;
-      //   }
-      //
-      //   let content;
-      //
-      //   switch (type) {
-      //     case "file":
-      //       datum = this.state.resources.find(
-      //         resource => resource.id === datum,
-      //       );
-      //
-      //       if (datum === undefined) {
-      //         return null;
-      //       }
-      //
-      //       content = (
-      //         <a className="ui button" href={datum.uri}>
-      //           <i className="ui download icon" />
-      //           Download document
-      //         </a>
-      //       );
-      //       break;
-      //     case "uri":
-      //       datum = this.state.resources.find(
-      //         resource => resource.id === datum,
-      //       );
-      //
-      //       if (datum === undefined) {
-      //         return null;
-      //       }
-      //
-      //       content = <a href={datum.uri}>{datum.uri}</a>;
-      //       break;
-      //     case "text":
-      //       content = datum;
-      //       break;
-      //     case "bool":
-      //       content = (
-      //         <div className="ui checkbox">
-      //           <input
-      //             type="checkbox"
-      //             checked={datum}
-      //             style={{ cursor: "default" }}
-      //             disabled
-      //           />
-      //           <label> </label>
-      //         </div>
-      //       );
-      //       break;
-      //     default:
-      //       return null;
-      //   }
-      //
-      //   return (
-      //     <section key={key} className="ui segment">
-      //       <h3>{title}</h3>
-      //       {description ? (
-      //         <div style={{ marginTop: "-0.5rem" }}>{description}</div>
-      //       ) : null}
-      //       <div className="ui divider" />
-      //       {content}
-      //     </section>
-      //   );
-      // });
       metadata = (
         <>
           {this.state.schema.map(([key, type, title, description, id], i) => {
@@ -509,42 +479,7 @@ class EditPublicationView extends Component {
           <button
             className="ui button"
             type="submit"
-            onClick={() => {
-              let ddata = [];
-              let schema = JSON.parse(this.state.stage.schema);
-              schema.forEach(([key, type, title, description], i) => {
-                let content = this.state.publication.data[i];
-
-                switch (type) {
-                  case "file":
-                    //data.append("file", content);
-                    //content = fileIdx++;
-                    break;
-                  case "uri":
-                    break;
-                  case "text":
-                    break;
-                  case "bool":
-                    break;
-                  default:
-                    return;
-                }
-
-                ddata.push(content);
-              });
-              Api()
-                .publication(this.state.publication.id)
-                .post({
-                  id: this.state.publication.id,
-                  revision: this.state.publication.revision,
-                  title: this.state.publication.title,
-                  summary: this.state.publication.summary,
-                  funding: this.state.publication.funding,
-                  conflict: this.state.publication.conflict,
-                  data: JSON.stringify(ddata),
-                })
-                .then();
-            }}
+            onClick={this.handleEditSubmit}
           >
             Update Draft
           </button>
