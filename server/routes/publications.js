@@ -188,6 +188,36 @@ const postPublicationToID = async (req, res) => {
     JSON.stringify(data),
   );
 
+  const updatedTags = new Set(JSON.parse(req.body.tags));
+  const currentTags = new Map(
+    (await db.selectTagsByPublication(req.params.id, req.params.tag)).map(
+      entry => [entry.tag, entry.id],
+    ),
+  );
+
+  let tagsToAdd = [];
+  let tagIdsToDelete = [];
+
+  updatedTags.forEach(tag => {
+    if (!currentTags.has(tag)) {
+      tagsToAdd.push(tag);
+    }
+  });
+
+  currentTags.forEach((id, tag) => {
+    if (!updatedTags.has(tag)) {
+      tagIdsToDelete.push(id);
+    }
+  });
+
+  for (let i = 0; i < tagsToAdd.length; i++) {
+    await db.insertTagToPublication(req.params.id, tagsToAdd[i]);
+  }
+
+  for (let i = 0; i < tagIdsToDelete.length; i++) {
+    await db.deleteTagIdFromPublication(req.params.id, tagIdsToDelete[i]);
+  }
+
   await notifyLinkedUsers(req.params.id);
 
   broadcast(`/publications/${req.params.id}`);
@@ -437,32 +467,6 @@ const getTagsByPublication = async (req, res) => {
   res.status(200).json(tags);
 };
 
-/*const postTagToPublication = async (req, res) => {
-  const publication = await getAndValidatePublication(req.params.id, req);
-  if (!publication) {
-    return res.sendStatus(404);
-  }
-  
-  const tag = await db.insertOrSelectTag(req.body.tag);
-  
-  await db.insertTagToPublication(req.params.id, tag);
-  
-  res.sendStatus(204);
-};
-
-const deleteTagFromPublication = async (req, res) => {
-  const publication = await getAndValidatePublication(req.params.id, req);
-  if (!publication) {
-    return res.sendStatus(404);
-  }
-    
-  const tag = await db.insertOrSelectTag(req.body.tag);
-  
-  await db.deleteTagFromPublication(req.params.id, tag);
-    
-  res.sendStatus(204);
-}*/
-
 var router = express.Router();
 
 router.get("/", catchAsyncErrors(getPublications));
@@ -512,8 +516,6 @@ router.post(
   catchAsyncErrors(postRequestSignoffToPublication),
 );
 router.get("/:id(\\d+)/tags", catchAsyncErrors(getTagsByPublication));
-//router.post("/:id(\\d+)/tags", catchAsyncErrors(postTagToPublication));
-//router.delete("/:id(\\d+)/tags", catchAsyncErrors(deleteTagFromPublication));
 
 module.exports = {
   router,

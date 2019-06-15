@@ -511,11 +511,11 @@ const queries = {
         tag: res.rows[0].id,
       }),
     ),
-  /*deleteTagFromPublication: (publication, tag) =>
+  deleteTagIdFromPublication: (publication, tagId) =>
     knex("publication_tags")
       .where("publication", publication)
-      .where("tag", tag)
-      .del(),*/
+      .where("tag", tagId)
+      .del(),
   selectTagsByPublication: publication =>
     knex("publication_tags")
       .where("publication", publication)

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 
 class TagSelector extends Component {
-  /*static updateFromExternal(prevTags, prevIndex, newTags) {
+  static updateFromExternal(prevTags, prevIndex, newTags) {
     let extTags = new Set(newTags);
 
     let updIndex = prevIndex;
@@ -34,7 +34,7 @@ class TagSelector extends Component {
     });
 
     return { tags: updTags, index: updIndex };
-  }*/
+  }
 
   delimeter = new RegExp(/,|;/, "g");
 
