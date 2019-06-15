@@ -80,7 +80,8 @@ const getNotificationsForUser = async (req, res) => {
 
 const removeUserNotification = async (req, res) => {
   const user = getUserFromSession(req);
-  if (user !== req.params.id) {
+
+  if (user.toString() !== req.params.id.toString()) {
     return res.sendStatus(403);
   }
 

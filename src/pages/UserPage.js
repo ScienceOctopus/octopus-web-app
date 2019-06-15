@@ -55,9 +55,12 @@ class UserPage extends Component {
       .then(notifications => {
         this.notifications = notifications;
 
+        if (!notifications.length) {
+          this.setState({ unseenPublications: [] });
+        }
+
         notifications.forEach(x =>
           Api()
-            .subscribe(USER_KEY)
             .publication(x.publication)
             .get()
             .then(publication => {
