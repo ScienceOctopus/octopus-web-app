@@ -17,7 +17,7 @@ import uniqueId from "lodash/uniqueId";
 import ProblemSelector from "../components/ProblemSelector";
 import { loginRequired } from "./LogInRequiredPage";
 import withState from "../withState";
-import TagSelector from "../components/TagSelector";
+import TitledTagSelector from "../components/TitledTagSelector";
 
 const UPLOAD_KEY = "upload";
 
@@ -32,14 +32,14 @@ class UploadPage extends Component {
       publicationsToLink: [],
       title: "",
       summary: "",
-      tags: [],
+      tags: ["octopus"],
       funding: "",
       conflict: "",
       data: undefined,
       selectedFile: undefined,
 
       linkedProblemsSelected: false,
-      tagsIndex: 0,
+      tagsIndex: 1,
 
       problems: [],
       stages: [],
@@ -705,12 +705,14 @@ class UploadPage extends Component {
                 disabled={!problemAcceptsPublications}
                 onChange={this.handleSummaryChange}
               />
-              <TagSelector
+              <TitledTagSelector
+                title="Publication Keywords"
                 tags={this.state.tags}
                 index={this.state.tagsIndex}
-                onUpdate={(tags, index) =>
+                onChange={(tags, index) =>
                   this.setState({ tags: tags, tagsIndex: index })
                 }
+                disabled={!problemAcceptsPublications}
               />
               <TitledForm
                 title="Funding Statement"

@@ -566,6 +566,11 @@ class PublicationBuilder extends LinkBuilder {
     this.path += "/allCollaborators";
     return this;
   };
+
+  tags = () => {
+    this.path += "/tags";
+    return this;
+  };
 }
 
 class UserBuilder extends LinkBuilder {

@@ -8,6 +8,7 @@ import WebURI, {
 } from "../urls/WebsiteURIs";
 import Api from "../api";
 import withState from "../withState";
+import TagSelector from "./TagSelector";
 
 const SUMMARY_KEY = "summary";
 
@@ -71,6 +72,7 @@ class SummaryView extends Component {
         schema: undefined,
         stageNames: undefined,
         allPublications: undefined,
+        tags: undefined,
       },
       () => {
         // Cache under a similar scope as the ProblemPage
@@ -198,6 +200,13 @@ class SummaryView extends Component {
 
             this.setState({ allPublications: publications });
           });
+
+        Api()
+          .subscribe(SUMMARY_KEY)
+          .publication(this.props.publicationId)
+          .tags()
+          .get()
+          .then(tags => this.setState({ tags: tags.map(tag => tag.tag) }));
       },
     );
   }
@@ -390,6 +399,13 @@ class SummaryView extends Component {
               <h3>Summary</h3>
               <div className="ui divider" />
               {this.state.publication.summary}
+            </section>
+            <section className="ui segment">
+              <h3>Keywords</h3>
+              <div className="ui divider" />
+              {this.state.tags && (
+                <TagSelector tags={this.state.tags} index={0} />
+              )}
             </section>
             <section className="ui segment">
               <h3>Funding Statement</h3>

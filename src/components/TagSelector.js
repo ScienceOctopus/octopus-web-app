@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 
 class TagSelector extends Component {
-  static updateFromExternal(prevTags, prevIndex, newTags) {
+  /*static updateFromExternal(prevTags, prevIndex, newTags) {
     let extTags = new Set(newTags);
 
     let updIndex = prevIndex;
@@ -34,7 +34,7 @@ class TagSelector extends Component {
     });
 
     return { tags: updTags, index: updIndex };
-  }
+  }*/
 
   delimeter = new RegExp(/,|;/, "g");
 
@@ -101,25 +101,19 @@ class TagSelector extends Component {
         ? this.ref.selectionEnd
         : this.ref.selectionStart;
 
-    let updated = false;
-
     if (e.key === "Backspace") {
-      updated = this.removeTagToEdit();
+      this.removeTagToEdit();
     } else if (e.key === "Enter") {
-      updated = this.addTagToList(cursor);
+      this.addTagToList(cursor);
     } else if (e.key === "," || e.key === ";") {
-      updated = this.addTagToList(cursor);
+      this.addTagToList(cursor);
 
       e.preventDefault();
     } else if (e.key === "Tab") {
       if (this.addTagToList(cursor)) {
         e.preventDefault();
-
-        updated = true;
       } else {
         this.props.onUpdate(this.props.tags, this.props.tags.length);
-
-        updated = false;
       }
     } else if (e.key === "ArrowLeft" && this.props.index > 0 && cursor <= 0) {
       let value = this.ref.value.replace(this.delimeter, "").trim();
@@ -137,8 +131,6 @@ class TagSelector extends Component {
       this.ref.value = "";
 
       this.props.onUpdate(tags, index);
-
-      updated = true;
     } else if (
       e.key === "ArrowRight" &&
       this.props.index < this.props.tags.length &&
@@ -157,8 +149,6 @@ class TagSelector extends Component {
       this.ref.value = "";
 
       this.props.onUpdate(tags, this.props.index + 1);
-
-      updated = true;
     }
   };
 
@@ -184,54 +174,64 @@ class TagSelector extends Component {
               marginRight: "0.5rem",
               marginBottom: "0.5rem",
             }}
-            onClick={e => {
-              let value = this.ref.value.replace(this.delimeter, "").trim();
+            onClick={
+              this.props.input
+                ? e => {
+                    let value = this.ref.value
+                      .replace(this.delimeter, "")
+                      .trim();
 
-              let tags = [...this.props.tags];
+                    let tags = [...this.props.tags];
 
-              if (value.length > 0 && !this.props.tags.includes(value)) {
-                tags.splice(this.props.index, 0, value);
-              }
+                    if (value.length > 0 && !this.props.tags.includes(value)) {
+                      tags.splice(this.props.index, 0, value);
+                    }
 
-              this.ref.value = tags[i];
-              tags.splice(i, 1);
+                    this.ref.value = tags[i];
+                    tags.splice(i, 1);
 
-              this.props.onUpdate(tags, i);
-              this.ref.focus();
-            }}
+                    this.props.onUpdate(tags, i);
+                    this.ref.focus();
+                  }
+                : undefined
+            }
           >
             <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>
               {tag}
             </span>
-            <i
-              className="delete icon"
-              onClick={e => {
-                let tags = [...this.props.tags];
-                tags.splice(i, 1);
-                this.props.onUpdate(tags, this.props.index - 1);
-                e.stopPropagation();
-              }}
-            />
+            {this.props.input ? (
+              <i
+                className="delete icon"
+                onClick={e => {
+                  let tags = [...this.props.tags];
+                  tags.splice(i, 1);
+                  this.props.onUpdate(tags, this.props.index - 1);
+                  e.stopPropagation();
+                }}
+              />
+            ) : null}
           </div>
         ))}
-        <input
-          type="text"
-          style={{
-            border: "none",
-            boxShadow: "none",
-            display: "flex",
-            width: "unset",
-            padding: 0,
-            marginRight: "0.5rem",
-            marginBottom: "0.5rem",
-          }}
-          ref={ref => {
-            if (ref) {
-              this.ref = ref;
-              ref.addEventListener("keydown", this.handleTagsKeyDown);
-            }
-          }}
-        />
+        {this.props.input ? (
+          <input
+            type="text"
+            style={{
+              border: "none",
+              boxShadow: "none",
+              display: "flex",
+              width: "unset",
+              padding: 0,
+              marginRight: "0.5rem",
+              marginBottom: "0.5rem",
+            }}
+            ref={ref => {
+              if (ref) {
+                this.ref = ref;
+                ref.addEventListener("keydown", this.handleTagsKeyDown);
+              }
+            }}
+          />
+        ) : null}
         {this.props.tags
           .slice(this.props.index, this.props.tags.length)
           .map((tag, j) => (
@@ -243,37 +243,48 @@ class TagSelector extends Component {
                 marginRight: "0.5rem",
                 marginBottom: "0.5rem",
               }}
-              onClick={() => {
-                let value = this.ref.value.replace(this.delimeter, "").trim();
+              onClick={
+                this.props.input
+                  ? () => {
+                      let value = this.ref.value
+                        .replace(this.delimeter, "")
+                        .trim();
 
-                let tags = [...this.props.tags];
+                      let tags = [...this.props.tags];
 
-                this.ref.value = tags[this.props.index + j];
-                tags.splice(this.props.index + j, 1);
+                      this.ref.value = tags[this.props.index + j];
+                      tags.splice(this.props.index + j, 1);
 
-                let index = this.props.index + j;
+                      let index = this.props.index + j;
 
-                if (value.length > 0 && !this.props.tags.includes(value)) {
-                  tags.splice(this.props.index, 0, value);
-                  index += 1;
-                }
+                      if (
+                        value.length > 0 &&
+                        !this.props.tags.includes(value)
+                      ) {
+                        tags.splice(this.props.index, 0, value);
+                        index += 1;
+                      }
 
-                this.props.onUpdate(tags, index);
-                this.ref.focus();
-              }}
+                      this.props.onUpdate(tags, index);
+                      this.ref.focus();
+                    }
+                  : undefined
+              }
             >
               <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>
                 {tag}
               </span>
-              <i
-                className="delete icon"
-                onClick={e => {
-                  let tags = [...this.props.tags];
-                  tags.splice(this.props.index + j, 1);
-                  this.props.onUpdate(tags, this.props.index);
-                  e.stopPropagation();
-                }}
-              />
+              {this.props.input ? (
+                <i
+                  className="delete icon"
+                  onClick={e => {
+                    let tags = [...this.props.tags];
+                    tags.splice(this.props.index + j, 1);
+                    this.props.onUpdate(tags, this.props.index);
+                    e.stopPropagation();
+                  }}
+                />
+              ) : null}
             </div>
           ))}
       </div>

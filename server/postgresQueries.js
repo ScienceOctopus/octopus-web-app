@@ -515,11 +515,11 @@ const queries = {
     knex("publication_tags")
       .where("publication", publication)
       .where("tag", tag)
-      .del(),
+      .del(),*/
   selectTagsByPublication: publication =>
     knex("publication_tags")
       .where("publication", publication)
-      .join("tags", "tags.id", "publication_tags.tag"),*/
+      .join("tags", "tags.id", "publication_tags.tag"),
 };
 
 module.exports = {
