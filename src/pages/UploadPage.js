@@ -17,6 +17,7 @@ import uniqueId from "lodash/uniqueId";
 import ProblemSelector from "../components/ProblemSelector";
 import { loginRequired } from "./LogInRequiredPage";
 import withState from "../withState";
+import TagSelector from "../components/TagSelector";
 
 const UPLOAD_KEY = "upload";
 
@@ -31,19 +32,18 @@ class UploadPage extends Component {
       publicationsToLink: [],
       title: "",
       summary: "",
+      tags: [],
       funding: "",
       conflict: "",
       data: undefined,
       selectedFile: undefined,
 
       linkedProblemsSelected: false,
+      tagsIndex: 0,
 
       problems: [],
       stages: [],
       publications: undefined,
-
-      tags: [],
-      tagsEditIndex: 0,
     };
 
     // Always start a new cache when the upload page is loaded
@@ -498,129 +498,6 @@ class UploadPage extends Component {
     }
   }
 
-  delimeter = new RegExp(/,|;/, "g");
-
-  removeTagToEdit = input => {
-    if (input.value.length > 0 || this.state.tagsEditIndex <= 0) {
-      return false;
-    }
-
-    let tags = [...this.state.tags];
-    input.value = tags.splice(this.state.tagsEditIndex - 1, 1)[0] + " ";
-    this.setState({ tags: tags, tagsEditIndex: this.state.tagsEditIndex - 1 });
-
-    return true;
-  };
-
-  addTagToList = (input, cursor) => {
-    let [left, right] = [
-      input.value
-        .slice(0, cursor)
-        .replace(this.delimeter, "")
-        .trim(),
-      input.value
-        .slice(cursor, input.value.length)
-        .replace(this.delimeter, "")
-        .trim(),
-    ];
-
-    input.value = "";
-
-    setTimeout(() => (input.selectionStart = input.selectionEnd = 0), 0);
-
-    if (left.length <= 0 && right.length <= 0) {
-      return false;
-    }
-
-    if (left.length <= 0) {
-      if (this.state.tags.includes(right)) {
-        return true;
-      }
-
-      let tags = [...this.state.tags];
-      tags.splice(this.state.tagsEditIndex, 0, right);
-      this.setState({ tags: tags });
-
-      return true;
-    }
-
-    input.value = right;
-
-    if (this.state.tags.includes(left)) {
-      return true;
-    }
-
-    let tags = [...this.state.tags];
-    tags.splice(this.state.tagsEditIndex, 0, left);
-    this.setState({ tags: tags, tagsEditIndex: this.state.tagsEditIndex + 1 });
-
-    return true;
-  };
-
-  handleTagsKeyDown = e => {
-    let cursor =
-      e.target.selectionDirection === "backward"
-        ? e.target.selectionEnd
-        : e.target.selectionStart;
-
-    if (e.key === "Backspace") {
-      this.removeTagToEdit(e.target);
-    } else if (e.key === "Enter") {
-      this.addTagToList(e.target, cursor);
-    } else if (e.key === "," || e.key === ";") {
-      this.addTagToList(e.target, cursor);
-
-      e.preventDefault();
-    } else if (e.key === "Tab") {
-      if (this.addTagToList(e.target, cursor)) {
-        e.preventDefault();
-      } else {
-        this.setState({ tagsEditIndex: this.state.tags.length });
-      }
-    } else if (
-      e.key === "ArrowLeft" &&
-      this.state.tagsEditIndex > 0 &&
-      cursor <= 0
-    ) {
-      let value = e.target.value.replace(this.delimeter, "").trim();
-
-      let tags = [...this.state.tags];
-      let tagsEditIndex = this.state.tagsEditIndex - 1;
-
-      if (value.length > 0 && !this.state.tags.includes(value)) {
-        tags.splice(this.state.tagsEditIndex, 0, value);
-        tagsEditIndex = this.state.tagsEditIndex;
-
-        e.preventDefault();
-      }
-
-      e.target.value = "";
-
-      this.setState({ tags: tags, tagsEditIndex: tagsEditIndex });
-    } else if (
-      e.key === "ArrowRight" &&
-      this.state.tagsEditIndex < this.state.tags.length &&
-      cursor >= e.target.value.length
-    ) {
-      let value = e.target.value.replace(this.delimeter, "").trim();
-
-      let tags = [...this.state.tags];
-
-      if (value.length > 0 && !this.state.tags.includes(value)) {
-        tags.splice(this.state.tagsEditIndex, 0, value);
-
-        e.preventDefault();
-      }
-
-      e.target.value = "";
-
-      this.setState({
-        tags: tags,
-        tagsEditIndex: this.state.tagsEditIndex + 1,
-      });
-    }
-  };
-
   render() {
     let metaData = null;
 
@@ -827,145 +704,13 @@ class UploadPage extends Component {
                 disabled={!problemAcceptsPublications}
                 onChange={this.handleSummaryChange}
               />
-              <div
-                style={{
-                  border: "1px solid #ccc",
-                  boxShadow: "inset 0 1px 1px rgba(0, 0, 0, 0.075)",
-                  paddingLeft: "0.5rem",
-                  paddingTop: "0.5rem",
-                  borderRadius: "4px",
-                  display: "flex",
-                  flexWrap: "wrap",
-                }}
-              >
-                {this.state.tags
-                  .slice(0, this.state.tagsEditIndex)
-                  .map((tag, i) => (
-                    <div
-                      key={i}
-                      className="ui horizontal label"
-                      style={{
-                        display: "flex",
-                        marginRight: "0.5rem",
-                        marginBottom: "0.5rem",
-                      }}
-                      onClick={e => {
-                        let value = this.tagRef.value
-                          .replace(this.delimeter, "")
-                          .trim();
-
-                        let tags = [...this.state.tags];
-
-                        if (
-                          value.length > 0 &&
-                          !this.state.tags.includes(value)
-                        ) {
-                          tags.splice(this.state.tagsEditIndex, 0, value);
-                        }
-
-                        this.tagRef.value = tags[i];
-                        tags.splice(i, 1);
-
-                        this.setState({ tags: tags, tagsEditIndex: i }, () =>
-                          this.tagRef.focus(),
-                        );
-                      }}
-                    >
-                      <span
-                        style={{ overflow: "hidden", textOverflow: "ellipsis" }}
-                      >
-                        {tag}
-                      </span>
-                      <i
-                        className="delete icon"
-                        onClick={e => {
-                          let tags = [...this.state.tags];
-                          tags.splice(i, 1);
-                          this.setState({
-                            tags: tags,
-                            tagsEditIndex: this.state.tagsEditIndex - 1,
-                          });
-                          e.stopPropagation();
-                        }}
-                      />
-                    </div>
-                  ))}
-                <input
-                  type="text"
-                  style={{
-                    border: "none",
-                    boxShadow: "none",
-                    display: "flex",
-                    width: "unset",
-                    padding: 0,
-                    marginRight: "0.5rem",
-                    marginBottom: "0.5rem",
-                    flexGrow: 1,
-                  }}
-                  ref={ref => {
-                    if (ref) {
-                      this.tagRef = ref;
-                      ref.addEventListener("keydown", this.handleTagsKeyDown);
-                    }
-                  }}
-                  disabled={!problemAcceptsPublications}
-                />
-                {this.state.tags
-                  .slice(this.state.tagsEditIndex, this.state.tags.length)
-                  .map((tag, j) => (
-                    <div
-                      key={this.state.tagsEditIndex + j}
-                      className="ui horizontal label"
-                      style={{
-                        display: "flex",
-                        marginRight: "0.5rem",
-                        marginBottom: "0.5rem",
-                      }}
-                      onClick={() => {
-                        let value = this.tagRef.value
-                          .replace(this.delimeter, "")
-                          .trim();
-
-                        let tags = [...this.state.tags];
-
-                        this.tagRef.value = tags[this.state.tagsEditIndex + j];
-                        tags.splice(this.state.tagsEditIndex + j, 1);
-
-                        let tagsEditIndex = this.state.tagsEditIndex + j;
-
-                        if (
-                          value.length > 0 &&
-                          !this.state.tags.includes(value)
-                        ) {
-                          tags.splice(this.state.tagsEditIndex, 0, value);
-                          tagsEditIndex += 1;
-                        }
-
-                        this.setState(
-                          { tags: tags, tagsEditIndex: tagsEditIndex },
-                          () => this.tagRef.focus(),
-                        );
-                      }}
-                    >
-                      <span
-                        style={{ overflow: "hidden", textOverflow: "ellipsis" }}
-                      >
-                        {tag}
-                      </span>
-                      <i
-                        className="delete icon"
-                        onClick={e => {
-                          let tags = [...this.state.tags];
-                          tags.splice(this.state.tagsEditIndex + j, 1);
-                          this.setState({
-                            tags: tags,
-                          });
-                          e.stopPropagation();
-                        }}
-                      />
-                    </div>
-                  ))}
-              </div>
+              <TagSelector
+                tags={this.state.tags}
+                index={this.state.tagsIndex}
+                onUpdate={(tags, index) =>
+                  this.setState({ tags: tags, tagsIndex: index })
+                }
+              />
               <TitledForm
                 title="Funding Statement"
                 value={this.state.funding}
