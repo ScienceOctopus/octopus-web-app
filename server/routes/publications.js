@@ -85,13 +85,76 @@ const postPublicationToID = async (req, res) => {
     return res.sendStatus(404);
   }
 
+  const stages = await db.selectStagesByID(publication.stage);
+
+  if (!stages.length) {
+    return res.sendStatus(400);
+  }
+
+  let data;
+  const schema = JSON.parse(stages[0].schema);
+  data = JSON.parse(req.body.data);
+
+  if (schema.length !== data.length) {
+    return res.sendStatus(400);
+  }
+
+  for (let i = 0; i < schema.length; i++) {
+    let content = data[i];
+    let error;
+
+    switch (schema[i][1]) {
+      case "file":
+        error =
+          typeof content != "number" ||
+          content <= 0 ||
+          req.files[content] === undefined;
+        break;
+      case "uri":
+        error = typeof content != "string";
+        break;
+      case "text":
+        error = typeof content != "string";
+        break;
+      case "bool":
+        error = typeof content != "boolean";
+        break;
+      default:
+        error = true;
+    }
+
+    if (error) {
+      return res.sendStatus(400);
+    }
+
+    switch (schema[i][1]) {
+      case "file":
+        content = (await db.insertResource(
+          "azureBlob",
+          req.files[content].url
+        ))[0];
+        resources.push(content);
+        break;
+      case "uri":
+        content = (await db.insertResource("uri", content))[0];
+        resources.push(content);
+        break;
+      case "text":
+        break;
+      case "bool":
+        break;
+    }
+
+    data[i] = content;
+  }
+
   await db.updatePublication(
     req.params.id,
     req.body.revision,
     req.body.title,
     req.body.summary,
     req.body.funding,
-    req.body.data
+    JSON.stringify(data)
   );
 
   broadcast(`/publications/${req.params.id}`);
