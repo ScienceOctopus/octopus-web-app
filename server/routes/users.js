@@ -80,8 +80,8 @@ const getNotificationsForUser = async (req, res) => {
 
 const removeUserNotification = async (req, res) => {
   const user = getUserFromSession(req);
-  if (user !== req.params.user) {
-    res.sendStatus(403);
+  if (user !== req.params.id) {
+    return res.sendStatus(403);
   }
 
   let numDeleted = await db.deleteUserNotificationByUserAndID(
