@@ -95,14 +95,17 @@ const getPublicationByID = async (req, res) => {
 };
 
 const notifyLinkedUsers = async publication => {
-  let basedOn = await db.selectPublicationsByLinksAfterPublication(publication);
+  let basedOn = await db
+    .selectPublicationsByLinksAfterPublication(publication)
+    .map(x => x.id);
+
   let usersToNotify = await db
     .selectAllCollaboratorsForListOfPublications(basedOn)
     .map(x => x.user);
 
   for (let i = 0; i < usersToNotify.length; i++) {
-    await db.insertUserNotification(usersToNotify[i], publications[0]);
-    broadcast(`/users/${user}/notifications`);
+    await db.insertUserNotification(usersToNotify[i], publication);
+    broadcast(`/users/${usersToNotify[i]}/notifications`);
   }
 };
 
