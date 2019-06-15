@@ -552,6 +552,10 @@ class PublicationBuilder extends LinkBuilder {
     return this;
   };
 
+  declineAuthorship = () => {
+    return Axios.post(root + this.path + "/declineAuthorship");
+  };
+
   signoffsRemaining = () => {
     this.path += "/signoffs_remaining";
     return this;

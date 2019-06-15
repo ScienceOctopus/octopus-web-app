@@ -8,6 +8,7 @@ import TitledForm from "../components/TitledForm";
 import TitledCheckbox from "../components/TitledCheckbox";
 
 import uniqueId from "lodash/uniqueId";
+import Modal from "./Modal";
 
 const EDIT_KEY = "edit";
 
@@ -61,7 +62,7 @@ class EditPublicationView extends Component {
                   schema: schema,
                 });
               });
-          }
+          },
         );
       });
 
@@ -90,7 +91,7 @@ class EditPublicationView extends Component {
               this.setState(state => {
                 var augmented = state;
                 augmented.collaborators = augmented.collaborators.filter(
-                  collaborator => collaborator.id !== user.id
+                  collaborator => collaborator.id !== user.id,
                 );
                 augmented.collaborators.push(user);
                 return augmented;
@@ -113,7 +114,7 @@ class EditPublicationView extends Component {
               this.setState(state => {
                 var augmented = state;
                 augmented.signoffs = augmented.signoffs.filter(
-                  signoff => signoff.id !== user.id
+                  signoff => signoff.id !== user.id,
                 );
                 augmented.signoffs.push(user);
                 return augmented;
@@ -137,7 +138,7 @@ class EditPublicationView extends Component {
                 this.setState(state => {
                   var augmented = state;
                   augmented.signoffsRemaining = augmented.signoffsRemaining.filter(
-                    signoff => signoff.id !== user.id
+                    signoff => signoff.id !== user.id,
                   );
                   augmented.signoffsRemaining.push(user);
                   return augmented;
@@ -257,6 +258,34 @@ class EditPublicationView extends Component {
         data: JSON.stringify(ddata),
       })
       .then();
+  };
+
+  presentDeleteWarning = () => {
+    return (
+      <Modal>
+        <div />
+      </Modal>
+    );
+  };
+
+  declineAuthorship = () => {
+    Api()
+      .publication(this.state.publication.id)
+      .declineAuthorship();
+  };
+
+  handleDecline = () => {
+    Api()
+      .publication(this.state.publication.id)
+      .collaborators()
+      .count()
+      .then(currentCollaboratorsCount => {
+        if (currentCollaboratorsCount <= 1) {
+          this.presentDeleteWarning();
+        } else {
+          this.declineAuthorship();
+        }
+      });
   };
 
   render() {
@@ -394,18 +423,24 @@ class EditPublicationView extends Component {
       );
     } else {
       signoffInvitation = (
-        <button
-          className="ui green button"
-          onClick={() => {
-            Api()
-              .publication(this.state.publication.id)
-              .requestSignoff()
-              .post({ revision: this.state.publication.revision })
-              .then();
-          }}
-        >
-          Finalise Publication And Request Signoffs
-        </button>
+        <>
+          <button
+            className="ui green button"
+            onClick={() => {
+              Api()
+                .publication(this.state.publication.id)
+                .requestSignoff()
+                .post({ revision: this.state.publication.revision })
+                .then();
+            }}
+          >
+            Finalise Publication And Request Signoffs
+          </button>
+
+          <button className="ui red button" onClick={this.handleDecline}>
+            {"Decline Authorship"}
+          </button>
+        </>
       );
     }
 

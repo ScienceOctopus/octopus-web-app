@@ -157,7 +157,6 @@ class UserPage extends Component {
         {this.renderTitle()}
 
         {this.renderUnseen()}
-
         {this.renderAwaitingSignoff()}
 
         <div className="ui segment">
