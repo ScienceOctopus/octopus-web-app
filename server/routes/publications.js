@@ -61,13 +61,31 @@ const getAllPublicationsByUser = async (req, res) => {
   res.status(200).json(publications);
 };
 
+const getAllReviewsForUser = async (req, res) => {
+  let reviews = await db.selectReviewsForUser(req.query.forUser);
+  if (!reviews.length) {
+    return res.sendStatus(404);
+  }
+
+  res.status(200).json(reviews);
+};
+
 const getPublications = (req, res) => {
   if (req.query && req.query.user) {
     return getAllPublicationsByUser(req, res);
   }
 
   // TODO: not done yet
-  res.status(404).end();
+  res.status(444).end();
+};
+
+const getReviews = (req, res) => {
+  if (req.query && req.query.forUser) {
+    return getAllReviewsForUser(req, res);
+  }
+
+  // TODO: not done yet
+  res.status(444).end();
 };
 
 const getPublicationByID = async (req, res) => {
@@ -393,6 +411,7 @@ const postRequestSignoffToPublication = async (req, res) => {
 var router = express.Router();
 
 router.get("/", catchAsyncErrors(getPublications));
+router.get("/reviews", catchAsyncErrors(getReviews));
 
 router.get("/:id(\\d+)", catchAsyncErrors(getPublicationByID));
 router.post("/:id(\\d+)", catchAsyncErrors(postPublicationToID));

@@ -10,6 +10,9 @@ import WebURI from "../urls/WebsiteURIs";
 const USER_KEY = "user";
 
 class UserPage extends Component {
+  notifications = [];
+  loadingUnseenPublications = [];
+
   constructor(props) {
     super(props);
 
@@ -19,9 +22,14 @@ class UserPage extends Component {
       finalizedReviews: [],
       draftPublications: [],
       draftReviews: [],
-    };
 
+      unseenPublications: [],
+    };
+  }
+
+  componentDidMount() {
     this.fetchUserPublications();
+    this.fetchUserNotifications();
   }
 
   componentWillUnmount() {
@@ -35,6 +43,36 @@ class UserPage extends Component {
       .getByUser(global.session.user.id)
       .then(publications => {
         this.setState(splitPublications(publications));
+      });
+  }
+
+  fetchUserNotifications() {
+    Api()
+      .subscribe(USER_KEY)
+      .user(global.session.user.id)
+      .notifications()
+      .get()
+      .then(notifications => {
+        this.notifications = notifications;
+
+        notifications.forEach(x =>
+          Api()
+            .subscribe(USER_KEY)
+            .publication(x.publication)
+            .get()
+            .then(publication => {
+              this.loadingUnseenPublications.push(publication);
+              if (
+                this.loadingUnseenPublications.length ===
+                this.notifications.length
+              ) {
+                this.setState({
+                  unseenPublications: this.loadingUnseenPublications,
+                });
+                this.loadingUnseenPublications = [];
+              }
+            }),
+        );
       });
   }
 
@@ -69,6 +107,13 @@ class UserPage extends Component {
     );
   }
 
+  renderUnseen() {
+    return this.renderPublications(
+      this.state.unseenPublications,
+      "unseen linked",
+    );
+  }
+
   renderAwaitingSignoff() {
     let arr = Array(20).fill(this.state.draftPublications[0]);
 
@@ -93,6 +138,8 @@ class UserPage extends Component {
     return (
       <div className="ui container main">
         {this.renderTitle()}
+
+        {this.renderUnseen()}
 
         {this.renderAwaitingSignoff()}
 

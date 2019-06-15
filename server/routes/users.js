@@ -64,15 +64,25 @@ const getUserAvatar = async (req, res) => {
         request({
           qs: req.query,
           uri: `https://gravatar.com/avatar/${email_hash}`,
-        })
+        }),
       )
       .pipe(res);
   }
 };
 
+const getNotificationsForUser = async (req, res) => {
+  const notifications = await db.selectNotificationsForUser(req.params.id);
+
+  res.status(200).json(notifications);
+};
+
 var router = express.Router();
 
 router.get("/:id(\\d+)", catchAsyncErrors(getUserByID));
+router.get(
+  "/:id(\\d+)/notifications",
+  catchAsyncErrors(getNotificationsForUser),
+);
 router.get("/:id(\\d+)/avatar", catchAsyncErrors(getUserAvatar));
 
 module.exports = {

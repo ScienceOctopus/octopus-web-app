@@ -17,13 +17,13 @@ const KnexQueryBuilder = require("knex/lib/query/builder");
 KnexQueryBuilder.prototype.onConflictUpdate = function(conflict, ...columns) {
   if (this._method !== "insert") {
     throw new Error(
-      "onConflictUpdate error: should be used only with insert query."
+      "onConflictUpdate error: should be used only with insert query.",
     );
   }
 
   if (columns.length === 0) {
     throw new Error(
-      "onConflictUpdate error: please specify at least one column name."
+      "onConflictUpdate error: please specify at least one column name.",
     );
   }
 
@@ -38,9 +38,9 @@ KnexQueryBuilder.prototype.onConflictUpdate = function(conflict, ...columns) {
 
   let builder = this.client.raw(
     `${this.toString()} on conflict("${conflict}") do update set ${placeholders.join(
-      ", "
+      ", ",
     )}`,
-    bindings
+    bindings,
   );
 
   builder.returning = field =>
@@ -63,7 +63,7 @@ const queries = {
       .whereRaw("lower(title) like ?", `%${searchPhrase.toLowerCase()}%`)
       .orWhereRaw(
         "lower(description) like ?",
-        `%${searchPhrase.toLowerCase()}%`
+        `%${searchPhrase.toLowerCase()}%`,
       ),
 
   insertProblem: (title, description, creator) =>
@@ -118,7 +118,7 @@ const queries = {
         "publications",
         "publications.id",
         "=",
-        "publication_collaborators.publication"
+        "publication_collaborators.publication",
       ),
 
   selectPublicationsByProblemAndCollaborator: (problem, collaborator) =>
@@ -138,7 +138,7 @@ const queries = {
   selectOriginalDraftPublicationsByProblemAndStageAndUser: (
     problem,
     stage,
-    user
+    user,
   ) =>
     queries
       .selectPublicationsByProblemAndCollaborator(problem, user)
@@ -154,9 +154,35 @@ const queries = {
         "publications",
         "publications.id",
         "=",
-        "publication_links.publication_after"
+        "publication_links.publication_after",
       )
       .select(),
+
+  selectReviewsForUser: user =>
+    knex("publication_links")
+      .where(
+        "publication_before",
+        "in",
+        queries.selectPublicationsByUserId(user).select("publications.id"),
+      )
+      .join(
+        "publications",
+        "publications.id",
+        "=",
+        "publication_links.publication_after",
+      )
+      .where("review", true),
+
+  selectNotificationsForUser: user =>
+    knex("user_notifications").where("user", user),
+
+  selectAllCollaboratorsForListOfPublications: basedOnThese =>
+    knex("publication_collaborators")
+      .distinct("user")
+      .whereIn("publication", basedOnThese),
+
+  insertUserNotification: (user, publication) =>
+    knex("user_notifications").insert({ user, publication }),
 
   selectOriginalPublicationsByLinksBeforePublication: publication =>
     queries
@@ -176,7 +202,7 @@ const queries = {
         "publications",
         "publications.id",
         "=",
-        "publication_links.publication_before"
+        "publication_links.publication_before",
       )
       .select(),
   selectOriginalPublicationsByLinksAfterPublication: publication =>
@@ -188,6 +214,7 @@ const queries = {
     queries
       .selectPublicationsByLinksAfterPublication(publication)
       .where("review", true),
+
   selectCollaboratorsByPublication: publication =>
     knex("publication_collaborators")
       .select()
@@ -202,7 +229,7 @@ const queries = {
     conflict,
     review,
     data,
-    draft
+    draft,
   ) =>
     knex("publications")
       .insert({
@@ -281,7 +308,7 @@ const queries = {
     description,
     review,
     basedOn,
-    fileUrl
+    fileUrl,
   ) => {
     return knex
       .transaction(t => {
@@ -309,9 +336,9 @@ const queries = {
                   db.insertPublicationResource(
                     id[0],
                     resources[0],
-                    "main"
+                    "main",
                   ).then(/* ... */);
-                })
+                }),
               );
           })
           .then(t.commit)
@@ -332,7 +359,7 @@ const queries = {
       basedOn.map(base => ({
         publication_before: base,
         publication_after: publication,
-      }))
+      })),
     ),
 
   selectResourcesByPublication: publication =>
@@ -403,13 +430,13 @@ const queries = {
           .union(qb => {
             qb.select(
               "publication_links.publication_before",
-              "publication_links.publication_after"
+              "publication_links.publication_after",
             )
               .from("publication_links")
               .join(
                 "ancestors",
                 "ancestors.publication_before",
-                "publication_links.publication_after"
+                "publication_links.publication_after",
               );
           });
       })
@@ -422,15 +449,15 @@ const queries = {
             qb
               .select("id")
               .from("publications")
-              .where("id", publication)
-          )
+              .where("id", publication),
+          ),
       )
       .select()
       .from("ancestor_publications")
       .join(
         "publication_collaborators",
         "ancestor_publications.publication",
-        "publication_collaborators.publication"
+        "publication_collaborators.publication",
       ),
   selectPublicationsByAllLinksBeforePublication: publication =>
     knex
@@ -441,13 +468,13 @@ const queries = {
           .union(qb => {
             qb.select(
               "publication_links.publication_before",
-              "publication_links.publication_after"
+              "publication_links.publication_after",
             )
               .from("publication_links")
               .join(
                 "ancestors",
                 "ancestors.publication_before",
-                "publication_links.publication_after"
+                "publication_links.publication_after",
               );
           });
       })
