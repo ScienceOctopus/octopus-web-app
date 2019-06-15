@@ -259,84 +259,67 @@ class EditPublicationView extends Component {
       .then();
   };
 
-  render() {
-    // TODO: handle cases where publication may not have loaded?
-    if (this.state.publication === undefined) {
-      return null;
-    }
+  renderMetadata = () => {
+    return (
+      <>
+        {this.state.schema.map(([key, type, title, description, id], i) => {
+          let value = this.state.publication.data[i];
+          let onChange = this.handleDataChange(i);
 
-    const mainResourcePresent =
-      this.state.resources !== undefined && this.state.resources.length > 0;
-    const stagePresent = this.state.stage !== undefined;
-    const reviewPresent = this.state.publication.review;
+          switch (type) {
+            case "file":
+              return (
+                <FileUploadSelector
+                  key={key}
+                  title={title}
+                  description={description}
+                  files={[value]}
+                  onSelect={onChange}
+                />
+              );
+            case "uri":
+              return (
+                <TitledForm
+                  key={key}
+                  title={title}
+                  description={description}
+                  value={value}
+                  onChange={onChange}
+                />
+              );
+            case "text":
+              return (
+                <TitledForm
+                  key={key}
+                  title={title}
+                  description={description}
+                  value={value}
+                  onChange={onChange}
+                />
+              );
+            case "bool":
+              return (
+                <TitledCheckbox
+                  key={key}
+                  title={title}
+                  description={description}
+                  checked={value}
+                  onChange={onChange}
+                  id={id}
+                />
+              );
+            default:
+              return null;
+          }
+        })}
+        <div className="ui divider" />
+      </>
+    );
+  };
 
-    let metadata = null;
-
-    if (
-      this.state.publication !== {} &&
-      stagePresent &&
-      this.state.resources !== undefined
-    ) {
-      metadata = (
-        <>
-          {this.state.schema.map(([key, type, title, description, id], i) => {
-            let value = this.state.publication.data[i];
-            let onChange = this.handleDataChange(i);
-
-            switch (type) {
-              case "file":
-                return (
-                  <FileUploadSelector
-                    key={key}
-                    title={title}
-                    description={description}
-                    files={[value]}
-                    onSelect={onChange}
-                  />
-                );
-              case "uri":
-                return (
-                  <TitledForm
-                    key={key}
-                    title={title}
-                    description={description}
-                    value={value}
-                    onChange={onChange}
-                  />
-                );
-              case "text":
-                return (
-                  <TitledForm
-                    key={key}
-                    title={title}
-                    description={description}
-                    value={value}
-                    onChange={onChange}
-                  />
-                );
-              case "bool":
-                return (
-                  <TitledCheckbox
-                    key={key}
-                    title={title}
-                    description={description}
-                    checked={value}
-                    onChange={onChange}
-                    id={id}
-                  />
-                );
-              default:
-                return null;
-            }
-          })}
-          <div className="ui divider" />
-        </>
-      );
-    }
-
-    let signoffInvitation = null;
+  renderSignoffInvitation = () => {
     if (this.state.publication.signoff_requested) {
-      signoffInvitation = (
+      return (
         <>
           <p>
             Signoff has been requested on this publication, and once all
@@ -393,7 +376,7 @@ class EditPublicationView extends Component {
         </>
       );
     } else {
-      signoffInvitation = (
+      return (
         <button
           className="ui green button"
           onClick={() => {
@@ -408,8 +391,10 @@ class EditPublicationView extends Component {
         </button>
       );
     }
+  };
 
-    let addCollaboratorButton = (
+  renderAddCollaboratorButton = () => {
+    return (
       <>
         <div className="ui form">
           <div className="inline field">
@@ -440,8 +425,17 @@ class EditPublicationView extends Component {
         </div>
       </>
     );
+  };
 
-    let editForm = (
+  renderEditForm = () => {
+    let metadata =
+      this.state.publication !== {} &&
+      this.state.stage !== undefined &&
+      this.state.resources !== undefined
+        ? this.renderMetadata()
+        : null;
+
+    return (
       <>
         <div className="ui form">
           <div className="inline field">
@@ -490,6 +484,25 @@ class EditPublicationView extends Component {
         </p>
       </>
     );
+  };
+
+  render() {
+    // TODO: handle cases where publication may not have loaded?
+    if (this.state.publication === undefined) {
+      return null;
+    }
+
+    const mainResourcePresent =
+      this.state.resources !== undefined && this.state.resources.length > 0;
+    const stagePresent = this.state.stage !== undefined;
+    const reviewPresent = this.state.publication.review;
+
+    let signoffInvitation =
+      this.state.publication !== {} ? this.renderSignoffInvitation() : null;
+
+    let addCollaboratorButton = this.renderAddCollaboratorButton();
+
+    let editForm = this.renderEditForm();
 
     return (
       <div>
@@ -528,21 +541,6 @@ class EditPublicationView extends Component {
                 Download document
               </a>
             )}
-
-            {/*{metadata}
-
-            {mainResourcePresent ? (
-              <section className="ui segment">
-                <PDFImagePreviewRenderer document={this.state.resources[0]} />
-              </section>
-            ) : (
-              <section className="ui placeholder segment">
-                <div className="ui icon header">
-                  <i className="pencil icon" />
-                  No resources were uploaded for this publication.
-                </div>
-              </section>
-            )}*/}
 
             <div className="ui divider" />
 
