@@ -184,6 +184,12 @@ const queries = {
   insertUserNotification: (user, publication) =>
     knex("user_notifications").insert({ user, publication }),
 
+  deleteUserNotificationByID: (user, id) =>
+    knex("user_notifications")
+      .where("id", id)
+      .where("user", user)
+      .del(),
+
   selectOriginalPublicationsByLinksBeforePublication: publication =>
     queries
       .selectPublicationsByLinksBeforePublication(publication)
@@ -205,6 +211,7 @@ const queries = {
         "publication_links.publication_before",
       )
       .select(),
+
   selectOriginalPublicationsByLinksAfterPublication: publication =>
     queries
       .selectPublicationsByLinksAfterPublication(publication)

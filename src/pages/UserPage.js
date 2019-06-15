@@ -76,6 +76,15 @@ class UserPage extends Component {
       });
   }
 
+  markAllNotificationsAsSeen = () => {
+    this.notifications.forEach(notif => {
+      Api()
+        .user(global.session.user.id)
+        .notification(notif.id)
+        .delete();
+    });
+  };
+
   renderLoading() {
     return null;
   }
@@ -128,6 +137,7 @@ class UserPage extends Component {
               {"You have publications awaiting your signoff"}
             </div>
           </div>
+
           {this.renderPublications(arr)}
         </div>
       </div>
@@ -137,6 +147,10 @@ class UserPage extends Component {
   render() {
     return (
       <div className="ui container main">
+        <div
+          onClick={this.markAllNotificationsAsSeen}
+          style={{ height: 100, backgroundColor: "red" }}
+        />
         {this.renderTitle()}
 
         {this.renderUnseen()}

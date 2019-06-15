@@ -417,6 +417,8 @@ class LinkBuilder {
 
   head = () => store.head(this.path, this.key);
 
+  delete = () => Axios.delete(root + this.path);
+
   count = () => {
     let promise = store.head(this.path, this.key);
 
@@ -574,6 +576,11 @@ class UserBuilder extends LinkBuilder {
 
   notifications = () => {
     this.path += "/notifications";
+    return this;
+  };
+
+  notification = id => {
+    this.path += `/notifications/${id}`;
     return this;
   };
 }
