@@ -520,15 +520,15 @@ const queries = {
         tag: res.rows[0].id,
       }),
     ),
-  /*deleteTagFromPublication: (publication, tag) =>
+  deleteTagIdFromPublication: (publication, tagId) =>
     knex("publication_tags")
       .where("publication", publication)
-      .where("tag", tag)
+      .where("tag", tagId)
       .del(),
   selectTagsByPublication: publication =>
     knex("publication_tags")
       .where("publication", publication)
-      .join("tags", "tags.id", "publication_tags.tag"),*/
+      .join("tags", "tags.id", "publication_tags.tag"),
 };
 
 module.exports = {
