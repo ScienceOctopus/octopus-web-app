@@ -223,6 +223,7 @@ class TagSelector extends Component {
               padding: 0,
               marginRight: "0.5rem",
               marginBottom: "0.5rem",
+              flexGrow: 1,
             }}
             ref={ref => {
               if (ref) {

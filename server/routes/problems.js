@@ -134,10 +134,9 @@ const postPublicationToProblemAndStage = async (req, res) => {
     return;
   }
 
-  if (
-    !isNumber(req.body.user) ||
-    (await db.selectUsers(req.body.user)).length <= 0
-  ) {
+  let user = getUserFromSession(req);
+
+  if (!isNumber(req.body.user) || user !== req.body.user) {
     return requestInvalid(res);
   }
 

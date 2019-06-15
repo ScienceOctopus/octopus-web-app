@@ -227,7 +227,7 @@ class Store {
           cache.count -= 1;
 
           // DEBUG CHECK
-          if (cache.count < 0) {
+          if (cache.count < 0 && process.DEBUG_MODE) {
             console.log("open", path, primary, cache.count, callback[0]);
             console.log(undefined[0]);
           }
@@ -253,7 +253,7 @@ class Store {
           cache.count -= 1;
 
           // DEBUG CHECK
-          if (cache.count < 0) {
+          if (cache.count < 0 && process.DEBUG_MODE) {
             console.log("close", path, primary, cache.count, callback[0]);
             console.log(undefined[0]);
           }

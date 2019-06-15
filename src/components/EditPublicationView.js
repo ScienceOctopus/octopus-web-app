@@ -3,9 +3,10 @@ import PDFImagePreviewRenderer from "./PDFImagePreviewRenderer";
 import styled from "styled-components";
 import Api from "../api";
 import withState from "../withState";
-import FileUploadSelector from "../components/FileUploadSelector";
-import TitledForm from "../components/TitledForm";
-import TitledCheckbox from "../components/TitledCheckbox";
+import FileUploadSelector from "./FileUploadSelector";
+import TitledForm from "./TitledForm";
+import TitledCheckbox from "./TitledCheckbox";
+import TagSelector from "./TagSelector";
 
 import uniqueId from "lodash/uniqueId";
 
@@ -24,6 +25,8 @@ class EditPublicationView extends Component {
       schema: undefined,
       signoffs: [],
       signoffsRemaining: [],
+      tags: undefined,
+      tagsIndex: 0,
     };
 
     this.fetchPublicationData();
@@ -34,118 +37,153 @@ class EditPublicationView extends Component {
   }
 
   fetchPublicationData() {
-    this.setState({ publication: undefined, collaborators: [] });
+    this.setState(
+      {
+        publication: undefined,
+        collaborators: [],
+        tags: undefined,
+      },
+      () => {
+        Api()
+          .subscribeClass(EDIT_KEY, this.props.publicationId)
+          .publication(this.props.publicationId)
+          .get()
+          .then(publication => {
+            publication.data = JSON.parse(publication.data);
 
-    Api()
-      .subscribeClass(EDIT_KEY, this.props.publicationId)
-      .publication(this.props.publicationId)
-      .get()
-      .then(publication => {
-        publication.data = JSON.parse(publication.data);
-
-        this.setState(
-          {
-            publication: publication,
-          },
-          () => {
-            Api()
-              .subscribe(EDIT_KEY)
-              .problem(this.state.publication.problem)
-              .stage(this.state.publication.stage)
-              .get()
-              .then(stage => {
-                let schema = JSON.parse(stage.schema);
-                schema.forEach(scheme => scheme.push(uniqueId("metadata-")));
-                this.setState({
-                  stage: stage,
-                  schema: schema,
-                });
-              });
-          }
-        );
-      });
-
-    Api()
-      .subscribe(EDIT_KEY)
-      .publication(this.props.publicationId)
-      .resources()
-      .get()
-      .then(resources => {
-        this.setState({
-          resources: resources,
-        });
-      });
-
-    Api()
-      .subscribe(EDIT_KEY)
-      .publication(this.props.publicationId)
-      .collaborators()
-      .get()
-      .then(collaborators => {
-        collaborators.forEach(collaborator => {
-          Api()
-            .user(collaborator.user)
-            .get()
-            .then(user => {
-              this.setState(state => {
-                var augmented = state;
-                augmented.collaborators = augmented.collaborators.filter(
-                  collaborator => collaborator.id !== user.id
-                );
-                augmented.collaborators.push(user);
-                return augmented;
-              });
-            });
-        });
-      });
-
-    Api()
-      .subscribe(EDIT_KEY)
-      .publication(this.props.publicationId)
-      .signoffs()
-      .get()
-      .then(signoffs => {
-        signoffs.forEach(signoff => {
-          Api()
-            .user(signoff.user)
-            .get()
-            .then(user => {
-              this.setState(state => {
-                var augmented = state;
-                augmented.signoffs = augmented.signoffs.filter(
-                  signoff => signoff.id !== user.id
-                );
-                augmented.signoffs.push(user);
-                return augmented;
-              });
-            });
-        });
-      });
-
-    Api()
-      .subscribe(EDIT_KEY)
-      .publication(this.props.publicationId)
-      .signoffsRemaining()
-      .get()
-      .then(signoffsRemaining => {
-        this.setState({ signoffsRemaining: [] }, () => {
-          signoffsRemaining.forEach(signoff => {
-            Api()
-              .user(signoff.user)
-              .get()
-              .then(user => {
-                this.setState(state => {
-                  var augmented = state;
-                  augmented.signoffsRemaining = augmented.signoffsRemaining.filter(
-                    signoff => signoff.id !== user.id
-                  );
-                  augmented.signoffsRemaining.push(user);
-                  return augmented;
-                });
-              });
+            this.setState(
+              {
+                publication: publication,
+              },
+              () => {
+                Api()
+                  .subscribe(EDIT_KEY)
+                  .problem(this.state.publication.problem)
+                  .stage(this.state.publication.stage)
+                  .get()
+                  .then(stage => {
+                    let schema = JSON.parse(stage.schema);
+                    schema.forEach(scheme =>
+                      scheme.push(uniqueId("metadata-")),
+                    );
+                    this.setState({
+                      stage: stage,
+                      schema: schema,
+                    });
+                  });
+              },
+            );
           });
-        });
-      });
+
+        Api()
+          .subscribe(EDIT_KEY)
+          .publication(this.props.publicationId)
+          .resources()
+          .get()
+          .then(resources => {
+            this.setState({
+              resources: resources,
+            });
+          });
+
+        Api()
+          .subscribe(EDIT_KEY)
+          .publication(this.props.publicationId)
+          .collaborators()
+          .get()
+          .then(collaborators => {
+            collaborators.forEach(collaborator => {
+              Api()
+                .user(collaborator.user)
+                .get()
+                .then(user => {
+                  this.setState(state => {
+                    var augmented = state;
+                    augmented.collaborators = augmented.collaborators.filter(
+                      collaborator => collaborator.id !== user.id,
+                    );
+                    augmented.collaborators.push(user);
+                    return augmented;
+                  });
+                });
+            });
+          });
+
+        Api()
+          .subscribe(EDIT_KEY)
+          .publication(this.props.publicationId)
+          .signoffs()
+          .get()
+          .then(signoffs => {
+            signoffs.forEach(signoff => {
+              Api()
+                .user(signoff.user)
+                .get()
+                .then(user => {
+                  this.setState(state => {
+                    var augmented = state;
+                    augmented.signoffs = augmented.signoffs.filter(
+                      signoff => signoff.id !== user.id,
+                    );
+                    augmented.signoffs.push(user);
+                    return augmented;
+                  });
+                });
+            });
+          });
+
+        Api()
+          .subscribe(EDIT_KEY)
+          .publication(this.props.publicationId)
+          .signoffsRemaining()
+          .get()
+          .then(signoffsRemaining => {
+            this.setState({ signoffsRemaining: [] }, () => {
+              signoffsRemaining.forEach(signoff => {
+                Api()
+                  .user(signoff.user)
+                  .get()
+                  .then(user => {
+                    this.setState(state => {
+                      var augmented = state;
+                      augmented.signoffsRemaining = augmented.signoffsRemaining.filter(
+                        signoff => signoff.id !== user.id,
+                      );
+                      augmented.signoffsRemaining.push(user);
+                      return augmented;
+                    });
+                  });
+              });
+            });
+          });
+
+        Api()
+          .subscribe(EDIT_KEY)
+          .publication(this.props.publicationId)
+          .tags()
+          .get()
+          .then(tags => {
+            tags = tags.map(tag => tag.tag);
+
+            if (this.state.tags === undefined) {
+              return this.setState({
+                tags: tags,
+                tagsIndex: tags.length,
+              });
+            }
+
+            let newState = TagSelector.updateFromExternal(
+              this.state.tags,
+              this.state.tagsIndex,
+              tags,
+            );
+
+            if (newState !== null) {
+              this.setState({ tags: newState.tags, tagsIndex: newState.index });
+            }
+          });
+      },
+    );
   }
 
   componentDidUpdate(oldProps) {
@@ -200,6 +238,10 @@ class EditPublicationView extends Component {
       publication.summary = val;
       return { publication: publication };
     });
+  };
+
+  handleTagsChange = (tags, index) => {
+    this.setState({ tags: tags, tagsIndex: index });
   };
 
   handleFundingChange = e => {
@@ -282,6 +324,7 @@ class EditPublicationView extends Component {
         revision: this.state.publication.revision,
         title: this.state.publication.title,
         summary: this.state.publication.summary,
+        tags: JSON.stringify(this.state.tags),
         funding: this.state.publication.funding,
         conflict: this.state.publication.conflict,
         data: JSON.stringify(ddata),
@@ -458,6 +501,17 @@ class EditPublicationView extends Component {
               value={this.state.publication.summary}
               onChange={this.handleSummaryChange}
             />
+          </div>
+          <div className="field">
+            <label>Keywords</label>
+            {this.state.tags && (
+              <TagSelector
+                tags={this.state.tags}
+                index={this.state.tagsIndex}
+                input={true}
+                onUpdate={this.handleTagsChange}
+              />
+            )}
           </div>
           <TitledForm
             title="Funding Statement"

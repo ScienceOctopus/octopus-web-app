@@ -341,26 +341,33 @@ class UploadPage extends Component {
   };
 
   handleTitleChange = e => {
+    let val = e.target.value;
     this.setState({
-      title: e.target.value,
+      title: val,
     });
   };
 
   handleSummaryChange = e => {
+    let val = e.target.value;
     this.setState({
-      summary: e.target.value,
+      summary: val,
     });
   };
 
+  handleTagsChange = (tags, index) =>
+    this.setState({ tags: tags, tagsIndex: index });
+
   handleFundingChange = e => {
+    let val = e.target.value;
     this.setState({
-      funding: e.target.value,
+      funding: val,
     });
   };
 
   handleConflictChange = e => {
+    let val = e.target.val;
     this.setState({
-      conflict: e.target.value,
+      conflict: val,
     });
   };
 
@@ -390,7 +397,7 @@ class UploadPage extends Component {
     }
 
     data[key] = content;
-    console.log(data);
+
     this.setState({ data: data });
   };
 
@@ -709,9 +716,7 @@ class UploadPage extends Component {
                 title="Publication Keywords"
                 tags={this.state.tags}
                 index={this.state.tagsIndex}
-                onChange={(tags, index) =>
-                  this.setState({ tags: tags, tagsIndex: index })
-                }
+                onChange={this.handleTagsChange}
                 disabled={!problemAcceptsPublications}
               />
               <TitledForm
