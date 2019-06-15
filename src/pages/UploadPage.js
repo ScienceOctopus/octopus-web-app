@@ -237,6 +237,7 @@ class UploadPage extends Component {
     data.set("title", this.state.title);
     data.set("summary", this.state.summary);
     data.set("funding", this.state.funding);
+    data.set("tags", JSON.stringify(this.state.tags));
     data.set("conflict", this.state.conflict);
     data.set("user", global.session.user.id);
     data.set("review", this.state.isReview);

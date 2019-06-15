@@ -17,3 +17,7 @@ exports.up = pgm => {
     },
   });
 };
+
+exports.down = pgm => {
+  pgm.dropTable("user_notifications", {ifExists: true});
+}

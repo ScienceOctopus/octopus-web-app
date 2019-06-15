@@ -481,6 +481,29 @@ const queries = {
       .select()
       .from("ancestors")
       .join("publications", "publications.id", "ancestors.publication_before"),
+  insertOrSelectTag: tag =>
+    knex("tags")
+      .insert({
+        tag: tag,
+      })
+      .onConflictUpdate("tag", "tag")
+      .returning("id"),
+  insertTagToPublication: (publication, tag) =>
+    queries.insertOrSelectTag(tag).then(res =>
+      knex("publication_tags").insert({
+        publication: publication,
+        tag: res.rows[0].id,
+      }),
+    ),
+  /*deleteTagFromPublication: (publication, tag) =>
+    knex("publication_tags")
+      .where("publication", publication)
+      .where("tag", tag)
+      .del(),
+  selectTagsByPublication: publication =>
+    knex("publication_tags")
+      .where("publication", publication)
+      .join("tags", "tags.id", "publication_tags.tag"),*/
 };
 
 module.exports = {
