@@ -55,9 +55,12 @@ class UserPage extends Component {
       .then(notifications => {
         this.notifications = notifications;
 
+        if (!notifications.length) {
+          this.setState({ unseenPublications: [] });
+        }
+
         notifications.forEach(x =>
           Api()
-            .subscribe(USER_KEY)
             .publication(x.publication)
             .get()
             .then(publication => {
@@ -75,6 +78,15 @@ class UserPage extends Component {
         );
       });
   }
+
+  markAllNotificationsAsSeen = () => {
+    this.notifications.forEach(notif => {
+      Api()
+        .user(global.session.user.id)
+        .notification(notif.id)
+        .delete();
+    });
+  };
 
   renderLoading() {
     return null;
@@ -128,6 +140,7 @@ class UserPage extends Component {
               {"You have publications awaiting your signoff"}
             </div>
           </div>
+
           {this.renderPublications(arr)}
         </div>
       </div>
@@ -137,6 +150,10 @@ class UserPage extends Component {
   render() {
     return (
       <div className="ui container main">
+        <div
+          onClick={this.markAllNotificationsAsSeen}
+          style={{ height: 100, backgroundColor: "red" }}
+        />
         {this.renderTitle()}
 
         {this.renderUnseen()}

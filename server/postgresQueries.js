@@ -184,6 +184,12 @@ const queries = {
   insertUserNotification: (user, publication) =>
     knex("user_notifications").insert({ user, publication }),
 
+  deleteUserNotificationByUserAndID: (user, id) =>
+    knex("user_notifications")
+      .where("id", id)
+      .where("user", user)
+      .del(),
+
   selectOriginalPublicationsByLinksBeforePublication: publication =>
     queries
       .selectPublicationsByLinksBeforePublication(publication)
@@ -205,6 +211,7 @@ const queries = {
         "publication_links.publication_before",
       )
       .select(),
+
   selectOriginalPublicationsByLinksAfterPublication: publication =>
     queries
       .selectPublicationsByLinksAfterPublication(publication)
@@ -259,16 +266,25 @@ const queries = {
 
   updatePublicationRequestSignoff: (publication, revision) =>
     knex("publications")
-      .update({ signoff_requested: true })
+      .update({ signoff_requested: true, updated_at: new Date() })
       .where("id", publication)
       .where("revision", revision),
 
-  updatePublication: (publication, revision, title, summary, funding, data) =>
+  updatePublication: (
+    publication,
+    revision,
+    title,
+    summary,
+    funding,
+    conflict,
+    data,
+  ) =>
     knex("publications")
       .update({
         title: title,
         summary: summary,
         funding: funding,
+        conflict: conflict,
         data: data,
         revision: revision + 1,
         signoff_requested: false,

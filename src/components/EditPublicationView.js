@@ -154,6 +154,42 @@ class EditPublicationView extends Component {
     }
   }
 
+  handleTitleChange = e => {
+    let val = e.target.value;
+    this.setState(state => {
+      let publication = { ...state.publication };
+      publication.title = val;
+      return { publication: publication };
+    });
+  };
+
+  handleSummaryChange = e => {
+    let val = e.target.value;
+    this.setState(state => {
+      let publication = { ...state.publication };
+      publication.summary = val;
+      return { publication: publication };
+    });
+  };
+
+  handleFundingChange = e => {
+    let val = e.target.value;
+    this.setState(state => {
+      let publication = { ...state.publication };
+      publication.funding = val;
+      return { publication: publication };
+    });
+  };
+
+  handleConflictChange = e => {
+    let val = e.target.value;
+    this.setState(state => {
+      let publication = { ...state.publication };
+      publication.conflict = val;
+      return { publication: publication };
+    });
+  };
+
   handleDataChange = idx => e => {
     let field = this.state.schema[idx];
     let data = [...this.state.publication.data];
@@ -178,12 +214,49 @@ class EditPublicationView extends Component {
     }
 
     data[idx] = content;
-    console.log(idx, data);
     this.setState(state => {
-      let publication = { ...this.state.publication };
+      let publication = { ...state.publication };
       publication.data = data;
       return { publication: publication };
     });
+  };
+
+  handleEditSubmit = () => {
+    let ddata = [];
+    let schema = JSON.parse(this.state.stage.schema);
+    schema.forEach(([key, type, title, description], i) => {
+      let content = this.state.publication.data[i];
+
+      switch (type) {
+        case "file":
+          //data.append("file", content);
+          //content = fileIdx++;
+          break;
+        case "uri":
+          break;
+        case "text":
+          break;
+        case "bool":
+          break;
+        default:
+          return;
+      }
+
+      ddata.push(content);
+    });
+
+    Api()
+      .publication(this.state.publication.id)
+      .post({
+        id: this.state.publication.id,
+        revision: this.state.publication.revision,
+        title: this.state.publication.title,
+        summary: this.state.publication.summary,
+        funding: this.state.publication.funding,
+        conflict: this.state.publication.conflict,
+        data: JSON.stringify(ddata),
+      })
+      .then();
   };
 
   render() {
@@ -204,76 +277,6 @@ class EditPublicationView extends Component {
       stagePresent &&
       this.state.resources !== undefined
     ) {
-      // metadata = this.state.schema.map(([key, type, title, description], i) => {
-      //   let datum = this.state.publication.data[i];
-      //
-      //   if (datum === undefined) {
-      //     return null;
-      //   }
-      //
-      //   let content;
-      //
-      //   switch (type) {
-      //     case "file":
-      //       datum = this.state.resources.find(
-      //         resource => resource.id === datum,
-      //       );
-      //
-      //       if (datum === undefined) {
-      //         return null;
-      //       }
-      //
-      //       content = (
-      //         <a className="ui button" href={datum.uri}>
-      //           <i className="ui download icon" />
-      //           Download document
-      //         </a>
-      //       );
-      //       break;
-      //     case "uri":
-      //       datum = this.state.resources.find(
-      //         resource => resource.id === datum,
-      //       );
-      //
-      //       if (datum === undefined) {
-      //         return null;
-      //       }
-      //
-      //       content = <a href={datum.uri}>{datum.uri}</a>;
-      //       break;
-      //     case "text":
-      //       content = datum;
-      //       break;
-      //     case "bool":
-      //       content = (
-      //         <div className="ui checkbox">
-      //           <input
-      //             type="checkbox"
-      //             checked={datum}
-      //             style={{ cursor: "default" }}
-      //             disabled
-      //           />
-      //           <label> </label>
-      //         </div>
-      //       );
-      //       break;
-      //     default:
-      //       return null;
-      //   }
-      //
-      //   return (
-      //     <section key={key} className="ui segment">
-      //       <h3>{title}</h3>
-      //       {description ? (
-      //         <div style={{ marginTop: "-0.5rem" }}>{description}</div>
-      //       ) : null}
-      //       <div className="ui divider" />
-      //       {content}
-      //     </section>
-      //   );
-      // });
-      console.log(this.state.schema);
-      console.log(this.state.publication.data);
       metadata = (
         <>
           {this.state.schema.map(([key, type, title, description, id], i) => {
@@ -445,64 +448,38 @@ class EditPublicationView extends Component {
             <label>Title</label>
             <input
               type="text"
-              value={this.state.newTitle || this.state.publication.title}
-              onChange={e => this.setState({ newTitle: e.target.value })}
+              value={this.state.publication.title}
+              onChange={this.handleTitleChange}
             />
           </div>
           <div className="ui divider" />
           <div className="field">
             <label>Summary</label>
             <textarea
-              value={this.state.newSummary || this.state.publication.summary}
-              onChange={e => this.setState({ newSummary: e.target.value })}
+              value={this.state.publication.summary}
+              onChange={this.handleSummaryChange}
             />
           </div>
+          <TitledForm
+            title="Funding Statement"
+            value={this.state.publication.funding}
+            guidance='If this research has any funding sources you think readers should be aware of, add them here. If not, feel free to enter "None".'
+            placeholder="For example, funded by the British Council"
+            onChange={this.handleFundingChange}
+          />
+          <p />
+          <TitledForm
+            title="Conflict of Interest Declaration"
+            value={this.state.publication.conflict}
+            guidance='Declare any potential conflicts of interest this publication may have in the following box. If there aren&apos;t any, just type "No conflicts of interest".'
+            placeholder="For example, no conflicts of interest"
+            onChange={this.handleConflictChange}
+          />
           {metadata}
           <button
             className="ui button"
             type="submit"
-            onClick={() => {
-              let ddata = [];
-              console.log(this.state.stage);
-              let schema = JSON.parse(this.state.stage.schema);
-              schema.forEach(([key, type, title, description], i) => {
-                let content = this.state.publication.data[i];
-
-                switch (type) {
-                  case "file":
-                    //data.append("file", content);
-                    //content = fileIdx++;
-                    break;
-                  case "uri":
-                    break;
-                  case "text":
-                    break;
-                  case "bool":
-                    break;
-                  default:
-                    return;
-                }
-
-                ddata.push(content);
-              });
-              Api()
-                .publication(this.state.publication.id)
-                .post({
-                  id: this.state.publication.id,
-                  revision: this.state.publication.revision,
-                  title: this.state.newTitle,
-                  summary: this.state.newSummary,
-                  funding: this.state.newFunding,
-                  data: JSON.stringify(ddata),
-                })
-                .then(() =>
-                  this.setState({
-                    newSummary: undefined,
-                    newTitle: undefined,
-                    newFunding: undefined,
-                  })
-                );
-            }}
+            onClick={this.handleEditSubmit}
           >
             Update Draft
           </button>
