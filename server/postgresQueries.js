@@ -190,6 +190,9 @@ const queries = {
       .where("user", user)
       .del(),
 
+  countCollaboratorsByPublication: publication =>
+    queries.selectCollaboratorsByPublication(publication).count(),
+
   selectOriginalPublicationsByLinksBeforePublication: publication =>
     queries
       .selectPublicationsByLinksBeforePublication(publication)
@@ -211,6 +214,12 @@ const queries = {
         "publication_links.publication_before",
       )
       .select(),
+
+  deletePublicationCollaborator: (publication, user) =>
+    knex("publication_collaborators")
+      .where("publication", publication)
+      .andWhere("user", user)
+      .del(),
 
   selectOriginalPublicationsByLinksAfterPublication: publication =>
     queries

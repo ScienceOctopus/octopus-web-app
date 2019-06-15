@@ -46,7 +46,7 @@ This leads to little areas where white bleeds through so change it back to none.
 
 /* Global variables for the Octopus colour scheme. */
 :root {
-  --octopus-theme-accent: #a092ed;
+  /* --octopus-theme-accent: #a092ed;
   --octopus-theme-background: #abbef0;
 
   --octopus-theme-publication: hsl(270, 68%, 60%);
@@ -64,7 +64,7 @@ This leads to little areas where white bleeds through so change it back to none.
   --octopus-theme-explore: #c4e2dd;
   --octopus-theme-publish: #99a4c7;
   --octopus-theme-moar: #9085b9;
-  --octopus-theme-questionable: #9873ab;
+  --octopus-theme-questionable: #9873ab; */
 }
 
 /* Class-specific overrides to colour according to our scheme.

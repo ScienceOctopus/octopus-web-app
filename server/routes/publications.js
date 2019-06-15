@@ -469,12 +469,67 @@ const getTagsByPublication = async (req, res) => {
   res.status(200).json(tags);
 };
 
+const declineAuthorship = async (req, res) => {
+  const removedNum = await db.deletePublicationCollaborator(
+    req.params.id,
+    getUserFromSession(req),
+  );
+
+  res.sendStatus(removedNum ? 204 : 404);
+};
+
+/*const postTagToPublication = async (req, res) => {
+  const publication = await getAndValidatePublication(req.params.id, req);
+  if (!publication) {
+    return res.sendStatus(404);
+  }
+  
+  const tag = await db.insertOrSelectTag(req.body.tag);
+  
+  await db.insertTagToPublication(req.params.id, tag);
+  
+  res.sendStatus(204);
+};
+
+const deleteTagFromPublication = async (req, res) => {
+  const publication = await getAndValidatePublication(req.params.id, req);
+  if (!publication) {
+    return res.sendStatus(404);
+  }
+    
+  const tag = await db.insertOrSelectTag(req.body.tag);
+  
+  await db.deleteTagFromPublication(req.params.id, tag);
+    
+  res.sendStatus(204);
+}*/
+
+const getCollaboratorsCountByPublication = async (req, res) => {
+  const publication = await getAndValidatePublication(req.params.id, req);
+  if (!publication) {
+    return res.sendStatus(404);
+  }
+
+  const count = await db.countCollaboratorsByPublication(req.params.id);
+
+  res
+    .status(200)
+    .append("X-Total-Count", count)
+    .end();
+};
+
 var router = express.Router();
 
 router.get("/", catchAsyncErrors(getPublications));
 router.get("/reviews", catchAsyncErrors(getReviews));
 
 router.get("/:id(\\d+)", catchAsyncErrors(getPublicationByID));
+
+router.post(
+  "/:id(\\d+)/declineAuthorship",
+  catchAsyncErrors(declineAuthorship),
+);
+
 router.post("/:id(\\d+)", catchAsyncErrors(postPublicationToID));
 router.get(
   "/:id(\\d+)/linksBefore",
@@ -499,6 +554,12 @@ router.get(
   "/:id(\\d+)/collaborators",
   catchAsyncErrors(getCollaboratorsByPublication),
 );
+
+router.head(
+  "/:id(\\d+)/collaborators",
+  catchAsyncErrors(getCollaboratorsCountByPublication),
+);
+
 router.get(
   "/:id(\\d+)/allCollaborators",
   catchAsyncErrors(getCollaboratorsBackwardsFromPublication),
