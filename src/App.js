@@ -10,6 +10,7 @@ import DebugReloadButton from "./components/DebugReloadButton";
 import "semantic-ui-css/semantic.min.css";
 import "./App.css";
 import "./i18n";
+import GlobalStyle from "./GlobalStyle";
 
 class App extends Component {
   constructor() {
@@ -35,7 +36,8 @@ class App extends Component {
   render() {
     // TODO: investigate whether this Provider is necessary
     return (
-      <div className="App">
+      <div className="app">
+        <GlobalStyle />
         <Header />
         <AppRouter />
         <OctopusSlackFeedback />
