@@ -61,7 +61,7 @@ class EditPublicationView extends Component {
                   schema: schema,
                 });
               });
-          },
+          }
         );
       });
 
@@ -90,7 +90,7 @@ class EditPublicationView extends Component {
               this.setState(state => {
                 var augmented = state;
                 augmented.collaborators = augmented.collaborators.filter(
-                  collaborator => collaborator.id !== user.id,
+                  collaborator => collaborator.id !== user.id
                 );
                 augmented.collaborators.push(user);
                 return augmented;
@@ -113,7 +113,7 @@ class EditPublicationView extends Component {
               this.setState(state => {
                 var augmented = state;
                 augmented.signoffs = augmented.signoffs.filter(
-                  signoff => signoff.id !== user.id,
+                  signoff => signoff.id !== user.id
                 );
                 augmented.signoffs.push(user);
                 return augmented;
@@ -137,7 +137,7 @@ class EditPublicationView extends Component {
                 this.setState(state => {
                   var augmented = state;
                   augmented.signoffsRemaining = augmented.signoffsRemaining.filter(
-                    signoff => signoff.id !== user.id,
+                    signoff => signoff.id !== user.id
                   );
                   augmented.signoffsRemaining.push(user);
                   return augmented;
@@ -153,6 +153,36 @@ class EditPublicationView extends Component {
       this.fetchPublicationData();
     }
   }
+
+  handleCollaboratorChange = e => {
+    this.setState({
+      newCollaborator: e.target.value,
+    });
+  };
+
+  handleAddCollaboratorSubmit = () => {
+    Api()
+      .publication(this.state.publication.id)
+      .collaborators()
+      .post({ email: this.state.newCollaborator })
+      .then();
+  };
+
+  handleSignoffSubmit = () => {
+    Api()
+      .publication(this.state.publication.id)
+      .signoffs()
+      .post({ revision: this.state.publication.revision })
+      .then();
+  };
+
+  handleFinaliseSubmit = () => {
+    Api()
+      .publication(this.state.publication.id)
+      .requestSignoff()
+      .post({ revision: this.state.publication.revision })
+      .then();
+  };
 
   handleTitleChange = e => {
     let val = e.target.value;
@@ -335,13 +365,7 @@ class EditPublicationView extends Component {
                   signoff.id === global.session.user.id ? (
                     <button
                       className="ui green button"
-                      onClick={() =>
-                        Api()
-                          .publication(this.state.publication.id)
-                          .signoffs()
-                          .post({ revision: this.state.publication.revision })
-                          .then()
-                      }
+                      onClick={this.handleSignoffSubmit}
                     >
                       Sign Off
                     </button>
@@ -377,16 +401,7 @@ class EditPublicationView extends Component {
       );
     } else {
       return (
-        <button
-          className="ui green button"
-          onClick={() => {
-            Api()
-              .publication(this.state.publication.id)
-              .requestSignoff()
-              .post({ revision: this.state.publication.revision })
-              .then();
-          }}
-        >
+        <button className="ui green button" onClick={this.handleFinaliseSubmit}>
           Finalise Publication And Request Signoffs
         </button>
       );
@@ -402,23 +417,13 @@ class EditPublicationView extends Component {
             <input
               type="text"
               placeholder="example@example.com"
-              onChange={e =>
-                this.setState({
-                  newCollaborator: e.target.value,
-                })
-              }
+              onChange={this.handleCollaboratorChange}
             />
           </div>
           <button
             className="ui button"
             type="submit"
-            onClick={() => {
-              Api()
-                .publication(this.state.publication.id)
-                .collaborators()
-                .post({ email: this.state.newCollaborator })
-                .then();
-            }}
+            onClick={this.handleAddCollaboratorSubmit}
           >
             Add New Collaborator
           </button>
