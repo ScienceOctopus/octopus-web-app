@@ -88,7 +88,7 @@ const removeUserNotification = async (req, res) => {
     req.params.id,
     req.params.notif,
   );
-  broadcast(`/${req.params.id}/notifications`);
+  broadcast(`/users/${req.params.id}/notifications`);
   res.sendStatus(numDeleted ? 204 : 404);
 };
 

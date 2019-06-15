@@ -138,25 +138,25 @@ const postPublicationToProblemAndStage = async (req, res) => {
     !isNumber(req.body.user) ||
     (await db.selectUsers(req.body.user)).length <= 0
   ) {
-    return res.sendStatus(400);
+    return requestInvalid(res);
   }
 
   const problems = await db.selectProblemsByID(req.params.id);
   if (!problems.length) {
-    return res.sendStatus(400);
+    return requestInvalid(res);
   }
 
   const stages = await db.selectStagesByID(req.params.stage);
 
   if (!stages.length) {
-    return res.sendStatus(400);
+    return requestInvalid(res);
   }
 
   if (
     req.body.review === "true" &&
     (req.body.basedOn === undefined || JSON.parse(req.body.basedOn).length <= 0)
   ) {
-    return res.sendStatus(400);
+    return requestInvalid(res);
   }
 
   let data;
@@ -169,7 +169,7 @@ const postPublicationToProblemAndStage = async (req, res) => {
     data = JSON.parse(req.body.data);
 
     if (schema.length !== data.length) {
-      return res.sendStatus(400);
+      return requestInvalid(res);
     }
 
     for (let i = 0; i < schema.length; i++) {
@@ -197,7 +197,7 @@ const postPublicationToProblemAndStage = async (req, res) => {
       }
 
       if (error) {
-        return res.sendStatus(400);
+        return requestInvalid(res);
       }
 
       switch (schema[i][1]) {
@@ -240,19 +240,19 @@ const postPublicationToProblemAndStage = async (req, res) => {
     "author",
   );
 
-  let usersToNotify = [];
+  //   let usersToNotify = [];
 
   if (req.body.basedOn !== undefined) {
     let basedArray = JSON.parse(req.body.basedOn);
     await db.insertLink(publications[0], basedArray);
 
-    usersToNotify = await db
-      .selectAllCollaboratorsForListOfPublications(basedArray)
-      .map(x => x.user);
+    // usersToNotify = await db
+    //   .selectAllCollaboratorsForListOfPublications(basedArray)
+    //   .map(x => x.user);
 
-    for (let i = 0; i < usersToNotify.length; i++) {
-      await db.insertUserNotification(usersToNotify[i], publications[0]);
-    }
+    // for (let i = 0; i < usersToNotify.length; i++) {
+    //   await db.insertUserNotification(usersToNotify[i], publications[0]);
+    // }
   }
 
   resources.unshift(
@@ -288,7 +288,7 @@ const postPublicationToProblemAndStage = async (req, res) => {
       broadcast(`/publications/${publication}/linksAfter`),
     );
 
-    usersToNotify.forEach(user => broadcast(`/users/${user}/notifications`));
+    // usersToNotify.forEach(user => broadcast(`/users/${user}/notifications`));
   }
 
   res.status(200).json(publications[0]);
@@ -305,14 +305,14 @@ const postProblem = async (req, res) => {
     !isNumber(req.body.user) ||
     (await db.selectUsers(req.body.user)).length <= 0
   ) {
-    return res.sendStatus(400);
+    return requestInvalid(res);
   }
 
   // If no stages were provided, just link all of them
   let stages =
     req.body.stages || (await db.selectAllStagesIds().map(x => x.id));
   if (!stages.length || stages.some(x => !isNumber(x))) {
-    return res.sendStatus(400);
+    return requestInvalid(res);
   }
 
   let problem = (await db.insertProblem(
