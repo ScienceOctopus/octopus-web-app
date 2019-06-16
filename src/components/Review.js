@@ -17,7 +17,6 @@ class Review extends Component {
             generateLocalizedPath(RouterURI.Publication, {
               id: this.props.review.id,
             }),
-            this.props.content,
           );
           event.stopPropagation();
         }}

@@ -87,7 +87,6 @@ class StageGraph extends Component {
               generateLocalizedPath(RouterURI.Problem, {
                 id: this.props.problem.id,
               }),
-              this.props.content,
             );
           }
           event.stopPropagation();

@@ -13,7 +13,6 @@ class Publication extends Component {
           generateLocalizedPath(RouterURI.Publication, {
             id: this.props.publication.id,
           }),
-          this.props.content,
         );
         event.stopPropagation();
       });
