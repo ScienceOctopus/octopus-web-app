@@ -7,7 +7,6 @@ import GoblinIDLoginInvitation from "./GoblinIDLoginInvitation";
 import UserIconName from "./UserIconName";
 import LogoutInvitation from "./LogoutInvitation";
 import OctopusLogo from "./OctopusLogo";
-import styled from "styled-components";
 
 class Header extends Component {
   render() {

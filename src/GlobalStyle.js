@@ -6,6 +6,8 @@ const GlobalStyle = createGlobalStyle`
     --octopus-theme-accent: #a092ed;
     --octopus-theme-background: #abbef0;
 
+    --octopus-theme-problem: #a092ed;
+    
     --octopus-theme-publication: hsl(270, 68%, 60%);
     --octopus-theme-publication-highlight: hsl(270, 68%, 85%);
     --octopus-theme-publication-highlight-transparent: hsla(270, 68%, 85%, 0);

@@ -1,4 +1,4 @@
-import React from "react";
+import "react";
 
 const withState = Child => {
   class ChildWithState extends Child {

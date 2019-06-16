@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import styled from "styled-components";
 
 class Modal extends React.Component {
   render() {
@@ -8,7 +9,7 @@ class Modal extends React.Component {
     }
 
     return (
-      <div style={styles.backdrop}>
+      <div style={styles.backdrop} ref={this.props.modalRef}>
         <button
           className="ui button"
           style={styles.button}
@@ -16,7 +17,14 @@ class Modal extends React.Component {
         >
           <i className="close icon" style={styles.icon} />
         </button>
-        <div style={styles.modal}>{this.props.children}</div>
+        <Presenter
+          backgroundColor={this.props.backgroundColor}
+          overflowX={this.props.overflowX}
+          overflowY={this.props.overflowY}
+          padding={this.props.padding}
+        >
+          {this.props.children}
+        </Presenter>
       </div>
     );
   }
@@ -37,7 +45,7 @@ const styles = {
     right: 0,
     backgroundColor: "rgba(0,0,0,0.3)",
     padding: "5% 20%",
-    zIndex: 999,
+    zIndex: 9999,
   },
 
   modal: {
@@ -46,8 +54,6 @@ const styles = {
     borderRadius: 5,
     width: "100%",
     height: "100%",
-    //   maxWidth: 800,
-    //   minHeight: 600,
     overflowY: "scroll",
     margin: "0 auto",
     padding: 50,
@@ -65,5 +71,17 @@ const styles = {
     margin: 0,
   },
 };
+
+const Presenter = styled.div`
+  position: relative;
+  background-color: ${p => p.backgroundColor || "#fff"};
+  border-radius: 5px;
+  width: 100%;
+  height: 100%;
+  overflow-x: ${p => p.overflowX || "scroll"};
+  overflow-y: ${p => p.overflowY || "scroll"};
+  margin: 0 auto;
+  padding: ${p => (p.padding !== undefined ? p.padding : "50px")};
+`;
 
 export default Modal;

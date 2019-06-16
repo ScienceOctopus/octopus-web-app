@@ -3,8 +3,11 @@ import React from "react";
 import StageGraph from "../components/StageGraph";
 import SummaryView from "../components/SummaryView";
 import EditPublicationView from "../components/EditPublicationView";
+import ForceGraph2D from "react-force-graph-2d";
+import Modal from "../components/Modal";
 import Api from "../api";
 import withState from "../withState";
+import { RouterURI, generateLocalizedPath } from "../urls/WebsiteURIs";
 
 const PROBLEM_KEY = "problem";
 
@@ -24,15 +27,41 @@ class ProblemPage extends React.Component {
       },
       open: true,
       measurements: global.measurements,
+      modal: {
+        width: global.innerWidth,
+        height: global.innerHeight,
+      },
+      graph: {
+        nodes: [{ id: 0 }],
+        links: [],
+      },
+      modalOpen: false,
+      graphHoverBool: false,
+      graphHoverTitle: null,
     };
+
+    global.addEventListener("resize", this.resize);
 
     if (this.state.measurements !== undefined) {
       this.initCheck(this.props, false, undefined, true);
     }
   }
 
+  resize = () => {
+    if (this.modalRef && this.state.modalOpen) {
+      this.setState({
+        modal: {
+          width: this.modalRef.clientWidth,
+          height: this.modalRef.clientHeight,
+        },
+      });
+    }
+  };
+
   componentWillUnmount() {
     Api().unsubscribeClass(PROBLEM_KEY);
+
+    global.removeEventListener("resize", this.resize);
   }
 
   initCheck(props, selection, review, boot) {
@@ -274,6 +303,42 @@ class ProblemPage extends React.Component {
   }
 
   generateSelection(boot) {
+    this.setState(state => {
+      let nodes = [{ id: 0 }];
+      let links = [];
+
+      this.state.content.stages.forEach((stage, i) => {
+        stage.publications.forEach(publication =>
+          nodes.push({ id: publication.id }),
+        );
+
+        if (i <= 0) {
+          stage.publications.forEach(publication =>
+            links.push({ source: 0, target: publication.id }),
+          );
+        }
+
+        stage.links.forEach(link =>
+          links.push({
+            source: this.state.content.stages[i].publications[link[0]].id,
+            target: this.state.content.stages[i + 1].publications[link[1]].id,
+          }),
+        );
+      });
+
+      let newNodes = new Set(nodes.map(node => node.id));
+
+      // Only difference in node currently checked
+      if (
+        nodes.length !== this.state.graph.nodes.length ||
+        this.state.graph.nodes.some(node => !newNodes.has(node.id))
+      ) {
+        return { graph: { nodes: nodes, links: links } };
+      }
+
+      return {};
+    });
+
     if (this.state.publication === undefined) {
       return;
     }
@@ -517,17 +582,155 @@ class ProblemPage extends React.Component {
 
     return (
       <div>
+        <Modal
+          modalRef={this.modalRefSetter}
+          show={this.state.modalOpen}
+          onClose={() =>
+            this.setState({ modalOpen: false }, () =>
+              document.getElementById("root").classList.remove("modal-open"),
+            )
+          }
+          backgroundColor="#000"
+          overflowX="none"
+          overflowY="none"
+          padding={0}
+          children={
+            <>
+              <div
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  bottom: 0,
+                  zIndex: 1,
+                  margin: "1rem",
+                  pointerEvents: "none",
+                  width: "calc(100% - 2rem)",
+                  opacity: this.state.graphHoverBool ? 1 : 0,
+                  transition: "opacity 0.3s ease-in-out 0s",
+                }}
+              >
+                <h3
+                  style={{
+                    color: "#fff",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {this.state.graphHoverTitle}
+                </h3>
+              </div>
+              <ForceGraph2D
+                width={this.state.modal.width * 0.6}
+                height={this.state.modal.height - this.state.modal.width * 0.1}
+                graphData={this.state.graph}
+                backgroundColor="#000"
+                linkColor={() => "#fff"}
+                linkDirectionalParticles={1}
+                onNodeHover={node => {
+                  let state = { graphHoverBool: node !== null };
+
+                  if (node) {
+                    if (node.id === 0) {
+                      state.graphHoverTitle = (
+                        <>
+                          <span
+                            style={{ color: "var(--octopus-theme-problem)" }}
+                          >
+                            Problem:
+                          </span>{" "}
+                          <span style={{ fontWeight: "initial" }}>
+                            {this.state.content.problem.title}
+                          </span>
+                        </>
+                      );
+                    } else {
+                      let publication = this.state.content.publications.get(
+                        node.id,
+                      );
+                      let stage = this.state.content.stages.find(
+                        stage => stage.id === publication.stage,
+                      );
+
+                      state.graphHoverTitle = (
+                        <>
+                          <span
+                            style={{
+                              color: "var(--octopus-theme-publication)",
+                            }}
+                          >
+                            {stage.singular}
+                          </span>
+                          <span
+                            style={{ color: "var(--octopus-theme-review)" }}
+                          >
+                            {publication.review ? " Review" : ""}
+                          </span>
+                          <span style={{ color: "var(--octopus-theme-draft)" }}>
+                            {publication.draft ? " Draft" : ""}
+                          </span>
+                          <span
+                            style={{
+                              color: "var(--octopus-theme-publication)",
+                            }}
+                          >
+                            :
+                          </span>{" "}
+                          <span style={{ fontWeight: "initial" }}>
+                            {publication.title}
+                          </span>
+                        </>
+                      );
+                    }
+                  }
+
+                  this.setState(state);
+                }}
+                onNodeClick={node => {
+                  if (node.id === 0) {
+                    this.props.history.push(
+                      generateLocalizedPath(RouterURI.Problem, {
+                        id: this.state.problem,
+                      }),
+                    );
+                  } else {
+                    this.props.history.push(
+                      generateLocalizedPath(RouterURI.Publication, {
+                        id: node.id,
+                      }),
+                    );
+                  }
+                }}
+              />
+            </>
+          }
+        />
         <StageGraph
           problem={this.state.content.problem}
           stages={this.state.content.stages}
           open={this.state.open}
           toggleOpen={() => this.setState({ open: !this.state.open })}
+          openMap={() =>
+            this.setState({ modalOpen: true }, () =>
+              document.getElementById("root").classList.add("modal-open"),
+            )
+          }
           content={this.state}
         />
         {publication}
       </div>
     );
   }
+
+  modalRefSetter = ref => {
+    if (!ref || ref === this.modalRef) {
+      return;
+    }
+
+    this.modalRef = ref;
+
+    this.resize();
+  };
 
   ensureMeasurements() {
     if (this.state.measurements !== undefined) {

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PDFImagePreviewRenderer from "./PDFImagePreviewRenderer";
 import styled from "styled-components";
-import WebURI, {
+import {
   LocalizedLink,
   generateLocalizedPath,
   RouterURI,

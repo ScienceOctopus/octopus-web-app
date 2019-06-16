@@ -54,7 +54,7 @@ app.use(
 );
 
 app.get("/api", (req, res) => {
-  response.send("Welcome to the Octopus API (Node.js)!");
+  res.send("Welcome to the Octopus API (Node.js)!");
 });
 app.ws("/api", wsConnectHandler);
 

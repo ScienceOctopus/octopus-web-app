@@ -125,3 +125,9 @@ Also correct some visual issues after the scheme is applied, like text contrast.
   background-color: var(--octopus-theme-review-highlight);
   color: black;
 }
+
+#root.modal-open {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
