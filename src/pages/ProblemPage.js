@@ -8,8 +8,26 @@ import Modal from "../components/Modal";
 import Api from "../api";
 import withState from "../withState";
 import { RouterURI, generateLocalizedPath } from "../urls/WebsiteURIs";
+import { interpolateCool as stageColour } from "d3-scale-chromatic";
 
 const PROBLEM_KEY = "problem";
+
+// https://stackoverflow.com/a/45140101
+function strokeStar(ctx, x, y, r, n, inset) {
+  ctx.save();
+  ctx.beginPath();
+  ctx.translate(x, y);
+  ctx.moveTo(0, 0 - r);
+  for (var i = 0; i < n; i++) {
+    ctx.rotate(Math.PI / n);
+    ctx.lineTo(0, 0 - r * inset);
+    ctx.rotate(Math.PI / n);
+    ctx.lineTo(0, 0 - r);
+  }
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
 
 class ProblemPage extends React.Component {
   constructor(props) {
@@ -32,7 +50,7 @@ class ProblemPage extends React.Component {
         height: global.innerHeight,
       },
       graph: {
-        nodes: [{ id: 0 }],
+        nodes: [{ id: 0, colour: "#a092ed", middle: false, review: false }],
         links: [],
       },
       modalOpen: false,
@@ -303,44 +321,8 @@ class ProblemPage extends React.Component {
   }
 
   generateSelection(boot) {
-    this.setState(state => {
-      let nodes = [{ id: 0 }];
-      let links = [];
-
-      this.state.content.stages.forEach((stage, i) => {
-        stage.publications.forEach(publication =>
-          nodes.push({ id: publication.id }),
-        );
-
-        if (i <= 0) {
-          stage.publications.forEach(publication =>
-            links.push({ source: 0, target: publication.id }),
-          );
-        }
-
-        stage.links.forEach(link =>
-          links.push({
-            source: this.state.content.stages[i].publications[link[0]].id,
-            target: this.state.content.stages[i + 1].publications[link[1]].id,
-          }),
-        );
-      });
-
-      let newNodes = new Set(nodes.map(node => node.id));
-
-      // Only difference in node currently checked
-      if (
-        nodes.length !== this.state.graph.nodes.length ||
-        this.state.graph.nodes.some(node => !newNodes.has(node.id))
-      ) {
-        return { graph: { nodes: nodes, links: links } };
-      }
-
-      return {};
-    });
-
     if (this.state.publication === undefined) {
-      return;
+      return this.fetchReviews(boot, 0, 0);
     }
 
     this.setState(
@@ -474,58 +456,120 @@ class ProblemPage extends React.Component {
         });
         return { content: content };
       },
-      () => this.fetchReviews(boot),
+      () => this.fetchReviews(boot, 0, 0),
     );
   }
 
-  fetchReviews(boot) {
-    if (this.state.publication === undefined) {
-      return;
+  fetchReviews(boot, stageId, publicationId) {
+    if (stageId >= this.state.content.stages.length) {
+      return this.generateGraph();
     }
 
-    let publication = this.state.content.publications.get(
-      this.state.publication,
-    );
-
-    // Publication was just added but has not been loaded into cached data yet
-    if (publication === undefined) {
-      return;
+    if (
+      publicationId >= this.state.content.stages[stageId].publications.length
+    ) {
+      return this.fetchReviews(boot, stageId + 1, 0);
     }
 
-    if (publication.reviews !== undefined) {
-      return;
-    }
+    let stage = this.state.content.stages[stageId];
+    let publication = stage.publications[publicationId];
 
     Api()
       .subscribe(PROBLEM_KEY)
-      .publication(this.state.publication)
+      .publication(publication.id)
       .reviews()
       .get()
       .then(reviews => {
-        this.setState(state => {
-          let content = { ...state.content };
+        this.setState(
+          state => {
+            let content = { ...state.content };
 
-          reviews.forEach(review =>
-            content.publications.set(review.id, review),
-          );
+            reviews.forEach(review =>
+              content.publications.set(review.id, review),
+            );
 
-          if (boot && this.state.review !== undefined) {
-            let review = reviews.splice(
-              reviews.findIndex(x => x.id === this.state.review),
-              1,
-            )[0];
+            if (
+              boot &&
+              this.state.review !== undefined &&
+              publication.id === this.state.publication
+            ) {
+              let review = reviews.splice(
+                reviews.findIndex(x => x.id === this.state.review),
+                1,
+              )[0];
 
-            reviews.unshift(review);
-          }
+              reviews.unshift(review);
+            }
 
-          content.stages
-            .find(stage => stage.id === publication.stage)
-            .publications.find(
-              pub => pub.id === publication.id,
-            ).reviews = reviews;
-          return { content: content };
-        });
+            content.stages
+              .find(stage => stage.id === publication.stage)
+              .publications.find(
+                pub => pub.id === publication.id,
+              ).reviews = reviews;
+            return { content: content };
+          },
+          () => this.fetchReviews(boot, stageId, publicationId + 1),
+        );
       });
+  }
+
+  generateGraph() {
+    this.setState(state => {
+      let nodes = [{ id: 0, colour: "#a092ed", middle: false, review: false }];
+      let links = [];
+
+      this.state.content.stages.forEach((stage, i) => {
+        let middle =
+          i === Math.floor((this.state.content.stages.length - 1) / 2);
+
+        stage.publications.forEach(publication => {
+          nodes.push({
+            id: publication.id,
+            colour: stageColour((i + 1) / this.state.content.stages.length),
+            middle: middle,
+          });
+
+          publication.reviews.forEach(review => {
+            nodes.push({
+              id: review.id,
+              colour: "hsl(176, 56%, 85%)",
+              middle: false,
+              review: true,
+            });
+
+            links.push({
+              source: publication.id,
+              target: review.id,
+            });
+          });
+        });
+
+        if (i <= 0) {
+          stage.publications.forEach(publication =>
+            links.push({ source: 0, target: publication.id }),
+          );
+        }
+
+        stage.links.forEach(link =>
+          links.push({
+            source: this.state.content.stages[i].publications[link[0]].id,
+            target: this.state.content.stages[i + 1].publications[link[1]].id,
+          }),
+        );
+      });
+
+      let newNodes = new Set(nodes.map(node => node.id));
+
+      // Only difference in node currently checked
+      if (
+        nodes.length !== this.state.graph.nodes.length ||
+        this.state.graph.nodes.some(node => !newNodes.has(node.id))
+      ) {
+        return { graph: { nodes: nodes, links: links } };
+      }
+
+      return {};
+    });
   }
 
   componentWillReceiveProps(nextProps) {
@@ -621,12 +665,65 @@ class ProblemPage extends React.Component {
                 </h3>
               </div>
               <ForceGraph2D
+                ref={fg => {
+                  if (fg) {
+                    fg.d3Force("link").distance(link =>
+                      link.source.review || link.target.review ? 10 : 30,
+                    );
+                  }
+                }}
                 width={this.state.modal.width * 0.6}
                 height={this.state.modal.height - this.state.modal.width * 0.1}
                 graphData={this.state.graph}
                 backgroundColor="#000"
+                nodeVal={node => (node.review ? 2 : 4)}
                 linkColor={() => "#fff"}
+                linkCanvasObject={(link, ctx, scale) => {
+                  if (
+                    link.source.id === undefined ||
+                    link.target.id === undefined
+                  )
+                    return;
+
+                  let gradient = ctx.createLinearGradient(
+                    link.source.x,
+                    link.source.y,
+                    link.target.x,
+                    link.target.y,
+                  );
+                  gradient.addColorStop(0, link.source.colour);
+                  gradient.addColorStop(1, link.target.colour);
+
+                  ctx.strokeStyle = gradient;
+                  ctx.lineWidth = 1;
+
+                  ctx.beginPath();
+                  ctx.moveTo(link.source.x, link.source.y);
+                  ctx.lineTo(link.target.x, link.target.y);
+
+                  ctx.stroke();
+                }}
                 linkDirectionalParticles={1}
+                nodeCanvasObject={(node, ctx, scale) => {
+                  ctx.fillStyle = node.colour;
+
+                  if (node.id === 0) {
+                    strokeStar(ctx, node.x, node.y, 4, 16, 2);
+                  } else if (node.middle) {
+                    ctx.fillRect(node.x - 4, node.y - 4, 8, 8);
+                  } else {
+                    ctx.beginPath();
+                    ctx.arc(
+                      node.x,
+                      node.y,
+                      node.review ? 2 : 4,
+                      0,
+                      2 * Math.PI,
+                      false,
+                    );
+                    ctx.fill();
+                  }
+                }}
                 onNodeHover={node => {
                   let state = { graphHoverBool: node !== null };
 
