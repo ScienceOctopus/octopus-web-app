@@ -516,13 +516,13 @@ class UploadPage extends Component {
     );
 
     // Whether a problem was selected, data loaded correctly, and an appropriate stage selected
-    // Alternatively, whether the selected stage was the first in the publishing flow
+    // Alternatively, whether the selected stage was the first in the publishing flow and not uploading a review
     // TODO: duplicated below in renderLinkingSelector
     // TODO: clean up
     const problemAcceptsPublications =
       (this.state.publications !== undefined &&
         this.state.publications.length > 0) ||
-      (selectedStage && selectedStage.order === 1);
+      (selectedStage && selectedStage.order === 1 && !this.state.isReview);
 
     // Whether any problem was selected, for fields not depending on stages
     const problemSelected = this.state.selectedProblemId;
