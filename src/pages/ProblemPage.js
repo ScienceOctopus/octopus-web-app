@@ -9,6 +9,7 @@ import Api from "../api";
 import withState from "../withState";
 import { RouterURI, generateLocalizedPath } from "../urls/WebsiteURIs";
 import { interpolateCool as stageColour } from "d3-scale-chromatic";
+import { ColourScheme } from "../GlobalStyle";
 
 const PROBLEM_KEY = "problem";
 
@@ -50,7 +51,9 @@ class ProblemPage extends React.Component {
         height: global.innerHeight,
       },
       graph: {
-        nodes: [{ id: 0, colour: "#a092ed", middle: false, review: false }],
+        nodes: [
+          { id: 0, colour: ColourScheme.problem, middle: false, review: false },
+        ],
         links: [],
       },
       modalOpen: false,
@@ -515,7 +518,9 @@ class ProblemPage extends React.Component {
 
   generateGraph() {
     this.setState(state => {
-      let nodes = [{ id: 0, colour: "#a092ed", middle: false, review: false }];
+      let nodes = [
+        { id: 0, colour: ColourScheme.problem, middle: false, review: false },
+      ];
       let links = [];
 
       this.state.content.stages.forEach((stage, i) => {
@@ -532,7 +537,7 @@ class ProblemPage extends React.Component {
           publication.reviews.forEach(review => {
             nodes.push({
               id: review.id,
-              colour: "hsl(176, 56%, 85%)",
+              colour: ColourScheme.reviewHighlight,
               middle: false,
               review: true,
             });

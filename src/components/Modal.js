@@ -10,7 +10,7 @@ class Modal extends React.Component {
 
     return (
       <div style={styles.backdrop} ref={this.props.modalRef}>
-        <div style={{ position: "relative" }}>
+        <div style={{ position: "relative", height: "100%" }}>
           <div
             className="ui button"
             style={styles.button}

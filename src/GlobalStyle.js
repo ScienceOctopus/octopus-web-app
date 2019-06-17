@@ -1,32 +1,79 @@
 import { createGlobalStyle } from "styled-components";
 
-// TODO: generate secondary colors from the main ones in js
+class hsla {
+  constructor(h, s, l, a) {
+    this.h = h;
+    this.s = s;
+    this.l = l;
+    this.a = a !== undefined ? a : 1;
+  }
+
+  withLightness(l) {
+    return new hsla(this.h, this.s, l, this.a);
+  }
+
+  withAlpha(a) {
+    return new hsla(this.h, this.s, this.l, a);
+  }
+
+  toString() {
+    return `hsla(${this.h}, ${Math.round(this.s * 100)}%, ${Math.round(
+      this.l * 100,
+    )}%, ${this.a})`;
+  }
+}
+
+const ColourScheme = (() => {
+  let scheme = {};
+
+  scheme.accent = new hsla(249, 0.72, 0.75);
+  scheme.accentDark = scheme.accent.withLightness(0.65);
+
+  scheme.background = new hsla(223, 0.7, 0.8);
+
+  scheme.problem = new hsla(249, 0.72, 0.75);
+
+  scheme.publication = new hsla(270, 0.68, 0.6);
+  scheme.publicationHighlight = scheme.publication.withLightness(0.85);
+  scheme.publicationHighlightTransparent = scheme.publicationHighlight.withAlpha(
+    0,
+  );
+
+  scheme.review = new hsla(176, 0.56, 0.5);
+  scheme.reviewHighlight = scheme.review.withLightness(0.85);
+  scheme.reviewHighlightTransparent = scheme.reviewHighlight.withAlpha(0);
+
+  scheme.draft = new hsla(176, 0.56, 0.5);
+  scheme.draftHighlight = scheme.draft.withLightness(0.85);
+  scheme.draftHighlightTransparent = scheme.draftHighlight.withAlpha(0);
+
+  scheme.explore = new hsla(170, 0.34, 0.85);
+  scheme.publish = new hsla(226, 0.29, 0.7);
+  scheme.moar = new hsla(253, 0.27, 0.6);
+  scheme.questionable = new hsla(280, 0.25, 0.55);
+
+  return scheme;
+})();
+
 const GlobalStyle = createGlobalStyle`
   :root {
-    --octopus-theme-accent: hsl(249, 72%, 75%);
-    --octopus-theme-accent-dark: hsl(249, 72%, 65%);
-    
-    --octopus-theme-background: hsl(223, 70%, 80%);
-
-    --octopus-theme-problem: hsl(249, 72%, 75%);
-    
-    --octopus-theme-publication: hsl(270, 68%, 60%);
-    --octopus-theme-publication-highlight: hsl(270, 68%, 85%);
-    --octopus-theme-publication-highlight-transparent: hsla(270, 68%, 85%, 0);
-
-    --octopus-theme-review: hsl(176, 56%, 50%);
-    --octopus-theme-review-highlight: hsl(176, 56%, 85%);
-    --octopus-theme-review-highlight-transparent: hsla(176, 56%, 85%, 0);
-
-    --octopus-theme-draft: hsl(176, 56%, 50%);
-    --octopus-theme-draft-highlight: hsl(176, 56%, 85%);
-    --octopus-theme-draft-highlight-transparent: hsla(176, 56%, 85%, 0);
-
-    --octopus-theme-explore: hsl(170, 34%, 85%);
-    --octopus-theme-publish: hsl(226, 29%, 70%);
-    --octopus-theme-moar: hsl(253, 27%, 60%);
-    --octopus-theme-questionable: hsl(280, 25%, 55%);
+    ${Object.keys(ColourScheme).reduce((acc, key) => {
+      return (
+        acc +
+        ("--octopus-theme-" +
+          key
+            .replace(/(?:^|\.?)([A-Z])/g, function(x, y) {
+              return "-" + y.toLowerCase();
+            })
+            .replace(/^-/, "") +
+          ": " +
+          ColourScheme[key] +
+          ";")
+      );
+    }, "")}
   }
 `;
+
+export { ColourScheme };
 
 export default GlobalStyle;
