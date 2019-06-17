@@ -62,13 +62,15 @@ class UserSearch extends Component {
     return (
       <FloatingUserList>
         {this.state.users.map(user => (
-          <UserInfoContainer
-            key={user.id}
-            onMouseDown={this.handleSelect(user)}
-          >
-            <UserName>{user.display_name}</UserName>
-            <UserEmail>{user.email || "(hidden email)"}</UserEmail>
-          </UserInfoContainer>
+          <UserInfoSelectContainer>
+            <UserInfoContainer
+              key={user.id}
+              onMouseDown={this.handleSelect(user)}
+            >
+              <UserName>{user.display_name}</UserName>
+              <UserEmail>{user.email || "(hidden email)"}</UserEmail>
+            </UserInfoContainer>
+          </UserInfoSelectContainer>
         ))}
       </FloatingUserList>
     );
@@ -94,6 +96,14 @@ class UserSearch extends Component {
   }
 }
 
+const UserInfoSelectContainer = styled.div`
+  :hover {
+    background-color: var(--octopus-theme-background);
+  }
+  padding-left: 1rem;
+  padding-right: 1rem;
+`;
+
 const FloatingUserList = styled.div`
   background-color: white;
   border: 1px solid var(--octopus-theme-accent);
@@ -101,9 +111,6 @@ const FloatingUserList = styled.div`
   position: absolute;
   top: 38px;
   left: 0;
-  padding-top: 0.5rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
   z-index: 999;
 `;
 
@@ -115,10 +122,10 @@ const UserLabelAndList = styled.span`
 const UserInfoContainer = styled.div`
   display: flex;
   flex-direction: column;
-  padding-bottom: 0.5rem;
+  padding-bottom: 0.25rem;
+  padding-top: 0.25rem;
   :hover {
     cursor: pointer;
-    background-color: var(--octopus-theme-background);
   }
 `;
 
