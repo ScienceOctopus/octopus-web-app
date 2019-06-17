@@ -293,9 +293,9 @@ const postPublicationToProblemAndStage = async (req, res) => {
     basedArray.forEach(publication =>
       broadcast(`/publications/${publication}/linksAfter`),
     );
-
-    // usersToNotify.forEach(user => broadcast(`/users/${user}/notifications`));
   }
+
+  broadcast(`/users/${user}/signoffs`);
 
   res.status(200).json(publications[0]);
 };

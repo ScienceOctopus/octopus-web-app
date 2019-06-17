@@ -244,6 +244,14 @@ const postPublicationToID = async (req, res) => {
 
   broadcast(`/publications/${req.params.id}/tags`);
 
+  let allCollaborators = await db
+    .selectCollaboratorsByPublication(req.params.id)
+    .map(x => x.user);
+
+  for (let i = 0; i < allCollaborators.length; i++) {
+    broadcast(`/users/${allCollaborators[i]}/signoffs`);
+  }
+
   res.sendStatus(204);
 };
 
@@ -374,6 +382,7 @@ const postCollaboratorToPublication = async (req, res) => {
   broadcast(`/publications/${req.params.id}/collaborators`);
   broadcast(`/publications/${req.params.id}/allCollaborators`);
   broadcast(`/publications/${req.params.id}/signoffs_remaining`);
+  broadcast(`/users/${users[0].id}/signoffs`);
 
   res.sendStatus(200);
 };
@@ -405,6 +414,7 @@ const postSignoffToPublication = async (req, res) => {
   );
 
   let collaborators = await db.selectCollaboratorsByPublication(req.params.id);
+  const allCollaborators = collaborators.map(x => x.user);
   collaborators = collaborators.filter(
     collaborator => collaborator.role === "author",
   );
@@ -448,6 +458,10 @@ const postSignoffToPublication = async (req, res) => {
 
   broadcast(`/publications/${req.params.id}/signoffs_remaining`);
   broadcast(`/publications/${req.params.id}/signoffs`);
+
+  for (let i = 0; i < allCollaborators.length; i++) {
+    broadcast(`/users/${allCollaborators[i]}/signoffs`);
+  }
 
   res.sendStatus(204);
 };

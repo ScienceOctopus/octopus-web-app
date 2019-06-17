@@ -123,15 +123,18 @@ const queries = {
 
   selectPublicationsAwaitingSignoffForUser: async user => {
     let pubs = await queries.selectPublicationsByUserId(user);
-    // console.log(pubs);
-    return pubs.filter(async pub => {
-      return !(await queries
+    let ret = [];
+    for (let i = 0; i < pubs.length; i++) {
+      const pub = pubs[i];
+      let signed = (await queries
         .selectPublicationSignoffsForRevision(pub.publication, pub.revision)
         .select("user")
         .map(x => x.user)).includes(user);
-      //   console.log(k);
-      //   return k;
-    });
+      if (!signed) {
+        ret.push(pub);
+      }
+    }
+    return ret;
   },
 
   //   .whereNotIn(
