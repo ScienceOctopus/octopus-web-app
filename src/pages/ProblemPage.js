@@ -635,8 +635,8 @@ class ProblemPage extends React.Component {
             )
           }
           backgroundColor="#000"
-          overflowX="none"
-          overflowY="none"
+          overflowX="hidden"
+          overflowY="hidden"
           padding={0}
           children={
             <>

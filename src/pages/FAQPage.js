@@ -16,9 +16,9 @@ class FAQPage extends Component {
           very long research process, it slows down the spread of scientific
           knowledge, and encourages ‘questionable research practices’ in order
           for researchers to produce seemingly easy, clear narratives that will
-          get their work widely read. Good science is necessarily a good story.
-          Good science can be the careful collection of a small amount of data,
-          or careful analysis of data collected by someone else, or a good
+          get their work widely read. Good science isn't necessarily a good
+          story. Good science can be the careful collection of a small amount of
+          data, or careful analysis of data collected by someone else, or a good
           hypothesis (regardless of whether data later supports it or not).
         </p>
 

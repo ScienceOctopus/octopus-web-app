@@ -10,21 +10,23 @@ class Modal extends React.Component {
 
     return (
       <div style={styles.backdrop} ref={this.props.modalRef}>
-        <button
-          className="ui button"
-          style={styles.button}
-          onClick={this.props.onClose}
-        >
-          <i className="close icon" style={styles.icon} />
-        </button>
-        <Presenter
-          backgroundColor={this.props.backgroundColor}
-          overflowX={this.props.overflowX}
-          overflowY={this.props.overflowY}
-          padding={this.props.padding}
-        >
-          {this.props.children}
-        </Presenter>
+        <div style={{ position: "relative" }}>
+          <div
+            className="ui button"
+            style={styles.button}
+            onClick={this.props.onClose}
+          >
+            <i className="close icon" style={styles.icon} />
+          </div>
+          <Presenter
+            backgroundColor={this.props.backgroundColor}
+            overflowX={this.props.overflowX}
+            overflowY={this.props.overflowY}
+            padding={this.props.padding}
+          >
+            {this.props.children}
+          </Presenter>
+        </div>
       </div>
     );
   }
@@ -60,8 +62,8 @@ const styles = {
   },
 
   button: {
-    position: "relative",
-    top: 15,
+    position: "absolute",
+    top: -5,
     left: -5,
     padding: 5,
     zIndex: 100,
