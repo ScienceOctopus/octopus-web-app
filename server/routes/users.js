@@ -132,8 +132,6 @@ const getSignoffsForUser = async (req, res) => {
     getUserFromSession(req),
   );
 
-  console.log(signoffs);
-
   res.status(200).json(signoffs);
 };
 

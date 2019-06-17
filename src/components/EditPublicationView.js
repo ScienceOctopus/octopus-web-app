@@ -436,6 +436,8 @@ class EditPublicationView extends Component {
             <ul>
               {this.state.signoffsRemaining.map(signoff => {
                 let submitSignoffButton =
+                  global.session &&
+                  global.session.user &&
                   signoff.id === global.session.user.id ? (
                     <button
                       className="ui green button"

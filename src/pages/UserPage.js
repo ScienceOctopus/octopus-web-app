@@ -26,6 +26,7 @@ class UserPage extends Component {
       draftReviews: [],
       signoffPublications: [],
       unseenPublications: [],
+      checkingUnseen: true,
     };
   }
 
@@ -90,27 +91,7 @@ class UserPage extends Component {
       .get()
       .then(signoffs => {
         this.signoffs = signoffs;
-
-        if (!signoffs.length) {
-          this.setState({ signoffPublications: [] });
-        }
-
-        signoffs.forEach(x =>
-          Api()
-            .publication(x.publication)
-            .get()
-            .then(publication => {
-              this.loadingSignoffPublications.push(publication);
-              if (
-                this.loadingSignoffPublications.length === this.signoffs.length
-              ) {
-                this.setState({
-                  signoffPublications: this.loadingSignoffPublications,
-                });
-                this.loadingSignoffPublications = [];
-              }
-            }),
-        );
+        this.setState({ checkingUnseen: false, signoffPublications: signoffs });
       });
   }
 
@@ -162,6 +143,7 @@ class UserPage extends Component {
   }
 
   renderUnsigned() {
+    if (this.state.checkingUnseen) return this.renderCheckingUnseen();
     if (!this.state.signoffPublications.length) return null;
     return (
       <div className="ui segment icon warning message">
@@ -174,6 +156,24 @@ class UserPage extends Component {
 
           {this.renderPublicationList(this.state.signoffPublications)}
         </div>
+      </div>
+    );
+  }
+
+  renderCheckingUnseen() {
+    return (
+      <div
+        className="ui segment"
+        style={{
+          height: 150,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <div className="ui active loader" style={{ position: "unset" }} />
+        <p>Checking for new publications to sign...</p>
       </div>
     );
   }
