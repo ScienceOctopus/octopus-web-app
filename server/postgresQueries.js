@@ -187,7 +187,15 @@ const queries = {
       .whereIn("publication", basedOnThese),
 
   insertUserNotification: (user, publication) =>
-    knex("user_notifications").insert({ user, publication }),
+    knex("user_notifications")
+      .select()
+      .where({
+        user,
+        publication,
+      })
+      .then(rows => {
+        if (rows.length === 0) insert({ user, publication });
+      }),
 
   deleteUserNotificationByUserAndPublication: (user, publication) =>
     knex("user_notifications")
