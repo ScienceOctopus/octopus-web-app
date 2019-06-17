@@ -189,6 +189,12 @@ const queries = {
   insertUserNotification: (user, publication) =>
     knex("user_notifications").insert({ user, publication }),
 
+  deleteUserNotificationByUserAndPublication: (user, publication) =>
+    knex("user_notifications")
+      .where("publication", publication)
+      .where("user", user)
+      .del(),
+
   deleteUserNotificationByUserAndID: (user, id) =>
     knex("user_notifications")
       .where("id", id)

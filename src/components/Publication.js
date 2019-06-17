@@ -185,7 +185,12 @@ class Publication extends Component {
           review={this.props.review}
           pointer={this.props.pointer}
         >
-          <Title>{this.props.publication.title}</Title>
+          <TitleContainer>
+            <Title>{this.props.publication.title}</Title>
+            {this.props.reviewDisplay && this.props.publication.review && (
+              <AdditionalLabel>[Review]</AdditionalLabel>
+            )}
+          </TitleContainer>
           <div className="meta">
             {new Date(this.props.publication.created_at).toLocaleDateString()}
           </div>
@@ -199,6 +204,14 @@ class Publication extends Component {
     return publicationView;
   }
 }
+
+const TitleContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  height: 3em;
+`;
+
+const AdditionalLabel = styled.p``;
 
 const BgDiv = styled.div`
   &&&& {
