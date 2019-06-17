@@ -56,6 +56,8 @@ const WebURI = {
   OrcidPage: orcid => `https://orcid.org/${orcid}`,
   OrcidLogin: (state, returnPath) =>
     `https://orcid.org/oauth/authorize?state=${state}&client_id=${GOBLINID_OAUTH_CLIENT_ID}&response_type=code&scope=/authenticate&redirect_uri=${REDIRECT_URI}?return_path=${returnPath}`,
+  Problem: "/problems",
+  Publication: "/publications",
 };
 
 export const LocalizedLink = props => {

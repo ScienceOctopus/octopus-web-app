@@ -9,10 +9,19 @@ import LogoutInvitation from "./LogoutInvitation";
 import OctopusLogo from "./OctopusLogo";
 
 class Header extends Component {
-	activeIfAt = (address) =>
-	{
-		return (window.location.pathname.startsWith(address) ? "active " : "");
-	}
+  activeIfAt = (addresses, exact) => {
+    let match;
+
+    if (exact) {
+      match = addresses.some(address => window.location.pathname === address);
+    } else {
+      match = addresses.some(address =>
+        window.location.pathname.startsWith(address),
+      );
+    }
+
+    return match ? "active " : "";
+  };
 
   render() {
     const loggedIn = global.session.user !== undefined;
@@ -23,20 +32,47 @@ class Header extends Component {
         id="octopus-navigation"
       >
         <div className="ui container" id="octopus-navigation-container">
-          <LocalizedLink to={WebURI.Home} className="header item">
+          <LocalizedLink
+            to={WebURI.Home}
+            className={
+              this.activeIfAt([WebURI.Home, WebURI.More, WebURI.FAQ], true) +
+              "header item"
+            }
+          >
             <OctopusLogo style={styles.logo} className="logo" />
             <Trans>octopus</Trans>
           </LocalizedLink>
+          <GlobalSearch
+            className={this.activeIfAt(
+              [
+                WebURI.Explore,
+                WebURI.Search(""),
+                WebURI.Problem,
+                WebURI.Publication,
+              ],
+              false,
+            )}
+          />
           {loggedIn && (
-            <LocalizedLink to={WebURI.Upload} className={this.activeIfAt(WebURI.Upload) + "item"}>
+            <LocalizedLink
+              to={WebURI.Upload}
+              className={
+                this.activeIfAt(
+                  [WebURI.Upload, WebURI.ProblemCreation],
+                  false,
+                ) + "item"
+              }
+            >
               <i className="ui pencil alternate icon" />
               Publish your work
             </LocalizedLink>
           )}
-          <GlobalSearch />
           {loggedIn ? (
             <div className="right menu" id="octopus-navigation-login-items">
-              <LocalizedLink to={WebURI.Profile} className={this.activeIfAt(WebURI.Profile) + "item"}>
+              <LocalizedLink
+                to={WebURI.Profile}
+                className={this.activeIfAt([WebURI.Profile], false) + "item"}
+              >
                 <UserIconName />
               </LocalizedLink>
               <LogoutInvitation />

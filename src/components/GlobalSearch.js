@@ -27,6 +27,7 @@ class GlobalSearch extends Component {
   render() {
     return (
       <SearchField
+        className={this.props.className}
         placeholder="Search science"
         onChange={this.handleChange}
         onSubmit={this.handleSubmit}

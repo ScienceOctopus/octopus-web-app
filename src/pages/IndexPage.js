@@ -7,10 +7,6 @@ import ProblemSelector from "../components/ProblemSelector";
 
 class IndexPage extends Component {
   render() {
-    if (process.DEBUG_MODE) {
-      return <ProblemSelector />;
-    }
-
     return (
       <div>
         <main
