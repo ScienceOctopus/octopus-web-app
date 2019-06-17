@@ -207,11 +207,13 @@ class EditPublicationView extends Component {
       .then();
   };
 
-  handleAddColaborator = user => {
+  handleAddCollaborator = user => {
+    console.log("Adding collaborator", user);
     Api()
       .publication(this.state.publication.id)
       .collaborators()
-      .post();
+      .log()
+      .post({ userID: user.id });
   };
 
   handleSignoffSubmit = () => {
@@ -500,7 +502,7 @@ class EditPublicationView extends Component {
     return (
       <>
         <div className="ui form">
-          <UserSearch onSelect={this.handleAddColaborator} />
+          <UserSearch onSelect={this.handleAddCollaborator} />
           <div className="inline field">
             <label>Email Address</label>
             <input

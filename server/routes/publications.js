@@ -356,7 +356,7 @@ const postCollaboratorToPublication = async (req, res) => {
     return res.sendStatus(404);
   }
 
-  users = await db.selectUsersByEmail(req.body.email);
+  users = await db.selectUsers(req.body.userID);
   if (!users.length) {
     return res.sendStatus(410);
   }

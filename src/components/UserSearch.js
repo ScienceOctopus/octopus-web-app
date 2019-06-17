@@ -40,6 +40,10 @@ class UserSearch extends Component {
     this.clearUserList();
   };
 
+  handleSelect = user => () => {
+    this.props.onSelect(user);
+  };
+
   updateUserList = users => {
     this.setState({ users: users.slice(0, MAX_USERS_DISPLAY) });
   };
@@ -58,9 +62,12 @@ class UserSearch extends Component {
     return (
       <FloatingUserList>
         {this.state.users.map(user => (
-          <UserInfoContainer key={user.id} onClick={this.props.onSelect}>
+          <UserInfoContainer
+            key={user.id}
+            onMouseDown={this.handleSelect(user)}
+          >
             <UserName>{user.display_name}</UserName>
-            <UserEmail> {user.email || "(hidden email)"}</UserEmail>
+            <UserEmail>{user.email || "(hidden email)"}</UserEmail>
           </UserInfoContainer>
         ))}
       </FloatingUserList>
@@ -109,14 +116,24 @@ const UserInfoContainer = styled.div`
   display: flex;
   flex-direction: column;
   padding-bottom: 0.5rem;
+  :hover {
+    cursor: pointer;
+    background-color: var(--octopus-theme-background);
+  }
 `;
 
 const UserName = styled.label`
   color: black;
+  :hover {
+    cursor: pointer;
+  }
 `;
 
 const UserEmail = styled.label`
   color: grey;
+  :hover {
+    cursor: pointer;
+  }
 `;
 
 export default UserSearch;
