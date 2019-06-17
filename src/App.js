@@ -18,7 +18,7 @@ class App extends Component {
 
     // Initialise global login state
     global.session = {
-      user: { id: 262, display_name: "i8tuy3894hg" },
+      user: undefined,
       OAuthState: undefined,
     };
 

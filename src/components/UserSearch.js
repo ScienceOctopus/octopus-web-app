@@ -37,11 +37,19 @@ class UserSearch extends Component {
   }
 
   handleBadUserList = () => {
-    this.updateUserList([]);
+    this.clearUserList();
   };
 
   updateUserList = users => {
     this.setState({ users: users.slice(0, MAX_USERS_DISPLAY) });
+  };
+
+  handleBlur = () => {
+    this.clearUserList();
+  };
+
+  clearUserList = () => {
+    this.updateUserList([]);
   };
 
   renderUserList() {
@@ -50,9 +58,9 @@ class UserSearch extends Component {
     return (
       <FloatingUserList>
         {this.state.users.map(user => (
-          <UserInfoContainer key={user.id}>
+          <UserInfoContainer key={user.id} onClick={this.props.onSelect}>
             <UserName>{user.display_name}</UserName>
-            <UserEmail> {user.email}</UserEmail>
+            <UserEmail> {user.email || "(hidden email)"}</UserEmail>
           </UserInfoContainer>
         ))}
       </FloatingUserList>
@@ -70,6 +78,7 @@ class UserSearch extends Component {
             value={this.state.input}
             placeholder="example@example.com"
             onChange={this.handleInputChange}
+            onBlur={this.handleBlur}
           />
           {this.renderUserList()}
         </UserLabelAndList>
@@ -88,6 +97,7 @@ const FloatingUserList = styled.div`
   padding-top: 0.5rem;
   padding-left: 1rem;
   padding-right: 1rem;
+  z-index: 999;
 `;
 
 const UserLabelAndList = styled.span`
