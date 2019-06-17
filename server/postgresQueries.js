@@ -273,9 +273,7 @@ const queries = {
       .where("review", false),
 
   selectReviewedPublicationsByReviewPublication: publication =>
-    queries
-      .selectCompletedPublicationsByLinksAfterPublication(publication)
-      .where("review", true),
+    queries.selectCompletedPublicationsByLinksAfterPublication(publication),
 
   selectCollaboratorsByPublication: publication =>
     knex("publication_collaborators")

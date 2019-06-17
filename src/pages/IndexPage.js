@@ -4,6 +4,7 @@ import { withRouter } from "react-router-dom";
 import graph from "../assets/images/graph.png";
 import Footer from "../components/Footer";
 import ProblemSelector from "../components/ProblemSelector";
+import LinkOnlyIfAcquiredState from "../components/LinkOnlyIfAcquiredState";
 
 class IndexPage extends Component {
   render() {
@@ -44,16 +45,13 @@ class IndexPage extends Component {
                 </LocalizedLink>
               </div>
               <div className="column" style={styles.publish}>
-                <a
+                <LinkOnlyIfAcquiredState
                   className="ui octopus-theme publish large right labeled icon button"
-                  href={WebURI.OrcidLogin(
-                    global.session.OAuthState,
-                    WebURI.Upload,
-                  )}
+                  returnPath={WebURI.Upload}
                 >
                   <i className="ui pencil alternate icon" />
                   Publish your work
-                </a>
+                </LinkOnlyIfAcquiredState>
               </div>
               <div className="column" style={styles.more}>
                 <LocalizedLink

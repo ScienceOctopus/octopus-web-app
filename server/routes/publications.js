@@ -116,6 +116,10 @@ const postPublicationToID = async (req, res) => {
     return res.sendStatus(404);
   }
 
+  if (!publication.draft) {
+    return res.status(400);
+  }
+
   const stages = await db.selectStagesByID(publication.stage);
 
   if (!stages.length) {
@@ -220,6 +224,16 @@ const postPublicationToID = async (req, res) => {
   }
 
   await notifyLinkedUsers(req.params.id);
+
+  if (publication.review) {
+    let reviewedPublications = await db.selectReviewedPublicationsByReviewPublication(
+      publication.id,
+    );
+
+    reviewedPublications.map(reviewedPublication =>
+      broadcast(`/publications/${reviewedPublication.id}/reviews`),
+    );
+  }
 
   broadcast(`/publications/${req.params.id}`);
   broadcast(`/problems/${publication.problem}/publications`);
@@ -409,6 +423,16 @@ const postSignoffToPublication = async (req, res) => {
 
   if (collaborators.length === 0) {
     await db.finalisePublication(publication.id, publication.revision);
+
+    if (publication.review) {
+      let reviewedPublications = await db.selectReviewedPublicationsByReviewPublication(
+        publication.id,
+      );
+
+      reviewedPublications.map(reviewedPublication =>
+        broadcast(`/publications/${reviewedPublication.id}/reviews`),
+      );
+    }
 
     await notifyLinkedUsers(req.params.id);
 
