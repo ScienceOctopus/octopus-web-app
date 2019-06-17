@@ -115,6 +115,10 @@ const postPublicationToID = async (req, res) => {
     return res.sendStatus(404);
   }
 
+  if (!publication.draft) {
+    return res.status(400);
+  }
+
   const stages = await db.selectStagesByID(publication.stage);
 
   if (!stages.length) {
