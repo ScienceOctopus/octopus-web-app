@@ -90,14 +90,15 @@ const getPublicationsByProblemAndStage = async (req, res) => {
 
   // TODO: refactor session cookie name into environmental waste
   const sessionUser = getUserFromSession(req);
-  if (sessionUser || true) {
-    const additionalPublications = await db.selectOriginalDraftPublicationsByProblemAndStageAndUser(
-      req.params.id,
-      req.params.stage,
-      262,
-    );
+  if (sessionUser) {
+    const additionalPublications =
+      (await db.selectOriginalDraftPublicationsByProblemAndStageAndUser(
+        req.params.id,
+        req.params.stage,
+        sessionUser,
+      )) || [];
 
-    publications = publications.concat(additionalPublications);
+    publications = [...publications, ...additionalPublications];
   }
 
   res.status(200).json(publications);
