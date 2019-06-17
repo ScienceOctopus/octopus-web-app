@@ -193,18 +193,11 @@ class EditPublicationView extends Component {
     }
   }
 
+  // Unused function?
   handleCollaboratorChange = e => {
     this.setState({
       newCollaborator: e.target.value,
     });
-  };
-
-  handleAddCollaboratorSubmit = () => {
-    Api()
-      .publication(this.state.publication.id)
-      .collaborators()
-      .post({ email: this.state.newCollaborator })
-      .then();
   };
 
   handleAddCollaborator = user => {
@@ -503,21 +496,6 @@ class EditPublicationView extends Component {
       <>
         <div className="ui form">
           <UserSearch onSelect={this.handleAddCollaborator} />
-          <div className="inline field">
-            <label>Email Address</label>
-            <input
-              type="text"
-              placeholder="example@example.com"
-              onChange={this.handleCollaboratorChange}
-            />
-          </div>
-          <button
-            className="ui button"
-            type="submit"
-            onClick={this.handleAddCollaboratorSubmit}
-          >
-            Add New Collaborator
-          </button>
         </div>
       </>
     );
@@ -607,8 +585,6 @@ class EditPublicationView extends Component {
     let signoffInvitation =
       this.state.publication !== {} ? this.renderSignoffInvitation() : null;
 
-    let addCollaboratorButton = this.renderAddCollaboratorButton();
-
     let editForm = this.renderEditForm();
 
     return (
@@ -636,9 +612,9 @@ class EditPublicationView extends Component {
               ))}
             </ul>
 
-            <div className="ui divider" />
-
-            {addCollaboratorButton}
+            {/* <div className="ui divider" /> */}
+            <h4>{"Add new"}</h4>
+            {this.renderAddCollaboratorButton()}
 
             <div className="ui divider" />
 

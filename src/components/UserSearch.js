@@ -5,17 +5,19 @@ import styled from "styled-components";
 const MAX_USERS_DISPLAY = 3;
 
 class UserSearch extends Component {
+  selectedUser = undefined;
   constructor(props) {
     super(props);
     this.state = {
       input: "",
       users: [],
+      searchError: undefined,
     };
   }
 
   handleSubmit = () => {
-    if (this.props.onSubmit) {
-      this.props.onSubmit();
+    if (this.selectedUser) {
+      this.props.onSelect(this.selectedUser);
     }
   };
 
@@ -41,11 +43,18 @@ class UserSearch extends Component {
   };
 
   handleSelect = user => () => {
-    this.props.onSelect(user);
+    this.setState({
+      input: user.display_name || user.email,
+    });
+    this.selectedUser = user;
   };
 
   updateUserList = users => {
-    this.setState({ users: users.slice(0, MAX_USERS_DISPLAY) });
+    this.setState({
+      users: users
+        .filter(x => x.id !== global.session.user.id)
+        .slice(0, MAX_USERS_DISPLAY),
+    });
   };
 
   handleBlur = () => {
@@ -76,25 +85,50 @@ class UserSearch extends Component {
     );
   }
 
+  setMessage(searchError) {
+    this.setState({ searchError });
+  }
+
+  clearMessage() {
+    this.setState({
+      searchError: undefined,
+    });
+  }
+
+  renderMessage() {
+    if (!this.state.searchError) return null;
+    return <SearchError>{this.state.searchError}</SearchError>;
+  }
+
   render() {
     return (
-      <div className="inline field">
-        <label>Username or Email Address</label>
-        <UserLabelAndList>
-          <input
-            style={{ height: "38px" }}
-            type="text"
-            value={this.state.input}
-            placeholder="example@example.com"
-            onChange={this.handleInputChange}
-            onBlur={this.handleBlur}
-          />
-          {this.renderUserList()}
-        </UserLabelAndList>
-      </div>
+      <>
+        <div className="inline field">
+          <label>Username or Email Address</label>
+          <UserLabelAndList>
+            <input
+              style={{ height: "38px" }}
+              type="text"
+              value={this.state.input}
+              placeholder="example@example.com"
+              onChange={this.handleInputChange}
+              onBlur={this.handleBlur}
+            />
+            {this.renderUserList()}
+            {this.renderMessage()}
+          </UserLabelAndList>
+        </div>
+        <button className="ui button" type="submit" onClick={this.handleSubmit}>
+          Add New Collaborator
+        </button>
+      </>
     );
   }
 }
+
+const SearchError = styled.label`
+  color: red;
+`;
 
 const UserInfoSelectContainer = styled.div`
   :hover {
@@ -112,6 +146,7 @@ const FloatingUserList = styled.div`
   top: 38px;
   left: 0;
   z-index: 999;
+  max-width: 100% !important;
 `;
 
 const UserLabelAndList = styled.span`
