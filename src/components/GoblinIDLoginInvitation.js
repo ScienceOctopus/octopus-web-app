@@ -1,32 +1,15 @@
 import React from "react";
-import WebURI from "../urls/WebsiteURIs";
-
-function LinkOnlyIfAcquiredState(props) {
-  if (global.session.OAuthState !== undefined) {
-    return (
-      <a
-        className="right item"
-        href={WebURI.OrcidLogin(global.session.OAuthState, props.returnPath)}
-      >
-        {props.children}
-      </a>
-    );
-  } else {
-    return <div className="right item">{props.children}</div>;
-  }
-}
+import LinkOnlyIfAcquiredState from "./LinkOnlyIfAcquiredState";
 
 function GoblinIDLoginInvitation(props) {
   return (
-    <LinkOnlyIfAcquiredState returnPath={props.returnPath}>
-      {props.showAvatar && (
+    <LinkOnlyIfAcquiredState className="right item" returnPath={props.returnPath}>
         <img
           src="/images/avatar.jpg"
           className="ui avatar image"
           alt="Generic avatar"
           title="Log in"
         />
-      )}
       <span>Log in via ORCiD</span>
     </LinkOnlyIfAcquiredState>
   );
