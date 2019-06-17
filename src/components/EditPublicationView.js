@@ -10,6 +10,7 @@ import TagSelector from "./TagSelector";
 
 import uniqueId from "lodash/uniqueId";
 import Modal from "./Modal";
+import UserSearch from "./UserSearch";
 
 const EDIT_KEY = "edit";
 
@@ -492,6 +493,7 @@ class EditPublicationView extends Component {
     return (
       <>
         <div className="ui form">
+          <UserSearch />
           <div className="inline field">
             <label>Email Address</label>
             <input

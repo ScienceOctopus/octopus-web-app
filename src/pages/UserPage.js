@@ -188,7 +188,7 @@ class UserPage extends Component {
         {draftPubs.length > 0 && (
           <div className="ui segment">
             {this.renderPublications(
-              [...this.state.draftPublications, ...this.state.draftReviews],
+              draftPubs,
               "draft",
               "Your draft publications",
             )}
