@@ -616,16 +616,22 @@ class ProblemPage extends React.Component {
       if (pub && pub.draft) {
         publication = <EditPublicationView publicationId={pub.id} />;
       } else {
+        let publicationId =
+          this.state.review !== undefined
+            ? this.state.review
+            : this.state.publication;
         publication = (
           <SummaryView
             problemId={this.state.problem}
-            publicationId={
-              this.state.review !== undefined
-                ? this.state.review
-                : this.state.publication
-            }
+            publicationId={publicationId}
           />
         );
+        if (global.session.user !== undefined) {
+          Api()
+            .user(global.session.user.id)
+            .notificationForPublication(publicationId)
+            .delete();
+        }
       }
     }
 

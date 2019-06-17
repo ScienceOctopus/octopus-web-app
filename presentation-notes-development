@@ -6,7 +6,11 @@ use react because not php
 
 use express because use react (same language, infrastructure, ?same libraries?)
 
+
+
 components => api file => cache handler ===> api response functions => database knex queries
+
+"The api calls look beautiful and concise, and the best thing about them"
 
 components <callbacks<=>
 api file <websocket message<=>

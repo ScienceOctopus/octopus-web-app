@@ -166,26 +166,35 @@ class UserPage extends Component {
   }
 
   renderPublishedContent() {
+    const draftPubs = [
+      ...this.state.draftPublications,
+      ...this.state.draftReviews,
+    ];
+    const finalPubs = [
+      ...this.state.finalizedPublications,
+      ...this.state.finalizedReviews,
+    ];
     return (
       <>
-        <div className="ui segment">
-          {this.renderPublications(
-            [
-              ...this.state.finalizedPublications,
-              ...this.state.finalizedReviews,
-            ],
-            "finalized",
-            "Your finalized publications",
-          )}
-        </div>
+        {finalPubs.length > 0 && (
+          <div className="ui segment">
+            {this.renderPublications(
+              finalPubs,
+              "finalized",
+              "Your finalized publications",
+            )}
+          </div>
+        )}
 
-        <div className="ui segment">
-          {this.renderPublications(
-            [...this.state.draftPublications, ...this.state.draftReviews],
-            "draft",
-            "Your draft publications",
-          )}
-        </div>
+        {draftPubs.length > 0 && (
+          <div className="ui segment">
+            {this.renderPublications(
+              [...this.state.draftPublications, ...this.state.draftReviews],
+              "draft",
+              "Your draft publications",
+            )}
+          </div>
+        )}
       </>
     );
   }
