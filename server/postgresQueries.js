@@ -482,6 +482,12 @@ const queries = {
       .select()
       .where("orcid", orc),
 
+  selectUsersBySearchQuery: q =>
+    knex("users")
+      .select()
+      .whereRaw("lower(email) like ?", `%${q.toLowerCase()}%`)
+      .orWhereRaw("lower(display_name) like ?", `%${q.toLowerCase()}%`),
+
   insertOrUpdateUser: (orcid, name, primary_email) =>
     knex("users")
       .insert({

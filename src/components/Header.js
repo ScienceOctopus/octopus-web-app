@@ -24,6 +24,11 @@ class Header extends Component {
   };
 
   render() {
+    global.session = {
+      user: { id: 262, display_name: "i8tuy3894hg" },
+      OAuthState: undefined,
+    };
+
     const loggedIn = global.session.user !== undefined;
 
     return (

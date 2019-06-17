@@ -112,7 +112,23 @@ const removeUserNotifications = async (req, res) => {
   }
 };
 
+const getAllUsers = async (req, res) => {
+  if (req.query && req.query.q) {
+    const users = await db.selectUsersBySearchQuery(req.query.q);
+
+    if (users.length) {
+      res.status(200).json(users);
+    } else {
+      res.sendStatus(404);
+    }
+  }
+
+  res.sendStatus(403);
+};
+
 var router = express.Router();
+
+router.get("/", catchAsyncErrors(getAllUsers));
 
 router.get("/:id(\\d+)", catchAsyncErrors(getUserByID));
 router.get(
