@@ -669,6 +669,11 @@ class ApiBuilder extends LinkBuilder {
     return new UserBuilder(this.key, userId);
   };
 
+  users = () => {
+    this.path += "/users";
+    return this;
+  };
+
   feedback = () => {
     this._checkNotFinal();
 
