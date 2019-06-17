@@ -9,6 +9,11 @@ import LogoutInvitation from "./LogoutInvitation";
 import OctopusLogo from "./OctopusLogo";
 
 class Header extends Component {
+	activeIfAt = (address) =>
+	{
+		return (window.location.pathname.startsWith(address) ? "active " : "");
+	}
+
   render() {
     const loggedIn = global.session.user !== undefined;
 
@@ -23,7 +28,7 @@ class Header extends Component {
             <Trans>octopus</Trans>
           </LocalizedLink>
           {loggedIn && (
-            <LocalizedLink to={WebURI.Upload} className="item">
+            <LocalizedLink to={WebURI.Upload} className={this.activeIfAt(WebURI.Upload) + "item"}>
               <i className="ui pencil alternate icon" />
               Publish your work
             </LocalizedLink>
@@ -31,7 +36,7 @@ class Header extends Component {
           <GlobalSearch />
           {loggedIn ? (
             <div className="right menu" id="octopus-navigation-login-items">
-              <LocalizedLink to={WebURI.Profile} className="item">
+              <LocalizedLink to={WebURI.Profile} className={this.activeIfAt(WebURI.Profile) + "item"}>
                 <UserIconName />
               </LocalizedLink>
               <LogoutInvitation />

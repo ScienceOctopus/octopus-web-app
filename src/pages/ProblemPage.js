@@ -734,7 +734,7 @@ class ProblemPage extends React.Component {
                           <span
                             style={{ color: "var(--octopus-theme-problem)" }}
                           >
-                            Problem:
+                            Area of research:
                           </span>{" "}
                           <span style={{ fontWeight: "initial" }}>
                             {this.state.content.problem.title}

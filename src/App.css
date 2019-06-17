@@ -28,13 +28,18 @@ This leads to little areas where white bleeds through so change it back to none.
   border-radius: 0;
 }
 
-@media only screen and (max-width: 767px) {
+@media only screen and (max-width: 991px) {
   #octopus-navigation .item::before {
     display: none;
   }
 
+  #octopus-navigation-container .header.item:first-child {
+	  border-left: none;
+  }
+
   #octopus-navigation-container,
   #octopus-navigation-login-items {
+	  width: auto;
     flex-wrap: wrap;
     justify-content: center;
   }
