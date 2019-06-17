@@ -106,7 +106,6 @@ const removeNotificationsByUserAndPublication = async (req, res) => {
 };
 
 const removeUserNotifications = async (req, res) => {
-  console.log("removing");
   if (req.query && req.query.publication) {
     await removeNotificationsByUserAndPublication(req, res);
     return;
