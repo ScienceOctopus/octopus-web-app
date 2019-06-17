@@ -223,13 +223,18 @@ const queries = {
     publication,
     collaborator,
   ) =>
-    queries
-      .selectAllReviewPublicationsByPublication(publication)
+    knex
+      .with(
+        "all_reviews",
+        queries.selectAllReviewPublicationsByPublication(publication),
+      )
+      .select()
+      .from("publication_collaborators")
       .join(
-        "publication_collaborators",
-        "publication_collaborators.publication",
+        "all_reviews",
+        "all_reviews.publication_after",
         "=",
-        "publications.id",
+        "publication_collaborators.publication",
       )
       .select()
       .where("user", collaborator),
