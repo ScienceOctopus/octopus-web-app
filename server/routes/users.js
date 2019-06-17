@@ -127,11 +127,22 @@ const getAllUsers = async (req, res) => {
   res.sendStatus(403);
 };
 
+const getSignoffsForUser = async (req, res) => {
+  const signoffs = await db.selectPublicationsAwaitingSignoffForUser(
+    getUserFromSession(req),
+  );
+
+  console.log(signoffs);
+
+  res.status(200).json(signoffs);
+};
+
 var router = express.Router();
 
 router.get("/", catchAsyncErrors(getAllUsers));
 
 router.get("/:id(\\d+)", catchAsyncErrors(getUserByID));
+router.get("/:id(\\d+)/signoffs", catchAsyncErrors(getSignoffsForUser));
 router.get(
   "/:id(\\d+)/notifications",
   catchAsyncErrors(getNotificationsForUser),

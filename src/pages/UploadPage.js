@@ -217,11 +217,8 @@ class UploadPage extends Component {
   handleFileSelect = event => {
     const file = event.target.files[0];
     if (!this.checkCorrectFile(file)) {
-      console.log("ujknlj");
-      this.setState({ badFileSelected: true }, () => {
-        console.log(this.state.badFileSelected);
-      });
-      //   event.preventDefault();
+      this.setState({ badFileSelected: true });
+      event.preventDefault();
       return;
     }
 

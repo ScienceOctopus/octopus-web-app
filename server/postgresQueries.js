@@ -121,6 +121,24 @@ const queries = {
         "publication_collaborators.publication",
       ),
 
+  selectPublicationsAwaitingSignoffForUser: async user => {
+    let pubs = await queries.selectPublicationsByUserId(user);
+    // console.log(pubs);
+    return pubs.filter(async pub => {
+      return !(await queries
+        .selectPublicationSignoffsForRevision(pub.publication, pub.revision)
+        .select("user")
+        .map(x => x.user)).includes(user);
+      //   console.log(k);
+      //   return k;
+    });
+  },
+
+  //   .whereNotIn(
+  //     "publications.id",
+  //     queries.selectPublicationSignoffsForRevision().select('publication'),
+  //   ),
+
   selectPublicationsByProblemAndCollaborator: (problem, collaborator) =>
     queries
       .selectPublicationsByUserId(collaborator)

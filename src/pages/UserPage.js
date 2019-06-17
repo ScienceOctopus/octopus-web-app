@@ -10,6 +10,8 @@ import WebURI from "../urls/WebsiteURIs";
 const USER_KEY = "user";
 
 class UserPage extends Component {
+  signoffs = [];
+  loadingSignoffPublications = [];
   notifications = [];
   loadingUnseenPublications = [];
 
@@ -22,7 +24,7 @@ class UserPage extends Component {
       finalizedReviews: [],
       draftPublications: [],
       draftReviews: [],
-
+      signoffPublications: [],
       unseenPublications: [],
     };
   }
@@ -30,6 +32,7 @@ class UserPage extends Component {
   componentDidMount() {
     this.fetchUserPublications();
     this.fetchUserNotifications();
+    this.fetchUnsigned();
   }
 
   componentWillUnmount() {
@@ -73,6 +76,38 @@ class UserPage extends Component {
                   unseenPublications: this.loadingUnseenPublications,
                 });
                 this.loadingUnseenPublications = [];
+              }
+            }),
+        );
+      });
+  }
+
+  fetchUnsigned() {
+    Api()
+      .subscribe(USER_KEY)
+      .user(global.session.user.id)
+      .signoffs()
+      .get()
+      .then(signoffs => {
+        this.signoffs = signoffs;
+
+        if (!signoffs.length) {
+          this.setState({ signoffPublications: [] });
+        }
+
+        signoffs.forEach(x =>
+          Api()
+            .publication(x.publication)
+            .get()
+            .then(publication => {
+              this.loadingSignoffPublications.push(publication);
+              if (
+                this.loadingSignoffPublications.length === this.signoffs.length
+              ) {
+                this.setState({
+                  signoffPublications: this.loadingSignoffPublications,
+                });
+                this.loadingSignoffPublications = [];
               }
             }),
         );
@@ -123,6 +158,23 @@ class UserPage extends Component {
         </a>
         {")"}
       </h2>
+    );
+  }
+
+  renderUnsigned() {
+    if (!this.state.signoffPublications.length) return null;
+    return (
+      <div className="ui segment icon warning message">
+        <div className="content" style={styles.signoffContent}>
+          <div style={styles.signoffHeaderContainer}>
+            <div className="header">
+              {"You have some publications to sign "}
+            </div>
+          </div>
+
+          {this.renderPublicationList(this.state.signoffPublications)}
+        </div>
+      </div>
     );
   }
 
@@ -223,7 +275,7 @@ class UserPage extends Component {
         {this.renderTitle()}
 
         {this.renderUnseen()}
-        {/* {this.renderWarningPublications([], "unseen linked")} */}
+        {this.renderUnsigned()}
 
         {this.shouldRenderInfo()
           ? this.renderInfo()

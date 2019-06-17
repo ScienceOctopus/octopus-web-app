@@ -597,6 +597,11 @@ class UserBuilder extends LinkBuilder {
     this.path += `/notifications?publication=${publicationID}`;
     return this;
   };
+
+  signoffs = () => {
+    this.path += "/signoffs";
+    return this;
+  };
 }
 
 class AuthenticationBuilder extends LinkBuilder {
