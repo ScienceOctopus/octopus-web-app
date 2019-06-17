@@ -124,6 +124,7 @@ class UserPage extends Component {
     return this.renderWarningPublications(
       this.state.unseenPublications,
       "unseen linked",
+      "There are new publications linked to your publications",
     );
   }
 
@@ -137,9 +138,7 @@ class UserPage extends Component {
         <div className="content" style={styles.signoffContent}>
           <div style={styles.signoffHeaderContainer}>
             {/* <i className="exclamation icon" style={styles.signoffIcon} /> */}
-            <div className="header">
-              {"You have publications awaiting your signoff"}
-            </div>
+            <div className="header">{arguments[2]}</div>
           </div>
 
           {this.renderPublications(...arguments)}
