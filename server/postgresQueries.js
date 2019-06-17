@@ -186,16 +186,20 @@ const queries = {
       .distinct("user")
       .whereIn("publication", basedOnThese),
 
-  insertUserNotification: (user, publication) =>
-    knex("user_notifications")
+  insertUserNotification: async (user, publication) => {
+    let rows = await knex("user_notifications")
       .select()
       .where({
         user,
         publication,
-      })
-      .then(rows => {
-        if (rows.length === 0) insert({ user, publication });
-      }),
+      });
+
+    if (rows.length === 0) {
+      await knex("user_notifications")
+        .insert({ user, publication })
+        .returning("id");
+    }
+  },
 
   deleteUserNotificationByUserAndPublication: (user, publication) =>
     knex("user_notifications")

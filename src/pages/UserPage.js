@@ -92,17 +92,23 @@ class UserPage extends Component {
     return null;
   }
 
+  renderPublicationList(publications) {
+    return (
+      <PublicationSelector
+        publications={publications}
+        selectionEnabled={false}
+        reviewDisplay
+      />
+    );
+  }
+
   renderPublications(publications, name, title, zeroLengthRender) {
     if (!publications) return this.renderLoading();
     if (!publications.length) return zeroLengthRender;
     return (
       <>
-        {<h2>{title}</h2>}
-        <PublicationSelector
-          publications={publications}
-          selectionEnabled={false}
-          reviewDisplay
-        />
+        <h2>{title}</h2>
+        {this.renderPublicationList(publications)}
       </>
     );
   }
@@ -121,14 +127,22 @@ class UserPage extends Component {
   }
 
   renderUnseen() {
-    return this.renderWarningPublications(
-      this.state.unseenPublications,
-      "unseen linked",
-      "There are new publications linked to your publications",
+    if (!this.state.unseenPublications.length) return null;
+    return (
+      <div className="ui segment icon warning message">
+        <div className="content" style={styles.signoffContent}>
+          <div style={styles.signoffHeaderContainer}>
+            <div className="header">{"You have new linked publications"}</div>
+            <button className="ui button">{"Mark all as seen"}</button>
+          </div>
+
+          {this.renderPublicationList(this.state.unseenPublications)}
+        </div>
+      </div>
     );
   }
 
-  renderWarningPublications() {
+  renderWarningPublications(publications) {
     // let arr = Array(20).fill(this.state.draftPublications[0]);
     // console.log(params);
     if (!arguments[0].length) return null;
@@ -141,7 +155,7 @@ class UserPage extends Component {
             <div className="header">{arguments[2]}</div>
           </div>
 
-          {this.renderPublications(...arguments)}
+          {this.renderPublicationList(publications)}
         </div>
       </div>
     );
@@ -204,7 +218,7 @@ class UserPage extends Component {
         {this.renderTitle()}
 
         {this.renderUnseen()}
-        {this.renderWarningPublications([], "unseen linked")}
+        {/* {this.renderWarningPublications([], "unseen linked")} */}
 
         {this.shouldRenderInfo()
           ? this.renderInfo()

@@ -121,6 +121,8 @@ const getAllUsers = async (req, res) => {
     } else {
       res.sendStatus(404);
     }
+
+    return;
   }
 
   res.sendStatus(403);
