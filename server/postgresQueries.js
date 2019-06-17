@@ -211,7 +211,7 @@ const queries = {
 
   selectAllReviewPublicationsByPublication: publication =>
     queries
-      .selectCompletedPublicationsByLinksBeforePublication(publication)
+      .selectAllPublicationsByLinksBeforePublication(publication)
       .where("review", true),
 
   selectCompletedReviewPublicationsByPublication: publication =>
