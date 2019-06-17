@@ -303,7 +303,7 @@ class UploadPage extends Component {
       .then(response => {
         this.setState({ insertedId: response.data, uploadSuccessful: true });
       })
-      .catch(err => console.error(err.response))
+      .catch(err => console.error(err.response));
       .finally(() => this.setState({ uploading: false }));
   };
 
