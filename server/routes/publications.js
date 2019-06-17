@@ -96,7 +96,7 @@ const getPublicationByID = async (req, res) => {
 
 const notifyLinkedUsers = async publication => {
   let basedOn = await db
-    .selectPublicationsByLinksAfterPublication(publication)
+    .selectCompletedPublicationsByLinksAfterPublication(publication)
     .map(x => x.id);
 
   let usersToNotify = await db
@@ -239,7 +239,7 @@ const getLinksBeforeByPublication = async (req, res) => {
     return res.sendStatus(404);
   }
 
-  const publications = await db.selectPublicationsByLinksAfterPublication(
+  const publications = await db.selectCompletedPublicationsByLinksAfterPublication(
     req.params.id,
   );
   res.status(200).json(publications);
@@ -251,9 +251,10 @@ const getAllLinksBeforeByPublication = async (req, res) => {
     return res.sendStatus(404);
   }
 
-  const resources = await db.selectPublicationsByAllLinksBeforePublication(
+  const resources = await db.selectCompletedPublicationsByAllLinksBeforePublication(
     req.params.id,
   );
+
   res.status(200).json(resources);
 };
 
@@ -263,7 +264,7 @@ const getLinksAfterByPublication = async (req, res) => {
     return res.sendStatus(404);
   }
 
-  const publications = await db.selectPublicationsByLinksBeforePublication(
+  const publications = await db.selectCompletedPublicationsByLinksBeforePublication(
     req.params.id,
   );
   res.status(200).json(publications);
@@ -285,9 +286,21 @@ const getReviewsByPublication = async (req, res) => {
     return res.sendStatus(404);
   }
 
-  const publications = await db.selectReviewPublicationsByPublication(
+  let publications = await db.selectCompletedReviewPublicationsByPublication(
     req.params.id,
   );
+
+  // TODO: refactor session cookie name into environmental waste
+  const sessionUser = getUserFromSession(req);
+  if (sessionUser) {
+    const additionalPublications = await db.selectDraftReviewPublicationsByPublicationAndUser(
+      req.params.id,
+      sessionUser,
+    );
+
+    publications = publications.concat(additionalPublications);
+  }
+
   res.status(200).json(publications);
 };
 
@@ -483,11 +496,11 @@ const declineAuthorship = async (req, res) => {
   if (!publication) {
     return res.sendStatus(404);
   }
-  
+
   const tag = await db.insertOrSelectTag(req.body.tag);
-  
+
   await db.insertTagToPublication(req.params.id, tag);
-  
+
   res.sendStatus(204);
 };
 
@@ -496,11 +509,11 @@ const deleteTagFromPublication = async (req, res) => {
   if (!publication) {
     return res.sendStatus(404);
   }
-    
+
   const tag = await db.insertOrSelectTag(req.body.tag);
-  
+
   await db.deleteTagFromPublication(req.params.id, tag);
-    
+
   res.sendStatus(204);
 }*/
 

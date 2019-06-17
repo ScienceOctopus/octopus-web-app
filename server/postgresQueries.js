@@ -146,7 +146,7 @@ const queries = {
       .where("review", false)
       .where("draft", true),
 
-  selectPublicationsByLinksBeforePublication: publication =>
+  selectAllPublicationsByLinksBeforePublication: publication =>
     knex("publication_links")
       .select()
       .where("publication_before", publication)
@@ -157,6 +157,11 @@ const queries = {
         "publication_links.publication_after",
       )
       .select(),
+
+  selectCompletedPublicationsByLinksBeforePublication: publication =>
+    queries
+      .selectAllPublicationsByLinksBeforePublication(publication)
+      .where("draft", false),
 
   selectReviewsForUser: user =>
     knex("publication_links")
@@ -195,15 +200,40 @@ const queries = {
 
   selectOriginalPublicationsByLinksBeforePublication: publication =>
     queries
-      .selectPublicationsByLinksBeforePublication(publication)
+      .selectCompletedPublicationsByLinksBeforePublication(publication)
       .where("review", false),
 
-  selectReviewPublicationsByPublication: publication =>
+  selectAllReviewPublicationsByPublication: publication =>
     queries
-      .selectPublicationsByLinksBeforePublication(publication)
+      .selectCompletedPublicationsByLinksBeforePublication(publication)
       .where("review", true),
 
-  selectPublicationsByLinksAfterPublication: publication =>
+  selectCompletedReviewPublicationsByPublication: publication =>
+    queries
+      .selectAllReviewPublicationsByPublication(publication)
+      .where("draft", false),
+
+  selectReviewPublicationsByPublicationAndCollaborator: (
+    publication,
+    collaborator,
+  ) =>
+    queries
+      .selectAllReviewPublicationsByPublication(publication)
+      .join(
+        "publication_collaborators",
+        "publication_collaborators.publication",
+        "=",
+        "publications.id",
+      )
+      .select()
+      .where("user", collaborator),
+
+  selectDraftReviewPublicationsByPublicationAndUser: (publication, user) =>
+    queries
+      .selectReviewPublicationsByPublicationAndCollaborator(publication, user)
+      .where("draft", true),
+
+  selectAllPublicationsByLinksAfterPublication: publication =>
     knex("publication_links")
       .select()
       .where("publication_after", publication)
@@ -215,6 +245,11 @@ const queries = {
       )
       .select(),
 
+  selectCompletedPublicationsByLinksAfterPublication: publication =>
+    queries
+      .selectAllPublicationsByLinksAfterPublication(publication)
+      .where("draft", false),
+
   deletePublicationCollaborator: (publication, user) =>
     knex("publication_collaborators")
       .where("publication", publication)
@@ -223,12 +258,12 @@ const queries = {
 
   selectOriginalPublicationsByLinksAfterPublication: publication =>
     queries
-      .selectPublicationsByLinksAfterPublication(publication)
+      .selectCompletedPublicationsByLinksAfterPublication(publication)
       .where("review", false),
 
   selectReviewedPublicationsByReviewPublication: publication =>
     queries
-      .selectPublicationsByLinksAfterPublication(publication)
+      .selectCompletedPublicationsByLinksAfterPublication(publication)
       .where("review", true),
 
   selectCollaboratorsByPublication: publication =>
@@ -484,7 +519,8 @@ const queries = {
         "ancestor_publications.publication",
         "publication_collaborators.publication",
       ),
-  selectPublicationsByAllLinksBeforePublication: publication =>
+
+  selectAllPublicationsByAllLinksBeforePublication: publication =>
     knex
       .withRecursive("ancestors", qb => {
         qb.select("publication_before", "publication_after")
@@ -506,6 +542,12 @@ const queries = {
       .select()
       .from("ancestors")
       .join("publications", "publications.id", "ancestors.publication_before"),
+
+  selectCompletedPublicationsByAllLinksBeforePublication: publication =>
+    queries
+      .selectAllPublicationsByAllLinksBeforePublication(publication)
+      .where("draft", false),
+
   insertOrSelectTag: tag =>
     knex("tags")
       .insert({
