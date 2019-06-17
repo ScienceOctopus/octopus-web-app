@@ -72,6 +72,10 @@ const GlobalStyle = createGlobalStyle`
       );
     }, "")}
   }
+
+  .ui.form input[type=text]:focus {
+      border-color: var(--octopus-theme-accent)!important;
+  }
 `;
 
 export { ColourScheme };

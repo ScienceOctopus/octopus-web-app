@@ -1,23 +1,18 @@
 import React from "react";
-import WebURI from "../urls/WebsiteURIs";
 import { withRouter } from "react-router-dom";
+import LinkOnlyIfAcquiredState from "../components/LinkOnlyIfAcquiredState";
 
 const LogInRequiredPage = withRouter(props => {
   return (
     <div className="ui main text container">
       <div className="ui negative icon message">
         <i className="key icon" />
-        <a
-          href={WebURI.OrcidLogin(
-            global.session.OAuthState,
-            props.location.pathname,
-          )}
-        >
+        <LinkOnlyIfAcquiredState returnPath={props.location.pathname}>
           <div className="content">
             <div className="header">Log-in required</div>
             <p>Logging in via your ORCiD is required to access this page.</p>
           </div>
-        </a>
+        </LinkOnlyIfAcquiredState>
       </div>
     </div>
   );

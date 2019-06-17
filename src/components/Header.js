@@ -24,6 +24,13 @@ class Header extends Component {
   };
 
   render() {
+    if (process.DEBUG_MODE) {
+      global.session = {
+        user: { id: 262, display_name: "i8tuy3894hg" },
+        OAuthState: undefined,
+      };
+    }
+
     const loggedIn = global.session.user !== undefined;
 
     return (
@@ -79,7 +86,6 @@ class Header extends Component {
             </div>
           ) : (
             <GoblinIDLoginInvitation
-              showAvatar
               returnPath={this.props.location.pathname}
             />
           )}

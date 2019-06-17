@@ -10,6 +10,7 @@ import TagSelector from "./TagSelector";
 
 import uniqueId from "lodash/uniqueId";
 import Modal from "./Modal";
+import UserSearch from "./UserSearch";
 
 const EDIT_KEY = "edit";
 
@@ -204,6 +205,15 @@ class EditPublicationView extends Component {
       .collaborators()
       .post({ email: this.state.newCollaborator })
       .then();
+  };
+
+  handleAddCollaborator = user => {
+    console.log("Adding collaborator", user);
+    Api()
+      .publication(this.state.publication.id)
+      .collaborators()
+      .log()
+      .post({ userID: user.id });
   };
 
   handleSignoffSubmit = () => {
@@ -492,6 +502,7 @@ class EditPublicationView extends Component {
     return (
       <>
         <div className="ui form">
+          <UserSearch onSelect={this.handleAddCollaborator} />
           <div className="inline field">
             <label>Email Address</label>
             <input

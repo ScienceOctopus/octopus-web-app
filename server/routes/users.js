@@ -93,13 +93,54 @@ const removeUserNotification = async (req, res) => {
   res.sendStatus(numDeleted ? 204 : 404);
 };
 
+const removeNotificationsByUserAndPublication = async (req, res) => {
+  const user = getUserFromSession(req);
+
+  let numDeleted = await db.deleteUserNotificationByUserAndPublication(
+    user,
+    req.query.publication,
+  );
+
+  broadcast(`/users/${req.params.id}/notifications`);
+  res.sendStatus(numDeleted ? 204 : 404);
+};
+
+const removeUserNotifications = async (req, res) => {
+  if (req.query && req.query.publication) {
+    await removeNotificationsByUserAndPublication(req, res);
+    return;
+  }
+};
+
+const getAllUsers = async (req, res) => {
+  if (req.query && req.query.q) {
+    const users = await db.selectUsersBySearchQuery(req.query.q);
+
+    if (users.length) {
+      res.status(200).json(users);
+    } else {
+      res.sendStatus(404);
+    }
+  }
+
+  res.sendStatus(403);
+};
+
 var router = express.Router();
+
+router.get("/", catchAsyncErrors(getAllUsers));
 
 router.get("/:id(\\d+)", catchAsyncErrors(getUserByID));
 router.get(
   "/:id(\\d+)/notifications",
   catchAsyncErrors(getNotificationsForUser),
 );
+
+router.delete(
+  "/:id(\\d+)/notifications",
+  catchAsyncErrors(removeUserNotifications),
+);
+
 router.delete(
   "/:id(\\d+)/notifications/:notif(\\d+)",
   catchAsyncErrors(removeUserNotification),

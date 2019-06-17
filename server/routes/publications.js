@@ -96,7 +96,7 @@ const getPublicationByID = async (req, res) => {
 
 const notifyLinkedUsers = async publication => {
   let basedOn = await db
-    .selectPublicationsByLinksAfterPublication(publication)
+    .selectCompletedPublicationsByLinksAfterPublication(publication)
     .map(x => x.id);
 
   let usersToNotify = await db
@@ -113,6 +113,10 @@ const postPublicationToID = async (req, res) => {
   const publication = await getAndValidatePublication(req.params.id, req);
   if (!publication) {
     return res.sendStatus(404);
+  }
+
+  if (!publication.draft) {
+    return res.status(400);
   }
 
   const stages = await db.selectStagesByID(publication.stage);
@@ -220,6 +224,16 @@ const postPublicationToID = async (req, res) => {
 
   await notifyLinkedUsers(req.params.id);
 
+  if (publication.review) {
+    let reviewedPublications = await db.selectReviewedPublicationsByReviewPublication(
+      publication.id,
+    );
+
+    reviewedPublications.map(reviewedPublication =>
+      broadcast(`/publications/${reviewedPublication.id}/reviews`),
+    );
+  }
+
   broadcast(`/publications/${req.params.id}`);
   broadcast(`/problems/${publication.problem}/publications`);
   broadcast(
@@ -239,7 +253,7 @@ const getLinksBeforeByPublication = async (req, res) => {
     return res.sendStatus(404);
   }
 
-  const publications = await db.selectPublicationsByLinksAfterPublication(
+  const publications = await db.selectCompletedPublicationsByLinksAfterPublication(
     req.params.id,
   );
   res.status(200).json(publications);
@@ -251,9 +265,10 @@ const getAllLinksBeforeByPublication = async (req, res) => {
     return res.sendStatus(404);
   }
 
-  const resources = await db.selectPublicationsByAllLinksBeforePublication(
+  const resources = await db.selectCompletedPublicationsByAllLinksBeforePublication(
     req.params.id,
   );
+
   res.status(200).json(resources);
 };
 
@@ -263,7 +278,7 @@ const getLinksAfterByPublication = async (req, res) => {
     return res.sendStatus(404);
   }
 
-  const publications = await db.selectPublicationsByLinksBeforePublication(
+  const publications = await db.selectCompletedPublicationsByLinksBeforePublication(
     req.params.id,
   );
   res.status(200).json(publications);
@@ -285,9 +300,21 @@ const getReviewsByPublication = async (req, res) => {
     return res.sendStatus(404);
   }
 
-  const publications = await db.selectReviewPublicationsByPublication(
+  let publications = await db.selectCompletedReviewPublicationsByPublication(
     req.params.id,
   );
+
+  // TODO: refactor session cookie name into environmental waste
+  const sessionUser = getUserFromSession(req);
+  if (sessionUser) {
+    const additionalPublications = await db.selectDraftReviewPublicationsByPublicationAndUser(
+      req.params.id,
+      sessionUser,
+    );
+
+    publications = publications.concat(additionalPublications);
+  }
+
   res.status(200).json(publications);
 };
 
@@ -329,7 +356,7 @@ const postCollaboratorToPublication = async (req, res) => {
     return res.sendStatus(404);
   }
 
-  users = await db.selectUsersByEmail(req.body.email);
+  users = await db.selectUsers(req.body.userID);
   if (!users.length) {
     return res.sendStatus(410);
   }
@@ -395,6 +422,16 @@ const postSignoffToPublication = async (req, res) => {
 
   if (collaborators.length === 0) {
     await db.finalisePublication(publication.id, publication.revision);
+
+    if (publication.review) {
+      let reviewedPublications = await db.selectReviewedPublicationsByReviewPublication(
+        publication.id,
+      );
+
+      reviewedPublications.map(reviewedPublication =>
+        broadcast(`/publications/${reviewedPublication.id}/reviews`),
+      );
+    }
 
     await notifyLinkedUsers(req.params.id);
 
@@ -483,11 +520,11 @@ const declineAuthorship = async (req, res) => {
   if (!publication) {
     return res.sendStatus(404);
   }
-  
+
   const tag = await db.insertOrSelectTag(req.body.tag);
-  
+
   await db.insertTagToPublication(req.params.id, tag);
-  
+
   res.sendStatus(204);
 };
 
@@ -496,11 +533,11 @@ const deleteTagFromPublication = async (req, res) => {
   if (!publication) {
     return res.sendStatus(404);
   }
-    
+
   const tag = await db.insertOrSelectTag(req.body.tag);
-  
+
   await db.deleteTagFromPublication(req.params.id, tag);
-    
+
   res.sendStatus(204);
 }*/
 

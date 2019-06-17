@@ -17,7 +17,10 @@ class App extends Component {
     super();
 
     // Initialise global login state
-    global.session = { user: undefined, OAuthState: undefined };
+    global.session = {
+      user: undefined,
+      OAuthState: undefined,
+    };
 
     Api()
       .authentication()

@@ -592,6 +592,11 @@ class UserBuilder extends LinkBuilder {
     this.path += `/notifications/${id}`;
     return this;
   };
+
+  notificationForPublication = publicationID => {
+    this.path += `/notifications?publication=${publicationID}`;
+    return this;
+  };
 }
 
 class AuthenticationBuilder extends LinkBuilder {
@@ -662,6 +667,11 @@ class ApiBuilder extends LinkBuilder {
     this._checkNotFinal();
 
     return new UserBuilder(this.key, userId);
+  };
+
+  users = () => {
+    this.path += "/users";
+    return this;
   };
 
   feedback = () => {
