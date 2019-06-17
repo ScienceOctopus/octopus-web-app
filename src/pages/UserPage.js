@@ -92,15 +92,16 @@ class UserPage extends Component {
     return null;
   }
 
-  renderPublications(publications, name) {
+  renderPublications(publications, name, title, zeroLengthRender) {
     if (!publications) return this.renderLoading();
-    if (!publications.length) return `You have no ${name} publications yet`;
+    if (!publications.length) return zeroLengthRender;
     return (
       <>
-        {name && <h2>{`${capitalizeFirst(name)} publications`}</h2>}
+        {<h2>{title}</h2>}
         <PublicationSelector
           publications={publications}
           selectionEnabled={false}
+          reviewDisplay
         />
       </>
     );
@@ -120,16 +121,16 @@ class UserPage extends Component {
   }
 
   renderUnseen() {
-    return this.renderPublications(
+    return this.renderWarningPublications(
       this.state.unseenPublications,
       "unseen linked",
     );
   }
 
-  renderAwaitingSignoff() {
-    let arr = Array(20).fill(this.state.draftPublications[0]);
-
-    if (!this.state.draftPublications[0]) return null;
+  renderWarningPublications() {
+    // let arr = Array(20).fill(this.state.draftPublications[0]);
+    // console.log(params);
+    if (!arguments[0].length) return null;
 
     return (
       <div className="ui segment icon warning message">
@@ -141,34 +142,65 @@ class UserPage extends Component {
             </div>
           </div>
 
-          {this.renderPublications(arr)}
+          {this.renderPublications(...arguments)}
         </div>
       </div>
+    );
+  }
+
+  shouldRenderInfo() {
+    return !(
+      this.state.finalizedPublications.length ||
+      this.state.finalizedReviews.length ||
+      this.state.draftReviews.length ||
+      this.state.draftPublications.length
+    );
+  }
+
+  renderInfo() {
+    return (
+      <div className="ui segment">
+        <h1>Your publications will appear here</h1>
+      </div>
+    );
+  }
+
+  renderPublishedContent() {
+    return (
+      <>
+        <div className="ui segment">
+          {this.renderPublications(
+            [
+              ...this.state.finalizedPublications,
+              ...this.state.finalizedReviews,
+            ],
+            "finalized",
+            "Your finalized publications",
+          )}
+        </div>
+
+        <div className="ui segment">
+          {this.renderPublications(
+            [...this.state.draftPublications, ...this.state.draftReviews],
+            "draft",
+            "Your draft publications",
+          )}
+        </div>
+      </>
     );
   }
 
   render() {
     return (
       <div className="ui container main">
-        <div
-          onClick={this.markAllNotificationsAsSeen}
-          style={{ height: 100, backgroundColor: "red" }}
-        />
         {this.renderTitle()}
 
         {this.renderUnseen()}
-        {this.renderAwaitingSignoff()}
+        {this.renderWarningPublications([], "unseen linked")}
 
-        <div className="ui segment">
-          {this.renderPublications(
-            this.state.finalizedPublications,
-            "finalized",
-          )}
-        </div>
-
-        <div className="ui segment">
-          {this.renderPublications(this.state.draftPublications, "draft")}
-        </div>
+        {this.shouldRenderInfo()
+          ? this.renderInfo()
+          : this.renderPublishedContent()}
       </div>
     );
   }

@@ -48,7 +48,11 @@ class PublicationSelector extends Component {
           <div className="ui stackable grid">
             {this.props.publications.map((publication, i) => (
               <div className="four wide column" key={i}>
-                <Publication publication={publication} {...selectionProps(i)} />
+                <Publication
+                  publication={publication}
+                  reviewDisplay={this.props.reviewDisplay}
+                  {...selectionProps(i)}
+                />
               </div>
             ))}
           </div>
