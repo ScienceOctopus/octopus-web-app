@@ -133,7 +133,12 @@ class UserPage extends Component {
         <div className="content" style={styles.signoffContent}>
           <div style={styles.signoffHeaderContainer}>
             <div className="header">{"You have new linked publications"}</div>
-            <button className="ui button">{"Mark all as seen"}</button>
+            <button
+              className="ui button"
+              onClick={this.markAllNotificationsAsSeen}
+            >
+              {"Mark all as seen"}
+            </button>
           </div>
 
           {this.renderPublicationList(this.state.unseenPublications)}
@@ -267,6 +272,8 @@ const styles = {
     lineHeight: "1.5em",
     marginBottom: 15,
     display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
 };
 

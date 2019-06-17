@@ -84,7 +84,6 @@ const removeUserNotification = async (req, res) => {
   if (user.toString() !== req.params.id.toString()) {
     return res.sendStatus(403);
   }
-
   let numDeleted = await db.deleteUserNotificationByUserAndID(
     req.params.id,
     req.params.notif,
