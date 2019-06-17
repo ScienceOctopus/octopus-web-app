@@ -20,7 +20,7 @@ import withState from "../withState";
 import TitledTagSelector from "../components/TitledTagSelector";
 
 const UPLOAD_KEY = "upload";
-
+const SUPPORTED_EXTENSIONS = ["pdf"];
 class UploadPage extends Component {
   constructor(props) {
     super(props);
@@ -37,6 +37,7 @@ class UploadPage extends Component {
       conflict: "",
       data: undefined,
       selectedFile: undefined,
+      badFileSelected: false,
 
       linkedProblemsSelected: false,
       tagsIndex: 1,
@@ -215,7 +216,18 @@ class UploadPage extends Component {
 
   handleFileSelect = event => {
     const file = event.target.files[0];
-    if (!this.checkCorrectFile(file)) return;
+    if (!this.checkCorrectFile(file)) {
+      console.log("ujknlj");
+      this.setState({ badFileSelected: true }, () => {
+        console.log(this.state.badFileSelected);
+      });
+      //   event.preventDefault();
+      return;
+    }
+
+    this.setState({
+      badFileSelected: false,
+    });
 
     this.preprocessFile(file);
 
@@ -423,7 +435,12 @@ class UploadPage extends Component {
   };
 
   checkCorrectFile(file) {
-    //TODO check file format
+    const extension = file.name
+      .split(".")
+      .pop()
+      .toLowerCase();
+
+    if (!SUPPORTED_EXTENSIONS.includes(extension)) return false;
     return true;
   }
 
@@ -740,6 +757,18 @@ class UploadPage extends Component {
                 disabled={!problemAcceptsPublications}
                 onSelect={this.handleFileSelect}
               />
+              {this.state.badFileSelected && (
+                <div
+                  className="ui icon warning message"
+                  style={{ display: "flex" }}
+                >
+                  <i className="info icon" />
+                  <div className="content">
+                    <div className="header">Bad publication format</div>
+                    <p>{"Currently, only PDF format is supported"}</p>
+                  </div>
+                </div>
+              )}
               <div className="ui divider" />
               {metaData}
               <p>Note: Fields marked with a red asterisk are required.</p>
