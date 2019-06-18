@@ -302,6 +302,11 @@ const queries = {
       .andWhere("user", user)
       .del(),
 
+  deletePublication: publication =>
+    knex("publications")
+      .where({ id: publication })
+      .del(),
+
   selectOriginalPublicationsByLinksAfterPublication: publication =>
     queries
       .selectCompletedPublicationsByLinksAfterPublication(publication)
