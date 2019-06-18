@@ -122,7 +122,9 @@ const queries = {
       ),
 
   selectPublicationsAwaitingSignoffForUser: async user => {
-    let pubs = await queries.selectPublicationsByUserId(user);
+    let pubs = await queries
+      .selectPublicationsByUserId(user)
+      .where({ draft: true });
     let ret = [];
     for (let i = 0; i < pubs.length; i++) {
       const pub = pubs[i];
