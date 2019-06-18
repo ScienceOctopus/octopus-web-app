@@ -53,6 +53,11 @@ class UserSearch extends Component {
     this.setState({
       users: users
         .filter(x => x.id !== global.session.user.id)
+        .filter(
+          x =>
+            !this.props.excluded ||
+            !this.props.excluded.find(y => y.id === x.id),
+        )
         .slice(0, MAX_USERS_DISPLAY),
     });
   };

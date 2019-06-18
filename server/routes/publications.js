@@ -125,9 +125,8 @@ const postPublicationToID = async (req, res) => {
     return res.sendStatus(400);
   }
 
-  let data;
   const schema = JSON.parse(stages[0].schema);
-  data = JSON.parse(req.body.data);
+  let data = JSON.parse(req.body.data);
 
   if (schema.length !== data.length) {
     return res.sendStatus(400);
@@ -161,7 +160,8 @@ const postPublicationToID = async (req, res) => {
       return res.sendStatus(400);
     }
 
-    switch (schema[i][1]) {
+    // TODO
+    /*switch (schema[i][1]) {
       case "file":
         content = (await db.insertResource(
           "azureBlob",
@@ -177,7 +177,7 @@ const postPublicationToID = async (req, res) => {
         break;
       case "bool":
         break;
-    }
+    }*/
 
     data[i] = content;
   }
@@ -368,6 +368,8 @@ const postCollaboratorToPublication = async (req, res) => {
   if (!users.length) {
     return res.sendStatus(410);
   }
+
+  // TODO: Check that not already a collaborator
 
   const id = await db.insertPublicationCollaborator(
     req.params.id,

@@ -12,6 +12,9 @@ import uniqueId from "lodash/uniqueId";
 import Modal from "./Modal";
 import UserSearch from "./UserSearch";
 
+import { withRouter } from "react-router-dom";
+import { RouterURI, generateLocalizedPath } from "../urls/WebsiteURIs";
+
 const EDIT_KEY = "edit";
 
 class EditPublicationView extends Component {
@@ -273,7 +276,7 @@ class EditPublicationView extends Component {
 
     switch (field[1]) {
       case "file":
-        content = content.files[0];
+        //content = content.files[0];
         break;
       case "uri":
         content = content.value;
@@ -302,10 +305,11 @@ class EditPublicationView extends Component {
     schema.forEach(([key, type, title, description], i) => {
       let content = this.state.publication.data[i];
 
-      switch (type) {
+      // TODO
+      /*switch (type) {
         case "file":
-          //data.append("file", content);
-          //content = fileIdx++;
+          data.append("file", content);
+          content = fileIdx++;
           break;
         case "uri":
           break;
@@ -315,7 +319,7 @@ class EditPublicationView extends Component {
           break;
         default:
           return;
-      }
+      }*/
 
       ddata.push(content);
     });
@@ -404,7 +408,14 @@ class EditPublicationView extends Component {
   declineAuthorship = () => {
     Api()
       .publication(this.state.publication.id)
-      .declineAuthorship();
+      .declineAuthorship()
+      .finally(() =>
+        this.props.history.replace(
+          generateLocalizedPath(RouterURI.Problem, {
+            id: this.props.problem.id,
+          }),
+        ),
+      );
   };
 
   handleDecline = () => {
@@ -413,11 +424,11 @@ class EditPublicationView extends Component {
       .collaborators()
       .count()
       .then(currentCollaboratorsCount => {
-        if (currentCollaboratorsCount <= 1) {
+        /*if (currentCollaboratorsCount <= 1) {
           this.presentDeleteWarning();
-        } else {
-          this.declineAuthorship();
-        }
+        } else {*/
+        this.declineAuthorship();
+        //}
       });
   };
 
@@ -484,10 +495,6 @@ class EditPublicationView extends Component {
           >
             Finalise Publication And Request Signoffs
           </button>
-
-          <button className="ui red button" onClick={this.handleDecline}>
-            {"Decline Authorship"}
-          </button>
         </>
       );
     }
@@ -497,7 +504,10 @@ class EditPublicationView extends Component {
     return (
       <>
         <div className="ui form">
-          <UserSearch onSelect={this.handleAddCollaborator} />
+          <UserSearch
+            onSelect={this.handleAddCollaborator}
+            excluded={this.collaborators}
+          />
         </div>
       </>
     );
@@ -505,7 +515,7 @@ class EditPublicationView extends Component {
 
   renderEditForm = () => {
     let metadata =
-      this.state.publication !== {} &&
+      this.state.publication !== undefined &&
       this.state.stage !== undefined &&
       this.state.resources !== undefined
         ? this.renderMetadata()
@@ -634,6 +644,10 @@ class EditPublicationView extends Component {
             <div className="ui divider" />
 
             {signoffInvitation}
+
+            <button className="ui red button" onClick={this.handleDecline}>
+              {"Decline Authorship"}
+            </button>
           </article>
         </main>
       </div>
@@ -653,4 +667,4 @@ const DraftTitle = styled.span`
   color: var(--octopus-theme-draft);
 `;
 
-export default withState(EditPublicationView);
+export default withRouter(withState(EditPublicationView));
