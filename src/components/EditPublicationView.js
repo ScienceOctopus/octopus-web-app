@@ -416,7 +416,7 @@ class EditPublicationView extends Component {
       .finally(() =>
         this.props.history.replace(
           generateLocalizedPath(RouterURI.Problem, {
-            id: this.props.problem.id,
+            id: this.props.problemId,
           }),
         ),
       );

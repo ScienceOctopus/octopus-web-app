@@ -615,7 +615,12 @@ class ProblemPage extends React.Component {
 
       if (pub) {
         if (pub.draft) {
-          publication = <EditPublicationView publicationId={pub.id} />;
+          publication = (
+            <EditPublicationView
+              publicationId={pub.id}
+              problemId={this.state.problem}
+            />
+          );
         } else {
           publication = (
             <SummaryView
