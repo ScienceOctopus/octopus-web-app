@@ -526,6 +526,26 @@ const declineAuthorship = async (req, res) => {
     getUserFromSession(req),
   );
 
+  let allCollaborators = await db.selectCollaboratorsByPublication(
+    req.params.id,
+  );
+  if (allCollaborators.length === 0) {
+    await db.deletePublication(req.params.id);
+  }
+
+  broadcast(`/publications/${publication.id}`);
+  broadcast(`/problems/${publication.problem}/publications`);
+  broadcast(
+    `/problems/${publication.problem}/stages/${publication.stage}/publications`,
+  );
+  broadcast(`/publications/${req.params.id}/signoffs_remaining`);
+  broadcast(`/publications/${req.params.id}/signoffs`);
+  broadcast(`/publications/${req.params.id}/collaborators`);
+
+  for (let i = 0; i < allCollaborators.length; i++) {
+    broadcast(`/users/${allCollaborators[i]}/signoffs`);
+  }
+
   res.sendStatus(removedNum ? 204 : 404);
 };
 
