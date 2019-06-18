@@ -9,7 +9,7 @@ import LinkOnlyIfAcquiredState from "../components/LinkOnlyIfAcquiredState";
 class IndexPage extends Component {
   render() {
     return (
-      <div>
+      <div style={{ marginBottom: "-1rem" }}>
         <main
           className="ui middle aligned two column centered stackable inverted octopus-theme background grid"
           style={styles.main}

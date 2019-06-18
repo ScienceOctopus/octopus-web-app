@@ -453,7 +453,6 @@ class SummaryView extends Component {
               {stagedPublications}
             </section>
           </article>
-          <br />
         </main>
       </div>
     );

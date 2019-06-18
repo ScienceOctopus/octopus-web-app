@@ -103,8 +103,6 @@ class MorePage extends Component {
           Publishing quickly and well, and good collaborative reviewing is
           therefore rewarded.
         </p>
-
-        <br />
       </main>
     );
   }

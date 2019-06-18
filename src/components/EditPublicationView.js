@@ -497,7 +497,9 @@ class EditPublicationView extends Component {
             className="ui green button"
             onClick={this.handleFinaliseSubmit}
           >
-            Finalise Publication And Request Signoffs
+            {this.state.collaborators.length > 1
+              ? "Finalise Draft And Request Signoffs"
+              : "Finalise And Publish Draft"}
           </button>
         </>
       );
@@ -650,7 +652,9 @@ class EditPublicationView extends Component {
             {signoffInvitation}
 
             <button className="ui red button" onClick={this.handleDecline}>
-              {"Decline Authorship"}
+              {this.state.collaborators.length > 1
+                ? "Decline Authorship"
+                : "Delete Draft"}
             </button>
           </article>
         </main>

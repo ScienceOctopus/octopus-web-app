@@ -774,17 +774,8 @@ class UploadPage extends Component {
                 onClick={this.handleSubmit}
                 disabled={!this.submitEnabled()}
               >
-                Submit
-              </button>{" "}
-              as publication author{" "}
-              <strong>{global.session.user.display_name}</strong>
-              {" ("}
-              {
-                <a href={`https://orcid.org/${global.session.user.orcid}`}>
-                  {global.session.user.orcid}
-                </a>
-              }
-              {")"}.
+                Submit as draft
+              </button>
               {this.state.uploadSuccessful && (
                 <LocalizedRedirect
                   to={generatePath(RouterURI.Publication, {

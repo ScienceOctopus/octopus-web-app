@@ -159,8 +159,6 @@ class FAQPage extends Component {
           the issue will be escalated to the corresponding author’s
           institutional Research Integrity Office, or their national office.
         </p>
-
-        <br />
       </main>
     );
   }

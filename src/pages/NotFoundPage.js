@@ -12,8 +12,6 @@ class NotFoundPage extends Component {
           as a bug using the feedback form (present at the bottom-right of your
           screen).
         </p>
-
-        <br />
       </main>
     );
   }
