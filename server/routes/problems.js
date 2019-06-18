@@ -24,7 +24,7 @@ const getProblemsByQuery = async (req, res) => {
 
 const getProblems = async (req, res) => {
   if (req.query && req.query.q) {
-    getProblemsByQuery(req, res);
+    await getProblemsByQuery(req, res);
     return;
   }
 
