@@ -320,7 +320,7 @@ class UploadPage extends Component {
           );
 
           if (nextStage !== -1 && nextStage + 1 < this.state.stages.length) {
-            redirect = { stage: nextStage + 1 };
+            redirect = { stage: this.state.stages[nextStage + 1].id };
           }
         }
 
