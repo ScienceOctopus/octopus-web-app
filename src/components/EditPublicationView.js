@@ -96,20 +96,22 @@ class EditPublicationView extends Component {
           .collaborators()
           .get()
           .then(collaborators => {
-            collaborators.forEach(collaborator => {
-              Api()
-                .user(collaborator.user)
-                .get()
-                .then(user => {
-                  this.setState(state => {
-                    var augmented = state;
-                    augmented.collaborators = augmented.collaborators.filter(
-                      collaborator => collaborator.id !== user.id,
-                    );
-                    augmented.collaborators.push(user);
-                    return augmented;
+            this.setState({ collaborators: [] }, () => {
+              collaborators.forEach(collaborator => {
+                Api()
+                  .user(collaborator.user)
+                  .get()
+                  .then(user => {
+                    this.setState(state => {
+                      var augmented = state;
+                      augmented.collaborators = augmented.collaborators.filter(
+                        collaborator => collaborator.id !== user.id,
+                      );
+                      augmented.collaborators.push(user);
+                      return augmented;
+                    });
                   });
-                });
+              });
             });
           });
 
@@ -119,20 +121,22 @@ class EditPublicationView extends Component {
           .signoffs()
           .get()
           .then(signoffs => {
-            signoffs.forEach(signoff => {
-              Api()
-                .user(signoff.user)
-                .get()
-                .then(user => {
-                  this.setState(state => {
-                    var augmented = state;
-                    augmented.signoffs = augmented.signoffs.filter(
-                      signoff => signoff.id !== user.id,
-                    );
-                    augmented.signoffs.push(user);
-                    return augmented;
+            this.setState({ signoffs: [] }, () => {
+              signoffs.forEach(signoff => {
+                Api()
+                  .user(signoff.user)
+                  .get()
+                  .then(user => {
+                    this.setState(state => {
+                      var augmented = state;
+                      augmented.signoffs = augmented.signoffs.filter(
+                        signoff => signoff.id !== user.id,
+                      );
+                      augmented.signoffs.push(user);
+                      return augmented;
+                    });
                   });
-                });
+              });
             });
           });
 
