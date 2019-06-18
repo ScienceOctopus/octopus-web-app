@@ -45,6 +45,9 @@ class UploadPage extends Component {
       problems: [],
       stages: [],
       publications: undefined,
+
+      uploadSuccessful: false,
+      redirect: undefined,
     };
 
     // Always start a new cache when the upload page is loaded
@@ -88,6 +91,8 @@ class UploadPage extends Component {
           publicationsToLink: [],
           linkedProblemsSelected: false,
           data: undefined,
+          redirect: undefined,
+          uploadSuccessful: false,
         },
         callback,
       );
@@ -106,6 +111,8 @@ class UploadPage extends Component {
           publicationsToLink: [],
           linkedProblemsSelected: false,
           data: undefined,
+          redirect: undefined,
+          uploadSuccessful: false,
         },
         callback,
       );
@@ -116,6 +123,8 @@ class UploadPage extends Component {
           publications: undefined,
           publicationsToLink: [],
           linkedProblemsSelected: false,
+          redirect: undefined,
+          uploadSuccessful: false,
         },
         () => this.fetchPublications(review),
       );
@@ -130,6 +139,8 @@ class UploadPage extends Component {
           this.state.publications.find(
             publication => publication.id === review,
           ) !== undefined,
+        redirect: undefined,
+        uploadSuccessful: false,
       });
     }
   }
@@ -233,7 +244,7 @@ class UploadPage extends Component {
     });
   };
 
-  handleSubmit = async () => {
+  handleSubmit = async cont => {
     if (this.state.selectedFile === undefined) return;
 
     let linkedPublications = undefined;
@@ -301,10 +312,26 @@ class UploadPage extends Component {
       .publications()
       .post(data)
       .then(response => {
-        this.setState({ insertedId: response.data, uploadSuccessful: true });
+        let redirect = { publication: response.data };
+
+        if (cont === true && !this.state.isReview) {
+          let nextStage = this.state.stages.findIndex(
+            stage => stage.id === this.state.selectedStageId,
+          );
+
+          if (nextStage !== -1 && nextStage + 1 < this.state.stages.length) {
+            redirect = { stage: nextStage + 1 };
+          }
+        }
+
+        this.setState({ redirect: redirect, uploadSuccessful: true });
       })
       .catch(err => console.error(err.response))
       .finally(() => this.setState({ uploading: false }));
+  };
+
+  handleSubmitAndContinue = async () => {
+    return await this.handleSubmit(true);
   };
 
   static uploadURLBuilder(problem, stage, review) {
@@ -616,6 +643,16 @@ class UploadPage extends Component {
       }
     }
 
+    let nextStage = this.state.stages.findIndex(
+      stage => stage.id === Number(this.state.selectedStageId),
+    );
+
+    if (nextStage !== -1) {
+      nextStage += 1;
+    } else {
+      nextStage = this.state.stages.length;
+    }
+    console.log(nextStage, this.selectedStageId, this.state.stages);
     return (
       <>
         <div className="ui text container">
@@ -769,18 +806,39 @@ class UploadPage extends Component {
               <div className="ui divider" />
               {metaData}
               <p>Note: Fields marked with a red asterisk are required.</p>
-              <button
-                className="ui submit button"
+              <div
+                className={
+                  "ui submit button" +
+                  (!this.submitEnabled() ? " disabled" : "")
+                }
                 onClick={this.handleSubmit}
-                disabled={!this.submitEnabled()}
               >
                 Submit as draft
-              </button>
-              {this.state.uploadSuccessful && (
+              </div>
+              {nextStage < this.state.stages.length && !this.state.isReview && (
+                <div
+                  className={
+                    "ui submit button" +
+                    (!this.submitEnabled() ? " disabled" : "")
+                  }
+                  onClick={this.handleSubmitAndContinue}
+                >
+                  Submit as draft And Continue with{" "}
+                  {this.state.stages[nextStage].singular}
+                </div>
+              )}
+              {this.state.uploadSuccessful && this.state.redirect && (
                 <LocalizedRedirect
-                  to={generatePath(RouterURI.Publication, {
-                    id: this.state.insertedId,
-                  })}
+                  to={
+                    this.state.redirect.stage !== undefined
+                      ? generateLocalizedPath(RouterURI.UploadToProblemStage, {
+                          id: this.state.selectedProblemId,
+                          stage: this.state.redirect.stage,
+                        })
+                      : generateLocalizedPath(RouterURI.Publication, {
+                          id: this.state.redirect.publication,
+                        })
+                  }
                 />
               )}
             </div>

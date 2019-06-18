@@ -47,10 +47,10 @@ class ProblemSelector extends Component {
   };
 
   renderProblem() {
-    const title = this.props.problems.find(
+    const problem = this.props.problems.find(
       x => x.id === Number(this.props.selectedProblem),
-    ).title;
-    return <h1>{title}</h1>;
+    );
+    return problem && <h1>{problem.title}</h1>;
   }
 
   handleProblemsLoaded = () => {

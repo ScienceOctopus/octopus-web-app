@@ -457,15 +457,18 @@ class EditPublicationView extends Component {
                   global.session &&
                   global.session.user &&
                   signoff.id === global.session.user.id ? (
-                    <button
-                      className={
-                        "ui green button" +
-                        (this.state.changed ? " disabled" : "")
-                      }
-                      onClick={this.handleSignoffSubmit}
-                    >
-                      Sign Off
-                    </button>
+                    <>
+                      {" "}
+                      <button
+                        className={
+                          "ui green button" +
+                          (this.state.changed ? " disabled" : "")
+                        }
+                        onClick={this.handleSignoffSubmit}
+                      >
+                        Sign Off
+                      </button>
+                    </>
                   ) : (
                     <></>
                   );
