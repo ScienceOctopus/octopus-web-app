@@ -114,7 +114,6 @@ const postPublicationToID = async (req, res) => {
   if (!publication) {
     return res.sendStatus(404);
   }
-
   if (!publication.draft) {
     return res.status(400);
   }
@@ -532,8 +531,8 @@ const declineAuthorship = async (req, res) => {
   if (allCollaborators.length === 0) {
     await db.deletePublication(req.params.id);
   }
-
-  broadcast(`/publications/${publication.id}`);
+  const publication = await db.selectPublicationsByID(req.params.id);
+  broadcast(`/publications/${req.params.id}`);
   broadcast(`/problems/${publication.problem}/publications`);
   broadcast(
     `/problems/${publication.problem}/stages/${publication.stage}/publications`,
