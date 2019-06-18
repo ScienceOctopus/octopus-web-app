@@ -146,53 +146,87 @@ class Store {
     }
 
     if (cache.subscribed === Store.SUBSCRIBED_HEADERS) {
-      Axios.head(root + path).then(result => {
-        let cache = this.store.get(path);
+      Axios.head(root + path)
+        .then(result => {
+          let cache = this.store.get(path);
 
-        if (cache === undefined) {
-          return;
-        }
+          if (cache === undefined) {
+            return;
+          }
 
-        cache.headers = Store._clone(result.headers);
+          cache.headers = Store._clone(result.headers);
 
-        cache.callbacks.forEach(
-          ([callback, subscribed], primary, callbacks) => {
-            if (subscribed === Store.SUBSCRIBED_HEADERS) {
-              callback.resolve(Store._clone(cache.headers));
-            }
-          },
-        );
-      });
+          cache.callbacks.forEach(
+            ([callback, subscribed], primary, callbacks) => {
+              if (subscribed === Store.SUBSCRIBED_HEADERS) {
+                callback.resolve(Store._clone(cache.headers));
+              }
+            },
+          );
+        })
+        .catch(reason => {
+          let cache = this.store.get(path);
+
+          if (cache === undefined) {
+            return;
+          }
+
+          cache.callbacks.forEach(
+            ([callback, subscribed], primary, callbacks) => {
+              if (subscribed === Store.SUBSCRIBED_HEADERS) {
+                callback.reject(reason);
+              }
+            },
+          );
+        });
     } else if (cache.subscribed === Store.SUBSCRIBED_BOTH) {
-      Axios.get(root + path).then(result => {
-        let cache = this.store.get(path);
+      Axios.get(root + path)
+        .then(result => {
+          let cache = this.store.get(path);
 
-        if (cache === undefined) {
-          return;
-        }
+          if (cache === undefined) {
+            return;
+          }
 
-        cache.data = Store._clone(result.data);
+          cache.data = Store._clone(result.data);
 
-        if (
-          typeof result.data === "object" &&
-          result.data.length !== undefined &&
-          result.headers["x-total-count"] === undefined
-        ) {
-          result.headers["x-total-count"] = result.data.length;
-        }
+          if (
+            typeof result.data === "object" &&
+            result.data.length !== undefined &&
+            result.headers["x-total-count"] === undefined
+          ) {
+            result.headers["x-total-count"] = result.data.length;
+          }
 
-        cache.headers = Store._clone(result.headers);
+          cache.headers = Store._clone(result.headers);
 
-        cache.callbacks.forEach(
-          ([callback, subscribed], primary, callbacks) => {
-            if (subscribed === Store.SUBSCRIBED_HEADERS) {
-              callback.resolve(Store._clone(cache.headers));
-            } else if (subscribed === Store.SUBSCRIBED_DATA) {
-              callback.resolve(Store._clone(cache.data));
-            }
-          },
-        );
-      });
+          cache.callbacks.forEach(
+            ([callback, subscribed], primary, callbacks) => {
+              if (subscribed === Store.SUBSCRIBED_HEADERS) {
+                callback.resolve(Store._clone(cache.headers));
+              } else if (subscribed === Store.SUBSCRIBED_DATA) {
+                callback.resolve(Store._clone(cache.data));
+              }
+            },
+          );
+        })
+        .catch(reason => {
+          let cache = this.store.get(path);
+
+          if (cache === undefined) {
+            return;
+          }
+
+          cache.callbacks.forEach(
+            ([callback, subscribed], primary, callbacks) => {
+              if (subscribed === Store.SUBSCRIBED_HEADERS) {
+                callback.reject(reason);
+              } else if (subscribed === Store.SUBSCRIBED_DATA) {
+                callback.reject(reason);
+              }
+            },
+          );
+        });
     }
   };
 
@@ -311,9 +345,11 @@ class Store {
 
     if (primary === undefined) {
       if (cache.data === undefined) {
-        Axios.get(root + path).then(result => {
-          promise.resolve(Store._clone(result.data));
-        });
+        Axios.get(root + path)
+          .then(result => {
+            promise.resolve(Store._clone(result.data));
+          })
+          .catch(reason => promise.reject(reason));
       }
     } else if (
       (cache.subscribed & Store.SUBSCRIBED_DATA) ===
@@ -360,9 +396,11 @@ class Store {
 
     if (primary === undefined) {
       if (cache.headers === undefined) {
-        Axios.head(root + path).then(result => {
-          promise.resolve(Store._clone(result.headers));
-        });
+        Axios.head(root + path)
+          .then(result => {
+            promise.resolve(Store._clone(result.headers));
+          })
+          .catch(reason => promise.reject(reason));
       }
     } else if (
       (cache.subscribed & Store.SUBSCRIBED_HEADERS) ===
@@ -386,7 +424,7 @@ Store.SUBSCRIBED_HEADERS = 1;
 Store.SUBSCRIBED_DATA = 2;
 Store.SUBSCRIBED_BOTH = 3;
 
-Store.CALLBACK_DUMMY = { resolve: data => {} };
+Store.CALLBACK_DUMMY = { resolve: data => {}, reject: reason => {} };
 
 let store = (global.store = new Store());
 
