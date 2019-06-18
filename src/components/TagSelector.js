@@ -165,6 +165,12 @@ class TagSelector extends Component {
           flexWrap: "wrap",
         }}
       >
+        <span
+          style={{
+            height: "calc(0.85714286rem + 0.8 * 0.85714286rem)",
+            marginBottom: "0.5rem",
+          }}
+        />
         {this.props.tags.slice(0, this.props.index).map((tag, i) => (
           <div
             key={i}

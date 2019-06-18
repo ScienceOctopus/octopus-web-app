@@ -31,6 +31,7 @@ class EditPublicationView extends Component {
       signoffsRemaining: [],
       tags: undefined,
       tagsIndex: 0,
+      changed: false,
     };
 
     this.fetchPublicationData();
@@ -46,6 +47,7 @@ class EditPublicationView extends Component {
         publication: undefined,
         collaborators: [],
         tags: undefined,
+        changed: false,
       },
       () => {
         Api()
@@ -57,6 +59,7 @@ class EditPublicationView extends Component {
 
             this.setState(
               {
+                changed: false,
                 publication: publication,
               },
               () => {
@@ -237,7 +240,7 @@ class EditPublicationView extends Component {
     this.setState(state => {
       let publication = { ...state.publication };
       publication.title = val;
-      return { publication: publication };
+      return { publication: publication, changed: true };
     });
   };
 
@@ -246,12 +249,12 @@ class EditPublicationView extends Component {
     this.setState(state => {
       let publication = { ...state.publication };
       publication.summary = val;
-      return { publication: publication };
+      return { publication: publication, changed: true };
     });
   };
 
   handleTagsChange = (tags, index) => {
-    this.setState({ tags: tags, tagsIndex: index });
+    this.setState({ tags: tags, tagsIndex: index, changed: true });
   };
 
   handleFundingChange = e => {
@@ -259,7 +262,7 @@ class EditPublicationView extends Component {
     this.setState(state => {
       let publication = { ...state.publication };
       publication.funding = val;
-      return { publication: publication };
+      return { publication: publication, changed: true };
     });
   };
 
@@ -268,7 +271,7 @@ class EditPublicationView extends Component {
     this.setState(state => {
       let publication = { ...state.publication };
       publication.conflict = val;
-      return { publication: publication };
+      return { publication: publication, changed: true };
     });
   };
 
@@ -299,7 +302,7 @@ class EditPublicationView extends Component {
     this.setState(state => {
       let publication = { ...state.publication };
       publication.data = data;
-      return { publication: publication };
+      return { publication: publication, changed: true };
     });
   };
 
@@ -455,7 +458,10 @@ class EditPublicationView extends Component {
                   global.session.user &&
                   signoff.id === global.session.user.id ? (
                     <button
-                      className="ui green button"
+                      className={
+                        "ui green button" +
+                        (this.state.changed ? " disabled" : "")
+                      }
                       onClick={this.handleSignoffSubmit}
                     >
                       Sign Off
@@ -494,7 +500,9 @@ class EditPublicationView extends Component {
       return (
         <>
           <button
-            className="ui green button"
+            className={
+              "ui green button" + (this.state.changed ? " disabled" : "")
+            }
             onClick={this.handleFinaliseSubmit}
           >
             {this.state.collaborators.length > 1
@@ -512,7 +520,7 @@ class EditPublicationView extends Component {
         <div className="ui form">
           <UserSearch
             onSelect={this.handleAddCollaborator}
-            excluded={this.collaborators}
+            excluded={this.state.collaborators}
           />
         </div>
       </>
@@ -574,11 +582,13 @@ class EditPublicationView extends Component {
           />
           {metadata}
           <button
-            className="ui button"
+            className={
+              "ui button" + (!this.state.changed ? " disabled" : " green")
+            }
             type="submit"
             onClick={this.handleEditSubmit}
           >
-            Update Draft
+            Save Draft Changes
           </button>
         </div>
         <p>
@@ -646,6 +656,21 @@ class EditPublicationView extends Component {
             <div className="ui divider" />
 
             {editForm}
+
+            <div className="ui divider" />
+
+            {mainResourcePresent ? (
+              <section className="ui segment">
+                <PDFImagePreviewRenderer document={this.state.resources[0]} />
+              </section>
+            ) : (
+              <section className="ui placeholder segment">
+                <div className="ui icon header">
+                  <i className="pencil icon" />
+                  No resources were uploaded for this publication.
+                </div>
+              </section>
+            )}
 
             <div className="ui divider" />
 

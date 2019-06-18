@@ -555,12 +555,19 @@ class ProblemPage extends React.Component {
           );
         }
 
-        stage.links.forEach(link =>
-          links.push({
-            source: this.state.content.stages[i].publications[link[0]].id,
-            target: this.state.content.stages[i + 1].publications[link[1]].id,
-          }),
-        );
+        // Links cached but new publications still loading
+        if (
+          stage.links.length > 0 &&
+          !this.state.content.stages[i].loading &&
+          !this.state.content.stages[i + 1].loading
+        ) {
+          stage.links.forEach(link =>
+            links.push({
+              source: this.state.content.stages[i].publications[link[0]].id,
+              target: this.state.content.stages[i + 1].publications[link[1]].id,
+            }),
+          );
+        }
       });
 
       let newNodes = new Set(nodes.map(node => node.id));
