@@ -11,8 +11,8 @@ import WebURI, {
   RouterURI,
   localizeLink,
   LocalizedLink,
+  generateLocalizedPath,
 } from "../urls/WebsiteURIs";
-import { generatePath } from "react-router";
 import uniqueId from "lodash/uniqueId";
 import ProblemSelector from "../components/ProblemSelector";
 import { loginRequired } from "./LogInRequiredPage";
