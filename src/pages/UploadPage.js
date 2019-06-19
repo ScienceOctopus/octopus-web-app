@@ -11,8 +11,8 @@ import WebURI, {
   RouterURI,
   localizeLink,
   LocalizedLink,
-  generateLocalizedPath,
 } from "../urls/WebsiteURIs";
+import { generatePath } from "react-router";
 import uniqueId from "lodash/uniqueId";
 import ProblemSelector from "../components/ProblemSelector";
 import { loginRequired } from "./LogInRequiredPage";
@@ -29,6 +29,8 @@ class UploadPage extends Component {
       selectedProblemId: undefined,
       selectedStageId: undefined,
       isReview: false,
+      multiStageApplicable: false,
+      multiStagePublicationLink: undefined,
       publicationsToLink: [],
       title: "",
       summary: "",
@@ -45,9 +47,6 @@ class UploadPage extends Component {
       problems: [],
       stages: [],
       publications: undefined,
-
-      uploadSuccessful: false,
-      redirect: undefined,
     };
 
     // Always start a new cache when the upload page is loaded
@@ -91,8 +90,6 @@ class UploadPage extends Component {
           publicationsToLink: [],
           linkedProblemsSelected: false,
           data: undefined,
-          redirect: undefined,
-          uploadSuccessful: false,
         },
         callback,
       );
@@ -111,8 +108,6 @@ class UploadPage extends Component {
           publicationsToLink: [],
           linkedProblemsSelected: false,
           data: undefined,
-          redirect: undefined,
-          uploadSuccessful: false,
         },
         callback,
       );
@@ -123,8 +118,6 @@ class UploadPage extends Component {
           publications: undefined,
           publicationsToLink: [],
           linkedProblemsSelected: false,
-          redirect: undefined,
-          uploadSuccessful: false,
         },
         () => this.fetchPublications(review),
       );
@@ -139,8 +132,6 @@ class UploadPage extends Component {
           this.state.publications.find(
             publication => publication.id === review,
           ) !== undefined,
-        redirect: undefined,
-        uploadSuccessful: false,
       });
     }
   }
@@ -212,17 +203,32 @@ class UploadPage extends Component {
       .stage(stageToReview)
       .publications()
       .get()
-      .then(publications =>
+      .then(publications => {
+        let links = publications.map(publication => publication.id === review);
+
+        // Update linked publication for a multistage publication
+        if (this.state.multiStagePublicationLink !== undefined) {
+          // Replicate/duplicate the work of handleLinkedPublicationsChanged
+          links[
+            publications.findIndex(
+              publication =>
+                publication.id === this.state.multiStagePublicationLink,
+            )
+          ] = true;
+          this.setState({ linkedProblemsSelected: true }); // Problems == Publications? Variable misname?
+        } else {
+          this.setState({
+            linkedProblemsSelected:
+              publications.find(publication => publication.id === review) !==
+              undefined,
+          });
+        }
+
         this.setState({
           publications: publications,
-          publicationsToLink: publications.map(
-            publication => publication.id === review,
-          ),
-          linkedProblemsSelected:
-            publications.find(publication => publication.id === review) !==
-            undefined,
-        }),
-      );
+          publicationsToLink: links,
+        });
+      });
   }
 
   handleFileSelect = event => {
@@ -244,7 +250,7 @@ class UploadPage extends Component {
     });
   };
 
-  handleSubmit = async cont => {
+  handleSubmit = async () => {
     if (this.state.selectedFile === undefined) return;
 
     let linkedPublications = undefined;
@@ -312,26 +318,40 @@ class UploadPage extends Component {
       .publications()
       .post(data)
       .then(response => {
-        let redirect = { publication: response.data };
+        if (this.state.multiStageApplicable) {
+          const nextStageId = this.state.stages[
+            this.state.stages.findIndex(
+              stage => stage.id === Number(this.state.selectedStageId),
+            ) + 1
+          ].id;
 
-        if (cont === true && !this.state.isReview) {
-          let nextStage = this.state.stages.findIndex(
-            stage => stage.id === this.state.selectedStageId,
+          // The checkbox about multistage relevancy is not enabled for the last stage, so adding 1 *should* be okay...
+          // Also not enabled for reviews
+          this.props.history.replace(
+            UploadPage.uploadURLBuilder(
+              this.state.selectedProblemId,
+              nextStageId,
+              undefined,
+            ),
           );
 
-          if (nextStage !== -1 && nextStage + 1 < this.state.stages.length) {
-            redirect = { stage: this.state.stages[nextStage + 1].id };
-          }
+          // Partially replace state as if on next stage
+          // Notify the form that the user should be directed to the next stage, and not to the uploaded publication
+          this.setState({
+            multiStagePublicationLink: response.data,
+          });
+        } else {
+          // Notify form that user should be directed to the uploaded publication
+          this.setState({ multiStagePublicationLink: undefined });
         }
 
-        this.setState({ redirect: redirect, uploadSuccessful: true });
+        this.setState({ insertedId: response.data, uploadSuccessful: true });
       })
       .catch(err => console.error(err.response))
-      .finally(() => this.setState({ uploading: false }));
-  };
-
-  handleSubmitAndContinue = async () => {
-    return await this.handleSubmit(true);
+      .finally(() => {
+        // Reset state trackers to reset the form UI and ensure no multistage applicability by default
+        this.setState({ uploading: false, multiStageApplicable: false });
+      });
   };
 
   static uploadURLBuilder(problem, stage, review) {
@@ -374,6 +394,17 @@ class UploadPage extends Component {
         this.state.isReview || undefined,
       ),
     );
+
+    const lastStage = this.state.stages[this.state.stages.length - 1];
+
+    // Disable the "applies to multiple stages, move to next after submit" if already on the last stage
+    const atLastStage =
+      lastStage === undefined || Number(stageId) === lastStage.stage;
+
+    if (atLastStage) {
+      // Clear this if the user checked the box but then selected the last stage
+      this.setState({ multiStageApplicable: false });
+    }
   };
 
   handleTitleChange = e => {
@@ -520,6 +551,15 @@ class UploadPage extends Component {
     } else {
       this.setState({ isReview: isReview });
     }
+
+    if (isReview) {
+      // Clear this if the user checked the box but then selected the review box
+      this.setState({ multiStageApplicable: false });
+    }
+  };
+
+  handleMultiStageApplicableChange = e => {
+    this.setState({ multiStageApplicable: e.target.checked });
   };
 
   componentWillReceiveProps(nextProps) {
@@ -567,6 +607,13 @@ class UploadPage extends Component {
 
     // Whether any problem was selected, for fields not depending on stages
     const problemSelected = this.state.selectedProblemId;
+
+    const lastStage = this.state.stages[this.state.stages.length - 1];
+
+    // Disable the "applies to multiple stages, move to next after submit" if already on the last stage
+    const atLastStage =
+      lastStage === undefined ||
+      Number(this.state.selectedStageId) === lastStage.stage;
 
     if (
       this.state.isReview === false &&
@@ -643,16 +690,6 @@ class UploadPage extends Component {
       }
     }
 
-    let nextStage = this.state.stages.findIndex(
-      stage => stage.id === Number(this.state.selectedStageId),
-    );
-
-    if (nextStage !== -1) {
-      nextStage += 1;
-    } else {
-      nextStage = this.state.stages.length;
-    }
-    console.log(nextStage, this.selectedStageId, this.state.stages);
     return (
       <>
         <div className="ui text container">
@@ -807,40 +844,54 @@ class UploadPage extends Component {
               {metaData}
               <p>Note: Fields marked with a red asterisk are required.</p>
               <div
-                className={
-                  "ui submit button" +
-                  (!this.submitEnabled() ? " disabled" : "")
-                }
+                className={`inline ${
+                  !problemSelected || this.state.isReview || atLastStage
+                    ? "disabled"
+                    : ""
+                } field`}
+              >
+                <div className="ui checkbox">
+                  <input
+                    type="checkbox"
+                    checked={this.state.multiStageApplicable}
+                    onChange={this.handleMultiStageApplicableChange}
+                    id="multistage-applicable"
+                  />
+                  <label htmlFor="multistage-applicable">
+                    The publication applies to multiple stages, go to the next
+                    one after submission
+                  </label>
+                </div>
+              </div>
+              {this.state.uploadSuccessful &&
+                this.state.multiStagePublicationLink !== undefined && (
+                  <div className="ui message">
+                    <div className="header">
+                      Draft publication submitted, you are now on the next stage
+                    </div>
+                    <p>
+                      Since you indicated that this publication is applicable to
+                      multiple stages, the necessary details were pre-filled,
+                      including the link to your publication in the previous
+                      stage.
+                    </p>
+                  </div>
+                )}
+              <button
+                className="ui submit button"
                 onClick={this.handleSubmit}
+                disabled={!this.submitEnabled()}
               >
                 Submit as draft
-              </div>
-              {nextStage < this.state.stages.length && !this.state.isReview && (
-                <div
-                  className={
-                    "ui submit button" +
-                    (!this.submitEnabled() ? " disabled" : "")
-                  }
-                  onClick={this.handleSubmitAndContinue}
-                >
-                  Submit as draft And Continue with{" "}
-                  {this.state.stages[nextStage].singular}
-                </div>
-              )}
-              {this.state.uploadSuccessful && this.state.redirect && (
-                <LocalizedRedirect
-                  to={
-                    this.state.redirect.stage !== undefined
-                      ? generateLocalizedPath(RouterURI.UploadToProblemStage, {
-                          id: this.state.selectedProblemId,
-                          stage: this.state.redirect.stage,
-                        })
-                      : generateLocalizedPath(RouterURI.Publication, {
-                          id: this.state.redirect.publication,
-                        })
-                  }
-                />
-              )}
+              </button>
+              {this.state.uploadSuccessful &&
+                this.state.multiStagePublicationLink === undefined && (
+                  <LocalizedRedirect
+                    to={generatePath(RouterURI.Publication, {
+                      id: this.state.insertedId,
+                    })}
+                  />
+                )}
             </div>
           </div>
         </div>
