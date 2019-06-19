@@ -203,17 +203,32 @@ class UploadPage extends Component {
       .stage(stageToReview)
       .publications()
       .get()
-      .then(publications =>
+      .then(publications => {
+        let links = publications.map(publication => publication.id === review);
+
+        // Update linked publication for a multistage publication
+        if (this.state.multiStagePublicationLink !== undefined) {
+          // Replicate/duplicate the work of handleLinkedPublicationsChanged
+          links[
+            publications.findIndex(
+              publication =>
+                publication.id === this.state.multiStagePublicationLink,
+            )
+          ] = true;
+          this.setState({ linkedProblemsSelected: true }); // Problems == Publications? Variable misname?
+        } else {
+          this.setState({
+            linkedProblemsSelected:
+              publications.find(publication => publication.id === review) !==
+              undefined,
+          });
+        }
+
         this.setState({
           publications: publications,
-          publicationsToLink: publications.map(
-            publication => publication.id === review,
-          ),
-          linkedProblemsSelected:
-            publications.find(publication => publication.id === review) !==
-            undefined,
-        }),
-      );
+          publicationsToLink: links,
+        });
+      });
   }
 
   handleFileSelect = event => {
@@ -309,6 +324,7 @@ class UploadPage extends Component {
               stage => stage.id === Number(this.state.selectedStageId),
             ) + 1
           ].id;
+
           // The checkbox about multistage relevancy is not enabled for the last stage, so adding 1 *should* be okay...
           // Also not enabled for reviews
           this.props.history.replace(
@@ -322,7 +338,6 @@ class UploadPage extends Component {
           // Partially replace state as if on next stage
           // Notify the form that the user should be directed to the next stage, and not to the uploaded publication
           this.setState({
-            selectedStageId: nextStageId,
             multiStagePublicationLink: response.data,
           });
         } else {
@@ -379,6 +394,17 @@ class UploadPage extends Component {
         this.state.isReview || undefined,
       ),
     );
+
+    const lastStage = this.state.stages[this.state.stages.length - 1];
+
+    // Disable the "applies to multiple stages, move to next after submit" if already on the last stage
+    const atLastStage =
+      lastStage === undefined || Number(stageId) === lastStage.stage;
+
+    if (atLastStage) {
+      // Clear this if the user checked the box but then selected the last stage
+      this.setState({ multiStageApplicable: false });
+    }
   };
 
   handleTitleChange = e => {
@@ -525,6 +551,11 @@ class UploadPage extends Component {
     } else {
       this.setState({ isReview: isReview });
     }
+
+    if (isReview) {
+      // Clear this if the user checked the box but then selected the review box
+      this.setState({ multiStageApplicable: false });
+    }
   };
 
   handleMultiStageApplicableChange = e => {
@@ -574,21 +605,6 @@ class UploadPage extends Component {
         this.state.publications.length > 0) ||
       (selectedStage && selectedStage.order === 1 && !this.state.isReview);
 
-    // I'm sorry, this is all a mess, and probably the wrong place to put such code
-    if (
-      this.state.multiStagePublicationLink !== undefined &&
-      this.state.publications !== undefined
-    ) {
-      // Replicate/duplicate the work of handleLinkedPublicationsChanged
-      this.state.publicationsToLink[
-        this.state.publications.findIndex(
-          publication =>
-            publication.id === this.state.multiStagePublicationLink,
-        )
-      ] = true;
-      this.state.linkedProblemsSelected = true; // Problems == Publications?
-    }
-
     // Whether any problem was selected, for fields not depending on stages
     const problemSelected = this.state.selectedProblemId;
 
@@ -598,11 +614,6 @@ class UploadPage extends Component {
     const atLastStage =
       lastStage === undefined ||
       Number(this.state.selectedStageId) === lastStage.stage;
-
-    if (atLastStage || this.state.isReview) {
-      // Clear this if the user checked the box but then selected the last stage
-      this.state.multiStageApplicable = false;
-    }
 
     if (
       this.state.isReview === false &&
