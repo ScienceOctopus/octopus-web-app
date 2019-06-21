@@ -17,13 +17,6 @@ class Footer extends Component {
           </div>
           <h4 className="ui inverted header">With support from</h4>
           <div className="ui images">
-            <a href="https://royalsociety.org">
-              <img
-                alt="Logo of the Royal Society"
-                src="/images/The Royal Society.png"
-                className="ui tiny image"
-              />
-            </a>
             <a href="https://elifesciences.org">
               <img
                 alt="Logo of the eLIFE organisation"
