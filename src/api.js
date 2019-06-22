@@ -1,5 +1,6 @@
 import Axios from "axios";
 
+// Similar to js Promises, but can be resolved/rejected multiple times with different data
 class MultiPromise {
   constructor(result) {
     this._then = undefined;
@@ -246,7 +247,7 @@ class Store {
     }
   };
 
-  // remove all callbacks with same primary but different secondary
+  // disable all callbacks with same primary but different secondary
   // save that this primary currently uses this secondary
   open = (primary, secondary) => {
     const purge = this.keys.get(primary) !== secondary;
@@ -260,7 +261,7 @@ class Store {
         if (callback[0] !== Store.CALLBACK_DUMMY) {
           cache.count -= 1;
 
-          // DEBUG CHECK
+          // BUG: cache.count has been observed to go below 0
           if (cache.count < 0 && process.DEBUG_MODE) {
             console.log("open", path, primary, cache.count, callback[0]);
             console.log(undefined[0]);
@@ -278,6 +279,7 @@ class Store {
     });
   };
 
+  // disable all callbacks with the primary
   close = primary => {
     this.store.forEach((cache, path, store) => {
       let callback = cache.callbacks.get(primary);
@@ -286,7 +288,7 @@ class Store {
         if (callback[0] !== Store.CALLBACK_DUMMY) {
           cache.count -= 1;
 
-          // DEBUG CHECK
+          // BUG: cache.count has been observed to go below 0
           if (cache.count < 0 && process.DEBUG_MODE) {
             console.log("close", path, primary, cache.count, callback[0]);
             console.log(undefined[0]);
@@ -316,6 +318,10 @@ class Store {
     return cache;
   };
 
+  // Proxy for a get request
+  // If result cached, resolves immediately
+  // If primary undefined, dispatches server request and does not fill cache
+  // If primary defined, registers callback
   get = (path, primary) => {
     let cache = this.getOrInit(path);
 
@@ -367,6 +373,10 @@ class Store {
     return promise;
   };
 
+  // Proxy for a head request
+  // If result cached, resolves immediately
+  // If primary undefined, dispatches server request and does not fill cache
+  // If primary defined, registers callback
   head = (path, primary) => {
     let cache = this.getOrInit(path);
 
@@ -441,11 +451,6 @@ class LinkBuilder {
 
   link = () => this.path;
 
-  /*fetch = () => {
-    console.error(`fetch(${this.path})`);
-    return fetch(this.path);
-  };*/
-
   get = () => store.get(this.path, this.key);
 
   getQuery = q => Axios.get(root + this.path + "?q=" + q).then(x => x.data);
@@ -468,14 +473,11 @@ class LinkBuilder {
     return promise;
   };
 
-  /*getFull = () => {
-    console.error(`getFull({$this.path})`);
-    return Axios.get(this.path);
-  };*/
-
   post = data => {
     return Axios.post(root + this.path, data);
   };
+
+  // TODO: Should use proper DFA or intermediate objects to only allow valid API requests
 
   _resetPath() {
     this.path = "";
@@ -599,11 +601,6 @@ class PublicationBuilder extends LinkBuilder {
     return this;
   };
 
-  /* referencedBy = () => {
-    this.path += "/referencedBy";
-    return this;
-    }; */
-
   allCollaborators = () => {
     this.path += "/allCollaborators";
     return this;
@@ -664,18 +661,22 @@ class ApiBuilder extends LinkBuilder {
     super(undefined);
   }
 
+  // Opens a new cache space under primary, disabled all existing callbacks under primary, removes them and potentially unsubscribes if secondary is different
   subscribeClass = (primary, secondary) => {
     store.open(primary, secondary);
 
     return this.subscribe(primary);
   };
 
+  // Makes this API call return a registered promise that can be resolved/rejected several time
+  // WARNING: only one callback is stored per path per primary
   subscribe = primary => {
     this.key = primary;
 
     return this;
   };
 
+  // Closes the current cache space under primary, disabled all existing callbacks under primary
   unsubscribeClass = primary => {
     store.close(primary);
   };

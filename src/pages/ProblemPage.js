@@ -36,17 +36,27 @@ class ProblemPage extends Component {
     super(props);
 
     this.state = {
+      // problem, stage, publication and review ids (number or undefined)
       problem: undefined,
       stage: undefined,
       publication: undefined,
+      review: undefined,
+
+      // ProblemPage global data structure
       content: {
         problem: {},
         stages: [],
         publications: new Map(),
         loading: true,
       },
+
+      // StageGraph open or collapsed
       open: true,
+
+      // measurements of the graph sizes on the client browser
       measurements: global.measurements,
+
+      // dynamic graph modal control data
       modal: {
         width: global.innerWidth,
         height: global.innerHeight,
@@ -86,6 +96,7 @@ class ProblemPage extends Component {
     global.removeEventListener("resize", this.resize);
   }
 
+  // Extract the problem, publication and review id from props
   initCheck(props, selection, review) {
     let id = Number(props.match ? props.match.params.id : props.params.id);
 
@@ -116,9 +127,11 @@ class ProblemPage extends Component {
     }
   }
 
+  // Check whether problem, publication or review have changed and plug into the loading pipeline
   initProblem(problem, publication, selection, review) {
     let stage = undefined;
 
+    // Fetch the reviewed publication's id if necessary
     if (publication !== undefined) {
       let review = this.state.content.publications.get(publication);
 
@@ -188,6 +201,7 @@ class ProblemPage extends Component {
     }
   }
 
+  // Update state on problem async update
   handleProblemChange = problem => state => {
     let content = state.content;
 
@@ -196,6 +210,7 @@ class ProblemPage extends Component {
     return { content: content };
   };
 
+  // Update state on stages async update
   handleStagesChange = stages => state => {
     let content = state.content;
 
@@ -227,6 +242,7 @@ class ProblemPage extends Component {
     return { content: content };
   };
 
+  // Update state on a stage's publications async update
   handleStagePublicationsChange = (stageId, publications) => state => {
     let content = state.content;
 
@@ -267,6 +283,7 @@ class ProblemPage extends Component {
     return { content: content };
   };
 
+  // Update state on a publication's links async update
   handleLinksChange = (stageId, publicationId, links) => state => {
     let content = state.content;
 
@@ -313,6 +330,7 @@ class ProblemPage extends Component {
     return {};
   };
 
+  // Update state on a publication's reviews async update
   handleReviewsChange = (stageId, publicationId, reviews) => state => {
     let content = state.content;
 
@@ -362,6 +380,7 @@ class ProblemPage extends Component {
     return { content: content };
   };
 
+  // Fetch the problem, then fetch its stages
   fetchProblem() {
     let done = false;
 
@@ -379,6 +398,7 @@ class ProblemPage extends Component {
       );
   }
 
+  // Fetch the stages, then fetch their publications
   fetchStages() {
     let done = false;
 
@@ -397,6 +417,7 @@ class ProblemPage extends Component {
       );
   }
 
+  // Fetch the publications of all stages, then and on async updates fetch their links
   fetchStagePublications() {
     let done = new Array(this.state.content.stages.length).fill(false);
 
@@ -426,6 +447,8 @@ class ProblemPage extends Component {
     });
   }
 
+  // Fetch the links of all publications, then and on async updates fetch their reviews
+  // TODO: Should only reevaluate new publications
   fetchLinks() {
     let done = this.state.content.stages
       .slice(1)
@@ -462,6 +485,8 @@ class ProblemPage extends Component {
     });
   }
 
+  // Fetch the reviews of all publications, then generate the shown publication selection
+  // TODO: Should only reevaluate new publications
   fetchReviews() {
     let done = this.state.content.stages.map(stage =>
       new Array(stage.publications.length + 1).fill(false),
@@ -498,6 +523,7 @@ class ProblemPage extends Component {
     });
   }
 
+  // Generate the selection of three publications per stage shown, then generate the graph
   generateSelection() {
     if (this.state.publication === undefined) {
       return this.generateGraph();
@@ -638,6 +664,7 @@ class ProblemPage extends Component {
     );
   }
 
+  // Generate the graph structure of all publications and reviews
   generateGraph() {
     this.setState(state => {
       let nodes = [
@@ -973,6 +1000,7 @@ class ProblemPage extends Component {
     this.resize();
   };
 
+  // Render an invisible simplified dummy version of the graph to measure sizes on the client
   ensureMeasurements() {
     if (this.state.measurements !== undefined) {
       return false;
