@@ -54,6 +54,6 @@ Contributions to this codebase are welcomed. Please send your code as a pull req
 
 # Copyright and Trademarks
 
-Octopus is freely licensed under the MIT license, a copy of which can be found in the [LICENSE file](https://github.com/tigerw/octopus/blob/master/LICENSE), along with a list of copyright holders.
+Octopus is freely licensed under the MIT license, a copy of which can be found in the [LICENSE file](https://github.com/octopus-hypothesis/Publishing-System/blob/master/LICENSE), along with a list of copyright holders.
 
 However, Octopus remains a trademark and any use must not be infringing.
