@@ -211,11 +211,9 @@ class EditPublicationView extends Component {
   };
 
   handleAddCollaborator = user => {
-    console.log("Adding collaborator", user);
     Api()
       .publication(this.state.publication.id)
       .collaborators()
-      .log()
       .post({ userID: user.id });
   };
 

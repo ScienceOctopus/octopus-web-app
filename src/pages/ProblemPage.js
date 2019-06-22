@@ -268,7 +268,10 @@ class ProblemPage extends Component {
         stage.publications.map(pub => pub.id),
       )
     ) {
-      let oldReviews = stage.publications.map(pub => [pub.id, pub.reviews]);
+      let oldReviews = new Map(
+        stage.publications.map(pub => [pub.id, pub.reviews]),
+      );
+
       stage.publications = publications.map(pub =>
         Object.assign(pub, { reviews: oldReviews.get(pub.id) }),
       );
