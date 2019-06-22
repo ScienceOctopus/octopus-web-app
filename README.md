@@ -1,68 +1,59 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is the current implementation of the Octopus science publishing platform, containing a frontend and backend written in JS as well as database migrations and website resources.
 
-## Available Scripts
+# About Octopus
 
-In the project directory, you can run:
+Octopus is the new way to publish your scientific ideas, findings and research. Designed to replace journals and papers, Octopus is free to use and gets your work out there much more quickly, to a wider audience and ensures you get maximum credit for the work you do, whether that’s coming up with hypotheses, designing protocols, collecting data, doing analyses or writing reviews.
 
-### `npm start`
+These principles underlie the design of Octopus: a new way to share scientific work that recognises and rewards good practice, and serves the needs of both scientists and science itself.
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+In Octopus, then, you publish work in smaller units than a ‘paper’. You can write and share one of 8 kinds of publication (though we are building the infrastructure to support custom types for different fields and research types):
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+- Problem – a neatly defined scientific problem
+- Hypothesis – an original hypothesis relating to an existing published Problem
+- Method/Protocol – a practical method of testing an existing published Hypothesis
+- Data/Results – raw data or summarised results collected according to an existing published Method (can be linked to a data repository)
+- Analysis – a statistical or thematic analysis of existing published Data or Results
+- Interpretation – a discussion around an existing published Analysis
+- Translation/Application – ‘real world’ applications arising from an existing published Interpretation
+- Review – a considered, detailed review of any of the above kinds of publication
 
-### `npm test`
+Every publication in Octopus must be linked to another existing publication in order to form ordered chains. Only Problems and Reviews can be linked to any of the first publication types – others must be linked only to a type directly above them in the ‘chain’:
+Graph of the connections between publication stages
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Anyone can read anything on Octopus. Those logged in with an ORCID can write and rate publications.
 
-### `npm run build`
+Every publication you write (including reviews) can be rated by others, and these will add to your individual page which is available for all individuals, institutions and funding bodies to see. Publishing quickly and well, and good collaborative reviewing is therefore rewarded.
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+For more information about the project, please see the [official website](https://octopus-hypothesis.netlify.com/).
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+# Hosted Octopus
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+The hosted (canonical) version of Octopus is available online at https://octopus-publishing.azurewebsites.net, and typically runs the latest commit to master in this repository.
 
-### `npm run eject`
+# Getting Started
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+Octopus comprises a Node.js backend and a React frontend. To get started, you need to install the dependencies using npm:
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+    npm ci
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Once they have been installed you can start both the backend and the frontend in development mode with this command:
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+    npm run dev
 
-## Learn More
+To run the backend (API) server, simply:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+    npm run server
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+And to compile the frontend in release mode:
 
-### Code Splitting
+    npm run build
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
+# Contribution Guidelines
 
-### Analyzing the Bundle Size
+Contributions to this codebase are welcomed. Please send your code as a pull request. Also, please ensure that all JS code is formatted using prettier with the style in the `package.json` file.
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
+# Copyright and Trademarks
 
-### Making a Progressive Web App
+Octopus is freely licensed under the MIT license, a copy of which can be found in the [LICENSE file](https://github.com/tigerw/octopus/blob/master/LICENSE), along with a list of copyright holders.
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+However, Octopus remains a trademark and any use must not be infringing.
