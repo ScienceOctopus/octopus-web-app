@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 
 import StageGraph from "../components/StageGraph";
 import SummaryView from "../components/SummaryView";
@@ -10,6 +10,7 @@ import withState from "../withState";
 import { RouterURI, generateLocalizedPath } from "../urls/WebsiteURIs";
 import { interpolateCool as stageColour } from "d3-scale-chromatic";
 import { ColourScheme } from "../GlobalStyle";
+import _ from "underscore";
 
 const PROBLEM_KEY = "problem";
 
@@ -30,7 +31,7 @@ function strokeStar(ctx, x, y, r, n, inset) {
   ctx.restore();
 }
 
-class ProblemPage extends React.Component {
+class ProblemPage extends Component {
   constructor(props) {
     super(props);
 
@@ -64,7 +65,7 @@ class ProblemPage extends React.Component {
     global.addEventListener("resize", this.resize);
 
     if (this.state.measurements !== undefined) {
-      this.initCheck(this.props, false, undefined, true);
+      this.initCheck(this.props, false, undefined);
     }
   }
 
@@ -85,7 +86,7 @@ class ProblemPage extends React.Component {
     global.removeEventListener("resize", this.resize);
   }
 
-  initCheck(props, selection, review, boot) {
+  initCheck(props, selection, review) {
     let id = Number(props.match ? props.match.params.id : props.params.id);
 
     if (props.publication) {
@@ -104,24 +105,18 @@ class ProblemPage extends React.Component {
                 return { content: content };
               },
               () =>
-                this.initProblem(
-                  publication.problem,
-                  id,
-                  selection,
-                  review,
-                  boot,
-                ),
+                this.initProblem(publication.problem, id, selection, review),
             );
           });
       } else {
-        this.initProblem(publication.problem, id, selection, review, boot);
+        this.initProblem(publication.problem, id, selection, review);
       }
     } else {
-      this.initProblem(id, undefined, selection, review, boot);
+      this.initProblem(id, undefined, selection, review);
     }
   }
 
-  initProblem(problem, publication, selection, review, boot) {
+  initProblem(problem, publication, selection, review) {
     let stage = undefined;
 
     if (publication !== undefined) {
@@ -135,7 +130,6 @@ class ProblemPage extends React.Component {
             { publication: true, params: { id: review.publication_before } },
             selection,
             review.id,
-            boot,
           );
         } else {
           return Api()
@@ -167,7 +161,6 @@ class ProblemPage extends React.Component {
                     },
                     selection,
                     review.id,
-                    boot,
                   ),
               );
             });
@@ -183,149 +176,331 @@ class ProblemPage extends React.Component {
           publication: publication,
           review: review,
         },
-        () => this.fetchProblem(boot),
+        () => this.fetchProblem(),
       );
     } else if (publication !== this.state.publication) {
       this.setState(
         { stage: stage, publication: publication, review: review },
-        () => this.generateSelection(boot),
+        () => this.generateSelection(),
       );
     } else if (review !== this.state.review) {
       this.setState({ stage: stage, review: review });
     }
   }
 
-  fetchProblem(boot) {
+  handleProblemChange = problem => state => {
+    let content = state.content;
+
+    content.problem = problem;
+
+    return { content: content };
+  };
+
+  handleStagesChange = stages => state => {
+    let content = state.content;
+
+    if (state.content.stages.length <= 0) {
+      stages.sort((a, b) => a.order - b.order);
+
+      stages.forEach(stage => {
+        stage.publications = [];
+        stage.links = [];
+        stage.selection = {
+          publications: [],
+          links: [],
+          size: 0,
+          loading: true,
+        };
+        stage.loading = true;
+      });
+
+      content.stages = stages;
+      content.loading = false;
+    } else {
+      let newStages = new Map(stages.map(stage => [stage.id, stage]));
+
+      content.stages.forEach(stage =>
+        Object.assign(stage, newStages.get(stage.id)),
+      );
+    }
+
+    return { content: content };
+  };
+
+  handleStagePublicationsChange = (stageId, publications) => state => {
+    let content = state.content;
+
+    publications.sort((a, b) => a.id - b.id);
+
+    publications.forEach(publication => {
+      content.publications.set(publication.id, publication);
+    });
+
+    let stage = content.stages.find(stage => stage.id === stageId);
+
+    if (stage === undefined) {
+      return {};
+    }
+
+    if (stage.publications.length <= 0) {
+      stage.publications = publications;
+      stage.loading = false;
+      stage.selection.loading = true;
+    } else if (
+      !_.isEqual(
+        publications.map(pub => pub.id),
+        stage.publications.map(pub => pub.id),
+      )
+    ) {
+      let oldReviews = stage.publications.map(pub => [pub.id, pub.reviews]);
+      stage.publications = publications.map(pub =>
+        Object.assign(pub, { reviews: oldReviews.get(pub.id) }),
+      );
+
+      stage.selection.loading = true;
+    } else {
+      stage.publications.forEach((pub, i) =>
+        Object.assign(pub, publications[i]),
+      );
+    }
+
+    return { content: content };
+  };
+
+  handleLinksChange = (stageId, publicationId, links) => state => {
+    let content = state.content;
+
+    let nextStage = content.stages.findIndex(stage => stage.id === stageId);
+
+    if (nextStage < 1) {
+      return {};
+    }
+
+    let prevStage = content.stages[nextStage - 1];
+    nextStage = content.stages[nextStage];
+
+    let next = nextStage.publications.findIndex(
+      pub => pub.id === publicationId,
+    );
+
+    if (next === -1) {
+      return {};
+    }
+
+    let nextPublication = nextStage.publications[next];
+
+    let newLinks = [];
+
+    links.forEach(link => {
+      let prev = prevStage.publications.findIndex(
+        pub => pub.id === link.publication_before,
+      );
+
+      if (prev !== -1) {
+        newLinks.push([prev, next]);
+      }
+    });
+
+    if (_.intersection(prevStage.links, newLinks).length !== newLinks.length) {
+      prevStage.links = newLinks.concat(
+        prevStage.links.filter(link => link[1] !== next),
+      );
+      prevStage.selection.loading = true;
+
+      return { content: content };
+    }
+
+    return {};
+  };
+
+  handleReviewsChange = (stageId, publicationId, reviews) => state => {
+    let content = state.content;
+
+    let stage = content.stages.find(stage => stage.id === stageId);
+
+    if (stage === undefined) {
+      return {};
+    }
+
+    let publication = stage.publications.find(pub => pub.id === publicationId);
+
+    if (publication === undefined) {
+      return {};
+    }
+
+    reviews.sort((a, b) => a.id - b.id);
+
+    reviews.forEach(review => content.publications.set(review.id, review));
+
+    if (
+      publication.reviews === undefined &&
+      state.review !== undefined &&
+      publication.id === state.publication
+    ) {
+      let review = reviews.splice(
+        reviews.findIndex(x => x.id === state.review),
+        1,
+      )[0];
+
+      reviews.unshift(review);
+    }
+
+    if (
+      publication.reviews === undefined ||
+      !_.isEqual(
+        reviews.map(review => review.id).sort(),
+        publication.reviews.map(review => review.id).sort(),
+      )
+    ) {
+      publication.reviews = reviews;
+    } else {
+      publication.reviews.forEach((review, i) =>
+        Object.assign(review, reviews[i]),
+      );
+    }
+
+    return { content: content };
+  };
+
+  fetchProblem() {
+    let done = false;
+
     Api()
       .subscribeClass(PROBLEM_KEY, this.state.problem)
       .problem(this.state.problem)
       .get()
-      .then(problem => {
-        this.setState(
-          state => {
-            let content = { ...state.content };
-            content.problem = problem;
-            return { content: content };
-          },
-          () => this.fetchStages(boot),
-        );
-      });
+      .then(problems =>
+        this.setState(this.handleProblemChange(problems), () => {
+          if (!done) {
+            done = true;
+            this.fetchStages();
+          }
+        }),
+      );
   }
 
-  fetchStages(boot) {
+  fetchStages() {
+    let done = false;
+
     Api()
       .subscribe(PROBLEM_KEY)
       .problem(this.state.problem)
       .stages()
       .get()
-      .then(stages => {
-        stages.sort((a, b) => a.order - b.order);
-        stages.forEach(stage => {
-          stage.publications = [];
-          stage.links = [];
-          stage.selection = {
-            publications: [],
-            links: [],
-            size: 0,
-            loading: true,
-          };
-          stage.loading = true;
-        });
-
-        this.setState(
-          state => {
-            let content = { ...state.content };
-
-            content.publications = new Map();
-            content.stages = stages;
-            content.loading = false;
-            return { content: content };
-          },
-          () => this.fetchStage(0, boot),
-        );
-      });
+      .then(stages =>
+        this.setState(this.handleStagesChange(stages), () => {
+          if (!done) {
+            done = true;
+            this.fetchStagePublications();
+          }
+        }),
+      );
   }
 
-  fetchStage(stageId, boot) {
-    if (stageId >= this.state.content.stages.length) {
-      return this.fetchLinks(1, boot);
-    }
+  fetchStagePublications() {
+    let done = new Array(this.state.content.stages.length).fill(false);
 
-    let stage = this.state.content.stages[stageId];
-
-    Api()
-      .subscribe(PROBLEM_KEY)
-      .problem(this.state.problem)
-      .stage(stage.id)
-      .publications()
-      .get()
-      .then(publications => {
-        this.setState(
-          state => {
-            let content = { ...state.content };
-            publications.forEach(publication => {
-              content.publications.set(publication.id, publication);
-              publication.reviews = undefined;
-            });
-            content.stages[stageId].publications = publications;
-            content.stages[stageId].loading = false;
-            content.stages[stageId].selection.loading = true;
-            return { content: content };
-          },
-          () => this.fetchStage(stageId + 1, boot),
-        );
-      });
-  }
-
-  fetchLinks(stageId, boot) {
-    if (stageId >= this.state.content.stages.length) {
-      return this.generateSelection(boot);
-    }
-
-    let links = [];
-    let counter = [];
-
-    let prevStagePubs = this.state.content.stages[stageId - 1].publications;
-    let nextStagePubs = this.state.content.stages[stageId].publications;
-
-    if (nextStagePubs.length <= 0) {
-      return this.fetchLinks(stageId + 1, boot);
-    }
-
-    nextStagePubs.forEach(nextPub => {
+    this.state.content.stages.forEach((stage, i) => {
       Api()
         .subscribe(PROBLEM_KEY)
-        .publication(nextPub.id)
-        .linksBefore()
+        .problem(this.state.problem)
+        .stage(stage.id)
+        .publications()
         .get()
-        .then(slinks => {
-          let next = nextStagePubs.findIndex(x => x === nextPub);
-          slinks.forEach(link => {
-            let prev = prevStagePubs.findIndex(
-              x => x.id === link.publication_before,
-            );
-            if (prev !== -1 && next !== -1) {
-              links.push([prev, next]);
-            }
-          });
+        .then(publications =>
+          this.setState(
+            this.handleStagePublicationsChange(stage.id, publications),
+            () => {
+              if (!done[i]) {
+                done[i] = true;
 
-          if (++counter >= nextStagePubs.length) {
-            this.setState(
-              state => {
-                let content = { ...state.content };
-                content.stages[stageId - 1].links = links;
-                return { content: content };
-              },
-              () => this.fetchLinks(stageId + 1, boot),
-            );
-          }
-        });
+                if (done.every(x => x)) {
+                  this.fetchLinks();
+                }
+              } else {
+                this.fetchLinks();
+              }
+            },
+          ),
+        );
     });
   }
 
-  generateSelection(boot) {
+  fetchLinks() {
+    let done = this.state.content.stages
+      .slice(1)
+      .map(stage => new Array(stage.publications.length + 1).fill(false));
+
+    this.state.content.stages.slice(1).forEach((stage, i) => {
+      stage.publications.forEach((pub, j) => {
+        Api()
+          .subscribe(PROBLEM_KEY)
+          .publication(pub.id)
+          .linksBefore()
+          .get()
+          .then(links =>
+            this.setState(
+              this.handleLinksChange(stage.id, pub.id, links),
+              () => {
+                if (!done[i][j + 1]) {
+                  done[i][j + 1] = true;
+
+                  if (done[i].slice(1).every(x => x)) {
+                    done[i][0] = true;
+
+                    if (done.every(x => x[0])) {
+                      this.fetchReviews();
+                    }
+                  }
+                } else {
+                  this.fetchReviews();
+                }
+              },
+            ),
+          );
+      });
+    });
+  }
+
+  fetchReviews() {
+    let done = this.state.content.stages.map(stage =>
+      new Array(stage.publications.length + 1).fill(false),
+    );
+
+    this.state.content.stages.forEach((stage, i) => {
+      stage.publications.forEach((pub, j) => {
+        Api()
+          .subscribe(PROBLEM_KEY)
+          .publication(pub.id)
+          .reviews()
+          .get()
+          .then(reviews =>
+            this.setState(
+              this.handleReviewsChange(stage.id, pub.id, reviews),
+              () => {
+                if (!done[i][j + 1]) {
+                  done[i][j + 1] = true;
+
+                  if (done[i].slice(1).every(x => x)) {
+                    done[i][0] = true;
+
+                    if (done.every(x => x[0])) {
+                      this.generateSelection();
+                    }
+                  }
+                } else {
+                  this.generateSelection();
+                }
+              },
+            ),
+          );
+      });
+    });
+  }
+
+  generateSelection() {
     if (this.state.publication === undefined) {
-      return this.fetchReviews(boot, 0, 0);
+      return this.generateGraph();
     }
 
     this.setState(
@@ -459,61 +634,8 @@ class ProblemPage extends React.Component {
         });
         return { content: content };
       },
-      () => this.fetchReviews(boot, 0, 0),
+      () => this.generateGraph(),
     );
-  }
-
-  fetchReviews(boot, stageId, publicationId) {
-    if (stageId >= this.state.content.stages.length) {
-      return this.generateGraph();
-    }
-
-    if (
-      publicationId >= this.state.content.stages[stageId].publications.length
-    ) {
-      return this.fetchReviews(boot, stageId + 1, 0);
-    }
-
-    let stage = this.state.content.stages[stageId];
-    let publication = stage.publications[publicationId];
-
-    Api()
-      .subscribe(PROBLEM_KEY)
-      .publication(publication.id)
-      .reviews()
-      .get()
-      .then(reviews => {
-        this.setState(
-          state => {
-            let content = { ...state.content };
-
-            reviews.forEach(review =>
-              content.publications.set(review.id, review),
-            );
-
-            if (
-              boot &&
-              this.state.review !== undefined &&
-              publication.id === this.state.publication
-            ) {
-              let review = reviews.splice(
-                reviews.findIndex(x => x.id === this.state.review),
-                1,
-              )[0];
-
-              reviews.unshift(review);
-            }
-
-            content.stages
-              .find(stage => stage.id === publication.stage)
-              .publications.find(
-                pub => pub.id === publication.id,
-              ).reviews = reviews;
-            return { content: content };
-          },
-          () => this.fetchReviews(boot, stageId, publicationId + 1),
-        );
-      });
   }
 
   generateGraph() {
@@ -596,7 +718,7 @@ class ProblemPage extends React.Component {
     let cur_pub = this.props.publication;
 
     if (new_id !== cur_id || new_pub !== cur_pub) {
-      this.initCheck(nextProps, true, undefined, false);
+      this.initCheck(nextProps, true, undefined);
     }
   }
 
@@ -645,6 +767,7 @@ class ProblemPage extends React.Component {
         }
       }
     }
+
     return (
       <div>
         <Modal
@@ -891,7 +1014,7 @@ class ProblemPage extends React.Component {
             {
               measurements: global.measurements,
             },
-            () => this.initCheck(this.props, false, undefined, true),
+            () => this.initCheck(this.props, false, undefined),
           );
         }}
       >
