@@ -1,4 +1,6 @@
-This is the current implementation of the Octopus science publishing platform, containing a frontend and backend written in JS as well as database migrations and website resources.
+This is the current implementation of the Octopus science publishing platform,
+containing a frontend and backend written in JS as well as database migrations
+and website resources.
 
 # About Octopus
 
@@ -32,25 +34,29 @@ The hosted (canonical) version of Octopus is available online at https://octopus
 
 # Getting Started
 
-Octopus comprises a Node.js backend and a React frontend. To get started, you need to install the dependencies using npm:
+Octopus comprises a Node.js backend and a React frontend.
 
-    npm ci
+To get started, you need to install the dependencies using npm:
+
+    `npm ci`
 
 Once they have been installed you can start both the backend and the frontend in development mode with this command:
 
-    npm run dev
+    `npm run dev`
 
 To run the backend (API) server, simply:
 
-    npm run server
+    `npm run server`
 
 And to compile the frontend in release mode:
 
-    npm run build
+    `npm run build`
 
 # Contribution Guidelines
 
-Contributions to this codebase are welcomed. Please send your code as a pull request. Also, please ensure that all JS code is formatted using prettier with the style in the `package.json` file.
+Contributions to this codebase are welcomed. Please send your code as a pull request.
+
+Also, please ensure that all JS code is formatted using prettier with the style in the `package.json` file.
 
 # Copyright and Trademarks
 
