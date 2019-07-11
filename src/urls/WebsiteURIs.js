@@ -3,7 +3,7 @@ import { Link, Redirect } from "react-router-dom";
 import i18n, { AVAILABLE_LANGUAGES, SHORT_LINK_LANGS } from "../i18n";
 import { generatePath } from "react-router-dom";
 
-const GOBLINID_OAUTH_CLIENT_ID = "APP-3IQDM9L3ZPD3ZC36";
+const ORCID_OAUTH_CLIENT_ID = "APP-3IQDM9L3ZPD3ZC36";
 
 const REDIRECT_HOST = window.location.host.endsWith(":3000")
   ? "http://" + window.location.host.slice(0, -1) + "1"
@@ -55,7 +55,7 @@ const WebURI = {
   Search: q => (q === "" ? "/search" : `/search?q=${q}`),
   OrcidPage: orcid => `https://orcid.org/${orcid}`,
   OrcidLogin: (state, returnPath) =>
-    `https://orcid.org/oauth/authorize?state=${state}&client_id=${GOBLINID_OAUTH_CLIENT_ID}&response_type=code&scope=/authenticate&redirect_uri=${REDIRECT_URI}?return_path=${returnPath}`,
+    `https://orcid.org/oauth/authorize?state=${state}&client_id=${ORCID_OAUTH_CLIENT_ID}&response_type=code&scope=/authenticate&redirect_uri=${REDIRECT_URI}?return_path=${returnPath}`,
   Problem: "/problems",
   Publication: "/publications",
 };
