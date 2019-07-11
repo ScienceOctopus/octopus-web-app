@@ -14,10 +14,8 @@ const publicationsHandlers = require("./routes/publications");
 const OAuthFlowResponseHandlers = require("./routes/oauth-flow");
 
 const fb = require("./feedback");
-const multer = require("multer");
-const MulterAzureStorage = require("multer-azure-storage");
 
-const blobService = require("./blobService.js");
+const blobService = require("./blobService");
 const upload = blobService.upload;
 blobService.initialise();
 
