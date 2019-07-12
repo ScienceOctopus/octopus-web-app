@@ -56,25 +56,9 @@
     "pg": "^7.11.0",
     "pino-colada": "^1.4.4"
   },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "proxy": "http://localhost:3001",
-  "prettier": {
-    "trailingComma": "all",
-    "semi": true,
-    "singleQuote": true
-  }
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not op_mini all"
+  ]
 }
