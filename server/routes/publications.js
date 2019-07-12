@@ -1,7 +1,7 @@
-const db = require("../postgresQueries.js").queries;
 const express = require("express");
-const getUserFromSession = require("../userSessions.js").getUserFromSession;
-const broadcast = require("../webSocket.js").broadcast;
+const db = require("../postgresQueries").queries;
+const getUserFromSession = require("../lib/userSessions").getUserFromSession;
+const broadcast = require("../lib/webSocket").broadcast;
 
 function catchAsyncErrors(fn) {
   return (req, res, next) => {

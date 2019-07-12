@@ -1,9 +1,9 @@
 const express = require("express");
 const request = require("request");
 const cryptography = require("crypto");
-const db = require("../postgresQueries.js").queries;
+const db = require("../postgresQueries").queries;
 
-const SESSION_COOKIE_NAME = require("../userSessions").SESSION_COOKIE_NAME;
+const SESSION_COOKIE_NAME = require("../lib/userSessions").SESSION_COOKIE_NAME;
 
 const ORCID_EXCHANGE_OAUTH_TOKEN_ADDRESS = "https://orcid.org/oauth/token";
 

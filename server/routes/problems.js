@@ -1,11 +1,10 @@
 const express = require("express");
-const bodyParser = require("body-parser");
 
-const db = require("../postgresQueries.js").queries;
-const blobService = require("../blobService.js");
+const db = require("../postgresQueries").queries;
+const blobService = require("../lib/blobService");
 const upload = blobService.upload;
-const getUserFromSession = require("../userSessions.js").getUserFromSession;
-const broadcast = require("../webSocket.js").broadcast;
+const getUserFromSession = require("../lib/userSessions").getUserFromSession;
+const broadcast = require("../lib/webSocket").broadcast;
 
 function catchAsyncErrors(fn) {
   return (req, res, next) => {
@@ -202,6 +201,7 @@ const postPublicationToProblemAndStage = async (req, res) => {
 
       switch (schema[i][1]) {
         case "file":
+          // @TODO use a generic model for file operations
           content = (await db.insertResource(
             "azureBlob",
             req.files[content].url,

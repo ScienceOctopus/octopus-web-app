@@ -4,9 +4,7 @@ const expressWs = require("express-ws");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 
-const db = require("./postgresQueries").queries;
-
-const wsConnectHandler = require("./webSocket").connect;
+const wsConnectHandler = require("./lib/webSocket").connect;
 
 const usersHandlers = require("./routes/users");
 const problemsHandlers = require("./routes/problems");
@@ -15,7 +13,7 @@ const OAuthFlowResponseHandlers = require("./routes/oauth-flow");
 
 const fb = require("./feedback");
 
-const blobService = require("./blobService");
+const blobService = require("./lib/blobService");
 const upload = blobService.upload;
 blobService.initialise();
 
