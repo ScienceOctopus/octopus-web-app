@@ -74,7 +74,6 @@ class MultiPromise {
 }
 
 const root = "/api";
-const port = process.env.NODE_ENV === "development" ? ":3001" : "";
 
 class Store {
   constructor() {
@@ -86,11 +85,17 @@ class Store {
     this._connect();
   }
 
+
   _connect = () => {
+    // const port = process.env.NODE_ENV === "development" ? ":3001" : "";
+
+    const env = ['localhost', '127.0.0.1', '0'].indexOf(window.location.hostname) !== -1 ? 'local' : 'prod';
+
+    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+    const port = env === 'local' ? ':3001' : '';
+
     this.ws = new WebSocket(
-      `${window.location.protocol === "https:" ? "wss:" : "ws:"}//${
-        window.location.hostname
-      }${port}${root}`,
+      `${protocol}//${window.location.hostname}${port}${root}`,
     );
 
     this.ws.onopen = event => {
