@@ -1,15 +1,14 @@
 const express = require("express");
-const expressWs = require("express-ws");
-
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 
+const expressWs = require("express-ws");
 const wsConnectHandler = require("./lib/webSocket").connect;
 
 const usersHandlers = require("./routes/users");
 const problemsHandlers = require("./routes/problems");
 const publicationsHandlers = require("./routes/publications");
-const OAuthFlowResponseHandlers = require("./routes/oauth-flow");
+const orcidAuthHandlers = require("./routes/auth/orcid");
 
 const fb = require("./feedback");
 
@@ -18,28 +17,18 @@ const upload = blobService.upload;
 blobService.initialise();
 
 const app = express();
-const wss = expressWs(app).getWss();
+expressWs(app);
+
+const pino = require('express-pino-logger')();
+app.use(pino);
 
 const port = process.env.PORT || 3001;
-
-const noop = () => {};
-
-const wss_interval = setInterval(() => {
-  wss.clients.forEach(ws => {
-    if (ws.isAlive === false) {
-      return ws.terminate();
-    }
-
-    ws.isAlive = false;
-    ws.ping(noop);
-  });
-}, 30000);
 
 global.sessions = [];
 global.subscriptions = new Map();
 
 // Can access anything in this folder
-app.use(express.static("public"));
+// app.use(express.static("public"));
 
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -50,14 +39,14 @@ app.use(
 );
 
 app.get("/api", (req, res) => {
-  res.send("Welcome to the Octopus API (Node.js)!");
+  res.send("Welcome to the Octopus API!");
 });
 app.ws("/api", wsConnectHandler);
 
 app.use("/api/problems", problemsHandlers.router);
 app.use("/api/publications", publicationsHandlers.router);
 app.use("/api/users", usersHandlers.router);
-app.use("/api/oauth-flow", OAuthFlowResponseHandlers.router);
+app.use("/api/auth/orcid", orcidAuthHandlers.router);
 
 app.post("/api/feedback", fb.postFeedback);
 app.post(
@@ -76,5 +65,5 @@ app.use(function(req, res, next) {
 });
 
 app.listen(port, () => {
-  console.log(`Octopus API (Node.js) is running on port ${port}.`);
+  console.log(`Octopus API is running on port ${port}.`);
 });

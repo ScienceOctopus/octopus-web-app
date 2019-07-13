@@ -642,7 +642,7 @@ class UserBuilder extends LinkBuilder {
 class AuthenticationBuilder extends LinkBuilder {
   constructor(key, userId) {
     super(key);
-    this.path = "/oauth-flow";
+    this.path = "/auth/orcid";
   }
 
   state = () => {
