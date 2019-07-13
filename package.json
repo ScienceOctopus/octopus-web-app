@@ -3,17 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start:debug": "REACT_APP_DEBUG=true react-scripts start",
-    "start:prod": "react-scripts start",
-    "build": "react-scripts build",
-    "test-node": "jest server/",
-    "test-react": "react-scripts test",
-    "eject": "react-scripts eject",
-    "server": "node-env-run server --exec nodemon | pino-colada",
-    "dev": "run-p server start:prod",
-    "debug": "run-p server start:debug",
+    "api": "node-env-run server | pino-colada",
+    "api:dev": "node-env-run server --exec nodemon | pino-colada",
+    "ui": "serve -n -d -s build -l 3000",
+    "ui:dev": "REACT_APP_NODE_ENV=development REACT_APP_DEBUG_MODE=true REACT_APP_DEBUG=true react-scripts start",
+    "ui:build": "rm -rf ./build; react-scripts build",
+    "dev": "run-p api:dev ui:dev",
+    "test": "run-p test:node test:react",
+    "test:node": "jest server/",
+    "test:react": "react-scripts test",
     "migrate": "node-pg-migrate",
-    "test": "run-p test-node test-react"
+    "eject": "react-scripts eject"
   },
   "dependencies": {
     "aws-sdk": "^2.491.0",
@@ -42,6 +42,7 @@
     "react-scripts": "3.0.1",
     "react-slack-feedback": "^2.1.0",
     "semantic-ui-css": "^2.4.1",
+    "serve": "^11.1.0",
     "styled-components": "^4.3.1",
     "underscore": "^1.9.1"
   },
@@ -60,5 +61,6 @@
     ">0.2%",
     "not dead",
     "not op_mini all"
-  ]
+  ],
+  "proxy": "http://localhost:3001"
 }

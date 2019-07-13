@@ -36,21 +36,44 @@ The hosted (canonical) version of Octopus is available online at https://octopus
 
 Octopus comprises a Node.js backend and a React frontend.
 
+**Install dependencies**
+
 To get started, you need to install the dependencies using npm:
 
     `npm ci`
+
+**Start the app locally**
 
 Once they have been installed you can start both the backend and the frontend in development mode with this command:
 
     `npm run dev`
 
-To run the backend (API) server, simply:
+It's equivalent to running `npm run ui:dev` and `npm run api:dev`.
 
-    `npm run server`
+**Start API**
 
-And to compile the frontend in release mode:
+To run the backend API server on port 3001, simply:
 
-    `npm run build`
+    `npm run api`
+
+**Compile and start UI**
+
+And to compile the frontend app in release mode:
+
+    `npm run ui:build`
+
+Then you can start the frontend app server on port 3000 with:
+
+    `npm run ui`
+
+## Running migrations
+
+To run migrations you'll need to pass a full PostgreSQL database URL:
+
+```
+DATABASE_URL=postgres://username:password@localhost:5432/octopus-web-db npm run migrate up
+```
+
 
 # Contribution Guidelines
 
