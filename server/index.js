@@ -16,11 +16,26 @@ const blobService = require("./lib/blobService");
 const upload = blobService.upload;
 blobService.initialise();
 
+function noop () {}
+
+// intialise the app
 const app = express();
-expressWs(app);
+const webSocketInstance = expressWs(app).getWss();
 
 const pino = require('express-pino-logger')();
 app.use(pino);
+
+// terminate abandoned open sockets, 30s interval
+setInterval(() => {
+  webSocketInstance.clients.forEach(ws => {
+    if (ws.isAlive === false) {
+      return ws.terminate();
+    }
+
+    ws.isAlive = false;
+    ws.ping(noop);
+  });
+}, 30000);
 
 const port = process.env.PORT || 3001;
 
