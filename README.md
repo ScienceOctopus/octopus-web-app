@@ -1,9 +1,13 @@
 # Octopus
 
 [![Build status][circle-img]][circle-url]
+[![beta.science-octopus.org][app-img]][app-url]
 
 [circle-img]: https://img.shields.io/circleci/project/github/octopus-hypothesis/octopus-web-app/master.svg
 [circle-url]: https://circleci.com/gh/octopus-hypothesis/octopus-web-app/tree/master
+
+[app-img]: https://img.shields.io/website-up-down-green-red/https/beta.science-octopus.org.svg?label=beta.science-octopus.org
+[app-url]: https://beta.science-octopus.org
 
 ## What is Octopus?
 
@@ -18,10 +22,10 @@ work that recognises and rewards good practice, and serves the needs of
 both scientists and science itself.
 
 
-## Hosted Octopus
+## Demo
 
 The current working version of Octopus is available online
-at https://science-octopus.org and runs code from master branch
+at [beta.science-octopus.org](https://beta.science-octopus.org/) and runs code from master branch
 in this repository.
 
 For more information about the project, please see
@@ -67,14 +71,18 @@ Octopus comprises a Node.js backend and a React frontend.
 
 To get started, you need to install the dependencies using npm:
 
-    `npm ci`
+```
+npm ci
+```
 
 **Start the app locally**
 
 Once they have been installed you can start both the backend
 and the frontend in development mode with this command:
 
-    `npm run dev`
+```
+npm run dev
+```
 
 It's equivalent to running `npm run ui:dev` and `npm run api:dev`.
 
@@ -82,17 +90,23 @@ It's equivalent to running `npm run ui:dev` and `npm run api:dev`.
 
 To run the backend API server on port 3001, simply:
 
-    `npm run api`
+```
+npm run api
+```
 
 **Compile and start UI**
 
 And to compile the frontend app in release mode:
 
-    `npm run ui:build`
+```
+npm run ui:build
+```
 
 Then you can start the frontend app server on port 3000 with:
 
-    `npm run ui`
+```
+npm run ui
+```
 
 **Run migrations**
 
@@ -103,11 +117,12 @@ DATABASE_URL=postgres://username:password@localhost:5432/octopus-web-db npm run 
 ```
 
 
-# Contribution Guidelines
+## Contribution Guidelines
 
 Contributions to this codebase are welcomed. Please send your code as a pull request.
 
 Also, please ensure that all JS code is formatted using prettier.
+
 
 ## Copyright and Trademarks
 
