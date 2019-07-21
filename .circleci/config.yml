@@ -10,15 +10,15 @@ jobs:
 
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          - v1-dependencies-
+          - node_modules-cache-{{ checksum "package.json" }}
+          - node_modules-cache-
 
       - run: npm install
 
       - save_cache:
           paths:
             - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
+          key: node_modules-cache-{{ checksum "package.json" }}
 
       # - run:
       #     name: Lint codebase
@@ -39,7 +39,7 @@ jobs:
           name: Package app
           command: |
             mkdir dist
-            tar czf ./dist/octopus-web-app-b$(echo $CIRCLE_BUILD_NUM).tar.gz package.json build server node_modules
+            tar czf ./dist/octopus-web-app_$(echo $CIRCLE_BUILD_NUM).tar.gz package.json build server node_modules
 
       - store_artifacts:
           path: ./dist

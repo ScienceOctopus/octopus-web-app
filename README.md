@@ -1,5 +1,9 @@
 # Octopus
 
+[![Build status][circle-img]][circle-url]
+
+[circle-img]: https://img.shields.io/circleci/project/github/octopus-hypothesis/octopus-web-app/master.svg
+[circle-url]: https://circleci.com/gh/octopus-hypothesis/octopus-web-app/tree/master
 
 ## What is Octopus?
 
@@ -17,8 +21,8 @@ both scientists and science itself.
 ## Hosted Octopus
 
 The current working version of Octopus is available online
-at https://octopus-publishing.azurewebsites.net and runs
-the code from master branch in this repository.
+at https://science-octopus.org and runs code from master branch
+in this repository.
 
 For more information about the project, please see
 the [official website](https://octopus-hypothesis.netlify.com/).
