@@ -3,7 +3,7 @@ import { Trans } from "react-i18next";
 import { withRouter } from "react-router-dom";
 import WebURI, { LocalizedLink } from "../urls/WebsiteURIs";
 import GlobalSearch from "./GlobalSearch";
-import GoblinIDLoginInvitation from "./GoblinIDLoginInvitation";
+import OrcIDLoginInvitation from "./OrcIDLoginInvitation";
 import UserIconName from "./UserIconName";
 import LogoutInvitation from "./LogoutInvitation";
 import OctopusLogo from "./OctopusLogo";
@@ -78,7 +78,7 @@ class Header extends Component {
               <LogoutInvitation />
             </div>
           ) : (
-            <GoblinIDLoginInvitation
+            <OrcIDLoginInvitation
               returnPath={this.props.location.pathname}
             />
           )}

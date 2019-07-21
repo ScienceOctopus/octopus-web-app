@@ -1,8 +1,8 @@
 const PUB_FOLDER = "public/";
 const TEST_HTML_PATH = "convertedHtmls/sample.html";
+var pdftohtml = require("pdftohtmljs");
 
 const pdfToHtml = (request, response) => {
-  var pdftohtml = require("pdftohtmljs");
 
   let pathToPdf = request.body.source;
   let pathToHtml = PUB_FOLDER + TEST_HTML_PATH;

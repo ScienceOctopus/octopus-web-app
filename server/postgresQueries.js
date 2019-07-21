@@ -515,7 +515,7 @@ const queries = {
       .select()
       .where("email", email),
 
-  selectUsersByGoblinID: orc =>
+  selectUsersByOrcID: orc =>
     knex("users")
       .select()
       .where("orcid", orc),

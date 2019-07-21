@@ -157,7 +157,7 @@ test("getPublicationsByProblemAndStage returns results", async () => {
   const mockRequest = () => {
     return {
       params: { id: 1, stage: 1 },
-      cookies: { "Octopus API (Node.js) Session Identifier": "Hello Moritz" },
+      cookies: { "OctopusSession": "Hello Moritz" },
     };
   };
 

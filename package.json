@@ -2,7 +2,21 @@
   "name": "octopus",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "api": "node-env-run server | pino-colada",
+    "api:dev": "node-env-run server --exec nodemon | pino-colada",
+    "ui": "serve -n -d -s build -l 3000",
+    "ui:dev": "REACT_APP_NODE_ENV=development REACT_APP_DEBUG_MODE=true REACT_APP_DEBUG=true react-scripts start",
+    "ui:build": "rm -rf ./build; react-scripts build",
+    "dev": "run-p api:dev ui:dev",
+    "test": "run-p test:node test:react",
+    "test:node": "jest server/",
+    "test:react": "react-scripts test",
+    "migrate": "node-pg-migrate",
+    "eject": "react-scripts eject"
+  },
   "dependencies": {
+    "aws-sdk": "^2.491.0",
     "axios": "^0.19.0",
     "azure-storage": "^2.10.3",
     "cookie-parser": "^1.4.4",
@@ -14,6 +28,7 @@
     "knex": "^0.16.5",
     "multer": "^1.4.1",
     "multer-azure-storage": "^0.2.0",
+    "multer-s3": "^2.9.0",
     "node-pg-migrate": "^3.21.1",
     "pdftohtmljs": "^0.5.2",
     "prop-types": "^15.7.2",
@@ -27,36 +42,9 @@
     "react-scripts": "3.0.1",
     "react-slack-feedback": "^2.1.0",
     "semantic-ui-css": "^2.4.1",
+    "serve": "^11.1.0",
     "styled-components": "^4.3.1",
     "underscore": "^1.9.1"
-  },
-  "scripts": {
-    "start:debug": "REACT_APP_DEBUG=true react-scripts start",
-    "start:prod": "react-scripts start",
-    "build": "react-scripts build",
-    "test-node": "jest server/",
-    "test-react": "react-scripts test",
-    "eject": "react-scripts eject",
-    "server": "node-env-run server --exec nodemon | pino-colada",
-    "dev": "run-p server start:prod",
-    "debug": "run-p server start:debug",
-    "migrate": "node-pg-migrate",
-    "test": "run-p test-node test-react"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
   },
   "devDependencies": {
     "body-parser": "^1.19.0",
@@ -69,10 +57,10 @@
     "pg": "^7.11.0",
     "pino-colada": "^1.4.4"
   },
-  "proxy": "http://localhost:3001",
-  "prettier": {
-    "trailingComma": "all",
-    "semi": true,
-    "singleQuote": false
-  }
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not op_mini all"
+  ],
+  "proxy": "http://localhost:3001"
 }

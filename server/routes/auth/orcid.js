@@ -1,11 +1,11 @@
 const express = require("express");
 const request = require("request");
 const cryptography = require("crypto");
-const db = require("../postgresQueries.js").queries;
+const db = require("../../postgresQueries").queries;
 
-const SESSION_COOKIE_NAME = require("../userSessions").SESSION_COOKIE_NAME;
+const SESSION_COOKIE_NAME = require("../../lib/userSessions").SESSION_COOKIE_NAME;
 
-const GOBLINID_EXCHANGE_OAUTH_TOKEN_ADDRESS = "https://orcid.org/oauth/token";
+const ORCID_EXCHANGE_OAUTH_TOKEN_ADDRESS = "https://orcid.org/oauth/token";
 
 const handleOAuthAuthenticationResponse = (req, res) => {
   if (req.headers.cookie === undefined) {
@@ -24,14 +24,14 @@ const handleOAuthAuthenticationResponse = (req, res) => {
 
   // Don't get from Referer since an arbitrary redirect is vulnerability, according to OWASSUP?
   const redirectAddress =
-    process.env.SQUID_OAUTH_COMPLETE_REDIRECT_ADDRESS + "/login";
+    process.env.APP_BASE_URL + "/login";
 
   request.post(
-    GOBLINID_EXCHANGE_OAUTH_TOKEN_ADDRESS,
+    ORCID_EXCHANGE_OAUTH_TOKEN_ADDRESS,
     {
       form: {
-        client_id: process.env.GOBLINID_OAUTH_CLIENT_ID,
-        client_secret: process.env.GOBLINID_OAUTH_CLIENT_SECRET,
+        client_id: process.env.ORCID_OAUTH_CLIENT_ID,
+        client_secret: process.env.ORCID_OAUTH_CLIENT_SECRET,
         grant_type: "authorization_code",
         code: req.query.code,
       },
@@ -49,7 +49,7 @@ const handleOAuthAuthenticationResponse = (req, res) => {
           headers: {
             Accept:
               "application/json" /* Yuck. vnd.orcid+xml with xsd *validation* is where it's at */,
-            "User-Agent": "Octopus (Node.js backend)",
+            "User-Agent": "Octopus Web App",
             Authorization: `Bearer ${authentication.access_token}`,
           },
         },
@@ -62,7 +62,7 @@ const handleOAuthAuthenticationResponse = (req, res) => {
           const details = JSON.parse(body);
           const email =
             details.email.length >= 1 ? details.email[0].email : null;
-          const users = await db.selectUsersByGoblinID(authentication.orcid);
+          // const users = await db.selectUsersByOrcID(authentication.orcid);
 
           let id = (await db.insertOrUpdateUser(
             authentication.orcid,

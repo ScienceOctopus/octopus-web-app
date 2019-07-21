@@ -1,4 +1,4 @@
-const SESSION_COOKIE_NAME = "Octopus API (Node.js) Session Identifier";
+const SESSION_COOKIE_NAME = "OctopusSession";
 
 const getUserFromSession = req => {
   const session = req.cookies[SESSION_COOKIE_NAME];

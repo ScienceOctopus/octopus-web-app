@@ -1,0 +1,38 @@
+
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/node:10.16
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+          - v1-dependencies-
+
+      - run: npm install
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+
+      # - run: npm run lint
+      # - run: npm run test
+
+      - run:
+          name: Build React app
+          command: |
+            npm run ui:build
+
+      - run:
+          name: Package app
+          command: |
+            mkdir dist
+            tar czf ./dist/octopus-web-app-b$(echo $CIRCLE_BUILD_NUM).tar.gz package.json build server node_modules
+
+      - store_artifacts:
+          path: ./dist

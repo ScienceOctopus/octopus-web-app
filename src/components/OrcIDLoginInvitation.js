@@ -1,7 +1,7 @@
 import React from "react";
 import LinkOnlyIfAcquiredState from "./LinkOnlyIfAcquiredState";
 
-function GoblinIDLoginInvitation(props) {
+function OrcIDLoginInvitation(props) {
   return (
     <LinkOnlyIfAcquiredState
       className="right item"
@@ -18,4 +18,4 @@ function GoblinIDLoginInvitation(props) {
   );
 }
 
-export default GoblinIDLoginInvitation;
+export default OrcIDLoginInvitation;
