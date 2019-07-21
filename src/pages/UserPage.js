@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import ProblemSearchDescription from "../components/ProblemSearchDescription";
+// import ProblemSearchDescription from "../components/ProblemSearchDescription";
 
 import Api from "../api";
 import { loginRequired } from "./LogInRequiredPage";
@@ -285,9 +285,9 @@ class UserPage extends Component {
   }
 }
 
-const capitalizeFirst = string => {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-};
+// const capitalizeFirst = string => {
+//   return string.charAt(0).toUpperCase() + string.slice(1);
+// };
 
 const splitPublications = pubs => {
   let splitted = {

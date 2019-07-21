@@ -307,7 +307,7 @@ class ProblemPage extends Component {
       return {};
     }
 
-    let nextPublication = nextStage.publications[next];
+    // let nextPublication = nextStage.publications[next];
 
     let newLinks = [];
 

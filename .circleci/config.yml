@@ -20,13 +20,20 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
 
-      # - run: npm run lint
-      # - run: npm run test
+      - run:
+          name: Lint codebase
+          command: |
+            npm run lint
+
+      # - run:
+      #     name: Unit tests
+      #     command: |
+      #       npm run test
 
       - run:
           name: Build React app
           command: |
-            npm run ui:build
+            CI=false npm run ui:build
 
       - run:
           name: Package app

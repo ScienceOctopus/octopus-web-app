@@ -1,6 +1,7 @@
 import React from "react";
 import { Link, Redirect } from "react-router-dom";
-import i18n, { AVAILABLE_LANGUAGES, SHORT_LINK_LANGS } from "../i18n";
+// import i18n, { AVAILABLE_LANGUAGES, SHORT_LINK_LANGS } from "../i18n";
+import { AVAILABLE_LANGUAGES } from "../i18n";
 import { generatePath } from "react-router-dom";
 
 const ORCID_OAUTH_CLIENT_ID = "APP-I3S9GLKWPY01BYEA";
@@ -14,10 +15,10 @@ const REDIRECT_URI = `${REDIRECT_HOST}/api/auth/orcid`;
 const languageRegex = AVAILABLE_LANGUAGES.reduce((a, b) => a + "|" + b);
 const LanguageMatcher = `/(${languageRegex})?`;
 
-const langLinkPrefix = () => {
-  if (SHORT_LINK_LANGS.includes(i18n.language)) return "";
-  else return "/" + i18n.language;
-};
+// const langLinkPrefix = () => {
+//   if (SHORT_LINK_LANGS.includes(i18n.language)) return "";
+//   else return "/" + i18n.language;
+// };
 
 export const localizeLink = link => {
   //   return langLinkPrefix() + link;

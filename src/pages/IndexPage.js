@@ -3,7 +3,7 @@ import WebURI, { LocalizedLink } from "../urls/WebsiteURIs";
 import { withRouter } from "react-router-dom";
 import graph from "../assets/images/graph.png";
 import Footer from "../components/Footer";
-import ProblemSelector from "../components/ProblemSelector";
+// import ProblemSelector from "../components/ProblemSelector";
 import LinkOnlyIfAcquiredState from "../components/LinkOnlyIfAcquiredState";
 
 class IndexPage extends Component {
