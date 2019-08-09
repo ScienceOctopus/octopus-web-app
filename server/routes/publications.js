@@ -73,6 +73,7 @@ const getPublications = (req, res) => {
   }
 
   // TODO: not done yet
+  console.log(`getPublications by user failed: ${req.query.user}`);
   res.status(444).end();
 };
 
@@ -82,12 +83,14 @@ const getReviews = (req, res) => {
   }
 
   // TODO: not done yet
+  console.log(`getReviews by user failed: ${req.query.forUser}`);
   res.status(444).end();
 };
 
 const getPublicationByID = async (req, res) => {
   const publication = await getAndValidatePublication(req.params.id, req);
   if (!publication) {
+    console.log(`Couldn't find publication with ID: ${req.params.id}`);
     return res.sendStatus(404);
   }
 
@@ -112,6 +115,7 @@ const notifyLinkedUsers = async publication => {
 const postPublicationToID = async (req, res) => {
   const publication = await getAndValidatePublication(req.params.id, req);
   if (!publication) {
+    console.log(`Couldn't post publication with ID: ${req.params.id}`);
     return res.sendStatus(404);
   }
   if (!publication.draft) {
@@ -128,6 +132,7 @@ const postPublicationToID = async (req, res) => {
   let data = JSON.parse(req.body.data);
 
   if (schema.length !== data.length) {
+    console.log(`Schema-data mismatch in publication posting`);
     return res.sendStatus(400);
   }
 
@@ -156,6 +161,7 @@ const postPublicationToID = async (req, res) => {
     }
 
     if (error) {
+      console.log(error);
       return res.sendStatus(400);
     }
 
@@ -257,6 +263,7 @@ const postPublicationToID = async (req, res) => {
 const getLinksBeforeByPublication = async (req, res) => {
   const publication = await getAndValidatePublication(req.params.id, req);
   if (!publication) {
+    console.log(`Couldn't find publication with ID: ${req.params.id}`);
     return res.sendStatus(404);
   }
 
@@ -282,6 +289,7 @@ const getAllLinksBeforeByPublication = async (req, res) => {
 const getLinksAfterByPublication = async (req, res) => {
   const publication = await getAndValidatePublication(req.params.id, req);
   if (!publication) {
+    console.log(`Couldn't find publication with ID: ${req.params.id}`);
     return res.sendStatus(404);
   }
 
@@ -294,6 +302,7 @@ const getLinksAfterByPublication = async (req, res) => {
 const getReferencesByPublication = async (req, res) => {
   const publication = await getAndValidatePublication(req.params.id, req);
   if (!publication) {
+    console.log(`Couldn't find publication with ID: ${req.params.id}`);
     return res.sendStatus(404);
   }
 
@@ -304,6 +313,7 @@ const getReferencesByPublication = async (req, res) => {
 const getReviewsByPublication = async (req, res) => {
   const publication = await getAndValidatePublication(req.params.id, req);
   if (!publication) {
+    console.log(`Couldn't find publication with ID: ${req.params.id}`);
     return res.sendStatus(404);
   }
 
@@ -328,6 +338,7 @@ const getReviewsByPublication = async (req, res) => {
 const getResourcesByPublication = async (req, res) => {
   const publication = await getAndValidatePublication(req.params.id, req);
   if (!publication) {
+    console.log(`Couldn't find publication with ID: ${req.params.id}`);
     return res.sendStatus(404);
   }
 
@@ -348,6 +359,7 @@ const getCollaboratorsByPublication = async (req, res) => {
 const getCollaboratorsBackwardsFromPublication = async (req, res) => {
   const publication = await getAndValidatePublication(req.params.id, req);
   if (!publication) {
+    console.log(`Couldn't find publication with ID: ${req.params.id}`);
     return res.sendStatus(404);
   }
 
@@ -363,8 +375,9 @@ const postCollaboratorToPublication = async (req, res) => {
     return res.sendStatus(404);
   }
 
-  users = await db.selectUsers(req.body.userID);
+  const users = await db.selectUsers(req.body.userID);
   if (!users.length) {
+    console.log(`Couldn't find user with ID: ${req.body.userID}`);
     return res.sendStatus(410);
   }
 
@@ -391,6 +404,7 @@ const postCollaboratorToPublication = async (req, res) => {
 const getSignoffsByPublication = async (req, res) => {
   const publication = await getAndValidatePublication(req.params.id, req);
   if (!publication) {
+    console.log(`Couldn't find publication with ID: ${req.params.id}`);
     return res.sendStatus(404);
   }
 
@@ -405,6 +419,7 @@ const getSignoffsByPublication = async (req, res) => {
 const postSignoffToPublication = async (req, res) => {
   const publication = await getAndValidatePublication(req.params.id, req);
   if (!publication) {
+    console.log(`Couldn't postSignoff for publication with ID: ${req.params.id}`);
     return res.sendStatus(404);
   }
 
@@ -470,6 +485,7 @@ const postSignoffToPublication = async (req, res) => {
 const getSignoffsRemainingByPublication = async (req, res) => {
   const publication = await getAndValidatePublication(req.params.id, req);
   if (!publication) {
+    console.log(`Couldn't find publication with ID: ${req.params.id}`);
     return res.sendStatus(404);
   }
 
@@ -495,6 +511,7 @@ const getSignoffsRemainingByPublication = async (req, res) => {
 const postRequestSignoffToPublication = async (req, res) => {
   const publication = await getAndValidatePublication(req.params.id, req);
   if (!publication) {
+    console.log(`Couldn't find publication with ID: ${req.params.id}`);
     return res.sendStatus(404);
   }
 
@@ -513,6 +530,7 @@ const postRequestSignoffToPublication = async (req, res) => {
 const getTagsByPublication = async (req, res) => {
   const publication = await getAndValidatePublication(req.params.id, req);
   if (!publication) {
+    console.log(`Couldn't find publication with ID: ${req.params.id}`);
     return res.sendStatus(404);
   }
 
@@ -579,6 +597,7 @@ const deleteTagFromPublication = async (req, res) => {
 const getCollaboratorsCountByPublication = async (req, res) => {
   const publication = await getAndValidatePublication(req.params.id, req);
   if (!publication) {
+    console.log(`Couldn't find publication with ID: ${req.params.id}`);
     return res.sendStatus(404);
   }
 

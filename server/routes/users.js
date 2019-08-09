@@ -19,6 +19,7 @@ const getUserByID = async (req, res) => {
   const users = await db.selectUsers(req.params.id);
 
   if (!users.length) {
+    console.log(`Couldn't find user with ID: ${req.params.id}`);
     return res.sendStatus(404);
   }
 
@@ -79,6 +80,7 @@ const removeUserNotification = async (req, res) => {
   const user = getUserFromSession(req);
 
   if (user.toString() !== req.params.id.toString()) {
+    console.log(`User ID mismatch. Session: ${user.toString()}. req param: ${req.params.id}`);
     return res.sendStatus(403);
   }
   let numDeleted = await db.deleteUserNotificationByUserAndID(

@@ -36,6 +36,7 @@ const getProblemByID = async (req, res) => {
   const problems = await db.selectProblemsByID(req.params.id);
 
   if (!problems.length) {
+    console.log(`Couldn't find problem with ID: ${req.params.id}`);
     return res.sendStatus(404);
   }
 
@@ -50,6 +51,7 @@ const getProblemByID = async (req, res) => {
 const getStagesByProblem = async (req, res) => {
   const problems = await db.selectProblemsByID(req.params.id);
   if (!problems.length) {
+    console.log(`Couldn't find problem with ID: ${req.params.id}`);
     return res.sendStatus(404);
   }
   const stages = await db.selectStagesByProblem(req.params.id);
@@ -65,6 +67,7 @@ const getStageByProblem = async (req, res) => {
 
   const stages = await db.selectStagesByID(req.params.stage);
   if (!stages.length) {
+    console.log(`Couldn't find stage: ${req.params.stage}`);
     return res.sendStatus(404);
   }
 
@@ -74,6 +77,7 @@ const getStageByProblem = async (req, res) => {
 const getPublicationsByProblemAndStage = async (req, res) => {
   const problems = await db.selectProblemsByID(req.params.id);
   if (!problems.length) {
+    console.log(`Couldn't find problem with ID: ${req.params.id}`);
     return res.sendStatus(404);
   }
 
@@ -106,6 +110,7 @@ const getPublicationsByProblemAndStage = async (req, res) => {
 const getPublicationsByProblem = async (req, res) => {
   const problems = await db.selectProblemsByID(req.params.id);
   if (!problems.length) {
+    console.log(`Couldn't find problem with ID: ${req.params.id}`);
     return res.sendStatus(404);
   }
 
@@ -137,17 +142,20 @@ const postPublicationToProblemAndStage = async (req, res) => {
   let user = getUserFromSession(req);
 
   if (!isNumber(req.body.user) || !user || user !== Number(req.body.user)) {
+    console.log(`Couldn't find user with ID: ${req.body.user}`);
     return res.sendStatus(400);
   }
 
   const problems = await db.selectProblemsByID(req.params.id);
   if (!problems.length) {
+    console.log(`Couldn't find problem with ID: ${req.params.id}`);
     return res.sendStatus(400);
   }
 
   const stages = await db.selectStagesByID(req.params.stage);
 
   if (!stages.length) {
+    console.log(`Couldn't find stage: ${req.params.stage}`);
     return res.sendStatus(400);
   }
 
@@ -155,6 +163,7 @@ const postPublicationToProblemAndStage = async (req, res) => {
     req.body.review === "true" &&
     (req.body.basedOn === undefined || JSON.parse(req.body.basedOn).length <= 0)
   ) {
+    console.log(`Review must have a basedOn property`);
     return res.sendStatus(400);
   }
 
@@ -168,6 +177,7 @@ const postPublicationToProblemAndStage = async (req, res) => {
     data = JSON.parse(req.body.data);
 
     if (schema.length !== data.length) {
+      console.log(`Schema and data lengths do not match`);
       return res.sendStatus(400);
     }
 
@@ -309,6 +319,7 @@ const postProblem = async (req, res) => {
   let user = getUserFromSession(req);
 
   if (!req.body.title || !user) {
+    console.log(`Title or user missing in postProblem routine`);
     return res.sendStatus(400);
   }
 
@@ -316,6 +327,7 @@ const postProblem = async (req, res) => {
   let stages =
     req.body.stages || (await db.selectAllStagesIds().map(x => x.id));
   if (!stages.length || stages.some(x => !isNumber(x))) {
+    console.log(`Stages not found`);
     return res.sendStatus(400);
   }
 
