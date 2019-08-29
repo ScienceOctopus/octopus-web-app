@@ -23,6 +23,7 @@ class Modal extends React.Component {
             overflowX={this.props.overflowX}
             overflowY={this.props.overflowY}
             padding={this.props.padding}
+            width={this.props.width}
           >
             {this.props.children}
           </Presenter>

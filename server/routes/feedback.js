@@ -29,7 +29,7 @@ const postImage = (req, res) => {
 
   setTimeout(() => {
     res.status(200).json({
-      url: req.file.url,
+      url: req.file.location,
     });
   }, 500);
 };

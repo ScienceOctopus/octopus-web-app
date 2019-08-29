@@ -85,14 +85,16 @@ class Store {
     this._connect();
   }
 
-
   _connect = () => {
     // const port = process.env.NODE_ENV === "development" ? ":3001" : "";
 
-    const env = ['localhost', '127.0.0.1', '0'].indexOf(window.location.hostname) !== -1 ? 'local' : 'prod';
+    const env =
+      ["localhost", "127.0.0.1", "0"].indexOf(window.location.hostname) !== -1
+        ? "local"
+        : "prod";
 
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const port = env === 'local' ? ':3001' : '';
+    const port = env === "local" ? ":3001" : "";
 
     this.ws = new WebSocket(
       `${protocol}//${window.location.hostname}${port}${root}`,
@@ -727,6 +729,15 @@ class ApiBuilder extends LinkBuilder {
     this._checkNotFinal();
 
     this.path += "/feedback";
+
+    this._final();
+    return this;
+  };
+
+  fileToText = () => {
+    this._checkNotFinal();
+
+    this.path += "/problems/file-to-text";
 
     this._final();
     return this;

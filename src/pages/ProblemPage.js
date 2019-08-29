@@ -686,19 +686,21 @@ class ProblemPage extends Component {
             middle: middle,
           });
 
-          publication.reviews.forEach(review => {
-            nodes.push({
-              id: review.id,
-              colour: ColourScheme.reviewHighlight,
-              middle: false,
-              review: true,
-            });
+          if (publication.review) {
+            publication.reviews.forEach(review => {
+              nodes.push({
+                id: review.id,
+                colour: ColourScheme.reviewHighlight,
+                middle: false,
+                review: true,
+              });
 
-            links.push({
-              source: publication.id,
-              target: review.id,
+              links.push({
+                source: publication.id,
+                target: review.id,
+              });
             });
-          });
+          }
         });
 
         if (i <= 0) {

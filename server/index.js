@@ -2,7 +2,7 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const express = require("express");
 const expressWs = require("express-ws");
-const pino = require('express-pino-logger')();
+const pino = require("express-pino-logger")();
 
 const usersHandlers = require("./routes/users");
 const problemsHandlers = require("./routes/problems");
@@ -15,7 +15,7 @@ const blobService = require("./lib/blobService");
 const upload = blobService.upload;
 blobService.initialise();
 
-function noop () {}
+function noop() {}
 
 // intialise the app
 const app = express();
@@ -60,10 +60,7 @@ app.use("/api/users", usersHandlers.router);
 app.use("/api/auth/orcid", orcidAuthHandlers.router);
 
 app.post("/api/feedback", feedbackHandlers.postFeedback);
-app.post("/api/image",
-  upload(blobService.AZURE_FEEDBACK_IMAGE_CONTAINER).single("image"),
-  feedbackHandlers.postImage,
-);
+app.post("/api/image", upload().single("image"), feedbackHandlers.postImage);
 
 app.use(function(err, req, res, next) {
   console.error(err.stack);

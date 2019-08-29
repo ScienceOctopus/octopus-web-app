@@ -311,7 +311,7 @@ class UploadPage extends Component {
 
     await this.setState({ uploading: true });
 
-    Api()
+    return Api()
       .subscribe(UPLOAD_KEY)
       .problem(this.state.selectedProblemId)
       .stage(this.state.selectedStageId)

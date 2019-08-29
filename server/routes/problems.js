@@ -6,6 +6,8 @@ const upload = blobService.upload;
 const getUserFromSession = require("../lib/userSessions").getUserFromSession;
 const broadcast = require("../lib/webSocket").broadcast;
 
+const fs = require("fs");
+
 function catchAsyncErrors(fn) {
   return (req, res, next) => {
     const routePromise = fn(req, res, next);
@@ -213,9 +215,10 @@ const postPublicationToProblemAndStage = async (req, res) => {
         case "file":
           // @TODO use a generic model for file operations
           content = (await db.insertResource(
-            "azureBlob",
-            req.files[content].url,
+            req.files[0].mimeType,
+            req.files[0].location,
           ))[0];
+
           resources.push(content);
           break;
         case "uri":
@@ -266,7 +269,7 @@ const postPublicationToProblemAndStage = async (req, res) => {
   }
 
   resources.unshift(
-    (await db.insertResource("azureBlob", req.files[0].url))[0],
+    (await db.insertResource(req.files[0].mimetype, req.files[0].location))[0],
   );
 
   for (let i = 0; i < resources.length; i++) {
@@ -348,7 +351,96 @@ const postProblem = async (req, res) => {
 
 const isNumber = x => Number(x) !== NaN;
 
+const fileToText = async (req, res) => {
+  // ge uploaded files bucket and key
+  let fileOptions = [];
+  req.files.forEach(file => {
+    fileOptions.push({
+      s3Options: {
+        Bucket: file.bucket,
+        Key: file.key,
+      },
+      mimetype: file.mimetype,
+    });
+  });
+
+  fileOptions.forEach(fileOption => {
+    const aws = require("aws-sdk");
+    const AWS_KEY = process.env.AWS_KEY;
+    const AWS_SECRET = process.env.AWS_SECRET;
+    const AWS_REGION = process.env.AWS_REGION;
+
+    aws.config.update({
+      region: AWS_REGION,
+      accessKeyId: AWS_KEY,
+      secretAccessKey: AWS_SECRET,
+    });
+    const s3Instance = new aws.S3();
+    const filePath = `/tmp/V0-${fileOption.s3Options.Key}`;
+
+    s3Instance.getObject(fileOption.s3Options, (err, data) => {
+      if (err) console.error(err);
+
+      // base64 encoding doesn't write corrupted .doc and .docx
+      // base64 encoding doesn't affect .pdf
+      fs.writeFileSync(filePath, Buffer.from(data.Body).toString("base64"), {
+        encoding: "base64",
+      });
+
+      console.log(`${filePath} has been created!`);
+
+      if (fileOption.mimetype === "application/msword") {
+        console.log("we in");
+      }
+
+      if (fileOption.mimetype === "text/x-tex") {
+        console.log("we in");
+      }
+
+      if (
+        fileOption.mimetype ===
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      ) {
+        // ------ works for DOCX ------
+        const mammoth = require("mammoth");
+        mammoth
+          .convertToHtml({ path: filePath })
+          .then(function(result) {
+            var html = result.value; // The generated HTML
+            res.status(200).json({ html });
+          })
+          .done();
+      }
+
+      // ------ works for PDF ------
+      if (fileOption.mimetype === "application/pdf") {
+        var extract = require("pdf-html-extract");
+
+        extract(filePath, function(err, html) {
+          if (err) {
+            console.dir(err);
+            return;
+          }
+
+          html.join(" ");
+          res.status(200).json({ html });
+        });
+      }
+    });
+  });
+};
+
 var router = express.Router();
+router.post(
+  "/file-to-text",
+  (req, res, next) => {
+    if (upload) {
+      return upload().array("file")(req, res, next);
+    }
+    next();
+  },
+  catchAsyncErrors(fileToText),
+);
 
 router.get("/", catchAsyncErrors(getProblems));
 router.post("/", catchAsyncErrors(postProblem));
@@ -373,7 +465,12 @@ router.get(
 
 router.post(
   "/:id(\\d+)/stages/:stage(\\d+)/publications",
-  upload(blobService.AZURE_PUBLICATION_CONTAINER).array("file"),
+  (req, res, next) => {
+    if (upload) {
+      return upload().array("file")(req, res, next);
+    }
+    next();
+  },
   catchAsyncErrors(postPublicationToProblemAndStage),
 );
 

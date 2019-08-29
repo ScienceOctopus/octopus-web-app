@@ -2,9 +2,34 @@ import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import styled from "styled-components";
 import Publication from "./Publication";
+import PublicationModal from "./AddPublicationModal/PublicationModal";
 import { generateLocalizedPath, RouterURI } from "../urls/WebsiteURIs";
 
 class Stage extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      modalVisible: false,
+    };
+  }
+
+  setModalVisible = visible => () => {
+    this.setState({
+      modalVisible: visible,
+    });
+  };
+
+  renderModal() {
+    return (
+      <PublicationModal
+        show={this.state.modalVisible}
+        onClose={this.setModalVisible(false)}
+        stage={this.props.stage}
+        content={this.props.content}
+      />
+    );
+  }
+
   render() {
     let {
       offset,
@@ -190,13 +215,24 @@ class Stage extends Component {
             className="ui placeholder"
             style={{
               marginLeft: "2.5rem",
-              marginRight: "1.5em",
+              marginRight: "2em",
               height: "1.2em",
             }}
           >
             <div className="long line" style={{ backgroundColor: "initial" }} />
           </div>
           <div style={{ clear: "both" }} />
+          <div
+            className="ui icon button octopus-theme publication disabled"
+            style={{
+              padding: "0.5rem",
+              position: "absolute",
+              top: "calc(13px - (1.07142857rem * 1.28571429 - 13px) / 2)",
+              right: "0.25rem",
+            }}
+          >
+            <i className="ui plus alternate icon" style={{ color: "white" }} />
+          </div>
           {pubsNumber}
         </h4>
       );
@@ -253,6 +289,18 @@ class Stage extends Component {
             />
           </div>
           {this.props.stage.name}
+          <div
+            className="ui icon button octopus-theme publication"
+            style={{
+              padding: "0.5rem",
+              position: "absolute",
+              top: "calc(13px - (1.07142857rem * 1.28571429 - 13px) / 2)",
+              right: "0.25rem",
+            }}
+            onClick={this.setModalVisible(true)}
+          >
+            <i className="ui plus alternate icon" style={{ color: "white" }} />
+          </div>
           {pubsNumber}
         </h4>
       );
@@ -285,6 +333,7 @@ class Stage extends Component {
           </PublicationCollapser>
         </PublicationSegment>
         {links}
+        {this.renderModal()}
       </div>
     );
   }
