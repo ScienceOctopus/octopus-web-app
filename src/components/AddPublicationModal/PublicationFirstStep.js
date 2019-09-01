@@ -41,12 +41,12 @@ class PublicationFirstStep extends Component {
             <PublicationUpload
               onSelect={this.props.onFileSelect}
               selectedFile={this.props.selectedFile}
-              publicationTitle={this.props.publicationTitle}
+              stageName={this.props.stageName.toLowerCase()}
               handleTitleChange={this.props.handleTitleChange}
             />
             <h4 style={{ marginTop: "0.6rem", marginBottom: "0.6rem" }}>Or</h4>
             <span style={styles.uploadText} onClick={this.props.showEditor}>
-              Use our editor to write your analysis
+              Use our editor to write your {this.props.stageName.toLowerCase()}
             </span>
           </div>
         )}

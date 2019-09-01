@@ -4,9 +4,6 @@ const multerS3 = require("multer-s3");
 
 let multerUpload = null;
 
-const AZURE_FEEDBACK_IMAGE_CONTAINER = "feedback-images";
-const AZURE_PUBLICATION_CONTAINER = "publications";
-
 const AWS_KEY = process.env.AWS_KEY;
 const AWS_SECRET = process.env.AWS_SECRET;
 const AWS_REGION = process.env.AWS_REGION;
@@ -43,6 +40,4 @@ function upload() {
 module.exports = {
   initialise,
   upload,
-  AZURE_FEEDBACK_IMAGE_CONTAINER,
-  AZURE_PUBLICATION_CONTAINER,
 };

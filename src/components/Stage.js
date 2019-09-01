@@ -26,6 +26,7 @@ class Stage extends Component {
         onClose={this.setModalVisible(false)}
         stage={this.props.stage}
         content={this.props.content}
+        backgroundColor="#FAFAFA"
       />
     );
   }
@@ -201,7 +202,7 @@ class Stage extends Component {
             style={{
               padding: "0.5rem",
               position: "absolute",
-              top: "calc(13px - (1.07142857rem * 1.28571429 - 13px) / 2)",
+              top: "0.5rem",
               marginLeft: "-0.25rem",
             }}
           >
@@ -227,7 +228,7 @@ class Stage extends Component {
             style={{
               padding: "0.5rem",
               position: "absolute",
-              top: "calc(13px - (1.07142857rem * 1.28571429 - 13px) / 2)",
+              top: "0.5rem",
               right: "0.25rem",
             }}
           >

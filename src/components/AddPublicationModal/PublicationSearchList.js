@@ -7,14 +7,16 @@ const SEARCH_KEY = "search";
 class PublicationSearchList extends Component {
   constructor(props) {
     super(props);
-    this.state = { loaded: true };
+    this.state = { loaded: true, publications: [] };
 
     // Always start a new cache when the search page is loaded
     Api().subscribeClass(SEARCH_KEY, Math.random());
   }
 
   componentDidMount() {
-    this.fetchQuery();
+    this.setState({
+      publications: this.props.publications,
+    });
   }
 
   componentWillUnmount() {
@@ -23,47 +25,30 @@ class PublicationSearchList extends Component {
 
   componentDidUpdate(oldProps) {
     if (oldProps.query !== this.props.query) {
-      this.fetchQuery();
+      let newPublications = this.props.publications.filter(publication =>
+        publication.title.includes(this.props.query),
+      );
+
+      this.setState({
+        publications: newPublications,
+      });
+
+      this.loadingComplete();
     }
   }
 
-  fetchQuery() {
-    if (!this.props.query) {
-      this.fetchAllProblems();
-    } else {
-      this.fetchQueryProblems();
-    }
-  }
-
-  fetchQueryProblems() {
-    Api()
-      .publications()
-      .getQuery(this.props.query)
-      .then(problems => {
-        this.setState(
-          {
-            loaded: true,
-            problems: problems.map(x => x.id),
-          },
-          this.loadingComplete,
-        );
-      });
-  }
-
-  fetchAllProblems() {
-    Api()
-      .publications()
-      .get()
-      .then(problems => {
-        this.setState(
-          {
-            loaded: true,
-            problems: problems.map(x => x.id),
-          },
-          this.loadingComplete,
-        );
-      });
-  }
+  updatePublicationsList = publications => {
+    console.log("global.session.user", global.session.user);
+    this.setState({
+      publications: publications
+        .filter(x => x.orcid !== global.session.user.orcid)
+        .filter(
+          x =>
+            !this.props.excluded ||
+            !this.props.excluded.find(y => y.orcid === x.orcid),
+        ),
+    });
+  };
 
   loadingComplete() {
     if (this.props.onLoaded) this.props.onLoaded();
@@ -73,17 +58,33 @@ class PublicationSearchList extends Component {
     if (!this.props.publications.length) {
       return <h1>Nothing found for query "{this.props.query}"!</h1>;
     }
-    return this.props.publications.map(
-      (publication, index) => (
-        <PublicationSearchTemplate
-          key={index}
-          publication={publication}
-          onSelect={this.props.onSelect}
-        />
-      ),
-      // <PublicationSearchDescription id={x} key={x} onSelect={this.props.onSelect} />
+    console.log("publication search list state", this.state);
+    return (
+      <div style={styles.publicationsListContainer}>
+        {this.state.publications.map((publication, index) => (
+          <PublicationSearchTemplate
+            key={index}
+            publication={publication}
+            onSelect={this.props.onSelect}
+            publicationCollaborators={this.props.publicationCollaborators}
+            handlePublicationsToLink={this.props.handlePublicationsToLink}
+            publicationsToLink={this.props.publicationsToLink}
+          />
+        ))}
+      </div>
     );
   }
 }
+
+const styles = {
+  publicationsListContainer: {
+    border: "1px solid #979797",
+    overflowX: "hidden",
+    overflowY: "auto",
+    borderRadius: 5,
+    marginTop: 10,
+    maxHeight: 400,
+  },
+};
 
 export default PublicationSearchList;

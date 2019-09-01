@@ -2,6 +2,7 @@ import React, { Component } from "react";
 // import PublicationLinkingTemplate from "./PublicationLinkingTemplate";
 import PublicationSearchList from "./PublicationSearchList";
 import SearchField from "../SearchField";
+import SortField from "../SortField";
 
 class PublicationThirdStep extends Component {
   constructor(props) {
@@ -9,7 +10,6 @@ class PublicationThirdStep extends Component {
     this.state = {
       selectedProblem: undefined,
       query: undefined,
-      modalVisible: false,
     };
   }
 
@@ -29,12 +29,13 @@ class PublicationThirdStep extends Component {
   };
 
   handleProblemSelect = problem => {
-    this.setState({
-      modalVisible: false,
-    });
     if (this.props.onSelect) {
       this.props.onSelect(problem);
     }
+  };
+
+  handleProblemsLoaded = () => {
+    this.setState({ searchLoading: false });
   };
 
   render() {
@@ -49,17 +50,28 @@ class PublicationThirdStep extends Component {
         </h4>
         <hr />
         <br />
-        <SearchField
-          placeholder={`Search for ${this.props.previousStageData.name}`}
-          onChange={this.handleSearchChange}
-          onSubmit={this.handleSearchSubmit}
-          loading={this.state.searchLoading}
-          value={this.state.query}
-        />
+        <div className="ui grid">
+          <div className="eight wide column">
+            <SearchField
+              placeholder={`Search for ${this.props.previousStageData.name}`}
+              onChange={this.handleSearchChange}
+              onSubmit={this.handleSearchSubmit}
+              loading={this.state.searchLoading}
+              value={this.state.query}
+            />
+          </div>
+          <div className="eight wide column" style={{ textAlign: "right" }}>
+            <SortField />
+          </div>
+        </div>
         <PublicationSearchList
           query={this.state.query}
           onSelect={this.handleProblemSelect}
+          onLoaded={this.handleProblemsLoaded}
           publications={this.props.previousStageData.publications}
+          publicationCollaborators={this.props.publicationCollaborators}
+          handlePublicationsToLink={this.props.handlePublicationsToLink}
+          publicationsToLink={this.props.publicationsToLink}
         />
       </div>
     );

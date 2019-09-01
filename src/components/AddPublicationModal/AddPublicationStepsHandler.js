@@ -32,6 +32,9 @@ const AddPublicationStepsHandler = props => {
           stageName={props.stageName}
           selecteStageId={props.selecteStageId}
           previousStageData={props.previousStageData}
+          publicationCollaborators={props.publicationCollaborators}
+          handlePublicationsToLink={props.handlePublicationsToLink}
+          publicationsToLink={props.publicationsToLink}
         />
       );
     default:

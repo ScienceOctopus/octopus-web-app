@@ -378,55 +378,60 @@ const fileToText = async (req, res) => {
     const s3Instance = new aws.S3();
     const filePath = `/tmp/V0-${fileOption.s3Options.Key}`;
 
-    s3Instance.getObject(fileOption.s3Options, (err, data) => {
-      if (err) console.error(err);
+    try {
+      s3Instance.getObject(fileOption.s3Options, (err, data) => {
+        if (err) console.error(err);
 
-      // base64 encoding doesn't write corrupted .doc and .docx
-      // base64 encoding doesn't affect .pdf
-      fs.writeFileSync(filePath, Buffer.from(data.Body).toString("base64"), {
-        encoding: "base64",
-      });
-
-      console.log(`${filePath} has been created!`);
-
-      if (fileOption.mimetype === "application/msword") {
-        console.log("we in");
-      }
-
-      if (fileOption.mimetype === "text/x-tex") {
-        console.log("we in");
-      }
-
-      if (
-        fileOption.mimetype ===
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-      ) {
-        // ------ works for DOCX ------
-        const mammoth = require("mammoth");
-        mammoth
-          .convertToHtml({ path: filePath })
-          .then(function(result) {
-            var html = result.value; // The generated HTML
-            res.status(200).json({ html });
-          })
-          .done();
-      }
-
-      // ------ works for PDF ------
-      if (fileOption.mimetype === "application/pdf") {
-        var extract = require("pdf-html-extract");
-
-        extract(filePath, function(err, html) {
-          if (err) {
-            console.dir(err);
-            return;
-          }
-
-          html.join(" ");
-          res.status(200).json({ html });
+        // base64 encoding doesn't write corrupted .doc and .docx
+        // base64 encoding doesn't affect .pdf
+        fs.writeFileSync(filePath, Buffer.from(data.Body).toString("base64"), {
+          encoding: "base64",
         });
-      }
-    });
+
+        console.log(`${filePath} has been created!`);
+
+        if (fileOption.mimetype === "application/msword") {
+          console.log("we in");
+        }
+
+        if (fileOption.mimetype === "text/x-tex") {
+          console.log("we in");
+        }
+
+        if (
+          fileOption.mimetype ===
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        ) {
+          // ------ works for DOCX ------
+          const mammoth = require("mammoth");
+          mammoth
+            .convertToHtml({ path: filePath })
+            .then(function(result) {
+              var html = result.value; // The generated HTML
+              res.status(200).json({ html });
+            })
+            .done();
+        }
+
+        // ------ works for PDF ------
+        if (fileOption.mimetype === "application/pdf") {
+          var extract = require("pdf-html-extract");
+
+          extract(filePath, function(err, html) {
+            if (err) {
+              console.dir(err);
+              return;
+            }
+
+            html.join(" ");
+            res.status(200).json({ html });
+          });
+        }
+      });
+    } catch (err) {
+      console.log("err", err);
+      res.status(500).send("500 Internal Server Error ");
+    }
   });
 };
 

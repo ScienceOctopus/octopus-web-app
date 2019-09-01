@@ -4,7 +4,9 @@ const PublicationUpload = props => {
   return (
     <div>
       <label htmlFor="file" className="ui icon" style={{ cursor: "pointer" }}>
-        <span style={styles.uploadText}>Upload an analysis document</span>
+        <span style={styles.uploadText}>
+          Upload an {props.stageName} document
+        </span>
         <div
           className="ui icon button publication"
           style={styles.uploadIconContainer}

@@ -22,20 +22,51 @@ class UserSearch extends Component {
   };
 
   handleInputChange = e => {
-    this.setState(
-      {
-        input: e.target.value,
-      },
-      this.fetchUsersByInput,
-    );
+    if (e.target.value.length > 2) {
+      this.setState(
+        {
+          input: e.target.value,
+        },
+        this.fetchUsersByInput,
+      );
+    }
   };
 
-  fetchUsersByInput() {
-    Api()
-      .users()
-      .getQuery(this.state.input)
-      .then(this.updateUserList)
-      .catch(this.handleBadUserList);
+  async fetchUsersByInput() {
+    let users = [];
+    const usersResponse = await fetch(
+      `https://pub.orcid.org/v2.1/search?q=${this.state.input}`,
+      {
+        method: "get",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    ).then(res => res.json());
+
+    const foundUsers = usersResponse.result;
+
+    await foundUsers.forEach(async foundUser => {
+      const userDetails = await fetch(
+        `https://pub.orcid.org/v2.1/${foundUser["orcid-identifier"].path}/personal-details`,
+        {
+          method: "get",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      ).then(res => res.json());
+
+      const { name } = userDetails;
+      if (name && name["given-names"] && name["family-name"]) {
+        const givenName = name["given-names"] ? name["given-names"].value : "";
+        const familyName = name["family-name"] ? name["family-name"].value : "";
+        const display_name = `${givenName} ${familyName}`;
+
+        users.push({ orcid: foundUser["orcid-identifier"].path, display_name });
+        this.updateUserList(users);
+      }
+    });
   }
 
   handleBadUserList = () => {
@@ -52,11 +83,11 @@ class UserSearch extends Component {
   updateUserList = users => {
     this.setState({
       users: users
-        .filter(x => x.id !== global.session.user.id)
+        .filter(x => x.orcid !== global.session.user.orcid)
         .filter(
           x =>
             !this.props.excluded ||
-            !this.props.excluded.find(y => y.id === x.id),
+            !this.props.excluded.find(y => y.orcid === x.orcid),
         )
         .slice(0, MAX_USERS_DISPLAY),
     });
@@ -72,13 +103,12 @@ class UserSearch extends Component {
 
   renderUserList() {
     if (!this.state.users.length) return null;
-
     return (
       <FloatingUserList>
         {this.state.users.map(user => (
           <UserInfoSelectContainer>
             <UserInfoContainer
-              key={user.id}
+              key={user.orcid}
               onMouseDown={this.handleSelect(user)}
             >
               <UserName>{user.display_name}</UserName>

@@ -29,6 +29,15 @@ class PublicationModal extends React.Component {
     };
   }
 
+  handlePublicationsToLink = publicationId => {
+    console.log("publicationId", publicationId);
+    console.log("publicationsToLink", this.state.publicationsToLink);
+    let publicationsToLink = this.state.publicationsToLink;
+    publicationsToLink.push(publicationId);
+
+    this.setState({ publicationsToLink });
+  };
+
   handleStepNumber = () => {
     if (this.state.publicationTitle !== "") {
       this.setState({
@@ -182,6 +191,8 @@ class PublicationModal extends React.Component {
                   showEditor={this.showEditor}
                   editorData={this.state.editorData}
                   editorVisible={this.state.editorVisible}
+                  handlePublicationsToLink={this.handlePublicationsToLink}
+                  publicationsToLink={this.state.publicationsToLink}
                 />
 
                 {this.state.stepNumber !== 3 ? (
