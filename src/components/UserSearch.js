@@ -22,13 +22,11 @@ class UserSearch extends Component {
   };
 
   handleInputChange = e => {
+    this.setState({
+      input: e.target.value,
+    });
     if (e.target.value.length > 2) {
-      this.setState(
-        {
-          input: e.target.value,
-        },
-        this.fetchUsersByInput,
-      );
+      this.fetchUsersByInput();
     }
   };
 
@@ -48,7 +46,7 @@ class UserSearch extends Component {
 
     await foundUsers.forEach(async foundUser => {
       const userDetails = await fetch(
-        `https://pub.orcid.org/v2.1/${foundUser["orcid-identifier"].path}/personal-details`,
+        `https://pub.orcid.org/v2.1/${foundUser["orcid-identifier"].path}/person`,
         {
           method: "get",
           headers: {
@@ -57,15 +55,22 @@ class UserSearch extends Component {
         },
       ).then(res => res.json());
 
-      const { name } = userDetails;
+      const { name, emails } = userDetails;
+      let givenName, familyName, display_name, display_email;
       if (name && name["given-names"] && name["family-name"]) {
-        const givenName = name["given-names"] ? name["given-names"].value : "";
-        const familyName = name["family-name"] ? name["family-name"].value : "";
-        const display_name = `${givenName} ${familyName}`;
-
-        users.push({ orcid: foundUser["orcid-identifier"].path, display_name });
-        this.updateUserList(users);
+        givenName = name["given-names"] ? name["given-names"].value : "";
+        familyName = name["family-name"] ? name["family-name"].value : "";
+        display_name = `${givenName} ${familyName}`;
       }
+      if (emails && emails.email.length > 0) {
+        display_email = emails.email[0].email;
+      }
+      users.push({
+        orcid: foundUser["orcid-identifier"].path,
+        display_name,
+        display_email,
+      });
+      this.updateUserList(users);
     });
   }
 
@@ -102,6 +107,7 @@ class UserSearch extends Component {
   };
 
   renderUserList() {
+    console.log(this.state.users);
     if (!this.state.users.length) return null;
     return (
       <FloatingUserList>
@@ -112,7 +118,7 @@ class UserSearch extends Component {
               onMouseDown={this.handleSelect(user)}
             >
               <UserName>{user.display_name}</UserName>
-              <UserEmail>{user.email || "(hidden email)"}</UserEmail>
+              <UserEmail>{user.display_email || "(hidden email)"}</UserEmail>
             </UserInfoContainer>
           </UserInfoSelectContainer>
         ))}
@@ -137,7 +143,7 @@ class UserSearch extends Component {
 
   render() {
     return (
-      <>
+      <div>
         <div className="inline field">
           <label>Username or Email Address</label>
           <UserLabelAndList>
@@ -156,7 +162,7 @@ class UserSearch extends Component {
         <button className="ui button" type="submit" onClick={this.handleSubmit}>
           Add New Collaborator
         </button>
-      </>
+      </div>
     );
   }
 }
