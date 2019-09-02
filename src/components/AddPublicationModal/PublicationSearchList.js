@@ -38,7 +38,6 @@ class PublicationSearchList extends Component {
   }
 
   updatePublicationsList = publications => {
-    console.log("global.session.user", global.session.user);
     this.setState({
       publications: publications
         .filter(x => x.orcid !== global.session.user.orcid)
@@ -58,7 +57,6 @@ class PublicationSearchList extends Component {
     if (!this.props.publications.length) {
       return <h1>Nothing found for query "{this.props.query}"!</h1>;
     }
-    console.log("publication search list state", this.state);
     return (
       <div style={styles.publicationsListContainer}>
         {this.state.publications.map((publication, index) => (

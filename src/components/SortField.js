@@ -13,9 +13,9 @@ const SortField = props => {
     <div className={containerClass}>
       <form onSubmit={props.onSubmit}>
         Sort by :
-        <div class="ui selection dropdown">
+        <div className="ui selection dropdown">
           <input type="hidden" type="text" placeholder="Enter weight.." />
-          {/* <div class="menu">
+          {/* <div className="menu">
             <div className="item" data-value="1">
               Male
             </div>
@@ -23,7 +23,7 @@ const SortField = props => {
               Female
             </div>
           </div> */}
-          <div class="ui basic label">
+          <div className="ui basic label">
             <div>
               <i className="angle up icon" />
             </div>

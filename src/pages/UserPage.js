@@ -27,6 +27,7 @@ class UserPage extends Component {
       signoffPublications: [],
       unseenPublications: [],
       checkingUnseen: true,
+      userPublications: undefined,
     };
   }
 
@@ -218,6 +219,88 @@ class UserPage extends Component {
     );
   }
 
+  getRadarData() {
+    const userPublications = this.state.userPublications
+      ? [...this.state.userPublications]
+      : [];
+    let problemsCounter = this.state.problems ? this.state.problems.length : 0;
+
+    let hypothesesCounter = 0;
+    let methodsCounter = 0;
+    let resultsCounter = 0;
+    let analysesCounter = 0;
+    let interpretationsCounter = 0;
+    let applicationsCounter = 0;
+    let reviewsCounter = 0;
+
+    if (userPublications) {
+      for (let i = 0; i < userPublications.length; i++) {
+        if (userPublications[i].review) {
+          reviewsCounter++;
+          userPublications.splice(i, 1);
+        }
+      }
+      userPublications.forEach(userPublication => {
+        switch (userPublication.stage) {
+          case 1:
+            hypothesesCounter++;
+            break;
+          case 2:
+            methodsCounter++;
+            break;
+          case 3:
+            resultsCounter++;
+            break;
+          case 4:
+            analysesCounter++;
+            break;
+          case 5:
+            interpretationsCounter++;
+            break;
+          case 6:
+            applicationsCounter++;
+            break;
+          default:
+            break;
+        }
+      });
+    }
+
+    return [
+      { title: "Problems", value: problemsCounter },
+      { title: "Hypotheses", value: hypothesesCounter },
+      { title: "Methods", value: methodsCounter },
+      { title: "Results", value: resultsCounter },
+      { title: "Analyses", value: analysesCounter },
+      { title: "Interpretations", value: interpretationsCounter },
+      { title: "Applications", value: applicationsCounter },
+      { title: "Reviews", value: reviewsCounter },
+    ];
+  }
+
+  renderPublicationRadar() {
+    const radarData = this.getRadarData();
+    return (
+      <table className="ui celled table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Number</th>
+          </tr>
+        </thead>
+        <tbody>
+          {radarData &&
+            radarData.map((data, index) => (
+              <tr key={index}>
+                <td>{data.title}</td>
+                <td>{data.value}</td>
+              </tr>
+            ))}
+        </tbody>
+      </table>
+    );
+  }
+
   shouldRenderInfo() {
     return !(
       this.state.finalizedPublications.length ||
@@ -274,6 +357,8 @@ class UserPage extends Component {
       <div className="ui container main">
         {this.renderTitle()}
 
+        {this.renderPublicationRadar()}
+
         {this.renderUnseen()}
         {this.renderUnsigned()}
 
@@ -291,6 +376,7 @@ class UserPage extends Component {
 
 const splitPublications = pubs => {
   let splitted = {
+    userPublications: pubs,
     finalizedPublications: [],
     finalizedReviews: [],
     draftPublications: [],

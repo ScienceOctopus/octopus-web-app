@@ -30,12 +30,22 @@ class PublicationModal extends React.Component {
   }
 
   handlePublicationsToLink = publicationId => {
-    console.log("publicationId", publicationId);
-    console.log("publicationsToLink", this.state.publicationsToLink);
-    let publicationsToLink = this.state.publicationsToLink;
-    publicationsToLink.push(publicationId);
+    const alreadyExists = this.state.publicationsToLink.includes(publicationId);
 
-    this.setState({ publicationsToLink });
+    if (alreadyExists) {
+      let existentLinks = this.state.publicationsToLink;
+
+      for (let i = 0; i < existentLinks.length; i++) {
+        if (existentLinks[i] === publicationId) {
+          existentLinks.splice(i, 1);
+        }
+      }
+    } else {
+      let publicationsToLink = this.state.publicationsToLink;
+      publicationsToLink.push(publicationId);
+
+      this.setState({ publicationsToLink });
+    }
   };
 
   handleStepNumber = () => {

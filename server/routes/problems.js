@@ -388,14 +388,10 @@ const fileToText = async (req, res) => {
           encoding: "base64",
         });
 
-        console.log(`${filePath} has been created!`);
-
         if (fileOption.mimetype === "application/msword") {
-          console.log("we in");
         }
 
         if (fileOption.mimetype === "text/x-tex") {
-          console.log("we in");
         }
 
         if (
