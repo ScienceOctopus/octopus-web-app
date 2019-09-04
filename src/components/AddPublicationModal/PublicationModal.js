@@ -5,6 +5,7 @@ import AddPublicationStepsHandler from "./AddPublicationStepsHandler";
 import LogInRequiredPage from "../../pages/LogInRequiredPage";
 import Api from "../../api";
 
+const UPLOAD_KEY = "upload";
 const SUPPORTED_EXTENSIONS = ["pdf", "doc", "docx", "tex"];
 
 class PublicationModal extends React.Component {
@@ -19,12 +20,15 @@ class PublicationModal extends React.Component {
 
       publicationsToLink: [],
       title: "",
-      summary: "",
+      summary: "None",
+      funding: "None",
       tags: ["octopus"],
       selectedFile: undefined,
+      isReview: false,
+      conflict: "None",
       badFileSelected: false,
+      publicationId: undefined,
 
-      linkedProblemsSelected: false,
       tagsIndex: 1,
     };
   }
@@ -54,10 +58,6 @@ class PublicationModal extends React.Component {
         stepNumber: this.state.stepNumber + 1,
       });
     }
-  };
-
-  handleSubmit = () => {
-    console.log("we in");
   };
 
   handleFileSelect = event => {
@@ -144,11 +144,50 @@ class PublicationModal extends React.Component {
       selectedFile: undefined,
       badFileSelected: false,
 
-      linkedProblemsSelected: false,
       tagsIndex: 1,
     });
 
     close();
+  };
+
+  handleSubmit = async () => {
+    const problemId = this.props.stage.problem;
+    const stageId = this.props.stage.id;
+    if (this.state.selectedFile === undefined) return;
+
+    const data = new FormData();
+    data.set("title", this.state.publicationTitle);
+    data.set("summary", this.state.summary);
+    data.set("funding", this.state.funding);
+    data.set("tags", JSON.stringify(this.state.tags));
+    data.set("conflict", this.state.conflict);
+    data.set("user", global.session.user.id);
+    data.set("review", this.state.isReview);
+    data.set("data", JSON.stringify([]));
+
+    if (this.state.publicationsToLink.length > 0) {
+      data.set(
+        "basedOn",
+        JSON.stringify(this.state.publicationsToLink.map(id => id)),
+      );
+    }
+
+    data.append("file", this.state.selectedFile);
+
+    return Api()
+      .subscribe(UPLOAD_KEY)
+      .problem(problemId)
+      .stage(stageId)
+      .publications()
+      .post(data)
+      .then(response => {
+        this.setState({ publicationId: response.data });
+      })
+      .catch(err => console.error(err.response))
+      .finally(() => {
+        // Reset state trackers to reset the form UI and ensure no multistage applicability by default
+        this.onClose(this.props.onClose);
+      });
   };
 
   render() {

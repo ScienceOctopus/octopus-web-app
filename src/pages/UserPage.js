@@ -8,6 +8,7 @@ import PublicationSelector from "../components/PublicationSelector";
 import WebURI from "../urls/WebsiteURIs";
 
 const USER_KEY = "user";
+const PROBLEM_KEY = "problem";
 
 class UserPage extends Component {
   signoffs = [];
@@ -278,6 +279,25 @@ class UserPage extends Component {
     ];
   }
 
+  // Fetch the stages, then fetch their publications
+  fetchStages() {
+    let done = false;
+
+    Api()
+      .subscribe(PROBLEM_KEY)
+      .problem(this.state.problem)
+      .stages()
+      .get()
+      .then(stages =>
+        this.setState(this.handleStagesChange(stages), () => {
+          if (!done) {
+            done = true;
+            this.fetchStagePublications();
+          }
+        }),
+      );
+  }
+
   renderPublicationRadar() {
     const radarData = this.getRadarData();
     return (
@@ -353,6 +373,8 @@ class UserPage extends Component {
   }
 
   render() {
+    console.log("this.state", this.state);
+    console.log("this.props", this.props);
     return (
       <div className="ui container main">
         {this.renderTitle()}

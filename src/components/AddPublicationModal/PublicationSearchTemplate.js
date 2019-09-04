@@ -111,6 +111,7 @@ class PublicationSearchTemplate extends Component {
             <div className="ui checkbox">
               <input
                 type="checkbox"
+                style={{ marginTop: 3 }}
                 checked={this.checkIfLinked(
                   this.props.publication.id,
                   this.props.publicationsToLink,

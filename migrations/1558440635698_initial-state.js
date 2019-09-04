@@ -9,7 +9,10 @@ exports.up = pgm => {
 
   pgm.createTable("users", {
     id: "id",
-    email: { type: "text", notNull: true },
+    email: {
+      type: "text",
+      notNull: true,
+    },
     login_type: {
       type: "text",
     },
@@ -206,4 +209,8 @@ exports.up = pgm => {
       default: pgm.func("current_timestamp"),
     },
   });
+};
+
+exports.down = pgm => {
+  pgm.dropTable("publications", { ifExists: true });
 };

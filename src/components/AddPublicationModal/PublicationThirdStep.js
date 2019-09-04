@@ -10,8 +10,23 @@ class PublicationThirdStep extends Component {
     this.state = {
       selectedProblem: undefined,
       query: undefined,
+      sortCategory: "Sort by",
+      sortAscendent: false,
+      sortDescendent: false,
     };
   }
+
+  handleSortCategory = sortCategory => {
+    this.setState({ sortCategory });
+  };
+
+  handleAscendent = () => {
+    this.setState({ sortAscendent: true, sortDescendent: false });
+  };
+
+  handleDescendent = () => {
+    this.setState({ sortAscendent: false, sortDescendent: true });
+  };
 
   handleSearchChange = event => {
     this.setState({
@@ -39,6 +54,8 @@ class PublicationThirdStep extends Component {
   };
 
   render() {
+    console.log("this.state", this.state);
+    console.log("this.props", this.props);
     if (!this.props.previousStageData)
       return <h4 style={styles.subtitle}> Please submit the publication!</h4>;
     return (
@@ -60,7 +77,14 @@ class PublicationThirdStep extends Component {
             />
           </div>
           <div className="eight wide column" style={{ textAlign: "right" }}>
-            <SortField />
+            <SortField
+              handleSortCategory={this.handleSortCategory}
+              handleAscendent={this.handleAscendent}
+              handleDescendent={this.handleDescendent}
+              sortCategory={this.state.sortCategory}
+              sortAscendent={this.state.sortAscendent}
+              sortDescendent={this.state.sortDescendent}
+            />
           </div>
         </div>
         <PublicationSearchList
