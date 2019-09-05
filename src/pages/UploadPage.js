@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
+import Rating from "react-rating";
 import Api from "../api";
 import FileUploadSelector from "../components/FileUploadSelector";
 import PublicationSelector from "../components/PublicationSelector";
@@ -47,8 +48,16 @@ class UploadPage extends Component {
       problems: [],
       stages: [],
       publications: undefined,
+      quality: 0,
+      sizeOfDataset: 0,
+      correctProtocol: 0,
     };
 
+    this.handleQualityRating = this.handleQualityRating.bind(this);
+    this.handleSizeOfDatasetRating = this.handleSizeOfDatasetRating.bind(this);
+    this.handleCorrectProtocolRating = this.handleCorrectProtocolRating.bind(
+      this,
+    );
     // Always start a new cache when the upload page is loaded
     Api()
       .subscribeClass(UPLOAD_KEY, Math.random())
@@ -587,6 +596,72 @@ class UploadPage extends Component {
     }
   }
 
+  handleQualityRating(value) {
+    this.setState({
+      quality: value,
+    });
+  }
+
+  handleSizeOfDatasetRating(value) {
+    this.setState({
+      sizeOfDataset: value,
+    });
+  }
+
+  handleCorrectProtocolRating(value) {
+    this.setState({
+      correctProtocol: value,
+    });
+  }
+
+  renderRatings() {
+    console.log("state", this.state);
+    console.log("props", this.props);
+    // const { review } = this.state.publication;
+    // if (review) {
+    //   return (
+    //     <div>
+    //       <p>Rating Counter</p>
+    //       <p>0</p>
+    //     </div>
+    //   );
+    // }
+    return (
+      <div>
+        <div className="row">
+          <h3>How do you rate these Results?</h3>
+          <hr />
+        </div>
+        <div className="ui equal width grid">
+          <div className="column">
+            <p>High Quality & Annotated</p>
+            <Rating
+              readonly={global.session.user ? false : true}
+              initialRating={this.state.quality}
+              onClick={this.handleQualityRating}
+            />
+          </div>
+          <div className="column" style={{ textAlign: "center" }}>
+            <p>Size of data</p>
+            <Rating
+              readonly={global.session.user ? false : true}
+              initialRating={this.state.sizeOfDataset}
+              onClick={this.handleSizeOfDatasetRating}
+            />
+          </div>
+          <div className="column" style={{ textAlign: "right" }}>
+            <p>Correct protocol</p>
+            <Rating
+              readonly={global.session.user ? false : true}
+              initialRating={this.state.correctProtocol}
+              onClick={this.handleCorrectProtocolRating}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   render() {
     let metaData = null;
 
@@ -782,6 +857,7 @@ class UploadPage extends Component {
                   </label>
                 </div>
               </div>
+              {this.state.isReview && this.renderRatings()}
               {this.shouldRenderLinkingSelector() &&
                 this.renderLinkingSelector()}
               <div className="ui hidden divider" />

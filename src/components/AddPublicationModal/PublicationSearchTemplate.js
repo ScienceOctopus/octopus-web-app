@@ -6,13 +6,15 @@ class PublicationSearchTemplate extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      publication: undefined,
       collaborators: [],
     };
-    this.handleCheckbox = this.handleCheckbox.bind(this);
   }
 
   componentDidMount() {
+    this.fetchPublicationCollaborators();
+  }
+
+  fetchPublicationCollaborators() {
     Api()
       .publication(this.props.publication.id)
       .collaborators()
@@ -25,7 +27,7 @@ class PublicationSearchTemplate extends Component {
               .get()
               .then(user => {
                 this.setState(state => {
-                  var augmented = state;
+                  let augmented = state;
                   augmented.collaborators = augmented.collaborators.filter(
                     collaborator => collaborator.id !== user.id,
                   );
@@ -40,21 +42,18 @@ class PublicationSearchTemplate extends Component {
   }
 
   checkIfLinked = (publicationId, publicationsToLink) => {
-    console.log("publicationsToLink", publicationsToLink);
-    const getPublication = publicationsToLink.find(
+    const checkLink = publicationsToLink.find(
       publication => publication === publicationId,
     );
-    console.log("getPublication", getPublication);
-    if (getPublication) return true;
+    if (checkLink) return true;
     return false;
   };
 
-  handleCheckbox() {
-    console.log("jajajajajajajaja", this.props);
-  }
+  handleCheckbox = () => {
+    this.props.handlePublicationsToLink(this.props.publication.id);
+  };
+
   render() {
-    console.log(this.props);
-    console.log(this.state);
     const dateAdded = new Date(
       this.props.publication.created_at,
     ).toLocaleDateString("en-US");
@@ -112,16 +111,12 @@ class PublicationSearchTemplate extends Component {
             <div className="ui checkbox">
               <input
                 type="checkbox"
-                className="hidden"
-                // onClick={this.props.handlePublicationsToLink(
-                //   this.props.publication.id,
-                // )}
-                // checked={this.checkIfLinked(
-                //   this.props.publication.id,
-                //   this.props.publicationsToLink,
-                // )}
-                checked={false}
-                onChange={this.handleCheckbox()}
+                style={{ marginTop: 3 }}
+                checked={this.checkIfLinked(
+                  this.props.publication.id,
+                  this.props.publicationsToLink,
+                )}
+                onChange={this.handleCheckbox}
               />
               <label style={{ marginTop: 3 }}></label>
             </div>

@@ -17,7 +17,7 @@ class PublicationFirstStep extends Component {
           Add {this.props.stageName.toLowerCase()} documents to Octopus
         </h4>
         <hr />
-        {this.props.selectedFile && (
+        {(this.props.selectedFile || this.props.editorVisible) && (
           <div style={{ marginBottom: "1rem" }}>
             <br />
             <div className="ui mini input">
@@ -29,9 +29,12 @@ class PublicationFirstStep extends Component {
                 style={styles.titleInput}
                 onChange={this.props.handleTitleChange}
               />
-              <span style={styles.fileSize}>
-                {Math.round((this.props.selectedFile.size / 1024) * 10) / 10}MB
-              </span>
+              {this.props.selectedFile && (
+                <span style={styles.fileSize}>
+                  {Math.round((this.props.selectedFile.size / 1024) * 10) / 10}
+                  MB
+                </span>
+              )}
             </div>
           </div>
         )}

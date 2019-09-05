@@ -42,6 +42,7 @@
     "react-i18next": "^10.11.0",
     "react-latex": "^1.4.0",
     "react-pdf": "^4.1.0",
+    "react-rating": "^1.7.2",
     "react-router-dom": "^5.0.1",
     "react-scripts": "3.0.1",
     "react-slack-feedback": "^2.1.0",

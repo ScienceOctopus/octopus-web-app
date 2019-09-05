@@ -10,8 +10,73 @@ class PublicationThirdStep extends Component {
     this.state = {
       selectedProblem: undefined,
       query: undefined,
+      sortCategory: "Sort by",
+      sortAscendent: false,
+      sortDescendent: false,
+      publicationsList: this.props.previousStageData.publications,
     };
   }
+
+  handleSortCategory = sortCategory => {
+    this.setState({ sortCategory });
+
+    if (this.state.sortAscendent) this.handleAscendent();
+    if (this.state.sortDescendent) this.handleDescendent();
+  };
+
+  handleAscendent = () => {
+    let clonePublicationsList = [...this.state.publicationsList];
+
+    switch (this.state.sortCategory) {
+      case "Alphabetically":
+        clonePublicationsList.sort(function(a, b) {
+          return a["title"].localeCompare(b["title"]);
+        });
+        break;
+      case "Date":
+        clonePublicationsList.sort(function(a, b) {
+          return new Date(a.created_at) - new Date(b.created_at);
+        });
+        break;
+      case "Rating":
+        break;
+      default:
+        break;
+    }
+
+    this.setState({
+      publicationsList: clonePublicationsList,
+      sortAscendent: true,
+      sortDescendent: false,
+    });
+  };
+
+  handleDescendent = () => {
+    let clonePublicationsList = [...this.state.publicationsList];
+
+    switch (this.state.sortCategory) {
+      case "Alphabetically":
+        clonePublicationsList.sort(function(a, b) {
+          return b["title"].localeCompare(a["title"]);
+        });
+        break;
+      case "Date":
+        clonePublicationsList.sort(function(a, b) {
+          return new Date(b.created_at) - new Date(a.created_at);
+        });
+        break;
+      case "Rating":
+        break;
+      default:
+        break;
+    }
+
+    this.setState({
+      publicationsList: clonePublicationsList,
+      sortAscendent: false,
+      sortDescendent: true,
+    });
+  };
 
   handleSearchChange = event => {
     this.setState({
@@ -41,7 +106,7 @@ class PublicationThirdStep extends Component {
   render() {
     if (!this.props.previousStageData)
       return <h4 style={styles.subtitle}> Please submit the publication!</h4>;
-    console.log("third step state", this.state);
+
     return (
       <div>
         <h4 style={styles.subtitle}>
@@ -61,14 +126,21 @@ class PublicationThirdStep extends Component {
             />
           </div>
           <div className="eight wide column" style={{ textAlign: "right" }}>
-            <SortField />
+            <SortField
+              handleSortCategory={this.handleSortCategory}
+              handleAscendent={this.handleAscendent}
+              handleDescendent={this.handleDescendent}
+              sortCategory={this.state.sortCategory}
+              sortAscendent={this.state.sortAscendent}
+              sortDescendent={this.state.sortDescendent}
+            />
           </div>
         </div>
         <PublicationSearchList
           query={this.state.query}
           onSelect={this.handleProblemSelect}
           onLoaded={this.handleProblemsLoaded}
-          publications={this.props.previousStageData.publications}
+          publications={this.state.publicationsList}
           publicationCollaborators={this.props.publicationCollaborators}
           handlePublicationsToLink={this.props.handlePublicationsToLink}
           publicationsToLink={this.props.publicationsToLink}

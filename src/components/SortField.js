@@ -1,40 +1,70 @@
 import React from "react";
 
-const SortField = props => {
-  let containerClass = "ui search item";
-  if (props.loading) {
-    containerClass += " loading";
-  }
-  if (props.className) {
-    containerClass += ` ${props.className}`;
-  }
+const sortCategories = ["Alphabetically", "Rating", "Date"];
 
+const renderSortButton = (active, onClick, style, iconClassName) => {
   return (
-    <div className={containerClass}>
-      <form onSubmit={props.onSubmit}>
-        Sort by :
-        <div class="ui selection dropdown">
-          <input type="hidden" type="text" placeholder="Enter weight.." />
-          {/* <div class="menu">
-            <div className="item" data-value="1">
-              Male
+    <button
+      className={active ? "mini ui button" : "mini basic ui button"}
+      style={style}
+      onClick={onClick}
+    >
+      <i className={iconClassName} style={{ margin: 0 }} />
+    </button>
+  );
+};
+
+const SortField = props => {
+  return (
+    <div className="ui compact menu" style={{ borderRadius: "50px" }}>
+      <div
+        className="ui simple dropdown item"
+        style={{ borderRadius: "15px 0 0 0" }}
+      >
+        {props.sortCategory}
+        <div className="menu">
+          {sortCategories.map((category, index) => (
+            <div
+              key={index}
+              className="item"
+              onClick={() => props.handleSortCategory(category)}
+            >
+              {category}
             </div>
-            <div className="item" data-value="0">
-              Female
-            </div>
-          </div> */}
-          <div class="ui basic label">
-            <div>
-              <i className="angle up icon" />
-            </div>
-            <div>
-              <i className="angle down icon" />
-            </div>
-          </div>
+          ))}
         </div>
-      </form>
+      </div>
+
+      {renderSortButton(
+        props.sortAscendent,
+        props.handleAscendent,
+        styles.sortAscendentButton,
+        "angle up icon",
+      )}
+
+      {renderSortButton(
+        props.sortDescendent,
+        props.handleDescendent,
+        styles.sortDescendentButton,
+        "angle down icon",
+      )}
     </div>
   );
+};
+
+const styles = {
+  sortAscendentButton: {
+    borderRight: "0.25px solid lightgrey",
+    textAlign: "center",
+    marginRight: 0,
+    borderRadius: 0,
+  },
+  sortDescendentButton: {
+    borderLeft: "0.25px solid lightgrey",
+    textAlign: "center",
+    marginRight: 0,
+    borderRadius: "0 50px 50px 0",
+  },
 };
 
 export default SortField;

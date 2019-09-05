@@ -1,18 +1,47 @@
 import React, { Component } from "react";
-import Api from "../api";
 import styled from "styled-components";
+import Api from "../api";
 
-const MAX_USERS_DISPLAY = 3;
+const debounceChangeEvent = (inner, ms = 0) => {
+  let timer = null;
+  let resolves = [];
+  return e => {
+    e.persist();
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      let result = inner(e);
+      resolves.forEach(r => r(result));
+      resolves = [];
+    }, ms);
+    return new Promise(r => resolves.push(r));
+  };
+};
+
+const getUsers = query =>
+  fetch(`https://pub.orcid.org/v2.1/search?q=${query}`, {
+    method: "get",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then(res => res.json());
+
+const getDetails = id =>
+  fetch(`https://pub.orcid.org/v2.1/${id}/person`, {
+    method: "get",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then(res => res.json());
 
 class UserSearch extends Component {
   selectedUser = undefined;
   constructor(props) {
     super(props);
-    this.state = {
-      input: "",
-      users: [],
-      searchError: undefined,
-    };
+
+    this.state = { details: [], loading: false, input: "" };
+    this.handleChange = debounceChangeEvent(this.handleChange.bind(this), 150);
+    this.handleChangeContainer = this.handleChangeContainer.bind(this);
+    this.handleBlur = this.handleBlur.bind(this);
   }
 
   handleSubmit = () => {
@@ -21,107 +50,88 @@ class UserSearch extends Component {
     }
   };
 
-  handleInputChange = e => {
-    this.setState({
-      input: e.target.value,
-    });
-    if (e.target.value.length > 2) {
-      this.fetchUsersByInput();
+  handleChangeContainer(event) {
+    this.setState({ details: [], loading: true, input: event.target.value });
+    this.handleChange(event);
+  }
+
+  async handleChange(event) {
+    let users = await getUsers(event.target.value);
+    if (!users) {
+      return this.setState({ loading: false });
     }
+
+    // Limit the results to 3
+    let found = users.result.slice(0, 3);
+
+    const details =
+      (await Promise.all(
+        found.map(u => getDetails(u["orcid-identifier"].path)),
+      )) || [];
+
+    this.setState({ ...this.state, details, loading: false });
+  }
+
+  handleSelect = user => () => {
+    const { name, emails } = user;
+    let givenName, familyName, display_name, display_email;
+
+    if (name && name["given-names"] && name["family-name"]) {
+      givenName = name["given-names"] ? name["given-names"].value : "";
+      familyName = name["family-name"] ? name["family-name"].value : "";
+      display_name = `${givenName} ${familyName}`;
+    }
+
+    if (emails && emails.email.length > 0) {
+      display_email = emails.email[0].email;
+    }
+
+    this.setState({
+      input: display_name || display_email,
+    });
+
+    this.selectedUser = {
+      display_name,
+      email: display_email,
+      orcid: name.path,
+    };
   };
 
-  async fetchUsersByInput() {
-    let users = [];
-    const usersResponse = await fetch(
-      `https://pub.orcid.org/v2.1/search?q=${this.state.input}`,
-      {
-        method: "get",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
-    ).then(res => res.json());
-
-    const foundUsers = usersResponse.result;
-
-    await foundUsers.forEach(async foundUser => {
-      const userDetails = await fetch(
-        `https://pub.orcid.org/v2.1/${foundUser["orcid-identifier"].path}/person`,
-        {
-          method: "get",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-      ).then(res => res.json());
-
-      const { name, emails } = userDetails;
-      let givenName, familyName, display_name, display_email;
-      if (name && name["given-names"] && name["family-name"]) {
-        givenName = name["given-names"] ? name["given-names"].value : "";
-        familyName = name["family-name"] ? name["family-name"].value : "";
-        display_name = `${givenName} ${familyName}`;
-      }
-      if (emails && emails.email.length > 0) {
-        display_email = emails.email[0].email;
-      }
-      users.push({
-        orcid: foundUser["orcid-identifier"].path,
-        display_name,
-        display_email,
-      });
-      this.updateUserList(users);
+  handleBlur() {
+    this.setState({
+      details: [],
     });
   }
 
-  handleBadUserList = () => {
-    this.clearUserList();
-  };
-
-  handleSelect = user => () => {
-    this.setState({
-      input: user.display_name || user.email,
-    });
-    this.selectedUser = user;
-  };
-
-  updateUserList = users => {
-    this.setState({
-      users: users
-        .filter(x => x.orcid !== global.session.user.orcid)
-        .filter(
-          x =>
-            !this.props.excluded ||
-            !this.props.excluded.find(y => y.orcid === x.orcid),
-        )
-        .slice(0, MAX_USERS_DISPLAY),
-    });
-  };
-
-  handleBlur = () => {
-    this.clearUserList();
-  };
-
-  clearUserList = () => {
-    this.updateUserList([]);
-  };
-
   renderUserList() {
-    console.log(this.state.users);
-    if (!this.state.users.length) return null;
+    if (!this.state.details.length) return null;
+
     return (
       <FloatingUserList>
-        {this.state.users.map(user => (
-          <UserInfoSelectContainer>
-            <UserInfoContainer
-              key={user.orcid}
-              onMouseDown={this.handleSelect(user)}
-            >
-              <UserName>{user.display_name}</UserName>
-              <UserEmail>{user.display_email || "(hidden email)"}</UserEmail>
-            </UserInfoContainer>
-          </UserInfoSelectContainer>
-        ))}
+        {this.state.loading ? "Loading" : ""}
+        {this.state.details.map(user => {
+          const { name, emails } = user;
+          let givenName, familyName, display_name, display_email;
+
+          if (name && name["given-names"] && name["family-name"]) {
+            givenName = name["given-names"] ? name["given-names"].value : "";
+            familyName = name["family-name"] ? name["family-name"].value : "";
+            display_name = `${givenName} ${familyName}`;
+          }
+
+          if (emails && emails.email.length > 0) {
+            display_email = emails.email[0].email;
+          }
+
+          return (
+            <UserInfoSelectContainer key={user.name.path}>
+              <UserInfoContainer onMouseDown={this.handleSelect(user)}>
+                <UserName>{display_name}</UserName>
+                <UserEmail>{display_email || "(hidden email)"}</UserEmail>
+              </UserInfoContainer>
+            </UserInfoSelectContainer>
+          );
+        })}
       </FloatingUserList>
     );
   }
@@ -152,7 +162,7 @@ class UserSearch extends Component {
               type="text"
               value={this.state.input}
               placeholder="example@example.com"
-              onChange={this.handleInputChange}
+              onChange={this.handleChangeContainer}
               onBlur={this.handleBlur}
             />
             {this.renderUserList()}

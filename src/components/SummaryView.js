@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PDFImagePreviewRenderer from "./PDFImagePreviewRenderer";
 import styled from "styled-components";
+import Rating from "react-rating";
 import {
   LocalizedLink,
   generateLocalizedPath,
@@ -16,13 +17,46 @@ class SummaryView extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {};
-
+    this.state = {
+      quality: 0,
+      sizeOfDataset: 0,
+      correctProtocol: 0,
+    };
     this.fetchPublicationData();
   }
 
   componentWillUnmount() {
     Api().unsubscribeClass(SUMMARY_KEY);
+  }
+
+  renderRatings() {
+    console.log("state", this.state);
+    console.log("props", this.props);
+    const { review } = this.state.publication;
+    if (review) {
+      return (
+        <div>
+          <p>Rating Counter</p>
+          <p>0</p>
+        </div>
+      );
+    }
+    return (
+      <div className="ui equal width grid">
+        <div className="column">
+          <p>High Quality & Annotated</p>
+          <Rating readonly={true} initialRating={this.state.quality} />
+        </div>
+        <div className="column" style={{ textAlign: "center" }}>
+          <p>Size of data</p>
+          <Rating readonly={true} initialRating={this.state.sizeOfDataset} />
+        </div>
+        <div className="column" style={{ textAlign: "right" }}>
+          <p>Correct protocol</p>
+          <Rating readonly={true} initialRating={this.state.correctProtocol} />
+        </div>
+      </div>
+    );
   }
 
   static getContributions = collaborators => {
@@ -375,6 +409,9 @@ class SummaryView extends Component {
               <strong>Date added: </strong>
               {new Date(this.state.publication.created_at).toLocaleDateString()}
             </p>
+            <br />
+            {this.renderRatings()}
+            <br />
             {this.state.collaborators &&
               SummaryView.sortByLastName(
                 this.state.collaborators,
@@ -387,7 +424,6 @@ class SummaryView extends Component {
                   </a>
                 </p>
               ))}
-
             {mainResourcePresent && (
               <a className="ui button" href={this.state.resources[0].uri}>
                 <i className="ui download icon" />
@@ -416,9 +452,7 @@ class SummaryView extends Component {
               <div className="ui divider" />
               {this.state.publication.conflict}
             </section>
-
             {metadata}
-
             {mainResourcePresent ? (
               <section className="ui segment">
                 <PDFImagePreviewRenderer document={this.state.resources[0]} />
@@ -431,7 +465,6 @@ class SummaryView extends Component {
                 </div>
               </section>
             )}
-
             <section className="ui segment">
               <h3>All collaborating authors in this line of research</h3>
               <div className="ui divider" />
@@ -446,7 +479,6 @@ class SummaryView extends Component {
                   </span>
                 ))}
             </section>
-
             <section className="ui segment">
               <h3>Earlier publications in this line of research</h3>
               <div className="ui divider" />

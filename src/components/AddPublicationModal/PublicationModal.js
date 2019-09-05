@@ -5,6 +5,7 @@ import AddPublicationStepsHandler from "./AddPublicationStepsHandler";
 import LogInRequiredPage from "../../pages/LogInRequiredPage";
 import Api from "../../api";
 
+const UPLOAD_KEY = "upload";
 const SUPPORTED_EXTENSIONS = ["pdf", "doc", "docx", "tex"];
 
 class PublicationModal extends React.Component {
@@ -20,22 +21,35 @@ class PublicationModal extends React.Component {
       publicationsToLink: [],
       title: "",
       summary: "",
+      funding: "",
       tags: ["octopus"],
       selectedFile: undefined,
+      isReview: false,
+      conflict: "",
       badFileSelected: false,
+      publicationId: undefined,
 
-      linkedProblemsSelected: false,
       tagsIndex: 1,
     };
   }
 
   handlePublicationsToLink = publicationId => {
-    console.log("publicationId", publicationId);
-    console.log("publicationsToLink", this.state.publicationsToLink);
-    let publicationsToLink = this.state.publicationsToLink;
-    publicationsToLink.push(publicationId);
+    const alreadyExists = this.state.publicationsToLink.includes(publicationId);
 
-    this.setState({ publicationsToLink });
+    if (alreadyExists) {
+      let existentLinks = this.state.publicationsToLink;
+
+      for (let i = 0; i < existentLinks.length; i++) {
+        if (existentLinks[i] === publicationId) {
+          existentLinks.splice(i, 1);
+        }
+      }
+    } else {
+      let publicationsToLink = this.state.publicationsToLink;
+      publicationsToLink.push(publicationId);
+
+      this.setState({ publicationsToLink });
+    }
   };
 
   handleStepNumber = () => {
@@ -44,10 +58,6 @@ class PublicationModal extends React.Component {
         stepNumber: this.state.stepNumber + 1,
       });
     }
-  };
-
-  handleSubmit = () => {
-    console.log("we in");
   };
 
   handleFileSelect = event => {
@@ -134,11 +144,51 @@ class PublicationModal extends React.Component {
       selectedFile: undefined,
       badFileSelected: false,
 
-      linkedProblemsSelected: false,
       tagsIndex: 1,
     });
 
     close();
+  };
+
+  handleSubmit = async () => {
+    const problemId = this.props.stage.problem;
+    const stageId = this.props.stage.id;
+    if (this.state.selectedFile === undefined) return;
+
+    const data = new FormData();
+    data.set("title", this.state.publicationTitle);
+    data.set("summary", this.state.summary);
+    data.set("funding", this.state.funding);
+    data.set("tags", JSON.stringify(this.state.tags));
+    data.set("conflict", this.state.conflict);
+    data.set("user", global.session.user.id);
+    data.set("review", this.state.isReview);
+    data.set("data", JSON.stringify([]));
+
+    if (this.state.publicationsToLink.length > 0) {
+      data.set(
+        "basedOn",
+        JSON.stringify(this.state.publicationsToLink.map(id => id)),
+      );
+    }
+
+    data.append("file", this.state.selectedFile);
+
+    return Api()
+      .subscribe(UPLOAD_KEY)
+      .problem(problemId)
+      .stage(stageId)
+      .publications()
+      .post(data)
+      .then(response => {
+        // insertLink(response.data, this.state.publicationsToLink);
+        this.setState({ publicationId: response.data });
+      })
+      .catch(err => console.error(err.response))
+      .finally(() => {
+        // Reset state trackers to reset the form UI and ensure no multistage applicability by default
+        this.onClose(this.props.onClose);
+      });
   };
 
   render() {
@@ -149,6 +199,8 @@ class PublicationModal extends React.Component {
     const previousStageData = this.props.content.content.stages[
       previousStageId
     ];
+
+    console.log(this.state);
 
     return (
       <div style={styles.backdrop}>
