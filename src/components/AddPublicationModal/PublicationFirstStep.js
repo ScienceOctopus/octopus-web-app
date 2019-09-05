@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import PublicationUpload from "./PublicationUpload";
 import HandleEditor from "./HandleEditor";
 
 class PublicationFirstStep extends Component {
@@ -42,36 +41,29 @@ class PublicationFirstStep extends Component {
         {this.props.editorData === "" && (
           <div className="ui segment">
             <div className="ui two column very relaxed grid">
-              <div className="column">
-                <label
-                  htmlFor="file"
-                  className="ui icon"
-                  style={{ cursor: "pointer" }}
-                >
-                  <PublicationUpload
-                    onSelect={this.props.onFileSelect}
-                    selectedFile={this.props.selectedFile}
-                    stageName={this.props.stageName.toLowerCase()}
-                    handleTitleChange={this.props.handleTitleChange}
+              <div className="column" style={styles.textCenter}>
+                <label for="file" style={styles.uploadLabel}>
+                  <i className="ui upload icon" style={styles.icon} />
+                  <p style={styles.uploadText}>
+                    Upload an {this.props.stageName.toLowerCase()} document
+                  </p>
+                  <input
+                    type="file"
+                    id="file"
+                    name="file"
+                    onChange={this.props.onFileSelect}
+                    style={styles.hidden}
                   />
                 </label>
               </div>
-
-              <div
-                className="column"
-                style={styles.uploadText}
-                onClick={this.props.showEditor}
-              >
-                <div
-                  className="ui icon basic button publication"
-                  style={styles.uploadIconContainer}
-                >
-                  <i className="ui pencil icon" style={{ color: "#4A74AF" }} />
+              <div className="column" style={styles.textCenter}>
+                <div onClick={this.props.showEditor}>
+                  <i className="ui pencil icon" style={styles.icon} />
+                  <p style={styles.uploadText}>
+                    Use our editor to write your{" "}
+                    {this.props.stageName.toLowerCase()}
+                  </p>
                 </div>
-                <p>
-                  Use our editor to write your{" "}
-                  {this.props.stageName.toLowerCase()}
-                </p>
               </div>
             </div>
             <div className="ui vertical divider">Or</div>
@@ -89,6 +81,16 @@ class PublicationFirstStep extends Component {
 }
 
 const styles = {
+  uploadLabel: {
+    display: "block",
+    cursor: "pointer",
+  },
+  textCenter: {
+    textAlign: "center",
+  },
+  hidden: {
+    display: "none",
+  },
   titleInput: {
     width: 200,
     backgroundColor: "#F0F0F1",
@@ -113,8 +115,8 @@ const styles = {
     textAlign: "center",
     cursor: "pointer",
   },
-  uploadIconContainer: {
-    padding: "0.35rem",
+  icon: {
+    color: "#4A74AF",
     margin: 20,
     fontSize: "42px",
   },
