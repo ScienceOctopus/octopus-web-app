@@ -2,18 +2,14 @@ import React from "react";
 
 const PublicationUpload = props => {
   return (
-    <div>
-      <label htmlFor="file" className="ui icon" style={{ cursor: "pointer" }}>
-        <span style={styles.uploadText}>
-          Upload an {props.stageName} document
-        </span>
-        <div
-          className="ui icon button publication"
-          style={styles.uploadIconContainer}
-        >
-          <i className="ui upload icon" style={{ color: "#4A74AF" }} />
-        </div>
-      </label>
+    <div style={styles.uploadContainer}>
+      <div
+        className="ui icon basic button publication"
+        style={styles.uploadIconContainer}
+      >
+        <i className="ui upload icon" style={{ color: "#4A74AF" }} />
+      </div>
+        <p style={styles.uploadText}>Upload an {props.stageName} document</p>
       <input
         type="file"
         id="file"
@@ -29,17 +25,17 @@ const styles = {
   uploadText: {
     color: "#4A74AF",
     fontWeight: "bold",
-    fontSize: 17,
-  },
-
-  uploadFileButton: {
-    backgroundColor: "white",
-    color: "#4A74AF",
+    fontSize: 18,
   },
 
   uploadIconContainer: {
     padding: "0.35rem",
-    marginLeft: 20,
+    margin: 20,
+    fontSize: "42px",
+  },
+
+  uploadContainer: {
+    textAlign: "center",
   },
 };
 

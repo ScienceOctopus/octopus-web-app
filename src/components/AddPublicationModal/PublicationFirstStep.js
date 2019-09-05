@@ -37,21 +37,43 @@ class PublicationFirstStep extends Component {
         )}
 
         {this.props.editorData === "" && (
-          <div>
-            <PublicationUpload
-              onSelect={this.props.onFileSelect}
-              selectedFile={this.props.selectedFile}
-              stageName={this.props.stageName.toLowerCase()}
-              handleTitleChange={this.props.handleTitleChange}
-            />
-            <h4 style={{ marginTop: "0.6rem", marginBottom: "0.6rem" }}>Or</h4>
-            <span style={styles.uploadText} onClick={this.props.showEditor}>
-              Use our editor to write your {this.props.stageName.toLowerCase()}
-            </span>
+          <div className="ui segment">
+            <div className="ui two column very relaxed grid">
+              <div className="column">
+                <label
+                  htmlFor="file"
+                  className="ui icon"
+                  style={{ cursor: "pointer" }}
+                >
+                  <PublicationUpload
+                    onSelect={this.props.onFileSelect}
+                    selectedFile={this.props.selectedFile}
+                    stageName={this.props.stageName.toLowerCase()}
+                    handleTitleChange={this.props.handleTitleChange}
+                  />
+                </label>
+              </div>
+
+              <div
+                className="column"
+                style={styles.uploadText}
+                onClick={this.props.showEditor}
+              >
+                <div
+                  className="ui icon basic button publication"
+                  style={styles.uploadIconContainer}
+                >
+                  <i className="ui pencil icon" style={{ color: "#4A74AF" }} />
+                </div>
+                <p>
+                  Use our editor to write your{" "}
+                  {this.props.stageName.toLowerCase()}
+                </p>
+              </div>
+            </div>
+            <div className="ui vertical divider">Or</div>
           </div>
         )}
-
-        <br />
         {this.props.editorVisible && (
           <HandleEditor
             selectedFile={this.props.selectedFile}
@@ -84,8 +106,14 @@ const styles = {
   uploadText: {
     color: "#4A74AF",
     fontWeight: "bold",
-    fontSize: 17,
+    fontSize: 18,
+    textAlign: "center",
     cursor: "pointer",
+  },
+  uploadIconContainer: {
+    padding: "0.35rem",
+    margin: 20,
+    fontSize: "42px",
   },
 };
 
