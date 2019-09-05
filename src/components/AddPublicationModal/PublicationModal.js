@@ -4,6 +4,7 @@ import styled from "styled-components";
 import AddPublicationStepsHandler from "./AddPublicationStepsHandler";
 import LogInRequiredPage from "../../pages/LogInRequiredPage";
 import Api from "../../api";
+import { Translate } from "aws-sdk";
 
 const UPLOAD_KEY = "upload";
 const SUPPORTED_EXTENSIONS = ["pdf", "doc", "docx", "tex"];
@@ -135,7 +136,7 @@ class PublicationModal extends React.Component {
     this.setState({ editorVisible: true, editorData: editorData });
   };
 
-  updateLoading = (loading) => {
+  updateLoading = loading => {
     this.setState({ ...this.state, loading });
   };
 
@@ -211,10 +212,14 @@ class PublicationModal extends React.Component {
       previousStageId
     ];
 
-    console.log(this.state);
-
     return (
-      <div style={styles.backdrop}>
+      <div
+        style={
+          global.session.user === undefined
+            ? styles.backdropMin
+            : styles.backdrop
+        }
+      >
         <div style={{ position: "relative", height: "100%", width: "100%" }}>
           <div
             className="ui button"
@@ -231,7 +236,9 @@ class PublicationModal extends React.Component {
             width={this.props.width}
           >
             {global.session.user === undefined ? (
-              <LogInRequiredPage />
+              <div style={styles.loginRequired}>
+                <LogInRequiredPage />
+              </div>
             ) : (
               <div>
                 <h1 style={{ fontWeight: "bold" }}>
@@ -260,12 +267,14 @@ class PublicationModal extends React.Component {
                 />
 
                 {this.state.stepNumber !== 3 ? (
-                  <a
+                  <button
+                    class="ui button"
+                    disabled={!this.state.publicationTitle}
                     style={styles.nextStepButton}
                     onClick={this.handleStepNumber}
                   >
                     Next
-                  </a>
+                  </button>
                 ) : (
                   <a style={styles.nextStepButton} onClick={this.handleSubmit}>
                     Submit
@@ -296,7 +305,20 @@ const styles = {
     left: 0,
     right: 0,
     backgroundColor: "rgba(0,0,0,0.3)",
-    padding: "10% 20%",
+    borderRadius: 4,
+    padding: "5% 15%",
+    zIndex: 9999,
+  },
+
+  backdropMin: {
+    position: "fixed",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "rgba(0,0,0,0.3)",
+    borderRadius: 4,
+    padding: "20% 20%",
     zIndex: 9999,
   },
 
@@ -304,9 +326,11 @@ const styles = {
     position: "absolute",
     top: 0,
     right: 0,
-    padding: 5,
+    padding: 15,
+    margin: 0,
+    fontSize: 18,
     zIndex: 100,
-    backgroundColor: "white",
+    backgroundColor: "transparent",
   },
 
   icon: {
@@ -315,14 +339,22 @@ const styles = {
 
   nextStepButton: {
     position: "absolute",
-    right: 15,
-    bottom: 20,
+    right: 0,
+    bottom: 0,
+    marginTop: 40,
+    marginBottom: 20,
+    marginRight: 20,
+    padding: 5,
     color: "#2185d0",
-    backgroundColor: "white",
-    boxShadow: "none",
-    borderWidth: 0,
-    fontSize: 17,
-    cursor: "pointer",
+    backgroundColor: "transparent",
+    fontSize: 18,
+    fontWeight: 600,
+  },
+  loginRequired: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
   },
 };
 

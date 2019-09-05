@@ -25,9 +25,9 @@ class PublicationFirstStep extends Component {
         )) || (
           <div>
             {(this.props.selectedFile || this.props.editorVisible) && (
-              <div style={{ marginBottom: "1rem" }}>
+              <div style={{ marginBottom: "2rem" }}>
                 <br />
-                <div className="ui mini input">
+                <div className="ui input focus">
                   <input
                     type="text"
                     name="title"
@@ -48,7 +48,7 @@ class PublicationFirstStep extends Component {
             )}
 
             {this.props.editorData === "" && (
-              <div className="ui segment">
+              <div className="ui segment" style={{ marginTop: 30 }}>
                 <div className="ui two column very relaxed grid">
                   <div className="column" style={styles.textCenter}>
                     <label htmlFor="file" style={styles.uploadLabel}>
@@ -103,13 +103,11 @@ const styles = {
     display: "none",
   },
   titleInput: {
-    width: 200,
-    backgroundColor: "#F0F0F1",
-    border: 0,
+    width: 300
   },
 
   fileSize: {
-    lineHeight: "30px",
+    lineHeight: "44px",
     fontSize: 16,
     marginLeft: 20,
     color: "#A8A8A9",

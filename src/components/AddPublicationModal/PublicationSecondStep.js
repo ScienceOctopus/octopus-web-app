@@ -43,8 +43,8 @@ class PublicationSecondStep extends Component {
             ))}
           </div>
         </div>
-        <h4 style={{ marginTop: 12, fontWeight: "normal" }}>
-          add a collaborator
+        <h4 style={{ marginTop: 30 }}>
+          Add a collaborator
           {/* <div
               className="ui icon button publication"
               style={styles.addCollaboratorButtonContainer}

@@ -48,6 +48,8 @@ class UserSearch extends Component {
     if (this.selectedUser) {
       this.props.onSelect(this.selectedUser);
     }
+    this.setState({ ...this.state, input: "" });
+    this.selectedUser = undefined;
   };
 
   handleChangeContainer(event) {
@@ -157,20 +159,29 @@ class UserSearch extends Component {
         <div className="inline field">
           <label>Username or Email Address</label>
           <UserLabelAndList>
-            <input
-              style={{ height: "38px" }}
-              type="text"
-              value={this.state.input}
-              placeholder="example@example.com"
-              onChange={this.handleChangeContainer}
-              onBlur={this.handleBlur}
-            />
+            <div className="ui icon input loading" style={{ width: "50%" }}>
+              <input
+                style={{ height: "38px" }}
+                type="text"
+                value={this.state.input}
+                placeholder="example@example.com"
+                onChange={this.handleChangeContainer}
+                onBlur={this.handleBlur}
+              />
+              {(this.state.loading && <i class="search icon"></i>) || null}
+            </div>
             {this.renderUserList()}
             {this.renderMessage()}
           </UserLabelAndList>
         </div>
-        <button className="ui button" type="submit" onClick={this.handleSubmit}>
-          Add New Collaborator
+        <button
+          className="ui icon button octopus-theme publication"
+          style={{ color: "white" }}
+          type="submit"
+          onClick={this.handleSubmit}
+          disabled={!this.selectedUser}
+        >
+          Add Collaborator
         </button>
       </div>
     );
@@ -200,8 +211,7 @@ const FloatingUserList = styled.div`
   max-width: 100% !important;
 `;
 
-const UserLabelAndList = styled.span`
-  background-color: wheat;
+const UserLabelAndList = styled.div`
   position: relative;
 `;
 
