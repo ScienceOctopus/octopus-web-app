@@ -16,6 +16,7 @@ const AddPublicationStepsHandler = props => {
           showEditor={props.showEditor}
           editorData={props.editorData}
           editorVisible={props.editorVisible}
+          loading={props.loading}
         />
       );
     case 2:

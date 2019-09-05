@@ -16,6 +16,7 @@ class PublicationModal extends React.Component {
       publicationTitle: "",
       publicationCollaborators: [],
       editorVisible: false,
+      loading: false,
       editorData: "",
 
       publicationsToLink: [],
@@ -95,6 +96,8 @@ class PublicationModal extends React.Component {
     fileData.append("file", file);
     fileData.set("data", JSON.stringify(fileData));
 
+    this.updateLoading(true);
+
     Api()
       .fileToText()
       .post(fileData)
@@ -108,7 +111,10 @@ class PublicationModal extends React.Component {
           this.showEditor(data.html);
         }
       })
-      .catch(err => console.log(err));
+      .catch(err => console.log(err))
+      .finally(() => {
+        this.updateLoading(false);
+      });
   }
 
   handleTitleChange = event => {
@@ -129,12 +135,17 @@ class PublicationModal extends React.Component {
     this.setState({ editorVisible: true, editorData: editorData });
   };
 
+  updateLoading = (loading) => {
+    this.setState({ ...this.state, loading });
+  };
+
   onClose = close => {
     this.setState({
       stepNumber: 1,
       publicationTitle: "",
       publicationCollaborators: [],
       editorVisible: false,
+      loading: false,
       editorData: "",
 
       publicationsToLink: [],
@@ -243,6 +254,7 @@ class PublicationModal extends React.Component {
                   showEditor={this.showEditor}
                   editorData={this.state.editorData}
                   editorVisible={this.state.editorVisible}
+                  loading={this.state.loading}
                   handlePublicationsToLink={this.handlePublicationsToLink}
                   publicationsToLink={this.state.publicationsToLink}
                 />
