@@ -7,16 +7,14 @@ const SEARCH_KEY = "search";
 class PublicationSearchList extends Component {
   constructor(props) {
     super(props);
-    this.state = { loaded: true, publications: [] };
+    this.state = { loaded: true, publications: this.props.publications };
 
     // Always start a new cache when the search page is loaded
     Api().subscribeClass(SEARCH_KEY, Math.random());
   }
 
-  componentDidMount() {
-    this.setState({
-      publications: this.props.publications,
-    });
+  componentWillReceiveProps(props) {
+    this.setState({ publications: props.publications });
   }
 
   componentWillUnmount() {
@@ -37,17 +35,17 @@ class PublicationSearchList extends Component {
     }
   }
 
-  updatePublicationsList = publications => {
-    this.setState({
-      publications: publications
-        .filter(x => x.orcid !== global.session.user.orcid)
-        .filter(
-          x =>
-            !this.props.excluded ||
-            !this.props.excluded.find(y => y.orcid === x.orcid),
-        ),
-    });
-  };
+  // updatePublicationsList = publications => {
+  //   this.setState({
+  //     publications: publications
+  //       .filter(x => x.orcid !== global.session.user.orcid)
+  //       .filter(
+  //         x =>
+  //           !this.props.excluded ||
+  //           !this.props.excluded.find(y => y.orcid === x.orcid),
+  //       ),
+  //   });
+  // };
 
   loadingComplete() {
     if (this.props.onLoaded) this.props.onLoaded();

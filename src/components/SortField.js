@@ -54,13 +54,13 @@ const SortField = props => {
 
 const styles = {
   sortAscendentButton: {
-    borderRight: "0.5px solid grey",
+    borderRight: "0.25px solid lightgrey",
     textAlign: "center",
     marginRight: 0,
     borderRadius: 0,
   },
   sortDescendentButton: {
-    borderLeft: "0.5px solid grey",
+    borderLeft: "0.25px solid lightgrey",
     textAlign: "center",
     marginRight: 0,
     borderRadius: "0 50px 50px 0",

@@ -9,7 +9,7 @@ exports.up = pgm => {
     conflict: {
       type: "text",
     },
-    doi: {
+    octopus_id: {
       type: "uuid",
       notNull: true,
       default: pgm.func("uuid_generate_v4()"),
@@ -18,11 +18,13 @@ exports.up = pgm => {
 
   pgm.sql("UPDATE publications SET conflict = 'Conflict of interest';");
 
-  pgm.alterColumn("publications", "conflict", "doi", { notNull: true });
+  pgm.alterColumn("publications", "conflict", "octopus_id", { notNull: true });
 };
 
 exports.down = pgm => {
   pgm.alterColumn("problems", "description", { notNull: false });
 
-  pgm.dropColumns("publications", ["conflict", "doi"], { ifExists: true });
+  pgm.dropColumns("publications", ["conflict", "octopus_id"], {
+    ifExists: true,
+  });
 };

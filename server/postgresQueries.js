@@ -463,6 +463,26 @@ const queries = {
       });
   },
 
+  insertPublicationRatings: (
+    publication,
+    quality,
+    sizeOfDataset,
+    correctProtocol,
+  ) =>
+    knex("publication_links").insert({
+      quality,
+      sizeOfDataset,
+      correctProtocol,
+      publicationId: publication,
+    }),
+
+  insertPublicationReviewRating: (publication, rating, userId) =>
+    knex("publication_links").insert({
+      publicationId: publication,
+      rating,
+      userId,
+    }),
+
   insertLink: (publication, basedOn) =>
     knex("publication_links").insert(
       basedOn.map(base => ({

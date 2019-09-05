@@ -13,19 +13,69 @@ class PublicationThirdStep extends Component {
       sortCategory: "Sort by",
       sortAscendent: false,
       sortDescendent: false,
+      publicationsList: this.props.previousStageData.publications,
     };
   }
 
   handleSortCategory = sortCategory => {
     this.setState({ sortCategory });
+
+    if (this.state.sortAscendent) this.handleAscendent();
+    if (this.state.sortDescendent) this.handleDescendent();
   };
 
   handleAscendent = () => {
-    this.setState({ sortAscendent: true, sortDescendent: false });
+    let clonePublicationsList = [...this.state.publicationsList];
+
+    switch (this.state.sortCategory) {
+      case "Alphabetically":
+        clonePublicationsList.sort(function(a, b) {
+          return a["title"].localeCompare(b["title"]);
+        });
+        break;
+      case "Date":
+        clonePublicationsList.sort(function(a, b) {
+          return new Date(a.created_at) - new Date(b.created_at);
+        });
+        break;
+      case "Rating":
+        break;
+      default:
+        break;
+    }
+
+    this.setState({
+      publicationsList: clonePublicationsList,
+      sortAscendent: true,
+      sortDescendent: false,
+    });
   };
 
   handleDescendent = () => {
-    this.setState({ sortAscendent: false, sortDescendent: true });
+    let clonePublicationsList = [...this.state.publicationsList];
+
+    switch (this.state.sortCategory) {
+      case "Alphabetically":
+        clonePublicationsList.sort(function(a, b) {
+          return b["title"].localeCompare(a["title"]);
+        });
+        break;
+      case "Date":
+        clonePublicationsList.sort(function(a, b) {
+          return new Date(b.created_at) - new Date(a.created_at);
+        });
+        break;
+      case "Rating":
+        break;
+      default:
+        break;
+    }
+
+    this.setState({
+      publicationsList: clonePublicationsList,
+      sortAscendent: false,
+      sortDescendent: true,
+    });
   };
 
   handleSearchChange = event => {
@@ -54,10 +104,9 @@ class PublicationThirdStep extends Component {
   };
 
   render() {
-    console.log("this.state", this.state);
-    console.log("this.props", this.props);
     if (!this.props.previousStageData)
       return <h4 style={styles.subtitle}> Please submit the publication!</h4>;
+
     return (
       <div>
         <h4 style={styles.subtitle}>
@@ -91,7 +140,7 @@ class PublicationThirdStep extends Component {
           query={this.state.query}
           onSelect={this.handleProblemSelect}
           onLoaded={this.handleProblemsLoaded}
-          publications={this.props.previousStageData.publications}
+          publications={this.state.publicationsList}
           publicationCollaborators={this.props.publicationCollaborators}
           handlePublicationsToLink={this.props.handlePublicationsToLink}
           publicationsToLink={this.props.publicationsToLink}

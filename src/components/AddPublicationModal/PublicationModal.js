@@ -20,12 +20,12 @@ class PublicationModal extends React.Component {
 
       publicationsToLink: [],
       title: "",
-      summary: "None",
-      funding: "None",
+      summary: "",
+      funding: "",
       tags: ["octopus"],
       selectedFile: undefined,
       isReview: false,
-      conflict: "None",
+      conflict: "",
       badFileSelected: false,
       publicationId: undefined,
 
@@ -181,6 +181,7 @@ class PublicationModal extends React.Component {
       .publications()
       .post(data)
       .then(response => {
+        // insertLink(response.data, this.state.publicationsToLink);
         this.setState({ publicationId: response.data });
       })
       .catch(err => console.error(err.response))
@@ -198,6 +199,8 @@ class PublicationModal extends React.Component {
     const previousStageData = this.props.content.content.stages[
       previousStageId
     ];
+
+    console.log(this.state);
 
     return (
       <div style={styles.backdrop}>

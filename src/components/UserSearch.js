@@ -105,7 +105,7 @@ class UserSearch extends Component {
 
   renderUserList() {
     if (!this.state.details.length) return null;
-    
+
     return (
       <FloatingUserList>
         {this.state.loading ? "Loading" : ""}
