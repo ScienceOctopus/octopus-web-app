@@ -98,12 +98,13 @@ const styles = {
   },
   textCenter: {
     textAlign: "center",
+    cursor: "pointer",
   },
   hidden: {
     display: "none",
   },
   titleInput: {
-    width: 300
+    width: 300,
   },
 
   fileSize: {
