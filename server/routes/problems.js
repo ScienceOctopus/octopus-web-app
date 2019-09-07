@@ -135,6 +135,26 @@ const getPublicationCountByProblem = async (req, res) => {
     .end();
 };
 
+// const postPublicationRatings = async (req, res) => {
+//   console.log("req", req);
+//   if (
+//     req.body.review &&
+//     req.body.quality != 0 &&
+//     req.body.sizeOfDataset != 0 &&
+//     req.body.correctProtocol != 0
+//   ) {
+//     await db.insertPublicationRatings(
+//       JSON.parse(req.body.basedOn)[0],
+//       req.body.quality,
+//       req.body.sizeOfDataset,
+//       req.body.correctProtocol,
+//       req.body.user,
+//     );
+//   }
+
+//   res.status(200).json(publications[0]);
+// };
+
 const postPublicationToProblemAndStage = async (req, res) => {
   if (req.body.__DEBUG__) {
     res.status(200).end();
@@ -246,7 +266,6 @@ const postPublicationToProblemAndStage = async (req, res) => {
     JSON.stringify(data),
     true,
   );
-  console.log("req.body", req.body);
 
   await db.insertPublicationCollaborator(
     publications[0],
@@ -255,10 +274,10 @@ const postPublicationToProblemAndStage = async (req, res) => {
   );
 
   if (
-    req.body.review &&
-    req.body.quality !== 0 &&
-    req.body.sizeOfDataset !== 0 &&
-    req.body.correctProtocol !== 0
+    JSON.parse(req.body.review) &&
+    req.body.quality != 0 &&
+    req.body.sizeOfDataset != 0 &&
+    req.body.correctProtocol != 0
   ) {
     await db.insertPublicationRatings(
       JSON.parse(req.body.basedOn)[0],
@@ -489,6 +508,10 @@ router.post(
   },
   catchAsyncErrors(postPublicationToProblemAndStage),
 );
+// router.post(
+//   "/:id(\\d+)/publication_ratings",
+//   catchAsyncErrors(postPublicationRatings),
+// );
 
 module.exports = {
   getProblems,
@@ -496,5 +519,6 @@ module.exports = {
   getStagesByProblem,
   getPublicationsByProblemAndStage,
   postPublicationToProblemAndStage,
+  // postPublicationRatings,
   router,
 };

@@ -162,9 +162,9 @@ class PublicationModal extends React.Component {
   };
 
   handleSubmit = async () => {
+    console.log("we in");
     const problemId = this.props.stage.problem;
     const stageId = this.props.stage.id;
-    if (this.state.selectedFile === undefined) return;
 
     const data = new FormData();
     data.set("title", this.state.publicationTitle);
