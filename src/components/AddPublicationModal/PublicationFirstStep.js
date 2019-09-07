@@ -17,8 +17,8 @@ class PublicationFirstStep extends Component {
         </h4>
         <hr />
         {(this.props.loading && (
-          <div className="ui segment" style={styles.loader}>
-            <div className="ui active inverted dimmer">
+          <div style={styles.loader}>
+            <div className="ui active inverted dimmer" style={styles.dimmer}>
               <div className="ui text loader">Loading</div>
             </div>
           </div>
@@ -132,6 +132,9 @@ const styles = {
   },
   loader: {
     padding: 20,
+  },
+  dimmer: {
+    borderRadius: 4,
   },
 };
 

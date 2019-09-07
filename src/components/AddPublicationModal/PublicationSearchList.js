@@ -13,16 +13,16 @@ class PublicationSearchList extends Component {
     Api().subscribeClass(SEARCH_KEY, Math.random());
   }
 
-  componentWillReceiveProps(props) {
-    this.setState({ publications: props.publications });
-  }
-
   componentWillUnmount() {
     Api().unsubscribeClass(SEARCH_KEY);
   }
 
   componentDidUpdate(oldProps) {
-    if (oldProps.query !== this.props.query) {
+    if (JSON.stringify(oldProps.publications) !== JSON.stringify(this.props.publications)) {
+      return this.setState({ publications: this.props.publications });
+    }
+
+    if (oldProps.query !== this.props.query ) {
       let newPublications = this.props.publications.filter(publication =>
         publication.title.includes(this.props.query),
       );
