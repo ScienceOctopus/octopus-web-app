@@ -35,17 +35,17 @@ class PublicationSearchList extends Component {
     }
   }
 
-  // updatePublicationsList = publications => {
-  //   this.setState({
-  //     publications: publications
-  //       .filter(x => x.orcid !== global.session.user.orcid)
-  //       .filter(
-  //         x =>
-  //           !this.props.excluded ||
-  //           !this.props.excluded.find(y => y.orcid === x.orcid),
-  //       ),
-  //   });
-  // };
+  updatePublicationsList = publications => {
+    this.setState({
+      publications: publications
+        .filter(x => x.orcid !== global.session.user.orcid)
+        .filter(
+          x =>
+            !this.props.excluded ||
+            !this.props.excluded.find(y => y.orcid === x.orcid),
+        ),
+    });
+  };
 
   loadingComplete() {
     if (this.props.onLoaded) this.props.onLoaded();

@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import Api from "../api";
 
 const debounceChangeEvent = (inner, ms = 0) => {
   let timer = null;
@@ -63,12 +62,18 @@ class UserSearch extends Component {
       return this.setState({ loading: false });
     }
 
-    // Limit the results to 3
-    let found = users.result.slice(0, 3);
+    // Remove already added collaborators from search results
+    let foundUsers = users.result.filter(el =>
+      this.props.excluded.some(f => f.orcid != el["orcid-identifier"].path),
+    );
 
+    // Limit the results to 10
+    foundUsers.slice(0, 10);
+
+    // Get user details
     const details =
       (await Promise.all(
-        found.map(u => getDetails(u["orcid-identifier"].path)),
+        foundUsers.map(u => getDetails(u["orcid-identifier"].path)),
       )) || [];
 
     this.setState({ ...this.state, details, loading: false });
@@ -111,7 +116,7 @@ class UserSearch extends Component {
     return (
       <FloatingUserList>
         {this.state.loading ? "Loading" : ""}
-        {this.state.details.map(user => {
+        {this.state.details.map((user, index) => {
           const { name, emails } = user;
           let givenName, familyName, display_name, display_email;
 
@@ -126,7 +131,7 @@ class UserSearch extends Component {
           }
 
           return (
-            <UserInfoSelectContainer key={user.name.path}>
+            <UserInfoSelectContainer key={index}>
               <UserInfoContainer onMouseDown={this.handleSelect(user)}>
                 <UserName>{display_name}</UserName>
                 <UserEmail>{display_email || "(hidden email)"}</UserEmail>
@@ -168,7 +173,7 @@ class UserSearch extends Component {
                 onChange={this.handleChangeContainer}
                 onBlur={this.handleBlur}
               />
-              {(this.state.loading && <i class="search icon"></i>) || null}
+              {(this.state.loading && <i className="search icon"></i>) || null}
             </div>
             {this.renderUserList()}
             {this.renderMessage()}

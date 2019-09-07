@@ -29,5 +29,5 @@ exports.up = pgm => {
 };
 
 exports.down = pgm => {
-  pgm.dropTable("publication_ratings", { ifExists: true });
+  pgm.dropTable("publication_review_rating", { ifExists: true });
 };

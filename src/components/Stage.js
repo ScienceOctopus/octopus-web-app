@@ -198,25 +198,9 @@ class Stage extends Component {
           }}
         >
           <div
-            className="ui icon button octopus-theme publication disabled"
-            style={{
-              padding: "0.5rem",
-              position: "absolute",
-              top: "0.5rem",
-              marginLeft: "-0.25rem",
-            }}
-          >
-            <i
-              className="ui pencil alternate icon"
-              style={{ color: "white" }}
-            />
-          </div>
-          <span style={{ float: "left" }}>&#x200b;</span>
-          <div
             className="ui placeholder"
             style={{
-              marginLeft: "2.5rem",
-              marginRight: "2em",
+              marginRight: "3.5em",
               height: "1.2em",
             }}
           >
@@ -229,7 +213,7 @@ class Stage extends Component {
               padding: "0.5rem",
               position: "absolute",
               top: "0.5rem",
-              right: "0.25rem",
+              right: "1.1rem",
             }}
           >
             <i className="ui plus alternate icon" style={{ color: "white" }} />
@@ -247,56 +231,14 @@ class Stage extends Component {
             textOverflow: "ellipsis",
           }}
         >
-          <div
-            className="ui icon button octopus-theme publication"
-            style={{
-              padding: "0.5rem",
-              position: "absolute",
-              top: "calc(13px - (1.07142857rem * 1.28571429 - 13px) / 2)",
-              marginLeft: "-0.25rem",
-            }}
-            onClick={event => {
-              this.props.history.push(
-                generateLocalizedPath(RouterURI.UploadToProblemStage, {
-                  id: this.props.content.problem,
-                  stage: this.props.stage.id,
-                }),
-              );
-              event.stopPropagation();
-            }}
-          >
-            <i
-              className="ui pencil alternate icon"
-              style={{ color: "white" }}
-            />
-          </div>
-          <div
-            className="ui icon button"
-            style={{
-              padding: "0.5rem",
-              margin: "-0.5rem 0.5rem -0.5rem -0.25rem",
-              opacity: 0,
-              pointerEvents: "none",
-            }}
-            hidden
-          >
-            <i
-              className="ui pencil alternate icon"
-              style={{
-                marginRight: "0.5em",
-                opacity: 0,
-              }}
-              hidden
-            />
-          </div>
           {this.props.stage.name}
           <div
             className="ui icon button octopus-theme publication"
             style={{
               padding: "0.5rem",
               position: "absolute",
-              top: "calc(13px - (1.07142857rem * 1.28571429 - 13px) / 2)",
-              right: "0.25rem",
+              top: "0.5rem",
+              right: "1.1rem",
             }}
             onClick={this.setModalVisible(true)}
           >
@@ -306,7 +248,6 @@ class Stage extends Component {
         </h4>
       );
     }
-
     return (
       <div className="column" style={{ minWidth: "30ch" }}>
         <PublicationSegment

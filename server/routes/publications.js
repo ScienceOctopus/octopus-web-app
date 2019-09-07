@@ -369,6 +369,17 @@ const getCollaboratorsBackwardsFromPublication = async (req, res) => {
   res.status(200).json(resources);
 };
 
+const getRatingsByPublication = async (req, res) => {
+  const publication = await getAndValidatePublication(req.params.id, req);
+  if (!publication) {
+    console.log(`Couldn't find publication with ID: ${req.params.id}`);
+    return res.sendStatus(404);
+  }
+
+  const resources = await db.getRatingsByPublicationId(req.params.id);
+  res.status(200).json(resources);
+};
+
 const postCollaboratorToPublication = async (req, res) => {
   const publication = await getAndValidatePublication(req.params.id, req);
   if (!publication) {
@@ -419,7 +430,9 @@ const getSignoffsByPublication = async (req, res) => {
 const postSignoffToPublication = async (req, res) => {
   const publication = await getAndValidatePublication(req.params.id, req);
   if (!publication) {
-    console.log(`Couldn't postSignoff for publication with ID: ${req.params.id}`);
+    console.log(
+      `Couldn't postSignoff for publication with ID: ${req.params.id}`,
+    );
     return res.sendStatus(404);
   }
 
@@ -464,9 +477,7 @@ const postSignoffToPublication = async (req, res) => {
     broadcast(`/publications/${publication.id}`);
     broadcast(`/problems/${publication.problem}/publications`);
     broadcast(
-      `/problems/${publication.problem}/stages/${
-        publication.stage
-      }/publications`,
+      `/problems/${publication.problem}/stages/${publication.stage}/publications`,
     );
     broadcast("/problems");
     broadcast(`/problems/${publication.problem}`);
@@ -641,6 +652,10 @@ router.get(
 //router.get("/:id(\\d+)/referencedBy", catchAsyncErrors(getReferencedByByPublication));
 router.get("/:id(\\d+)/reviews", catchAsyncErrors(getReviewsByPublication));
 router.get("/:id(\\d+)/resources", catchAsyncErrors(getResourcesByPublication));
+router.get(
+  "/:id(\\d+)/publication_ratings",
+  catchAsyncErrors(getRatingsByPublication),
+);
 router.get(
   "/:id(\\d+)/collaborators",
   catchAsyncErrors(getCollaboratorsByPublication),

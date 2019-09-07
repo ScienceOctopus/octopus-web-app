@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import PDFImagePreviewRenderer from "./PDFImagePreviewRenderer";
 import styled from "styled-components";
-import Rating from "react-rating";
 import {
   LocalizedLink,
   generateLocalizedPath,
@@ -10,6 +9,7 @@ import {
 import Api from "../api";
 import withState from "../withState";
 import TagSelector from "./TagSelector";
+import CustomRating from "./CustomRating";
 
 const SUMMARY_KEY = "summary";
 
@@ -30,8 +30,6 @@ class SummaryView extends Component {
   }
 
   renderRatings() {
-    console.log("state", this.state);
-    console.log("props", this.props);
     const { review } = this.state.publication;
     if (review) {
       return (
@@ -45,15 +43,21 @@ class SummaryView extends Component {
       <div className="ui equal width grid">
         <div className="column">
           <p>High Quality & Annotated</p>
-          <Rating readonly={true} initialRating={this.state.quality} />
+          <CustomRating readonly={true} initialRating={this.state.quality} />
         </div>
         <div className="column" style={{ textAlign: "center" }}>
           <p>Size of data</p>
-          <Rating readonly={true} initialRating={this.state.sizeOfDataset} />
+          <CustomRating
+            readonly={true}
+            initialRating={this.state.sizeOfDataset}
+          />
         </div>
         <div className="column" style={{ textAlign: "right" }}>
           <p>Correct protocol</p>
-          <Rating readonly={true} initialRating={this.state.correctProtocol} />
+          <CustomRating
+            readonly={true}
+            initialRating={this.state.correctProtocol}
+          />
         </div>
       </div>
     );
@@ -144,6 +148,29 @@ class SummaryView extends Component {
           .then(resources => {
             this.setState({
               resources: resources,
+            });
+          });
+
+        Api()
+          .subscribe(SUMMARY_KEY)
+          .publication(this.props.publicationId)
+          .publication_ratings(this.props.publicationId)
+          .get()
+          .then(ratings => {
+            let quality = 0;
+            let sizeOfDataset = 0;
+            let correctProtocol = 0;
+            let counter = 0;
+            ratings.forEach(rating => {
+              counter++;
+              quality = quality + rating.quality;
+              sizeOfDataset = sizeOfDataset + rating.sizeOfDataset;
+              correctProtocol = correctProtocol + rating.correctProtocol;
+            });
+            this.setState({
+              quality: Math.round(quality / counter),
+              sizeOfDataset: Math.round(sizeOfDataset / counter),
+              correctProtocol: Math.round(correctProtocol / counter),
             });
           });
 

@@ -4,7 +4,6 @@ import styled from "styled-components";
 import AddPublicationStepsHandler from "./AddPublicationStepsHandler";
 import LogInRequiredPage from "../../pages/LogInRequiredPage";
 import Api from "../../api";
-import { Translate } from "aws-sdk";
 
 const UPLOAD_KEY = "upload";
 const SUPPORTED_EXTENSIONS = ["pdf", "doc", "docx", "tex"];
@@ -268,7 +267,7 @@ class PublicationModal extends React.Component {
 
                 {this.state.stepNumber !== 3 ? (
                   <button
-                    class="ui button"
+                    className="ui button"
                     disabled={!this.state.publicationTitle}
                     style={styles.nextStepButton}
                     onClick={this.handleStepNumber}

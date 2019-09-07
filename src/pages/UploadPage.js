@@ -1,6 +1,7 @@
 import React, { Component } from "react";
+import { generatePath } from "react-router";
 import { withRouter } from "react-router-dom";
-import Rating from "react-rating";
+import uniqueId from "lodash/uniqueId";
 import Api from "../api";
 import FileUploadSelector from "../components/FileUploadSelector";
 import PublicationSelector from "../components/PublicationSelector";
@@ -13,12 +14,11 @@ import WebURI, {
   localizeLink,
   LocalizedLink,
 } from "../urls/WebsiteURIs";
-import { generatePath } from "react-router";
-import uniqueId from "lodash/uniqueId";
 import ProblemSelector from "../components/ProblemSelector";
 import { loginRequired } from "./LogInRequiredPage";
 import withState from "../withState";
 import TitledTagSelector from "../components/TitledTagSelector";
+import CustomRating from "../components/CustomRating";
 
 const UPLOAD_KEY = "upload";
 const SUPPORTED_EXTENSIONS = ["pdf"];
@@ -48,6 +48,7 @@ class UploadPage extends Component {
       problems: [],
       stages: [],
       publications: undefined,
+
       quality: 0,
       sizeOfDataset: 0,
       correctProtocol: 0,
@@ -276,6 +277,9 @@ class UploadPage extends Component {
     data.set("conflict", this.state.conflict);
     data.set("user", global.session.user.id);
     data.set("review", this.state.isReview);
+    data.set("quality", this.state.quality);
+    data.set("sizeOfDataset", this.state.sizeOfDataset);
+    data.set("correctProtocol", this.state.correctProtocol);
 
     if (linkedPublications !== undefined) {
       data.set("basedOn", JSON.stringify(linkedPublications.map(x => x.id)));
@@ -522,6 +526,9 @@ class UploadPage extends Component {
       this.state.title &&
       this.state.summary &&
       this.state.funding &&
+      this.state.quality !== 0 &&
+      this.state.sizeOfDataset !== 0 &&
+      this.state.correctProtocol !== 0 &&
       this.state.conflict &&
       (this.state.isReview ||
         (this.state.data !== undefined &&
@@ -596,27 +603,19 @@ class UploadPage extends Component {
     }
   }
 
-  handleQualityRating(value) {
-    this.setState({
-      quality: value,
-    });
+  handleQualityRating(quality) {
+    this.setState({ quality });
   }
 
-  handleSizeOfDatasetRating(value) {
-    this.setState({
-      sizeOfDataset: value,
-    });
+  handleSizeOfDatasetRating(sizeOfDataset) {
+    this.setState({ sizeOfDataset });
   }
 
-  handleCorrectProtocolRating(value) {
-    this.setState({
-      correctProtocol: value,
-    });
+  handleCorrectProtocolRating(correctProtocol) {
+    this.setState({ correctProtocol });
   }
 
   renderRatings() {
-    console.log("state", this.state);
-    console.log("props", this.props);
     // const { review } = this.state.publication;
     // if (review) {
     //   return (
@@ -628,14 +627,16 @@ class UploadPage extends Component {
     // }
     return (
       <div>
-        <div className="row">
-          <h3>How do you rate these Results?</h3>
-          <hr />
+        <div className="row" style={{ marginTop: 20, marginBottom: 10 }}>
+          <h5>
+            How do you rate these Results?
+            <span style={{ color: "red" }}>*</span>
+          </h5>
         </div>
-        <div className="ui equal width grid">
+        <div className="ui equal width grid" style={{ marginBottom: 0 }}>
           <div className="column">
             <p>High Quality & Annotated</p>
-            <Rating
+            <CustomRating
               readonly={global.session.user ? false : true}
               initialRating={this.state.quality}
               onClick={this.handleQualityRating}
@@ -643,7 +644,7 @@ class UploadPage extends Component {
           </div>
           <div className="column" style={{ textAlign: "center" }}>
             <p>Size of data</p>
-            <Rating
+            <CustomRating
               readonly={global.session.user ? false : true}
               initialRating={this.state.sizeOfDataset}
               onClick={this.handleSizeOfDatasetRating}
@@ -651,7 +652,7 @@ class UploadPage extends Component {
           </div>
           <div className="column" style={{ textAlign: "right" }}>
             <p>Correct protocol</p>
-            <Rating
+            <CustomRating
               readonly={global.session.user ? false : true}
               initialRating={this.state.correctProtocol}
               onClick={this.handleCorrectProtocolRating}
@@ -764,6 +765,8 @@ class UploadPage extends Component {
         );
       }
     }
+    console.log("UploadPage state", this.state);
+    console.log("UploadPage props", this.props);
 
     return (
       <>

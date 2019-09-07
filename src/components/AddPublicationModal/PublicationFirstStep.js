@@ -17,9 +17,9 @@ class PublicationFirstStep extends Component {
         </h4>
         <hr />
         {(this.props.loading && (
-          <div class="ui segment" className={styles.loader}>
-            <div class="ui active inverted dimmer">
-              <div class="ui text loader">Loading</div>
+          <div className="ui segment" style={styles.loader}>
+            <div className="ui active inverted dimmer">
+              <div className="ui text loader">Loading</div>
             </div>
           </div>
         )) || (

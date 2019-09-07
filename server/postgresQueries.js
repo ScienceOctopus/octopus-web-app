@@ -463,22 +463,29 @@ const queries = {
       });
   },
 
+  getRatingsByPublicationId: publicationId =>
+    knex("publication_ratings")
+      .select()
+      .where("publicationId", publicationId),
+
   insertPublicationRatings: (
-    publication,
+    publicationId,
     quality,
     sizeOfDataset,
     correctProtocol,
+    userId,
   ) =>
-    knex("publication_links").insert({
+    knex("publication_ratings").insert({
+      publicationId,
       quality,
       sizeOfDataset,
       correctProtocol,
-      publicationId: publication,
+      userId,
     }),
 
-  insertPublicationReviewRating: (publication, rating, userId) =>
-    knex("publication_links").insert({
-      publicationId: publication,
+  insertPublicationReviewRating: (publicationId, rating, userId) =>
+    knex("publication_review_rating").insert({
+      publicationId,
       rating,
       userId,
     }),

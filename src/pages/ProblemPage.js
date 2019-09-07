@@ -756,7 +756,6 @@ class ProblemPage extends Component {
 
   render() {
     let helper = this.ensureMeasurements();
-
     if (helper !== false) {
       return helper;
     }

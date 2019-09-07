@@ -246,6 +246,7 @@ const postPublicationToProblemAndStage = async (req, res) => {
     JSON.stringify(data),
     true,
   );
+  console.log("req.body", req.body);
 
   await db.insertPublicationCollaborator(
     publications[0],
@@ -253,6 +254,20 @@ const postPublicationToProblemAndStage = async (req, res) => {
     "author",
   );
 
+  if (
+    req.body.review &&
+    req.body.quality !== 0 &&
+    req.body.sizeOfDataset !== 0 &&
+    req.body.correctProtocol !== 0
+  ) {
+    await db.insertPublicationRatings(
+      JSON.parse(req.body.basedOn)[0],
+      req.body.quality,
+      req.body.sizeOfDataset,
+      req.body.correctProtocol,
+      req.body.user,
+    );
+  }
   //   let usersToNotify = [];
 
   if (req.body.basedOn !== undefined) {

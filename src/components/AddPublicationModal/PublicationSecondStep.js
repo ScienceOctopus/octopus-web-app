@@ -5,20 +5,11 @@ import UserSearch from "../UserSearch";
 class PublicationSecondStep extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      // displayAddCollaborator: false,
-    };
   }
 
   componentDidMount() {
     this.props.handleCollaborators(global.session.user);
   }
-
-  // displayAddCollaborator = () => {
-  //   this.setState({
-  //     displayAddCollaborator: true,
-  //   });
-  // };
 
   render() {
     return (
@@ -45,13 +36,6 @@ class PublicationSecondStep extends Component {
         </div>
         <h4 style={{ marginTop: 30 }}>
           Add a collaborator
-          {/* <div
-              className="ui icon button publication"
-              style={styles.addCollaboratorButtonContainer}
-              onClick={this.displayAddCollaborator}
-            >
-              <i className="ui plus icon" style={{ padding: "0.2rem" }} />
-            </div> */}
           <div className="ui form" style={{ marginTop: 12 }}>
             <UserSearch
               onSelect={this.props.handleCollaborators}
