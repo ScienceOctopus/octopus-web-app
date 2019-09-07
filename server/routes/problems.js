@@ -135,26 +135,6 @@ const getPublicationCountByProblem = async (req, res) => {
     .end();
 };
 
-// const postPublicationRatings = async (req, res) => {
-//   console.log("req", req);
-//   if (
-//     req.body.review &&
-//     req.body.quality != 0 &&
-//     req.body.sizeOfDataset != 0 &&
-//     req.body.correctProtocol != 0
-//   ) {
-//     await db.insertPublicationRatings(
-//       JSON.parse(req.body.basedOn)[0],
-//       req.body.quality,
-//       req.body.sizeOfDataset,
-//       req.body.correctProtocol,
-//       req.body.user,
-//     );
-//   }
-
-//   res.status(200).json(publications[0]);
-// };
-
 const postPublicationToProblemAndStage = async (req, res) => {
   if (req.body.__DEBUG__) {
     res.status(200).end();
@@ -210,18 +190,18 @@ const postPublicationToProblemAndStage = async (req, res) => {
       switch (schema[i][1]) {
         case "file":
           error =
-            typeof content != "number" ||
+            typeof content !== "number" ||
             content <= 0 ||
             req.files[content] === undefined;
           break;
         case "uri":
-          error = typeof content != "string";
+          error = typeof content !== "string";
           break;
         case "text":
-          error = typeof content != "string";
+          error = typeof content !== "string";
           break;
         case "bool":
-          error = typeof content != "boolean";
+          error = typeof content !== "boolean";
           break;
         default:
           error = true;
@@ -273,12 +253,7 @@ const postPublicationToProblemAndStage = async (req, res) => {
     "author",
   );
 
-  if (
-    JSON.parse(req.body.review) &&
-    req.body.quality != 0 &&
-    req.body.sizeOfDataset != 0 &&
-    req.body.correctProtocol != 0
-  ) {
+  if (JSON.parse(req.body.review) && !JSON.parse(req.body.isUserPublication)) {
     await db.insertPublicationRatings(
       JSON.parse(req.body.basedOn)[0],
       req.body.quality,
@@ -512,10 +487,6 @@ router.post(
   },
   catchAsyncErrors(postPublicationToProblemAndStage),
 );
-// router.post(
-//   "/:id(\\d+)/publication_ratings",
-//   catchAsyncErrors(postPublicationRatings),
-// );
 
 module.exports = {
   getProblems,
@@ -523,6 +494,5 @@ module.exports = {
   getStagesByProblem,
   getPublicationsByProblemAndStage,
   postPublicationToProblemAndStage,
-  // postPublicationRatings,
   router,
 };

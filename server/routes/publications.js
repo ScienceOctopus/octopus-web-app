@@ -143,18 +143,18 @@ const postPublicationToID = async (req, res) => {
     switch (schema[i][1]) {
       case "file":
         error =
-          typeof content != "number" ||
+          typeof content !== "number" ||
           content <= 0 ||
           req.files[content] === undefined;
         break;
       case "uri":
-        error = typeof content != "string";
+        error = typeof content !== "string";
         break;
       case "text":
-        error = typeof content != "string";
+        error = typeof content !== "string";
         break;
       case "bool":
-        error = typeof content != "boolean";
+        error = typeof content !== "boolean";
         break;
       default:
         error = true;

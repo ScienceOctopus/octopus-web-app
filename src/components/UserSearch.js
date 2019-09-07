@@ -64,11 +64,11 @@ class UserSearch extends Component {
 
     // Remove already added collaborators from search results
     let foundUsers = users.result.filter(el =>
-      this.props.excluded.some(f => f.orcid != el["orcid-identifier"].path),
+      this.props.excluded.some(f => f.orcid !== el["orcid-identifier"].path),
     );
 
     // Limit the results to 10
-    foundUsers.slice(0, 10);
+    foundUsers.slice(0, 7);
 
     // Get user details
     const details =
