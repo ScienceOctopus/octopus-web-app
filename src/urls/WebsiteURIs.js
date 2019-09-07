@@ -4,7 +4,7 @@ import { Link, Redirect } from "react-router-dom";
 import { AVAILABLE_LANGUAGES } from "../i18n";
 import { generatePath } from "react-router-dom";
 
-const ORCID_OAUTH_CLIENT_ID = "APP-ZOEBA1AI4XE8F82W";
+const { REACT_APP_ORCID_OAUTH_CLIENT_ID: ORCID_OAUTH_CLIENT_ID } = process.env;
 
 const REDIRECT_HOST = window.location.host.endsWith(":3000")
   ? "http://" + window.location.host.replace(":3000", ":3001")
