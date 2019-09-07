@@ -58,8 +58,20 @@ class PublicationSearchTemplate extends Component {
       this.props.publication.created_at,
     ).toLocaleDateString("en-US");
 
+    const checked = this.checkIfLinked(
+      this.props.publication.id,
+      this.props.publicationsToLink,
+    );
+
     return (
-      <div className="ui grid" style={styles.publicationTemplateContainer}>
+      <div
+        className="ui grid"
+        style={
+          checked
+            ? styles.checkedPublicationTemplateContainer
+            : styles.publicationTemplateContainer
+        }
+      >
         <div className="twelve wide column">
           <div style={styles.title}>{this.props.publication.title}</div>
           {this.state.collaborators.length > 0 && (
@@ -112,10 +124,7 @@ class PublicationSearchTemplate extends Component {
               <input
                 type="checkbox"
                 style={{ marginTop: 3 }}
-                checked={this.checkIfLinked(
-                  this.props.publication.id,
-                  this.props.publicationsToLink,
-                )}
+                checked={checked}
                 onChange={this.handleCheckbox}
               />
               <label style={{ marginTop: 3 }}></label>
@@ -131,6 +140,13 @@ const styles = {
   publicationTemplateContainer: {
     backgroundColor: "#FFF",
     border: "1px solid #979797",
+    borderRadius: 5,
+    padding: 5,
+    margin: 25,
+  },
+  checkedPublicationTemplateContainer: {
+    backgroundColor: "#FFF",
+    border: "1px solid var(--octopus-theme-publication)",
     borderRadius: 5,
     padding: 5,
     margin: 25,

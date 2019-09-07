@@ -275,9 +275,14 @@ class PublicationModal extends React.Component {
                     Next
                   </button>
                 ) : (
-                  <a style={styles.nextStepButton} onClick={this.handleSubmit}>
+                  <button
+                    className="ui button"
+                    disabled={!this.state.publicationsToLink.length}
+                    style={styles.nextStepButton}
+                    onClick={this.handleSubmit}
+                  >
                     Submit
-                  </a>
+                  </button>
                 )}
               </div>
             )}
