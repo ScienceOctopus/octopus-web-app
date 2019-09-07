@@ -301,10 +301,14 @@ const postPublicationToProblemAndStage = async (req, res) => {
     //   await db.insertUserNotification(usersToNotify[i], publications[0]);
     // }
   }
-
-  resources.unshift(
-    (await db.insertResource(req.files[0].mimetype, req.files[0].location))[0],
-  );
+  if (req.files.length > 0) {
+    resources.unshift(
+      (await db.insertResource(
+        req.files[0].mimetype,
+        req.files[0].location,
+      ))[0],
+    );
+  }
 
   for (let i = 0; i < resources.length; i++) {
     await db.insertPublicationResource(
