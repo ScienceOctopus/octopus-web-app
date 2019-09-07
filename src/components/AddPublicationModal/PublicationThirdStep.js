@@ -109,6 +109,14 @@ class PublicationThirdStep extends Component {
 
     return (
       <div>
+        {(this.props.loading && (
+          <div>
+            <div className="ui active inverted dimmer" style={styles.dimmer}>
+              <div className="ui text loader">Loading</div>
+            </div>
+          </div>
+        )) ||
+          null}
         <h4 style={styles.subtitle}>
           Which {this.props.previousStageData.name} publication is this{" "}
           {this.props.stageName} linked to?
@@ -155,6 +163,9 @@ const styles = {
     marginTop: 20,
     marginBottom: 0,
     fontWeight: "normal",
+  },
+  dimmer: {
+    borderRadius: 4,
   },
 };
 

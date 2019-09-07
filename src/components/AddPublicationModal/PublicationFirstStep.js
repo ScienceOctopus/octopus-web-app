@@ -17,7 +17,7 @@ class PublicationFirstStep extends Component {
         </h4>
         <hr />
         {(this.props.loading && (
-          <div style={styles.loader}>
+          <div>
             <div className="ui active inverted dimmer" style={styles.dimmer}>
               <div className="ui text loader">Loading</div>
             </div>
@@ -129,9 +129,6 @@ const styles = {
     color: "#4A74AF",
     margin: 20,
     fontSize: "42px",
-  },
-  loader: {
-    padding: 20,
   },
   dimmer: {
     borderRadius: 4,

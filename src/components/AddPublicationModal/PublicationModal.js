@@ -185,6 +185,8 @@ class PublicationModal extends React.Component {
 
     data.append("file", this.state.selectedFile);
 
+    this.updateLoading(true);
+
     return Api()
       .subscribe(UPLOAD_KEY)
       .problem(problemId)
@@ -197,6 +199,7 @@ class PublicationModal extends React.Component {
       })
       .catch(err => console.error(err.response))
       .finally(() => {
+        this.updateLoading(false);
         // Reset state trackers to reset the form UI and ensure no multistage applicability by default
         this.onClose(this.props.onClose);
       });

@@ -36,6 +36,7 @@ const AddPublicationStepsHandler = props => {
           publicationCollaborators={props.publicationCollaborators}
           handlePublicationsToLink={props.handlePublicationsToLink}
           publicationsToLink={props.publicationsToLink}
+          loading={props.loading}
         />
       );
     default:
