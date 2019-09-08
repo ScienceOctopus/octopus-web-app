@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
-import ProblemSearchList from "../components/ProblemSearchList";
+import SearchList from "../components/SearchList";
 
 class SearchPage extends Component {
   constructor(props) {
@@ -15,7 +15,7 @@ class SearchPage extends Component {
   render() {
     return (
       <div className="ui main container">
-        <ProblemSearchList allProblems query={this.getQuery()} />
+        <SearchList query={this.getQuery()} />
       </div>
     );
   }

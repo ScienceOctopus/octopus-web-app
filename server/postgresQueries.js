@@ -80,6 +80,8 @@ const queries = {
       .insert({ problem, stage, order })
       .returning("id"),
 
+  selectAllStages: () => knex("stages").orderBy("id"),
+
   selectAllStagesIds: () => knex("stages").select("id"),
 
   selectStagesByID: id =>
@@ -93,6 +95,18 @@ const queries = {
       .where("problem", problem)
       .join("stages", "stages.id", "=", "problem_stages.stage")
       .select(),
+
+  selectAllPublications: () =>
+    knex("publications")
+      .select()
+      .where("draft", false),
+
+  selectPublicationsBySearch: searchPhrase =>
+    queries.selectAllPublications()
+      .where(builder => builder
+        .whereRaw("lower(title) like ?", `%${searchPhrase.toLowerCase()}%`)
+        .orWhereRaw("lower(summary) like ?", `%${searchPhrase.toLowerCase()}%`)
+      ),
 
   selectPublicationsByID: id =>
     knex("publications")

@@ -34,6 +34,26 @@ const getProblems = async (req, res) => {
   res.status(200).json(problems);
 };
 
+const getStages = async (req, res) => {
+  const stages = await db.selectAllStages();
+  res.status(200).json(stages);
+}
+
+const getProblemsAndPublications = async (req, res) => {
+  let problems = [];
+  let publications = [];
+
+  if (req.query && req.query.q) {
+    problems = await db.selectProblemsBySearch(req.query.q);
+    publications = await db.selectPublicationsBySearch(req.query.q);
+  } else {
+    problems = await db.selectAllProblems();
+    publications = await db.selectAllPublications();
+  }
+
+  res.status(200).json({ problems, publications });
+};
+
 const getProblemByID = async (req, res) => {
   const problems = await db.selectProblemsByID(req.params.id);
 
@@ -483,6 +503,8 @@ router.post(
 
 router.get("/", catchAsyncErrors(getProblems));
 router.post("/", catchAsyncErrors(postProblem));
+router.get("/stages", catchAsyncErrors(getStages));
+router.get("/publications", catchAsyncErrors(getProblemsAndPublications));
 router.get(
   "/:id(\\d+)/publications",
   catchAsyncErrors(getPublicationsByProblem),

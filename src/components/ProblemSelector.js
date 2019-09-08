@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import WebURI, { LocalizedLink } from "../urls/WebsiteURIs";
 import Modal from "./Modal";
-import ProblemSearchList from "./ProblemSearchList";
+import ProblemSearchList from "./SearchList";
 import SearchField from "./SearchField";
 
 class ProblemSelector extends Component {
