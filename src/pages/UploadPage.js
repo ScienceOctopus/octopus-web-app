@@ -643,15 +643,6 @@ class UploadPage extends Component {
   }
 
   renderRatings() {
-    // const { review } = this.state.publication;
-    // if (review) {
-    //   return (
-    //     <div>
-    //       <p>Rating Counter</p>
-    //       <p>0</p>
-    //     </div>
-    //   );
-    // }
     return (
       <div>
         <div className="row" style={{ marginTop: 20, marginBottom: 10 }}>

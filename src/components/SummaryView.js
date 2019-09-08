@@ -21,21 +21,43 @@ class SummaryView extends Component {
       quality: 0,
       sizeOfDataset: 0,
       correctProtocol: 0,
+      reviewRating: 0,
     };
     this.fetchPublicationData();
+    this.handleReviewRating = this.handleReviewRating.bind(this);
   }
 
   componentWillUnmount() {
     Api().unsubscribeClass(SUMMARY_KEY);
   }
 
+  handleReviewRating() {
+    const reviewRating = this.state.reviewRating + 1;
+    const data = {
+      publicationId: this.props.publicationId,
+      userId: global.session.user.id,
+    };
+    Api()
+      .subscribe(SUMMARY_KEY)
+      .publication(this.props.publicationId)
+      .publication_review_rating()
+      .post(data)
+      .then(this.setState({ reviewRating, userAlreadyRated: true }));
+  }
+
   renderRatings() {
-    const { review } = this.state.publication;
-    if (review) {
+    const { review, draft } = this.state.publication;
+    if (review && !draft) {
       return (
-        <div>
-          <p>Rating Counter</p>
-          <p>0</p>
+        <div style={styles.reviewRatingContainer}>
+          {this.state.reviewRating}
+          {global.session.user && !this.state.userAlreadyRated && (
+            <i
+              className="arrow up icon"
+              style={styles.rateReview}
+              onClick={this.handleReviewRating}
+            />
+          )}
         </div>
       );
     }
@@ -171,6 +193,27 @@ class SummaryView extends Component {
               quality: Math.round(quality / counter),
               sizeOfDataset: Math.round(sizeOfDataset / counter),
               correctProtocol: Math.round(correctProtocol / counter),
+            });
+          });
+
+        Api()
+          .subscribe(SUMMARY_KEY)
+          .publication(this.props.publicationId)
+          .publication_review_rating()
+          .get()
+          .then(reviewRatings => {
+            let userAlreadyRated;
+            reviewRatings.forEach(reviewRating => {
+              if (
+                global.session.user &&
+                reviewRating.userId === global.session.user.id
+              ) {
+                userAlreadyRated = true;
+              }
+            });
+            this.setState({
+              userAlreadyRated,
+              reviewRating: reviewRatings.length,
             });
           });
 
@@ -517,6 +560,16 @@ class SummaryView extends Component {
     );
   }
 }
+
+const styles = {
+  rateReview: {
+    color: "green",
+    cursor: "pointer",
+  },
+  reviewRatingContainer: {
+    fontSize: 30,
+  },
+};
 
 const StageTitle = styled.span`
   color: var(--octopus-theme-publication);

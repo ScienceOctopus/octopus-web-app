@@ -102,10 +102,15 @@ const queries = {
       .where("draft", false),
 
   selectPublicationsBySearch: searchPhrase =>
-    queries.selectAllPublications()
-      .where(builder => builder
-        .whereRaw("lower(title) like ?", `%${searchPhrase.toLowerCase()}%`)
-        .orWhereRaw("lower(summary) like ?", `%${searchPhrase.toLowerCase()}%`)
+    queries
+      .selectAllPublications()
+      .where(builder =>
+        builder
+          .whereRaw("lower(title) like ?", `%${searchPhrase.toLowerCase()}%`)
+          .orWhereRaw(
+            "lower(summary) like ?",
+            `%${searchPhrase.toLowerCase()}%`,
+          ),
       ),
 
   selectPublicationsByID: id =>
@@ -497,10 +502,15 @@ const queries = {
       userId,
     }),
 
-  insertPublicationReviewRating: (publicationId, rating, userId) =>
+  getPublicationReviewRating: publicationId => {
+    return knex("publication_review_rating")
+      .select()
+      .where("publicationId", publicationId);
+  },
+
+  insertPublicationReviewRating: (publicationId, userId) =>
     knex("publication_review_rating").insert({
       publicationId,
-      rating,
       userId,
     }),
 

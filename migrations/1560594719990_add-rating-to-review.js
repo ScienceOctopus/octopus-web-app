@@ -9,11 +9,6 @@ exports.up = pgm => {
       references: "publications",
       onDelete: "cascade",
     },
-    rating: {
-      type: "integer",
-      notNull: true,
-      onDelete: "cascade",
-    },
     userId: {
       type: "integer",
       notNull: true,

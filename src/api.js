@@ -579,6 +579,11 @@ class PublicationBuilder extends LinkBuilder {
     return this;
   };
 
+  publication_review_rating = () => {
+    this.path += "/publication_review_rating";
+    return this;
+  };
+
   requestSignoff = () => {
     this.path += "/request_signoff";
     return this;
