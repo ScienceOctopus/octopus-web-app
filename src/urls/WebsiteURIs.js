@@ -32,6 +32,7 @@ export const generateLocalizedPath = (pattern, params) => {
 export const path = generatePath;
 
 export const RouterURI = {
+  Profile: "/profile/:id(\\d+)",
   Problem: "/problems/:id(\\d+)",
   Publication: "/publications/:id(\\d+)",
   UploadToProblem: "/publish/problems/:id(\\d+)",

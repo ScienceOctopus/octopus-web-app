@@ -29,6 +29,8 @@ class UserPage extends Component {
       unseenPublications: [],
       checkingUnseen: true,
       userPublications: undefined,
+      allStages: [],
+      user: undefined,
     };
   }
 
@@ -36,10 +38,20 @@ class UserPage extends Component {
     this.fetchUserPublications();
     this.fetchUserNotifications();
     this.fetchUnsigned();
+    this.fetchAllStages();
+    this.fetchUser();
   }
 
   componentWillUnmount() {
     Api().unsubscribeClass(USER_KEY);
+  }
+
+  fetchAllStages() {
+    Api()
+      .problem("")
+      .stages()
+      .get()
+      .then(allStages => this.setState({ allStages }));
   }
 
   fetchUserPublications() {
@@ -48,7 +60,7 @@ class UserPage extends Component {
       .publications()
       .getByUser(global.session.user.id)
       .then(publications => {
-        this.setState(splitPublications(publications));
+        this.setState(splitPublications(publications, this.state.allStages));
       });
   }
 
@@ -105,6 +117,25 @@ class UserPage extends Component {
         .delete();
     });
   };
+
+  fetchUser() {
+    Api()
+      .subscribe(USER_KEY)
+      .user(global.session.user.id)
+      .get()
+      .then(async user => {
+        const getDetails = await fetch(
+          `https://pub.orcid.org/v2.1/${user.orcid}/person`,
+          {
+            method: "get",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          },
+        ).then(res => res.json());
+        console.log("getDetails", getDetails);
+      });
+  }
 
   renderLoading() {
     return null;
@@ -268,14 +299,14 @@ class UserPage extends Component {
     }
 
     return [
-      { title: "Problems", value: problemsCounter },
-      { title: "Hypotheses", value: hypothesesCounter },
-      { title: "Methods", value: methodsCounter },
-      { title: "Results", value: resultsCounter },
-      { title: "Analyses", value: analysesCounter },
-      { title: "Interpretations", value: interpretationsCounter },
-      { title: "Applications", value: applicationsCounter },
-      { title: "Reviews", value: reviewsCounter },
+      problemsCounter,
+      hypothesesCounter,
+      methodsCounter,
+      resultsCounter,
+      analysesCounter,
+      interpretationsCounter,
+      applicationsCounter,
+      reviewsCounter,
     ];
   }
 
@@ -310,10 +341,17 @@ class UserPage extends Component {
         </thead>
         <tbody>
           {radarData &&
-            radarData.map((data, index) => (
+            this.state.allStages.length > 0 &&
+            // radarData.map((data, index) => (
+            //   <tr key={index}>
+            //     <td>{data.title}</td>
+            //     <td>{data.value}</td>
+            //   </tr>
+            // ))
+            this.state.allStages.map((stage, index) => (
               <tr key={index}>
-                <td>{data.title}</td>
-                <td>{data.value}</td>
+                <td>{stage.name}</td>
+                <td>{radarData[index]}</td>
               </tr>
             ))}
         </tbody>
@@ -372,21 +410,59 @@ class UserPage extends Component {
     );
   }
 
+  splitPubsByCategory(pubs) {
+    if (pubs !== undefined) {
+      let pubsByCategory = {};
+      if (pubs && this.state.allStages.length > 0) {
+        this.state.allStages.forEach(stage => (pubsByCategory[stage.id] = []));
+        pubs.forEach(pub => pubsByCategory[pub.stage].push(pub));
+      }
+      return pubsByCategory;
+    }
+    return null;
+  }
+
+  renderPubsByCategory() {
+    const splittedPubs = this.splitPubsByCategory(this.state.userPublications);
+
+    if (splittedPubs) {
+      return Object.keys(splittedPubs).map(pub => {
+        const stageKey = pub - 1;
+        if (splittedPubs[pub].length > 0) {
+          return (
+            <div className="ui segment icon warning message">
+              <div className="content" style={styles.signoffContent}>
+                <div style={styles.signoffHeaderContainer}>
+                  <div className="header">
+                    {`${this.state.allStages[stageKey].name}(${splittedPubs[pub].length})`}
+                  </div>
+                </div>
+                {this.renderPublicationList(splittedPubs[pub])}
+              </div>
+            </div>
+          );
+        }
+      });
+    }
+    return null;
+  }
+
   render() {
     console.log("this.state", this.state);
     console.log("this.props", this.props);
+
     return (
       <div className="ui container main">
         {this.renderTitle()}
 
         {this.renderPublicationRadar()}
 
+        {/* {this.renderPubsByCategory()}
         {this.renderUnseen()}
         {this.renderUnsigned()}
-
         {this.shouldRenderInfo()
           ? this.renderInfo()
-          : this.renderPublishedContent()}
+          : this.renderPublishedContent()} */}
       </div>
     );
   }
@@ -396,7 +472,7 @@ class UserPage extends Component {
 //   return string.charAt(0).toUpperCase() + string.slice(1);
 // };
 
-const splitPublications = pubs => {
+const splitPublications = (pubs, stages) => {
   let splitted = {
     userPublications: pubs,
     finalizedPublications: [],
@@ -404,7 +480,11 @@ const splitPublications = pubs => {
     draftPublications: [],
     draftReviews: [],
   };
-
+  let pubsByCategory = {};
+  if (pubs && stages.length > 0) {
+    stages.forEach(stage => (pubsByCategory[stage.id] = []));
+    pubs.forEach(pub => pubsByCategory[pub.stage].push(pub));
+  }
   pubs.forEach(p => {
     let key = "";
     if (p.draft) {
@@ -412,6 +492,8 @@ const splitPublications = pubs => {
     } else {
       key = p.review ? "finalizedReviews" : "finalizedPublications";
     }
+
+    // switch(p.stage)
 
     splitted[key].push(p);
   });
