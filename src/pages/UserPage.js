@@ -457,8 +457,8 @@ class UserPage extends Component {
 
         {this.renderPublicationRadar()}
 
-        {/* {this.renderPubsByCategory()}
-        {this.renderUnseen()}
+        {this.renderPubsByCategory()}
+        {/* {this.renderUnseen()}
         {this.renderUnsigned()}
         {this.shouldRenderInfo()
           ? this.renderInfo()
