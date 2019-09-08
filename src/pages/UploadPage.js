@@ -52,6 +52,7 @@ class UploadPage extends Component {
       quality: 0,
       sizeOfDataset: 0,
       correctProtocol: 0,
+      isUserPublication: false,
     };
 
     this.handleQualityRating = this.handleQualityRating.bind(this);
@@ -71,6 +72,28 @@ class UploadPage extends Component {
 
   componentWillUnmount() {
     Api().unsubscribeClass(UPLOAD_KEY);
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (
+      this.state.publications &&
+      this.state.publicationsToLink.length > 0 &&
+      JSON.stringify(prevState.publicationsToLink) !==
+        JSON.stringify(this.state.publicationsToLink)
+    ) {
+      const selectedPublication = this.state.publicationsToLink.indexOf(true);
+      const publicationUser = this.state.publications[selectedPublication].user;
+
+      if (publicationUser === global.session.user.id) {
+        this.setState({
+          isUserPublication: true,
+        });
+      } else {
+        this.setState({
+          isUserPublication: false,
+        });
+      }
+    }
   }
 
   initCheck(props) {
@@ -277,9 +300,12 @@ class UploadPage extends Component {
     data.set("conflict", this.state.conflict);
     data.set("user", global.session.user.id);
     data.set("review", this.state.isReview);
-    data.set("quality", this.state.quality);
-    data.set("sizeOfDataset", this.state.sizeOfDataset);
-    data.set("correctProtocol", this.state.correctProtocol);
+    data.set("isUserPublication", this.state.isUserPublication);
+    if (!this.state.isUserPublication) {
+      data.set("quality", this.state.quality);
+      data.set("sizeOfDataset", this.state.sizeOfDataset);
+      data.set("correctProtocol", this.state.correctProtocol);
+    }
 
     if (linkedPublications !== undefined) {
       data.set("basedOn", JSON.stringify(linkedPublications.map(x => x.id)));
@@ -526,9 +552,10 @@ class UploadPage extends Component {
       this.state.title &&
       this.state.summary &&
       this.state.funding &&
-      this.state.quality !== 0 &&
-      this.state.sizeOfDataset !== 0 &&
-      this.state.correctProtocol !== 0 &&
+      ((this.state.quality !== 0 &&
+        this.state.sizeOfDataset !== 0 &&
+        this.state.correctProtocol !== 0) ||
+        this.state.isUserPublication) &&
       this.state.conflict &&
       (this.state.isReview ||
         (this.state.data !== undefined &&
@@ -860,9 +887,11 @@ class UploadPage extends Component {
                   </label>
                 </div>
               </div>
-              {this.state.isReview && this.renderRatings()}
               {this.shouldRenderLinkingSelector() &&
                 this.renderLinkingSelector()}
+              {this.state.isReview &&
+                !this.state.isUserPublication &&
+                this.renderRatings()}
               <div className="ui hidden divider" />
               <TitledForm
                 title="Publication Title"
