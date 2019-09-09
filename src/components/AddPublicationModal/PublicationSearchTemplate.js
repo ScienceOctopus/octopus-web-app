@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import WebURI from "../../urls/WebsiteURIs";
 import Api from "../../api";
+import CustomRating from "../CustomRating";
 
 class PublicationSearchTemplate extends Component {
   constructor(props) {
@@ -63,6 +64,10 @@ class PublicationSearchTemplate extends Component {
       this.props.publicationsToLink,
     );
 
+    const pubRating = this.props.publication.overAllRating
+      ? this.props.publication.overAllRating
+      : 0;
+
     return (
       <div
         className="ui grid"
@@ -104,18 +109,12 @@ class PublicationSearchTemplate extends Component {
           <p style={styles.extraItem}>
             <b>Data ID:</b>
             &nbsp;
-          </p>
-          <p style={styles.extraItem}>
-            <b>File size:</b>
-            &nbsp;
-          </p>
-          <p style={styles.extraItem}>
-            <b>Data host:</b>
-            &nbsp;
+            {this.props.publication.id}
           </p>
           <p style={styles.extraItem}>
             <b>Average rating:</b>
             &nbsp;
+            <CustomRating readonly={true} initialRating={pubRating} />
           </p>
           <div style={styles.extraItem}>
             <b>Link to analysis</b>

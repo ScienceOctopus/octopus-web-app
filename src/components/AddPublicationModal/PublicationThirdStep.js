@@ -3,6 +3,9 @@ import React, { Component } from "react";
 import PublicationSearchList from "./PublicationSearchList";
 import SearchField from "../SearchField";
 import SortField from "../SortField";
+import Api from "../../api";
+
+const SUMMARY_KEY = "summary";
 
 class PublicationThirdStep extends Component {
   constructor(props) {
@@ -15,6 +18,52 @@ class PublicationThirdStep extends Component {
       sortDescendent: false,
       publicationsList: this.props.previousStageData.publications,
     };
+  }
+
+  componentDidMount() {
+    this.addRatingsToPublications();
+  }
+
+  addRatingsToPublications() {
+    let publicationsList = [...this.state.publicationsList];
+    if (publicationsList.length > 0) {
+      publicationsList.forEach(async (pub, index) => {
+        await this.fetchPublicationRatings(pub);
+      });
+    }
+  }
+
+  fetchPublicationRatings(publication) {
+    let newPublicationsList = [];
+    Api()
+      .subscribe(SUMMARY_KEY)
+      .publication(publication.id)
+      .publication_ratings(publication.id)
+      .get()
+      .then(publicationRatings => {
+        let quality = 0;
+        let sizeOfDataset = 0;
+        let correctProtocol = 0;
+        let counter = 1;
+
+        publicationRatings.forEach(rating => {
+          counter++;
+          quality = quality + rating.quality;
+          sizeOfDataset = sizeOfDataset + rating.sizeOfDataset;
+          correctProtocol = correctProtocol + rating.correctProtocol;
+        });
+
+        const overAllRating = Math.round(
+          (quality / counter +
+            sizeOfDataset / counter +
+            correctProtocol / counter) /
+            3,
+        );
+
+        publication.overAllRating = overAllRating;
+        newPublicationsList.push(publication);
+      })
+      .then(() => this.setState({ publicationsList: newPublicationsList }));
   }
 
   handleSortCategory = sortCategory => {
@@ -39,6 +88,9 @@ class PublicationThirdStep extends Component {
         });
         break;
       case "Rating":
+        clonePublicationsList.sort(function(a, b) {
+          return new Date(a.overAllRating) - new Date(b.overAllRating);
+        });
         break;
       default:
         break;
@@ -66,6 +118,9 @@ class PublicationThirdStep extends Component {
         });
         break;
       case "Rating":
+        clonePublicationsList.sort(function(a, b) {
+          return new Date(b.overAllRating) - new Date(a.overAllRating);
+        });
         break;
       default:
         break;
