@@ -45,9 +45,9 @@ class PublicationSelector extends Component {
         {this.props.title && <label>{this.props.title}</label>}
 
         <div className="ui container" style={{ minHeight: "0.5rem" }}>
-          <div className="ui stackable grid">
+          <div>
             {this.props.publications.map((publication, i) => (
-              <div className="four wide column" key={i}>
+              <div key={i} style={{ marginBottom: 15 }}>
                 <Publication
                   publication={publication}
                   reviewDisplay={this.props.reviewDisplay}

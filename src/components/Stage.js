@@ -2,9 +2,35 @@ import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import styled from "styled-components";
 import Publication from "./Publication";
+import PublicationModal from "./AddPublicationModal/PublicationModal";
 import { generateLocalizedPath, RouterURI } from "../urls/WebsiteURIs";
 
 class Stage extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      modalVisible: false,
+    };
+  }
+
+  setModalVisible = visible => () => {
+    this.setState({
+      modalVisible: visible,
+    });
+  };
+
+  renderModal() {
+    return (
+      <PublicationModal
+        show={this.state.modalVisible}
+        onClose={this.setModalVisible(false)}
+        stage={this.props.stage}
+        content={this.props.content}
+        backgroundColor="#FAFAFA"
+      />
+    );
+  }
+
   render() {
     let {
       offset,
@@ -172,31 +198,26 @@ class Stage extends Component {
           }}
         >
           <div
-            className="ui icon button octopus-theme publication disabled"
-            style={{
-              padding: "0.5rem",
-              position: "absolute",
-              top: "calc(13px - (1.07142857rem * 1.28571429 - 13px) / 2)",
-              marginLeft: "-0.25rem",
-            }}
-          >
-            <i
-              className="ui pencil alternate icon"
-              style={{ color: "white" }}
-            />
-          </div>
-          <span style={{ float: "left" }}>&#x200b;</span>
-          <div
             className="ui placeholder"
             style={{
-              marginLeft: "2.5rem",
-              marginRight: "1.5em",
+              marginRight: "3.5em",
               height: "1.2em",
             }}
           >
             <div className="long line" style={{ backgroundColor: "initial" }} />
           </div>
           <div style={{ clear: "both" }} />
+          <div
+            className="ui icon button octopus-theme publication disabled"
+            style={{
+              padding: "0.5rem",
+              position: "absolute",
+              top: "0.5rem",
+              right: "1.1rem",
+            }}
+          >
+            <i className="ui plus alternate icon" style={{ color: "white" }} />
+          </div>
           {pubsNumber}
         </h4>
       );
@@ -210,54 +231,23 @@ class Stage extends Component {
             textOverflow: "ellipsis",
           }}
         >
+          {this.props.stage.name}
           <div
             className="ui icon button octopus-theme publication"
             style={{
               padding: "0.5rem",
               position: "absolute",
-              top: "calc(13px - (1.07142857rem * 1.28571429 - 13px) / 2)",
-              marginLeft: "-0.25rem",
+              top: "0.5rem",
+              right: "1.1rem",
             }}
-            onClick={event => {
-              this.props.history.push(
-                generateLocalizedPath(RouterURI.UploadToProblemStage, {
-                  id: this.props.content.problem,
-                  stage: this.props.stage.id,
-                }),
-              );
-              event.stopPropagation();
-            }}
+            onClick={this.setModalVisible(true)}
           >
-            <i
-              className="ui pencil alternate icon"
-              style={{ color: "white" }}
-            />
+            <i className="ui plus alternate icon" style={{ color: "white" }} />
           </div>
-          <div
-            className="ui icon button"
-            style={{
-              padding: "0.5rem",
-              margin: "-0.5rem 0.5rem -0.5rem -0.25rem",
-              opacity: 0,
-              pointerEvents: "none",
-            }}
-            hidden
-          >
-            <i
-              className="ui pencil alternate icon"
-              style={{
-                marginRight: "0.5em",
-                opacity: 0,
-              }}
-              hidden
-            />
-          </div>
-          {this.props.stage.name}
           {pubsNumber}
         </h4>
       );
     }
-
     return (
       <div className="column" style={{ minWidth: "30ch" }}>
         <PublicationSegment
@@ -285,6 +275,7 @@ class Stage extends Component {
           </PublicationCollapser>
         </PublicationSegment>
         {links}
+        {this.renderModal()}
       </div>
     );
   }

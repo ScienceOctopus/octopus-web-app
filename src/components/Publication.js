@@ -167,6 +167,9 @@ class Publication extends Component {
           pointer={this.props.pointer}
         >
           <Title>{this.props.publication.title}</Title>
+          <Summary className="description" highlight={this.props.highlight}>
+            {this.props.publication.summary}
+          </Summary>
           <div className="meta">
             {new Date(this.props.publication.created_at).toLocaleDateString()}
           </div>
@@ -191,12 +194,12 @@ class Publication extends Component {
               <AdditionalLabel>[Review]</AdditionalLabel>
             )}
           </TitleContainer>
-          <div className="meta">
-            {new Date(this.props.publication.created_at).toLocaleDateString()}
-          </div>
           <Summary className="description" highlight={this.props.highlight}>
             {this.props.publication.summary}
           </Summary>
+          <div className="meta">
+            {new Date(this.props.publication.created_at).toLocaleDateString()}
+          </div>
         </BgDiv>
       );
     }

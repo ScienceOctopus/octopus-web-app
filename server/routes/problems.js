@@ -6,6 +6,8 @@ const upload = blobService.upload;
 const getUserFromSession = require("../lib/userSessions").getUserFromSession;
 const broadcast = require("../lib/webSocket").broadcast;
 
+const fs = require("fs");
+
 function catchAsyncErrors(fn) {
   return (req, res, next) => {
     const routePromise = fn(req, res, next);
@@ -30,6 +32,26 @@ const getProblems = async (req, res) => {
   const problems = await db.selectAllProblems();
 
   res.status(200).json(problems);
+};
+
+const getStages = async (req, res) => {
+  const stages = await db.selectAllStages();
+  res.status(200).json(stages);
+}
+
+const getProblemsAndPublications = async (req, res) => {
+  let problems = [];
+  let publications = [];
+
+  if (req.query && req.query.q) {
+    problems = await db.selectProblemsBySearch(req.query.q);
+    publications = await db.selectPublicationsBySearch(req.query.q);
+  } else {
+    problems = await db.selectAllProblems();
+    publications = await db.selectAllPublications();
+  }
+
+  res.status(200).json({ problems, publications });
 };
 
 const getProblemByID = async (req, res) => {
@@ -188,18 +210,18 @@ const postPublicationToProblemAndStage = async (req, res) => {
       switch (schema[i][1]) {
         case "file":
           error =
-            typeof content != "number" ||
+            typeof content !== "number" ||
             content <= 0 ||
             req.files[content] === undefined;
           break;
         case "uri":
-          error = typeof content != "string";
+          error = typeof content !== "string";
           break;
         case "text":
-          error = typeof content != "string";
+          error = typeof content !== "string";
           break;
         case "bool":
-          error = typeof content != "boolean";
+          error = typeof content !== "boolean";
           break;
         default:
           error = true;
@@ -213,9 +235,10 @@ const postPublicationToProblemAndStage = async (req, res) => {
         case "file":
           // @TODO use a generic model for file operations
           content = (await db.insertResource(
-            "azureBlob",
-            req.files[content].url,
+            req.files[0].mimeType,
+            req.files[0].location,
           ))[0];
+
           resources.push(content);
           break;
         case "uri":
@@ -250,6 +273,15 @@ const postPublicationToProblemAndStage = async (req, res) => {
     "author",
   );
 
+  if (JSON.parse(req.body.review) && !JSON.parse(req.body.isUserPublication)) {
+    await db.insertPublicationRatings(
+      JSON.parse(req.body.basedOn)[0],
+      req.body.quality,
+      req.body.sizeOfDataset,
+      req.body.correctProtocol,
+      req.body.user,
+    );
+  }
   //   let usersToNotify = [];
 
   if (req.body.basedOn !== undefined) {
@@ -264,10 +296,14 @@ const postPublicationToProblemAndStage = async (req, res) => {
     //   await db.insertUserNotification(usersToNotify[i], publications[0]);
     // }
   }
-
-  resources.unshift(
-    (await db.insertResource("azureBlob", req.files[0].url))[0],
-  );
+  if (req.files.length > 0) {
+    resources.unshift(
+      (await db.insertResource(
+        req.files[0].mimetype,
+        req.files[0].location,
+      ))[0],
+    );
+  }
 
   for (let i = 0; i < resources.length; i++) {
     await db.insertPublicationResource(
@@ -348,10 +384,102 @@ const postProblem = async (req, res) => {
 
 const isNumber = x => Number(x) !== NaN;
 
+const fileToText = async (req, res) => {
+  // ge uploaded files bucket and key
+  let fileOptions = [];
+  req.files.forEach(file => {
+    fileOptions.push({
+      s3Options: {
+        Bucket: file.bucket,
+        Key: file.key,
+      },
+      mimetype: file.mimetype,
+    });
+  });
+
+  fileOptions.forEach(fileOption => {
+    const aws = require("aws-sdk");
+    const AWS_KEY = process.env.AWS_KEY;
+    const AWS_SECRET = process.env.AWS_SECRET;
+    const AWS_REGION = process.env.AWS_REGION;
+
+    aws.config.update({
+      region: AWS_REGION,
+      accessKeyId: AWS_KEY,
+      secretAccessKey: AWS_SECRET,
+    });
+    const s3Instance = new aws.S3();
+    const filePath = `/tmp/V0-${fileOption.s3Options.Key}`;
+
+    try {
+      s3Instance.getObject(fileOption.s3Options, (err, data) => {
+        if (err) console.error(err);
+
+        // base64 encoding doesn't write corrupted .doc and .docx
+        // base64 encoding doesn't affect .pdf
+        fs.writeFileSync(filePath, Buffer.from(data.Body).toString("base64"), {
+          encoding: "base64",
+        });
+
+        if (fileOption.mimetype === "application/msword") {
+        }
+
+        if (fileOption.mimetype === "text/x-tex") {
+        }
+
+        if (
+          fileOption.mimetype ===
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        ) {
+          // ------ works for DOCX ------
+          const mammoth = require("mammoth");
+          mammoth
+            .convertToHtml({ path: filePath })
+            .then(function(result) {
+              var html = result.value; // The generated HTML
+              res.status(200).json({ html });
+            })
+            .done();
+        }
+
+        // ------ works for PDF ------
+        if (fileOption.mimetype === "application/pdf") {
+          var extract = require("pdf-html-extract");
+
+          extract(filePath, function(err, html) {
+            if (err) {
+              console.dir(err);
+              return;
+            }
+
+            html.join(" ");
+            res.status(200).json({ html });
+          });
+        }
+      });
+    } catch (err) {
+      console.log("err", err);
+      res.status(500).send("500 Internal Server Error ");
+    }
+  });
+};
+
 var router = express.Router();
+router.post(
+  "/file-to-text",
+  (req, res, next) => {
+    if (upload) {
+      return upload().array("file")(req, res, next);
+    }
+    next();
+  },
+  catchAsyncErrors(fileToText),
+);
 
 router.get("/", catchAsyncErrors(getProblems));
 router.post("/", catchAsyncErrors(postProblem));
+router.get("/stages", catchAsyncErrors(getStages));
+router.get("/publications", catchAsyncErrors(getProblemsAndPublications));
 router.get(
   "/:id(\\d+)/publications",
   catchAsyncErrors(getPublicationsByProblem),
@@ -373,7 +501,12 @@ router.get(
 
 router.post(
   "/:id(\\d+)/stages/:stage(\\d+)/publications",
-  upload(blobService.AZURE_PUBLICATION_CONTAINER).array("file"),
+  (req, res, next) => {
+    if (upload) {
+      return upload().array("file")(req, res, next);
+    }
+    next();
+  },
   catchAsyncErrors(postPublicationToProblemAndStage),
 );
 

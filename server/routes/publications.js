@@ -143,18 +143,18 @@ const postPublicationToID = async (req, res) => {
     switch (schema[i][1]) {
       case "file":
         error =
-          typeof content != "number" ||
+          typeof content !== "number" ||
           content <= 0 ||
           req.files[content] === undefined;
         break;
       case "uri":
-        error = typeof content != "string";
+        error = typeof content !== "string";
         break;
       case "text":
-        error = typeof content != "string";
+        error = typeof content !== "string";
         break;
       case "bool":
-        error = typeof content != "boolean";
+        error = typeof content !== "boolean";
         break;
       default:
         error = true;
@@ -369,6 +369,44 @@ const getCollaboratorsBackwardsFromPublication = async (req, res) => {
   res.status(200).json(resources);
 };
 
+const getRatingsByPublication = async (req, res) => {
+  const publication = await getAndValidatePublication(req.params.id, req);
+  if (!publication) {
+    console.log(`Couldn't find publication with ID: ${req.params.id}`);
+    return res.sendStatus(404);
+  }
+
+  const resources = await db.getRatingsByPublicationId(req.params.id);
+  res.status(200).json(resources);
+};
+
+const getPublicationReviewRating = async (req, res) => {
+  const publication = await getAndValidatePublication(req.params.id, req);
+  if (!publication) {
+    console.log(`Couldn't find publication with ID: ${req.params.id}`);
+    return res.sendStatus(404);
+  }
+
+  const reviewRatings = await db.getPublicationReviewRating(req.params.id);
+  res.status(200).json(reviewRatings);
+};
+
+const postPublicationReviewRating = async (req, res) => {
+  const publication = await getAndValidatePublication(req.params.id, req);
+  if (!publication) {
+    console.log(`Couldn't find publication with ID: ${req.params.id}`);
+    return res.sendStatus(404);
+  }
+
+  //to do: replace args: publicationId, rating, userId
+  const id = await db.insertPublicationReviewRating(
+    req.body.publicationId,
+    req.body.userId,
+  );
+
+  res.status(200).json(id);
+};
+
 const postCollaboratorToPublication = async (req, res) => {
   const publication = await getAndValidatePublication(req.params.id, req);
   if (!publication) {
@@ -419,7 +457,9 @@ const getSignoffsByPublication = async (req, res) => {
 const postSignoffToPublication = async (req, res) => {
   const publication = await getAndValidatePublication(req.params.id, req);
   if (!publication) {
-    console.log(`Couldn't postSignoff for publication with ID: ${req.params.id}`);
+    console.log(
+      `Couldn't postSignoff for publication with ID: ${req.params.id}`,
+    );
     return res.sendStatus(404);
   }
 
@@ -464,9 +504,7 @@ const postSignoffToPublication = async (req, res) => {
     broadcast(`/publications/${publication.id}`);
     broadcast(`/problems/${publication.problem}/publications`);
     broadcast(
-      `/problems/${publication.problem}/stages/${
-        publication.stage
-      }/publications`,
+      `/problems/${publication.problem}/stages/${publication.stage}/publications`,
     );
     broadcast("/problems");
     broadcast(`/problems/${publication.problem}`);
@@ -642,6 +680,15 @@ router.get(
 router.get("/:id(\\d+)/reviews", catchAsyncErrors(getReviewsByPublication));
 router.get("/:id(\\d+)/resources", catchAsyncErrors(getResourcesByPublication));
 router.get(
+  "/:id(\\d+)/publication_ratings",
+  catchAsyncErrors(getRatingsByPublication),
+);
+
+router.get(
+  "/:id(\\d+)/publication_review_rating",
+  catchAsyncErrors(getPublicationReviewRating),
+);
+router.get(
   "/:id(\\d+)/collaborators",
   catchAsyncErrors(getCollaboratorsByPublication),
 );
@@ -664,6 +711,10 @@ router.post("/:id(\\d+)/signoffs", catchAsyncErrors(postSignoffToPublication));
 router.get(
   "/:id(\\d+)/signoffs_remaining",
   catchAsyncErrors(getSignoffsRemainingByPublication),
+);
+router.post(
+  "/:id(\\d+)/publication_review_rating",
+  catchAsyncErrors(postPublicationReviewRating),
 );
 router.post(
   "/:id(\\d+)/request_signoff",

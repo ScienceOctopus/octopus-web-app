@@ -17,7 +17,7 @@ const SearchField = props => {
             className="prompt"
             type="text"
             onChange={props.onChange}
-            value={props.value}
+            value={props.value || ""}
             placeholder={props.placeholder}
           />
           <i className="search icon" />

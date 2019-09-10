@@ -80,6 +80,8 @@ const queries = {
       .insert({ problem, stage, order })
       .returning("id"),
 
+  selectAllStages: () => knex("stages").orderBy("id"),
+
   selectAllStagesIds: () => knex("stages").select("id"),
 
   selectStagesByID: id =>
@@ -93,6 +95,23 @@ const queries = {
       .where("problem", problem)
       .join("stages", "stages.id", "=", "problem_stages.stage")
       .select(),
+
+  selectAllPublications: () =>
+    knex("publications")
+      .select()
+      .where("draft", false),
+
+  selectPublicationsBySearch: searchPhrase =>
+    queries
+      .selectAllPublications()
+      .where(builder =>
+        builder
+          .whereRaw("lower(title) like ?", `%${searchPhrase.toLowerCase()}%`)
+          .orWhereRaw(
+            "lower(summary) like ?",
+            `%${searchPhrase.toLowerCase()}%`,
+          ),
+      ),
 
   selectPublicationsByID: id =>
     knex("publications")
@@ -462,6 +481,38 @@ const queries = {
         // transaction failed, data rolled back
       });
   },
+
+  getRatingsByPublicationId: publicationId =>
+    knex("publication_ratings")
+      .select()
+      .where("publicationId", publicationId),
+
+  insertPublicationRatings: (
+    publicationId,
+    quality,
+    sizeOfDataset,
+    correctProtocol,
+    userId,
+  ) =>
+    knex("publication_ratings").insert({
+      publicationId,
+      quality,
+      sizeOfDataset,
+      correctProtocol,
+      userId,
+    }),
+
+  getPublicationReviewRating: publicationId => {
+    return knex("publication_review_rating")
+      .select()
+      .where("publicationId", publicationId);
+  },
+
+  insertPublicationReviewRating: (publicationId, userId) =>
+    knex("publication_review_rating").insert({
+      publicationId,
+      userId,
+    }),
 
   insertLink: (publication, basedOn) =>
     knex("publication_links").insert(

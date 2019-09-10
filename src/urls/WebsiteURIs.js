@@ -4,7 +4,7 @@ import { Link, Redirect } from "react-router-dom";
 import { AVAILABLE_LANGUAGES } from "../i18n";
 import { generatePath } from "react-router-dom";
 
-const ORCID_OAUTH_CLIENT_ID = "APP-I3S9GLKWPY01BYEA";
+const { REACT_APP_ORCID_OAUTH_CLIENT_ID: ORCID_OAUTH_CLIENT_ID = "APP-I3S9GLKWPY01BYEA" } = process.env;
 
 const REDIRECT_HOST = window.location.host.endsWith(":3000")
   ? "http://" + window.location.host.replace(":3000", ":3001")
@@ -32,6 +32,7 @@ export const generateLocalizedPath = (pattern, params) => {
 export const path = generatePath;
 
 export const RouterURI = {
+  Profile: "/profile/:id(\\d+)",
   Problem: "/problems/:id(\\d+)",
   Publication: "/publications/:id(\\d+)",
   UploadToProblem: "/publish/problems/:id(\\d+)",

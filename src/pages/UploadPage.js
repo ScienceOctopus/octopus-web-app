@@ -1,5 +1,7 @@
 import React, { Component } from "react";
+import { generatePath } from "react-router";
 import { withRouter } from "react-router-dom";
+import uniqueId from "lodash/uniqueId";
 import Api from "../api";
 import FileUploadSelector from "../components/FileUploadSelector";
 import PublicationSelector from "../components/PublicationSelector";
@@ -12,12 +14,11 @@ import WebURI, {
   localizeLink,
   LocalizedLink,
 } from "../urls/WebsiteURIs";
-import { generatePath } from "react-router";
-import uniqueId from "lodash/uniqueId";
 import ProblemSelector from "../components/ProblemSelector";
 import { loginRequired } from "./LogInRequiredPage";
 import withState from "../withState";
 import TitledTagSelector from "../components/TitledTagSelector";
+import CustomRating from "../components/CustomRating";
 
 const UPLOAD_KEY = "upload";
 const SUPPORTED_EXTENSIONS = ["pdf"];
@@ -47,8 +48,18 @@ class UploadPage extends Component {
       problems: [],
       stages: [],
       publications: undefined,
+
+      quality: 0,
+      sizeOfDataset: 0,
+      correctProtocol: 0,
+      isUserPublication: false,
     };
 
+    this.handleQualityRating = this.handleQualityRating.bind(this);
+    this.handleSizeOfDatasetRating = this.handleSizeOfDatasetRating.bind(this);
+    this.handleCorrectProtocolRating = this.handleCorrectProtocolRating.bind(
+      this,
+    );
     // Always start a new cache when the upload page is loaded
     Api()
       .subscribeClass(UPLOAD_KEY, Math.random())
@@ -61,6 +72,28 @@ class UploadPage extends Component {
 
   componentWillUnmount() {
     Api().unsubscribeClass(UPLOAD_KEY);
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (
+      this.state.publications &&
+      this.state.publicationsToLink.length > 0 &&
+      JSON.stringify(prevState.publicationsToLink) !==
+        JSON.stringify(this.state.publicationsToLink)
+    ) {
+      const selectedPublication = this.state.publicationsToLink.indexOf(true);
+      const publicationUser = this.state.publications[selectedPublication].user;
+
+      if (publicationUser === global.session.user.id) {
+        this.setState({
+          isUserPublication: true,
+        });
+      } else {
+        this.setState({
+          isUserPublication: false,
+        });
+      }
+    }
   }
 
   initCheck(props) {
@@ -267,6 +300,12 @@ class UploadPage extends Component {
     data.set("conflict", this.state.conflict);
     data.set("user", global.session.user.id);
     data.set("review", this.state.isReview);
+    data.set("isUserPublication", this.state.isUserPublication);
+    if (!this.state.isUserPublication) {
+      data.set("quality", this.state.quality);
+      data.set("sizeOfDataset", this.state.sizeOfDataset);
+      data.set("correctProtocol", this.state.correctProtocol);
+    }
 
     if (linkedPublications !== undefined) {
       data.set("basedOn", JSON.stringify(linkedPublications.map(x => x.id)));
@@ -311,7 +350,7 @@ class UploadPage extends Component {
 
     await this.setState({ uploading: true });
 
-    Api()
+    return Api()
       .subscribe(UPLOAD_KEY)
       .problem(this.state.selectedProblemId)
       .stage(this.state.selectedStageId)
@@ -513,6 +552,10 @@ class UploadPage extends Component {
       this.state.title &&
       this.state.summary &&
       this.state.funding &&
+      ((this.state.quality !== 0 &&
+        this.state.sizeOfDataset !== 0 &&
+        this.state.correctProtocol !== 0) ||
+        this.state.isUserPublication) &&
       this.state.conflict &&
       (this.state.isReview ||
         (this.state.data !== undefined &&
@@ -585,6 +628,57 @@ class UploadPage extends Component {
     ) {
       this.initCheck(nextProps);
     }
+  }
+
+  handleQualityRating(quality) {
+    this.setState({ quality });
+  }
+
+  handleSizeOfDatasetRating(sizeOfDataset) {
+    this.setState({ sizeOfDataset });
+  }
+
+  handleCorrectProtocolRating(correctProtocol) {
+    this.setState({ correctProtocol });
+  }
+
+  renderRatings() {
+    return (
+      <div>
+        <div className="row" style={{ marginTop: 20, marginBottom: 10 }}>
+          <h5>
+            How do you rate these Results?
+            <span style={{ color: "red" }}>*</span>
+          </h5>
+        </div>
+        <div className="ui equal width grid" style={{ marginBottom: 0 }}>
+          <div className="column">
+            <p>High Quality & Annotated</p>
+            <CustomRating
+              readonly={global.session.user ? false : true}
+              initialRating={this.state.quality}
+              onClick={this.handleQualityRating}
+            />
+          </div>
+          <div className="column" style={{ textAlign: "center" }}>
+            <p>Size of data</p>
+            <CustomRating
+              readonly={global.session.user ? false : true}
+              initialRating={this.state.sizeOfDataset}
+              onClick={this.handleSizeOfDatasetRating}
+            />
+          </div>
+          <div className="column" style={{ textAlign: "right" }}>
+            <p>Correct protocol</p>
+            <CustomRating
+              readonly={global.session.user ? false : true}
+              initialRating={this.state.correctProtocol}
+              onClick={this.handleCorrectProtocolRating}
+            />
+          </div>
+        </div>
+      </div>
+    );
   }
 
   render() {
@@ -689,6 +783,8 @@ class UploadPage extends Component {
         );
       }
     }
+    console.log("UploadPage state", this.state);
+    console.log("UploadPage props", this.props);
 
     return (
       <>
@@ -784,6 +880,9 @@ class UploadPage extends Component {
               </div>
               {this.shouldRenderLinkingSelector() &&
                 this.renderLinkingSelector()}
+              {this.state.isReview &&
+                !this.state.isUserPublication &&
+                this.renderRatings()}
               <div className="ui hidden divider" />
               <TitledForm
                 title="Publication Title"

@@ -9,6 +9,7 @@ import {
 import Api from "../api";
 import withState from "../withState";
 import TagSelector from "./TagSelector";
+import CustomRating from "./CustomRating";
 
 const SUMMARY_KEY = "summary";
 
@@ -16,13 +17,72 @@ class SummaryView extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {};
-
+    this.state = {
+      quality: 0,
+      sizeOfDataset: 0,
+      correctProtocol: 0,
+      reviewRating: 0,
+    };
     this.fetchPublicationData();
+    this.handleReviewRating = this.handleReviewRating.bind(this);
   }
 
   componentWillUnmount() {
     Api().unsubscribeClass(SUMMARY_KEY);
+  }
+
+  handleReviewRating() {
+    const reviewRating = this.state.reviewRating + 1;
+    const data = {
+      publicationId: this.props.publicationId,
+      userId: global.session.user.id,
+    };
+    Api()
+      .subscribe(SUMMARY_KEY)
+      .publication(this.props.publicationId)
+      .publication_review_rating()
+      .post(data)
+      .then(this.setState({ reviewRating, userAlreadyRated: true }));
+  }
+
+  renderRatings() {
+    const { review, draft } = this.state.publication;
+    if (review && !draft) {
+      return (
+        <div style={styles.reviewRatingContainer}>
+          {this.state.reviewRating}
+          {global.session.user && !this.state.userAlreadyRated && (
+            <i
+              className="arrow up icon"
+              style={styles.rateReview}
+              onClick={this.handleReviewRating}
+            />
+          )}
+        </div>
+      );
+    }
+    return (
+      <div className="ui equal width grid">
+        <div className="column">
+          <p>High Quality & Annotated</p>
+          <CustomRating readonly={true} initialRating={this.state.quality} />
+        </div>
+        <div className="column" style={{ textAlign: "center" }}>
+          <p>Size of data</p>
+          <CustomRating
+            readonly={true}
+            initialRating={this.state.sizeOfDataset}
+          />
+        </div>
+        <div className="column" style={{ textAlign: "right" }}>
+          <p>Correct protocol</p>
+          <CustomRating
+            readonly={true}
+            initialRating={this.state.correctProtocol}
+          />
+        </div>
+      </div>
+    );
   }
 
   static getContributions = collaborators => {
@@ -110,6 +170,50 @@ class SummaryView extends Component {
           .then(resources => {
             this.setState({
               resources: resources,
+            });
+          });
+
+        Api()
+          .subscribe(SUMMARY_KEY)
+          .publication(this.props.publicationId)
+          .publication_ratings(this.props.publicationId)
+          .get()
+          .then(ratings => {
+            let quality = 0;
+            let sizeOfDataset = 0;
+            let correctProtocol = 0;
+            let counter = 0;
+            ratings.forEach(rating => {
+              counter++;
+              quality = quality + rating.quality;
+              sizeOfDataset = sizeOfDataset + rating.sizeOfDataset;
+              correctProtocol = correctProtocol + rating.correctProtocol;
+            });
+            this.setState({
+              quality: Math.round(quality / counter),
+              sizeOfDataset: Math.round(sizeOfDataset / counter),
+              correctProtocol: Math.round(correctProtocol / counter),
+            });
+          });
+
+        Api()
+          .subscribe(SUMMARY_KEY)
+          .publication(this.props.publicationId)
+          .publication_review_rating()
+          .get()
+          .then(reviewRatings => {
+            let userAlreadyRated;
+            reviewRatings.forEach(reviewRating => {
+              if (
+                global.session.user &&
+                reviewRating.userId === global.session.user.id
+              ) {
+                userAlreadyRated = true;
+              }
+            });
+            this.setState({
+              userAlreadyRated,
+              reviewRating: reviewRatings.length,
             });
           });
 
@@ -375,6 +479,9 @@ class SummaryView extends Component {
               <strong>Date added: </strong>
               {new Date(this.state.publication.created_at).toLocaleDateString()}
             </p>
+            <br />
+            {this.renderRatings()}
+            <br />
             {this.state.collaborators &&
               SummaryView.sortByLastName(
                 this.state.collaborators,
@@ -387,7 +494,6 @@ class SummaryView extends Component {
                   </a>
                 </p>
               ))}
-
             {mainResourcePresent && (
               <a className="ui button" href={this.state.resources[0].uri}>
                 <i className="ui download icon" />
@@ -416,9 +522,7 @@ class SummaryView extends Component {
               <div className="ui divider" />
               {this.state.publication.conflict}
             </section>
-
             {metadata}
-
             {mainResourcePresent ? (
               <section className="ui segment">
                 <PDFImagePreviewRenderer document={this.state.resources[0]} />
@@ -431,7 +535,6 @@ class SummaryView extends Component {
                 </div>
               </section>
             )}
-
             <section className="ui segment">
               <h3>All collaborating authors in this line of research</h3>
               <div className="ui divider" />
@@ -446,7 +549,6 @@ class SummaryView extends Component {
                   </span>
                 ))}
             </section>
-
             <section className="ui segment">
               <h3>Earlier publications in this line of research</h3>
               <div className="ui divider" />
@@ -458,6 +560,16 @@ class SummaryView extends Component {
     );
   }
 }
+
+const styles = {
+  rateReview: {
+    color: "green",
+    cursor: "pointer",
+  },
+  reviewRatingContainer: {
+    fontSize: 30,
+  },
+};
 
 const StageTitle = styled.span`
   color: var(--octopus-theme-publication);

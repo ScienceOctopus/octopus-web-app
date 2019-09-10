@@ -8,6 +8,7 @@ import PublicationSelector from "../components/PublicationSelector";
 import WebURI from "../urls/WebsiteURIs";
 
 const USER_KEY = "user";
+const PROBLEM_KEY = "problem";
 
 class UserPage extends Component {
   signoffs = [];
@@ -27,6 +28,9 @@ class UserPage extends Component {
       signoffPublications: [],
       unseenPublications: [],
       checkingUnseen: true,
+      userPublications: undefined,
+      allStages: [],
+      user: undefined,
     };
   }
 
@@ -34,10 +38,20 @@ class UserPage extends Component {
     this.fetchUserPublications();
     this.fetchUserNotifications();
     this.fetchUnsigned();
+    this.fetchAllStages();
+    this.fetchUser();
   }
 
   componentWillUnmount() {
     Api().unsubscribeClass(USER_KEY);
+  }
+
+  fetchAllStages() {
+    Api()
+      .problem("")
+      .stages()
+      .get()
+      .then(allStages => this.setState({ allStages }));
   }
 
   fetchUserPublications() {
@@ -46,7 +60,7 @@ class UserPage extends Component {
       .publications()
       .getByUser(global.session.user.id)
       .then(publications => {
-        this.setState(splitPublications(publications));
+        this.setState(splitPublications(publications, this.state.allStages));
       });
   }
 
@@ -103,6 +117,25 @@ class UserPage extends Component {
         .delete();
     });
   };
+
+  fetchUser() {
+    Api()
+      .subscribe(USER_KEY)
+      .user(global.session.user.id)
+      .get()
+      .then(async user => {
+        const getDetails = await fetch(
+          `https://pub.orcid.org/v2.1/${user.orcid}/person`,
+          {
+            method: "get",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          },
+        ).then(res => res.json());
+        console.log("getDetails", getDetails);
+      });
+  }
 
   renderLoading() {
     return null;
@@ -218,6 +251,114 @@ class UserPage extends Component {
     );
   }
 
+  getRadarData() {
+    const userPublications = this.state.userPublications
+      ? [...this.state.userPublications]
+      : [];
+    let problemsCounter = this.state.problems ? this.state.problems.length : 0;
+
+    let hypothesesCounter = 0;
+    let methodsCounter = 0;
+    let resultsCounter = 0;
+    let analysesCounter = 0;
+    let interpretationsCounter = 0;
+    let applicationsCounter = 0;
+    let reviewsCounter = 0;
+
+    if (userPublications) {
+      for (let i = 0; i < userPublications.length; i++) {
+        if (userPublications[i].review) {
+          reviewsCounter++;
+          userPublications.splice(i, 1);
+        }
+      }
+      userPublications.forEach(userPublication => {
+        switch (userPublication.stage) {
+          case 1:
+            hypothesesCounter++;
+            break;
+          case 2:
+            methodsCounter++;
+            break;
+          case 3:
+            resultsCounter++;
+            break;
+          case 4:
+            analysesCounter++;
+            break;
+          case 5:
+            interpretationsCounter++;
+            break;
+          case 6:
+            applicationsCounter++;
+            break;
+          default:
+            break;
+        }
+      });
+    }
+
+    return [
+      problemsCounter,
+      hypothesesCounter,
+      methodsCounter,
+      resultsCounter,
+      analysesCounter,
+      interpretationsCounter,
+      applicationsCounter,
+      reviewsCounter,
+    ];
+  }
+
+  // Fetch the stages, then fetch their publications
+  fetchStages() {
+    let done = false;
+
+    Api()
+      .subscribe(PROBLEM_KEY)
+      .problem(this.state.problem)
+      .stages()
+      .get()
+      .then(stages =>
+        this.setState(this.handleStagesChange(stages), () => {
+          if (!done) {
+            done = true;
+            this.fetchStagePublications();
+          }
+        }),
+      );
+  }
+
+  renderPublicationRadar() {
+    const radarData = this.getRadarData();
+    return (
+      <table className="ui celled table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Number</th>
+          </tr>
+        </thead>
+        <tbody>
+          {radarData &&
+            this.state.allStages.length > 0 &&
+            // radarData.map((data, index) => (
+            //   <tr key={index}>
+            //     <td>{data.title}</td>
+            //     <td>{data.value}</td>
+            //   </tr>
+            // ))
+            this.state.allStages.map((stage, index) => (
+              <tr key={index}>
+                <td>{stage.name}</td>
+                <td>{radarData[index]}</td>
+              </tr>
+            ))}
+        </tbody>
+      </table>
+    );
+  }
+
   shouldRenderInfo() {
     return !(
       this.state.finalizedPublications.length ||
@@ -269,17 +410,59 @@ class UserPage extends Component {
     );
   }
 
+  splitPubsByCategory(pubs) {
+    if (pubs !== undefined) {
+      let pubsByCategory = {};
+      if (pubs && this.state.allStages.length > 0) {
+        this.state.allStages.forEach(stage => (pubsByCategory[stage.id] = []));
+        pubs.forEach(pub => pubsByCategory[pub.stage].push(pub));
+      }
+      return pubsByCategory;
+    }
+    return null;
+  }
+
+  renderPubsByCategory() {
+    const splittedPubs = this.splitPubsByCategory(this.state.userPublications);
+
+    if (splittedPubs) {
+      return Object.keys(splittedPubs).map(pub => {
+        const stageKey = pub - 1;
+        if (splittedPubs[pub].length > 0) {
+          return (
+            <div className="ui segment icon warning message">
+              <div className="content" style={styles.signoffContent}>
+                <div style={styles.signoffHeaderContainer}>
+                  <div className="header">
+                    {`${this.state.allStages[stageKey].name}(${splittedPubs[pub].length})`}
+                  </div>
+                </div>
+                {this.renderPublicationList(splittedPubs[pub])}
+              </div>
+            </div>
+          );
+        }
+      });
+    }
+    return null;
+  }
+
   render() {
+    console.log("this.state", this.state);
+    console.log("this.props", this.props);
+
     return (
       <div className="ui container main">
         {this.renderTitle()}
 
-        {this.renderUnseen()}
-        {this.renderUnsigned()}
+        {this.renderPublicationRadar()}
 
+        {this.renderPubsByCategory()}
+        {/* {this.renderUnseen()}
+        {this.renderUnsigned()}
         {this.shouldRenderInfo()
           ? this.renderInfo()
-          : this.renderPublishedContent()}
+          : this.renderPublishedContent()} */}
       </div>
     );
   }
@@ -289,14 +472,19 @@ class UserPage extends Component {
 //   return string.charAt(0).toUpperCase() + string.slice(1);
 // };
 
-const splitPublications = pubs => {
+const splitPublications = (pubs, stages) => {
   let splitted = {
+    userPublications: pubs,
     finalizedPublications: [],
     finalizedReviews: [],
     draftPublications: [],
     draftReviews: [],
   };
-
+  let pubsByCategory = {};
+  if (pubs && stages.length > 0) {
+    stages.forEach(stage => (pubsByCategory[stage.id] = []));
+    pubs.forEach(pub => pubsByCategory[pub.stage].push(pub));
+  }
   pubs.forEach(p => {
     let key = "";
     if (p.draft) {
@@ -304,6 +492,8 @@ const splitPublications = pubs => {
     } else {
       key = p.review ? "finalizedReviews" : "finalizedPublications";
     }
+
+    // switch(p.stage)
 
     splitted[key].push(p);
   });
