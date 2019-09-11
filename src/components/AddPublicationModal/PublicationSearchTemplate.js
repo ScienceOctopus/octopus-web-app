@@ -121,7 +121,7 @@ class PublicationSearchTemplate extends Component {
             />
           </p>
           <div style={styles.extraItem}>
-            <b>Link to analysis</b>
+            <b>Link my new publication to this one</b>
             &nbsp;
             <div className="ui checkbox">
               <input
