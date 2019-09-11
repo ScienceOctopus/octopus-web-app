@@ -506,6 +506,16 @@ class SummaryView extends Component {
               {this.state.publication.summary}
             </section>
             <section className="ui segment">
+              <h3>Editor data</h3>
+              <div className="ui divider" />
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: this.state.publication.editorData,
+                }}
+                style={{ maxHeight: 1000, overflow: "auto" }}
+              />
+            </section>
+            <section className="ui segment">
               <h3>Keywords</h3>
               <div className="ui divider" />
               {this.state.tags && (

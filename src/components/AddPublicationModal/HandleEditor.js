@@ -6,9 +6,23 @@ const HandleEditor = props => {
   if (props.selectedFile) {
     switch (props.selectedFile.type) {
       case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-        return <CKEditor data={props.editorData} />;
+        return (
+          <CKEditor
+            data={props.editorData}
+            onChange={event =>
+              props.handleEditorData(event.editor.document.$.body.innerHTML)
+            }
+          />
+        );
       case "application/pdf":
-        return <CKEditor data={props.editorData} />;
+        return (
+          <CKEditor
+            data={props.editorData}
+            onChange={event =>
+              props.handleEditorData(event.editor.document.$.body.innerHTML)
+            }
+          />
+        );
       case "application/msword":
         return null;
       case "text/x-tex":
@@ -17,6 +31,14 @@ const HandleEditor = props => {
         return null;
     }
   }
-  return <CKEditor data={props.editorData} />;
+
+  return (
+    <CKEditor
+      data={props.editorData}
+      onChange={event =>
+        props.handleEditorData(event.editor.document.$.body.innerHTML)
+      }
+    />
+  );
 };
 export default HandleEditor;

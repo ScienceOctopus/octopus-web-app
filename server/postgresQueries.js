@@ -347,20 +347,22 @@ const queries = {
     funding,
     conflict,
     review,
+    editorData,
     data,
     draft,
   ) =>
     knex("publications")
       .insert({
-        problem: problem,
-        stage: stage,
-        title: title,
-        summary: summary,
-        funding: funding,
-        conflict: conflict,
-        review: review,
-        data: data,
-        draft: draft,
+        problem,
+        stage,
+        title,
+        summary,
+        funding,
+        conflict,
+        review,
+        editorData,
+        data,
+        draft,
       })
       .returning("id"),
 

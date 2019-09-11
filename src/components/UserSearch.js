@@ -83,7 +83,7 @@ class UserSearch extends Component {
     const { name, emails } = user;
     let givenName, familyName, display_name, display_email;
 
-    if (name && name["given-names"] && name["family-name"]) {
+    if (name && (name["given-names"] || name["family-name"])) {
       givenName = name["given-names"] ? name["given-names"].value : "";
       familyName = name["family-name"] ? name["family-name"].value : "";
       display_name = `${givenName} ${familyName}`;

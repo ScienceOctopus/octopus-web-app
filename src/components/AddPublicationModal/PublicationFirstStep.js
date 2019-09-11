@@ -82,6 +82,7 @@ class PublicationFirstStep extends Component {
               <HandleEditor
                 selectedFile={this.props.selectedFile}
                 editorData={this.props.editorData}
+                handleEditorData={this.props.handleEditorData}
               />
             )}
           </div>

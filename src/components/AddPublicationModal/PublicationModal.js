@@ -34,6 +34,10 @@ class PublicationModal extends React.Component {
     };
   }
 
+  handleEditorData = editorData => {
+    this.setState({ editorData });
+  };
+
   handlePublicationsToLink = publicationId => {
     const alreadyExists = this.state.publicationsToLink.includes(publicationId);
 
@@ -162,7 +166,6 @@ class PublicationModal extends React.Component {
   };
 
   handleSubmit = async () => {
-    console.log("we in");
     const problemId = this.props.stage.problem;
     const stageId = this.props.stage.id;
 
@@ -174,6 +177,7 @@ class PublicationModal extends React.Component {
     data.set("conflict", this.state.conflict);
     data.set("user", global.session.user.id);
     data.set("review", this.state.isReview);
+    data.set("editorData", this.state.editorData);
     data.set("data", JSON.stringify([]));
 
     if (this.state.publicationsToLink.length > 0) {
@@ -266,6 +270,7 @@ class PublicationModal extends React.Component {
                   loading={this.state.loading}
                   handlePublicationsToLink={this.handlePublicationsToLink}
                   publicationsToLink={this.state.publicationsToLink}
+                  handleEditorData={this.handleEditorData}
                 />
 
                 {this.state.stepNumber !== 3 ? (

@@ -37,7 +37,7 @@ const getProblems = async (req, res) => {
 const getStages = async (req, res) => {
   const stages = await db.selectAllStages();
   res.status(200).json(stages);
-}
+};
 
 const getProblemsAndPublications = async (req, res) => {
   let problems = [];
@@ -255,6 +255,8 @@ const postPublicationToProblemAndStage = async (req, res) => {
     }
   }
 
+  // console.log("req.body.editorData,", req.body.editorData);
+
   const publications = await db.insertPublication(
     req.params.id,
     req.params.stage,
@@ -263,6 +265,7 @@ const postPublicationToProblemAndStage = async (req, res) => {
     req.body.funding,
     req.body.conflict,
     req.body.review,
+    req.body.editorData,
     JSON.stringify(data),
     true,
   );

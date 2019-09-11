@@ -32,6 +32,8 @@ class UserPage extends Component {
       allStages: [],
       user: undefined,
     };
+
+    this.getFullName = this.getFullName.bind(this);
   }
 
   componentDidMount() {
@@ -124,7 +126,7 @@ class UserPage extends Component {
       .user(global.session.user.id)
       .get()
       .then(async user => {
-        const getDetails = await fetch(
+        const userDetails = await fetch(
           `https://pub.orcid.org/v2.1/${user.orcid}/person`,
           {
             method: "get",
@@ -133,7 +135,7 @@ class UserPage extends Component {
             },
           },
         ).then(res => res.json());
-        console.log("getDetails", getDetails);
+        this.setState({ user: userDetails });
       });
   }
 
@@ -342,12 +344,6 @@ class UserPage extends Component {
         <tbody>
           {radarData &&
             this.state.allStages.length > 0 &&
-            // radarData.map((data, index) => (
-            //   <tr key={index}>
-            //     <td>{data.title}</td>
-            //     <td>{data.value}</td>
-            //   </tr>
-            // ))
             this.state.allStages.map((stage, index) => (
               <tr key={index}>
                 <td>{stage.name}</td>
@@ -426,11 +422,11 @@ class UserPage extends Component {
     const splittedPubs = this.splitPubsByCategory(this.state.userPublications);
 
     if (splittedPubs) {
-      return Object.keys(splittedPubs).map(pub => {
+      return Object.keys(splittedPubs).map((pub, index) => {
         const stageKey = pub - 1;
         if (splittedPubs[pub].length > 0) {
           return (
-            <div className="ui segment icon warning message">
+            <div key={index} className="ui segment icon warning message">
               <div className="content" style={styles.signoffContent}>
                 <div style={styles.signoffHeaderContainer}>
                   <div className="header">
@@ -447,6 +443,52 @@ class UserPage extends Component {
     return null;
   }
 
+  getFullName() {
+    const { user } = this.state;
+    if (
+      user &&
+      user.name &&
+      (user.name["given-names"] || user.name["family-name"])
+    ) {
+      const givenName = user.name["given-names"]
+        ? user.name["given-names"].value
+        : "";
+      const familyName = user.name["family-name"]
+        ? user.name["family-name"].value
+        : "";
+      const display_name = `${givenName} ${familyName}`;
+      console.log("display_name 11", display_name);
+      return display_name;
+    }
+    return "";
+  }
+
+  renderUserInfo() {
+    console.log(this.state.user);
+    const fullName = this.getFullName();
+    console.log("fullName 11", fullName);
+
+    if (this.state.user) {
+      return (
+        <div>
+          <h3 style={{ marginBottom: 0 }}>{fullName}</h3>
+          <h4 style={{ marginTop: 0 }}>
+            <b>ORCID iD:</b>
+            &nbsp;
+            <a
+              href={WebURI.OrcidPage(this.state.user.name.path)}
+              target="_blank"
+              style={{ fontWeight: "normal" }}
+            >
+              {this.state.user.name.path}
+            </a>
+          </h4>
+        </div>
+      );
+    }
+    return null;
+  }
+
   render() {
     console.log("this.state", this.state);
     console.log("this.props", this.props);
@@ -455,7 +497,17 @@ class UserPage extends Component {
       <div className="ui container main">
         {this.renderTitle()}
 
-        {this.renderPublicationRadar()}
+        <div className="ui grid">
+          <div className="eight wide left floated column">
+            {this.renderUserInfo()}
+          </div>
+          <div
+            className="eight wide right floated column"
+            style={{ paddingRight: 0 }}
+          >
+            {this.renderPublicationRadar()}
+          </div>
+        </div>
 
         {this.renderPubsByCategory()}
         {/* {this.renderUnseen()}
