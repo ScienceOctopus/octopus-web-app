@@ -194,13 +194,10 @@ class PublicationModal extends React.Component {
     data.set("review", this.state.isReview);
     data.set("editorData", this.state.editorData);
     data.set("data", JSON.stringify([]));
-
-    if (this.state.publicationsToLink.length > 0) {
-      data.set(
-        "basedOn",
-        JSON.stringify(this.state.publicationsToLink.map(id => id)),
-      );
-    }
+    data.set(
+      "basedOn",
+      JSON.stringify(this.state.publicationsToLink.map(id => id)),
+    );
 
     data.append("file", this.state.selectedFile);
 
@@ -264,8 +261,7 @@ class PublicationModal extends React.Component {
               <div>
                 <h1 style={{ fontWeight: "bold" }}>
                   Add a new {this.props.stage.singular.toLowerCase()} - Step (
-                  {this.state.stepNumber}
-                  /3)
+                  {this.state.stepNumber}/{previousStageData ? 3 : 2})
                 </h1>
                 <AddPublicationStepsHandler
                   stepNumber={this.state.stepNumber}
@@ -292,10 +288,14 @@ class PublicationModal extends React.Component {
                   handleEditorData={this.handleEditorData}
                 />
 
-                {this.state.stepNumber !== 3 ? (
+                {this.state.stepNumber !== (previousStageData ? 3 : 2) ? (
                   <button
                     className="ui button"
-                    disabled={!this.state.publicationTitle}
+                    disabled={
+                      !this.state.publicationTitle.trim() ||
+                      !this.state.publicationSummary.trim() ||
+                      !this.state.editorData
+                    }
                     style={styles.nextStepButton}
                     onClick={this.handleStepNumber}
                   >
@@ -304,7 +304,11 @@ class PublicationModal extends React.Component {
                 ) : (
                   <button
                     className="ui button"
-                    disabled={!this.state.publicationsToLink.length}
+                    disabled={
+                      previousStageData
+                        ? !this.state.publicationsToLink.length
+                        : false
+                    }
                     style={styles.nextStepButton}
                     onClick={this.handleSubmit}
                   >
