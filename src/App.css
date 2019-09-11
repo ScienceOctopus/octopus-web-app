@@ -148,3 +148,10 @@ h1, h2, h3, h4, h5, .app, .ui.menu, .ui.header, .ui.button {
 
 
 .ui.icon.button, .ui.icon.buttons .button {padding: 15px}
+
+.summaryView article {margin-right:320px;}
+.summaryView sidebar {float: right; width: 300px}
+
+.ratingIcon {font-size: 1.4em !important; color: #fac56d}
+
+.segment {border: 1px solid #ccc !important; box-shadow: none }

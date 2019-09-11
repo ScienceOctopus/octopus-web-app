@@ -73,8 +73,8 @@ class SummaryView extends Component {
       );
     }
     return (
-      <div className="ui equal width grid">
-        <div className="column">
+      <div className="ui">
+
           <p>
             {this.state.ratingsNames
               ? this.state.ratingsNames.firstRating
@@ -83,9 +83,13 @@ class SummaryView extends Component {
           <CustomRating
             readonly={true}
             initialRating={this.state.firstRating}
+            emptySymbol={<i className="ratingIcon icon star outline" />}
+            fullSymbol={<i className="ratingIcon icon star" />}
           />
-        </div>
-        <div className="column" style={{ textAlign: "center" }}>
+
+          <br />
+          <br />
+
           <p>
             {this.state.ratingsNames
               ? this.state.ratingsNames.secondRating
@@ -94,9 +98,13 @@ class SummaryView extends Component {
           <CustomRating
             readonly={true}
             initialRating={this.state.secondRating}
+            emptySymbol={<i className="ratingIcon icon star outline" />}
+            fullSymbol={<i className="ratingIcon icon star" />}
           />
-        </div>
-        <div className="column" style={{ textAlign: "right" }}>
+
+          <br />
+          <br />
+
           <p>
             {this.state.ratingsNames
               ? this.state.ratingsNames.thirdRating
@@ -105,8 +113,10 @@ class SummaryView extends Component {
           <CustomRating
             readonly={true}
             initialRating={this.state.thirdRating}
+            emptySymbol={<i className="ratingIcon icon star outline" />}
+            fullSymbol={<i className="ratingIcon icon star" />}
           />
-        </div>
+
       </div>
     );
   }
@@ -489,9 +499,15 @@ class SummaryView extends Component {
     }
 
     return (
-      <div>
+      <div class="summaryView">
         <div className="ui divider" />
         <main className="ui main text">
+
+          <sidebar>
+            <h2>Ratings</h2>
+            {this.renderRatings()}
+          </sidebar>
+
           <article>
             <h1 className="ui header">
               <StageTitle>
@@ -505,8 +521,6 @@ class SummaryView extends Component {
               <strong>Date added: </strong>
               {new Date(this.state.publication.created_at).toLocaleDateString()}
             </p>
-            <br />
-            {this.renderRatings()}
             <br />
             {this.state.collaborators &&
               SummaryView.sortByLastName(
