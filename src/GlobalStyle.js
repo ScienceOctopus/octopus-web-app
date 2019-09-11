@@ -26,14 +26,14 @@ class hsla {
 const ColourScheme = (() => {
   let scheme = {};
 
-  scheme.accent = new hsla(167, 0.51, 0.38);
+  scheme.accent = new hsla(249, 0.72, 0.75);
   scheme.accentDark = scheme.accent.withLightness(0.65);
 
-  scheme.background = new hsla(167, 0.7, 0.8);
+  scheme.background = new hsla(223, 0.7, 0.8);
 
-  scheme.problem = new hsla(0, 0, 0);
+  scheme.problem = new hsla(249, 0.72, 0.75);
 
-  scheme.publication = new hsla(167, 0.51, 0.38);
+  scheme.publication = new hsla(270, 0.68, 0.6);
   scheme.publicationHighlight = scheme.publication.withLightness(0.85);
   scheme.publicationHighlightTransparent = scheme.publicationHighlight.withAlpha(0);
 
@@ -46,9 +46,9 @@ const ColourScheme = (() => {
   scheme.draftHighlightTransparent = scheme.draftHighlight.withAlpha(0);
 
   scheme.explore = new hsla(170, 0.34, 0.85);
-  scheme.publish = new hsla(170, 0.29, 0.7);
-  scheme.moar = new hsla(170, 0.27, 0.6);
-  scheme.questionable = new hsla(170, 0.25, 0.55);
+  scheme.publish = new hsla(226, 0.29, 0.7);
+  scheme.moar = new hsla(253, 0.27, 0.6);
+  scheme.questionable = new hsla(280, 0.25, 0.55);
 
   return scheme;
 })();
