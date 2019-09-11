@@ -18,11 +18,13 @@ class SummaryView extends Component {
     super(props);
 
     this.state = {
-      quality: 0,
-      sizeOfDataset: 0,
-      correctProtocol: 0,
+      firstRating: 0,
+      secondRating: 0,
+      thirdRating: 0,
       reviewRating: 0,
+      ratingsNames: undefined,
     };
+
     this.fetchPublicationData();
     this.handleReviewRating = this.handleReviewRating.bind(this);
   }
@@ -45,6 +47,15 @@ class SummaryView extends Component {
       .then(this.setState({ reviewRating, userAlreadyRated: true }));
   }
 
+  fetchStageRatingsNames(stageId) {
+    Api()
+      .subscribe(SUMMARY_KEY)
+      .publication(this.props.publicationId)
+      .stage_ratings_names()
+      .getQuery(stageId)
+      .then(ratingsNames => this.setState({ ratingsNames: ratingsNames[0] }));
+  }
+
   renderRatings() {
     const { review, draft } = this.state.publication;
     if (review && !draft) {
@@ -64,21 +75,36 @@ class SummaryView extends Component {
     return (
       <div className="ui equal width grid">
         <div className="column">
-          <p>High Quality & Annotated</p>
-          <CustomRating readonly={true} initialRating={this.state.quality} />
-        </div>
-        <div className="column" style={{ textAlign: "center" }}>
-          <p>Size of data</p>
+          <p>
+            {this.state.ratingsNames
+              ? this.state.ratingsNames.firstRating
+              : "High Quality & Annotated"}
+          </p>
           <CustomRating
             readonly={true}
-            initialRating={this.state.sizeOfDataset}
+            initialRating={this.state.firstRating}
+          />
+        </div>
+        <div className="column" style={{ textAlign: "center" }}>
+          <p>
+            {this.state.ratingsNames
+              ? this.state.ratingsNames.secondRating
+              : "Size of data"}
+          </p>
+          <CustomRating
+            readonly={true}
+            initialRating={this.state.secondRating}
           />
         </div>
         <div className="column" style={{ textAlign: "right" }}>
-          <p>Correct protocol</p>
+          <p>
+            {this.state.ratingsNames
+              ? this.state.ratingsNames.thirdRating
+              : "Correct protocol"}
+          </p>
           <CustomRating
             readonly={true}
-            initialRating={this.state.correctProtocol}
+            initialRating={this.state.thirdRating}
           />
         </div>
       </div>
@@ -152,12 +178,13 @@ class SummaryView extends Component {
                   .problem(this.state.publication.problem)
                   .stage(this.state.publication.stage)
                   .get()
-                  .then(stage =>
+                  .then(stage => {
                     this.setState({
                       stage: stage,
                       schema: JSON.parse(stage.schema),
-                    }),
-                  );
+                    });
+                    this.fetchStageRatingsNames(stage.id);
+                  });
               },
             );
           });
@@ -179,20 +206,20 @@ class SummaryView extends Component {
           .publication_ratings(this.props.publicationId)
           .get()
           .then(ratings => {
-            let quality = 0;
-            let sizeOfDataset = 0;
-            let correctProtocol = 0;
+            let firstRating = 0;
+            let secondRating = 0;
+            let thirdRating = 0;
             let counter = 0;
             ratings.forEach(rating => {
               counter++;
-              quality = quality + rating.quality;
-              sizeOfDataset = sizeOfDataset + rating.sizeOfDataset;
-              correctProtocol = correctProtocol + rating.correctProtocol;
+              firstRating = firstRating + rating.firstRating;
+              secondRating = secondRating + rating.secondRating;
+              thirdRating = thirdRating + rating.thirdRating;
             });
             this.setState({
-              quality: Math.round(quality / counter),
-              sizeOfDataset: Math.round(sizeOfDataset / counter),
-              correctProtocol: Math.round(correctProtocol / counter),
+              firstRating: Math.round(firstRating / counter),
+              secondRating: Math.round(secondRating / counter),
+              thirdRating: Math.round(thirdRating / counter),
             });
           });
 
@@ -319,7 +346,6 @@ class SummaryView extends Component {
       this.fetchPublicationData();
     }
   }
-
   render() {
     // TODO: handle cases where publication may not have loaded?
     if (this.state.publication === undefined) {
@@ -465,7 +491,7 @@ class SummaryView extends Component {
     return (
       <div>
         <div className="ui divider" />
-        <main className="ui main text container">
+        <main className="ui main container">
           <article>
             <h1 className="ui header">
               <StageTitle>
@@ -504,6 +530,16 @@ class SummaryView extends Component {
               <h3>Summary</h3>
               <div className="ui divider" />
               {this.state.publication.summary}
+            </section>
+            <section className="ui segment">
+              <h3>Editor data</h3>
+              <div className="ui divider" />
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: this.state.publication.editorData,
+                }}
+                style={{ maxHeight: 1000, overflow: "auto" }}
+              />
             </section>
             <section className="ui segment">
               <h3>Keywords</h3>

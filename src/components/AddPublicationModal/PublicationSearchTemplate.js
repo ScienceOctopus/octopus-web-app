@@ -114,10 +114,14 @@ class PublicationSearchTemplate extends Component {
           <p style={styles.extraItem}>
             <b>Average rating:</b>
             &nbsp;
-            <CustomRating readonly={true} initialRating={pubRating} />
+            <CustomRating
+              readonly={true}
+              initialRating={pubRating}
+              // size="20px"
+            />
           </p>
           <div style={styles.extraItem}>
-            <b>Link to analysis</b>
+            <b>Link my new publication to this one</b>
             &nbsp;
             <div className="ui checkbox">
               <input

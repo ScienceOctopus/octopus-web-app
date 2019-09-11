@@ -49,17 +49,14 @@ class UploadPage extends Component {
       stages: [],
       publications: undefined,
 
-      quality: 0,
-      sizeOfDataset: 0,
-      correctProtocol: 0,
+      firstRating: 0,
+      secondRating: 0,
+      thirdRating: 0,
       isUserPublication: false,
+      selectedPublicationId: undefined,
+      ratingsNames: undefined,
     };
 
-    this.handleQualityRating = this.handleQualityRating.bind(this);
-    this.handleSizeOfDatasetRating = this.handleSizeOfDatasetRating.bind(this);
-    this.handleCorrectProtocolRating = this.handleCorrectProtocolRating.bind(
-      this,
-    );
     // Always start a new cache when the upload page is loaded
     Api()
       .subscribeClass(UPLOAD_KEY, Math.random())
@@ -93,6 +90,13 @@ class UploadPage extends Component {
           isUserPublication: false,
         });
       }
+    }
+
+    if (
+      prevState.selectedPublicationId !== this.state.selectedPublicationId &&
+      this.state.selectedPublicationId
+    ) {
+      this.fetchStageRatingsNames(this.state.selectedStageId);
     }
   }
 
@@ -167,6 +171,15 @@ class UploadPage extends Component {
           ) !== undefined,
       });
     }
+  }
+
+  fetchStageRatingsNames(stageId) {
+    Api()
+      .subscribe(UPLOAD_KEY)
+      .publication(this.state.selectedPublicationId)
+      .stage_ratings_names()
+      .getQuery(stageId)
+      .then(ratingsNames => this.setState({ ratingsNames: ratingsNames[0] }));
   }
 
   fetchStages(review) {
@@ -302,9 +315,9 @@ class UploadPage extends Component {
     data.set("review", this.state.isReview);
     data.set("isUserPublication", this.state.isUserPublication);
     if (!this.state.isUserPublication) {
-      data.set("quality", this.state.quality);
-      data.set("sizeOfDataset", this.state.sizeOfDataset);
-      data.set("correctProtocol", this.state.correctProtocol);
+      data.set("firstRating", this.state.firstRating);
+      data.set("secondRating", this.state.secondRating);
+      data.set("thirdRating", this.state.thirdRating);
     }
 
     if (linkedPublications !== undefined) {
@@ -552,9 +565,9 @@ class UploadPage extends Component {
       this.state.title &&
       this.state.summary &&
       this.state.funding &&
-      ((this.state.quality !== 0 &&
-        this.state.sizeOfDataset !== 0 &&
-        this.state.correctProtocol !== 0) ||
+      ((this.state.firstRating !== 0 &&
+        this.state.secondRating !== 0 &&
+        this.state.thirdRating !== 0) ||
         this.state.isUserPublication) &&
       this.state.conflict &&
       (this.state.isReview ||
@@ -630,17 +643,11 @@ class UploadPage extends Component {
     }
   }
 
-  handleQualityRating(quality) {
-    this.setState({ quality });
-  }
+  handleFirstRating = firstRating => this.setState({ firstRating });
 
-  handleSizeOfDatasetRating(sizeOfDataset) {
-    this.setState({ sizeOfDataset });
-  }
+  handleSecondRating = secondRating => this.setState({ secondRating });
 
-  handleCorrectProtocolRating(correctProtocol) {
-    this.setState({ correctProtocol });
-  }
+  handleThirdRating = thirdRating => this.setState({ thirdRating });
 
   renderRatings() {
     return (
@@ -653,27 +660,39 @@ class UploadPage extends Component {
         </div>
         <div className="ui equal width grid" style={{ marginBottom: 0 }}>
           <div className="column">
-            <p>High Quality & Annotated</p>
+            <p>
+              {this.state.ratingsNames
+                ? this.state.ratingsNames.firstRating
+                : "High Quality & Annotated"}
+            </p>
             <CustomRating
               readonly={global.session.user ? false : true}
-              initialRating={this.state.quality}
-              onClick={this.handleQualityRating}
+              initialRating={this.state.firstRating}
+              onClick={this.handleFirstRating}
             />
           </div>
           <div className="column" style={{ textAlign: "center" }}>
-            <p>Size of data</p>
+            <p>
+              {this.state.ratingsNames
+                ? this.state.ratingsNames.firstRating
+                : "Size of data"}
+            </p>
             <CustomRating
               readonly={global.session.user ? false : true}
-              initialRating={this.state.sizeOfDataset}
-              onClick={this.handleSizeOfDatasetRating}
+              initialRating={this.state.secondRating}
+              onClick={this.handleSecondRating}
             />
           </div>
           <div className="column" style={{ textAlign: "right" }}>
-            <p>Correct protocol</p>
+            <p>
+              {this.state.ratingsNames
+                ? this.state.ratingsNames.firstRating
+                : "Correct protocol"}
+            </p>
             <CustomRating
               readonly={global.session.user ? false : true}
-              initialRating={this.state.correctProtocol}
-              onClick={this.handleCorrectProtocolRating}
+              initialRating={this.state.thirdRating}
+              onClick={this.handleThirdRating}
             />
           </div>
         </div>
@@ -783,8 +802,6 @@ class UploadPage extends Component {
         );
       }
     }
-    console.log("UploadPage state", this.state);
-    console.log("UploadPage props", this.props);
 
     return (
       <>
