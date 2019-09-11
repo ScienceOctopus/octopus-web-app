@@ -12,7 +12,11 @@ const AddPublicationStepsHandler = props => {
           onFileSelect={props.onFileSelect}
           selectedFile={props.selectedFile}
           publicationTitle={props.publicationTitle}
+          publicationSummary={props.publicationSummary}
+          dataRepository={props.dataRepository}
           handleTitleChange={props.handleTitleChange}
+          handleSummaryChange={props.handleSummaryChange}
+          handleDataRepositoryChange={props.handleDataRepositoryChange}
           showEditor={props.showEditor}
           editorData={props.editorData}
           editorVisible={props.editorVisible}

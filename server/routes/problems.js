@@ -266,6 +266,7 @@ const postPublicationToProblemAndStage = async (req, res) => {
     req.body.conflict,
     req.body.review,
     req.body.editorData,
+    req.body.dataRepository,
     JSON.stringify(data),
     true,
   );

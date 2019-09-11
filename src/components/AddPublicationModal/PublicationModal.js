@@ -14,6 +14,8 @@ class PublicationModal extends React.Component {
     this.state = {
       stepNumber: 1,
       publicationTitle: "",
+      publicationSummary: "",
+      dataRepository: "",
       publicationCollaborators: [],
       editorVisible: false,
       loading: false,
@@ -127,6 +129,18 @@ class PublicationModal extends React.Component {
     });
   };
 
+  handleSummaryChange = event => {
+    this.setState({
+      publicationSummary: event.target.value,
+    });
+  };
+
+  handleDataRepositoryChange = event => {
+    this.setState({
+      dataRepository: event.target.value,
+    });
+  };
+
   handleCollaborators = collaborator => {
     this.setState(state => {
       let collaborators = [...state.publicationCollaborators];
@@ -171,7 +185,8 @@ class PublicationModal extends React.Component {
 
     const data = new FormData();
     data.set("title", this.state.publicationTitle);
-    data.set("summary", this.state.summary);
+    data.set("summary", this.state.publicationSummary);
+    data.set("dataRepository", this.state.dataRepository);
     data.set("funding", this.state.funding);
     data.set("tags", JSON.stringify(this.state.tags));
     data.set("conflict", this.state.conflict);
@@ -258,7 +273,11 @@ class PublicationModal extends React.Component {
                   onFileSelect={this.handleFileSelect}
                   selectedFile={this.state.selectedFile}
                   publicationTitle={this.state.publicationTitle}
+                  publicationSummary={this.state.publicationSummary}
+                  dataRepository={this.state.dataRepository}
                   handleTitleChange={this.handleTitleChange}
+                  handleSummaryChange={this.handleSummaryChange}
+                  handleDataRepositoryChange={this.handleDataRepositoryChange}
                   handleCollaborators={this.handleCollaborators}
                   publicationCollaborators={this.state.publicationCollaborators}
                   selectedStageId={this.props.stage.id}

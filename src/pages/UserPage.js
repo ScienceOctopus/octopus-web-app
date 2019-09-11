@@ -6,6 +6,7 @@ import { loginRequired } from "./LogInRequiredPage";
 import withState from "../withState";
 import PublicationSelector from "../components/PublicationSelector";
 import WebURI from "../urls/WebsiteURIs";
+import axios from "axios";
 
 const USER_KEY = "user";
 const PROBLEM_KEY = "problem";
@@ -20,6 +21,7 @@ class UserPage extends Component {
     super(props);
 
     this.state = {
+      loading: false,
       problems: undefined,
       finalizedPublications: [],
       finalizedReviews: [],
@@ -121,22 +123,29 @@ class UserPage extends Component {
   };
 
   fetchUser() {
+    this.setState({ loading: true });
+
     Api()
       .subscribe(USER_KEY)
       .user(global.session.user.id)
       .get()
-      .then(async user => {
-        const userDetails = await fetch(
-          `https://pub.orcid.org/v2.1/${user.orcid}/person`,
-          {
-            method: "get",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          },
-        ).then(res => res.json());
-        this.setState({ user: userDetails });
-      });
+      .then(user =>
+        axios
+          .all([
+            axios.get(`https://pub.orcid.org/v2.1/${user.orcid}/person`, {
+              headers: { Accept: "application/json" },
+            }),
+            axios.get(`https://pub.orcid.org/v2.1/${user.orcid}/activities`, {
+              headers: { Accept: "application/json" },
+            }),
+          ])
+          .then(
+            axios.spread((details, activities) =>
+              this.setState({ user: { ...details.data, ...activities.data } }),
+            ),
+          )
+          .finally(() => this.setState({ loading: false })),
+      );
   }
 
   renderLoading() {
@@ -165,16 +174,7 @@ class UserPage extends Component {
   }
 
   renderTitle() {
-    return (
-      <h2 style={{ textAlign: "center" }}>
-        User page of <strong>{global.session.user.display_name}</strong>
-        {" ("}
-        <a href={WebURI.OrcidPage(global.session.user.orcid)}>
-          {`ORCID: ${global.session.user.orcid}`}
-        </a>
-        {")"}
-      </h2>
-    );
+    return <h2 style={styles.title}>User profile</h2>;
   }
 
   renderUnsigned() {
@@ -464,29 +464,41 @@ class UserPage extends Component {
   }
 
   renderUserInfo() {
-    console.log(this.state.user);
+    const { user, loading } = this.state;
     const fullName = this.getFullName();
-    console.log("fullName 11", fullName);
 
-    if (this.state.user) {
+    console.log("user", user);
+
+    if (loading) {
       return (
+        <div className="ui placeholder">
+          <div className="paragraph">
+            <div className="line"></div>
+            <div className="line"></div>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      (user && (
         <div>
           <h3 style={{ marginBottom: 0 }}>{fullName}</h3>
           <h4 style={{ marginTop: 0 }}>
             <b>ORCID iD:</b>
             &nbsp;
             <a
-              href={WebURI.OrcidPage(this.state.user.name.path)}
+              href={WebURI.OrcidPage(user.name.path)}
               target="_blank"
               style={{ fontWeight: "normal" }}
             >
-              {this.state.user.name.path}
+              {user.name.path}
             </a>
           </h4>
         </div>
-      );
-    }
-    return null;
+      )) ||
+      null
+    );
   }
 
   render() {
@@ -554,6 +566,9 @@ const splitPublications = (pubs, stages) => {
 };
 
 const styles = {
+  title: {
+    marginBottom: 20,
+  },
   signoffContent: {
     maxWidth: "100%",
   },
