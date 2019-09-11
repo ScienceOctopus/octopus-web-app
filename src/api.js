@@ -584,6 +584,11 @@ class PublicationBuilder extends LinkBuilder {
     return this;
   };
 
+  stage_ratings_names = () => {
+    this.path += "/stage_ratings_names";
+    return this;
+  };
+
   requestSignoff = () => {
     this.path += "/request_signoff";
     return this;

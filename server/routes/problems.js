@@ -266,9 +266,9 @@ const postPublicationToProblemAndStage = async (req, res) => {
     req.body.conflict,
     req.body.review,
     req.body.editorData,
-    req.body.dataRepository,
     JSON.stringify(data),
     true,
+    req.body.dataRepository,
   );
 
   await db.insertPublicationCollaborator(
@@ -280,9 +280,9 @@ const postPublicationToProblemAndStage = async (req, res) => {
   if (JSON.parse(req.body.review) && !JSON.parse(req.body.isUserPublication)) {
     await db.insertPublicationRatings(
       JSON.parse(req.body.basedOn)[0],
-      req.body.quality,
-      req.body.sizeOfDataset,
-      req.body.correctProtocol,
+      req.body.firstRating,
+      req.body.secondRating,
+      req.body.thirdRating,
       req.body.user,
     );
   }

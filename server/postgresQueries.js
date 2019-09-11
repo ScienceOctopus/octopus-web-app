@@ -350,6 +350,7 @@ const queries = {
     editorData,
     data,
     draft,
+    dataRepository,
   ) =>
     knex("publications")
       .insert({
@@ -363,6 +364,7 @@ const queries = {
         editorData,
         data,
         draft,
+        dataRepository,
       })
       .returning("id"),
 
@@ -484,6 +486,11 @@ const queries = {
       });
   },
 
+  getRatingsNamesByStageId: stageId =>
+    knex("ratings")
+      .select()
+      .where("stageId", stageId),
+
   getRatingsByPublicationId: publicationId =>
     knex("publication_ratings")
       .select()
@@ -491,16 +498,16 @@ const queries = {
 
   insertPublicationRatings: (
     publicationId,
-    quality,
-    sizeOfDataset,
-    correctProtocol,
+    firstRating,
+    secondRating,
+    thirdRating,
     userId,
   ) =>
     knex("publication_ratings").insert({
       publicationId,
-      quality,
-      sizeOfDataset,
-      correctProtocol,
+      firstRating,
+      secondRating,
+      thirdRating,
       userId,
     }),
 

@@ -380,6 +380,17 @@ const getRatingsByPublication = async (req, res) => {
   res.status(200).json(resources);
 };
 
+const getStageRatingsNames = async (req, res) => {
+  const publication = await getAndValidatePublication(req.params.id, req);
+  if (!publication) {
+    console.log(`Couldn't find publication with ID: ${req.params.id}`);
+    return res.sendStatus(404);
+  }
+
+  const stageNames = await db.getRatingsNamesByStageId(req.query.q);
+  res.status(200).json(stageNames);
+};
+
 const getPublicationReviewRating = async (req, res) => {
   const publication = await getAndValidatePublication(req.params.id, req);
   if (!publication) {
@@ -651,7 +662,10 @@ var router = express.Router();
 
 router.get("/", catchAsyncErrors(getPublications));
 router.get("/reviews", catchAsyncErrors(getReviews));
-
+router.get(
+  "/:id(\\d+)/stage_ratings_names",
+  catchAsyncErrors(getStageRatingsNames),
+);
 router.get("/:id(\\d+)", catchAsyncErrors(getPublicationByID));
 
 router.post(

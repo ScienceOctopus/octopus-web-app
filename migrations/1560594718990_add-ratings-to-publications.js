@@ -7,7 +7,6 @@ exports.up = pgm => {
       type: "integer",
       notNull: true,
       references: "publications",
-      onDelete: "cascade",
     },
     quality: {
       type: "integer",
