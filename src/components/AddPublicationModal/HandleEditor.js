@@ -1,44 +1,52 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Latex from "react-latex";
 import CKEditor from "ckeditor4-react";
 
 const HandleEditor = props => {
-  if (props.selectedFile) {
-    switch (props.selectedFile.type) {
-      case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-        return (
-          <CKEditor
-            data={props.editorData}
-            onChange={event =>
-              props.handleEditorData(event.editor.document.$.body.innerHTML)
-            }
-          />
-        );
-      case "application/pdf":
-        return (
-          <CKEditor
-            data={props.editorData}
-            onChange={event =>
-              props.handleEditorData(event.editor.document.$.body.innerHTML)
-            }
-          />
-        );
-      case "application/msword":
-        return null;
-      case "text/x-tex":
-        return <Latex>$$(3\times 4) \div (5-3)$$</Latex>;
-      default:
-        return null;
-    }
-  }
-
-  return (
+  const { selectedFile, editorData, handleEditorData } = props;
+  const [editor, setEditor] = useState(
     <CKEditor
-      data={props.editorData}
       onChange={event =>
         props.handleEditorData(event.editor.document.$.body.innerHTML)
       }
-    />
+    />,
   );
+
+  useEffect(() => {
+    if (selectedFile) {
+      switch (selectedFile.type) {
+        case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+          setEditor(
+            <CKEditor
+              data={editorData}
+              onChange={event =>
+                handleEditorData(event.editor.document.$.body.innerHTML)
+              }
+            />,
+          );
+          break;
+        case "application/pdf":
+          setEditor(
+            <CKEditor
+              data={editorData}
+              onChange={event =>
+                handleEditorData(event.editor.document.$.body.innerHTML)
+              }
+            />,
+          );
+          break;
+        case "application/msword":
+          setEditor(null);
+          break;
+        case "text/x-tex":
+          setEditor(null);
+          break;
+        default:
+          setEditor(null);
+      }
+    }
+  }, [selectedFile]);
+
+  return editor;
 };
 export default HandleEditor;

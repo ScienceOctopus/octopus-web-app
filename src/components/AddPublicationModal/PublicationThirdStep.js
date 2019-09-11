@@ -159,9 +159,6 @@ class PublicationThirdStep extends Component {
   };
 
   render() {
-    if (!this.props.previousStageData)
-      return <h4 style={styles.subtitle}> Please submit the publication!</h4>;
-
     return (
       <div>
         {(this.props.loading && (

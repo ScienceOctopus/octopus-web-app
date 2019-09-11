@@ -34,15 +34,18 @@ const AddPublicationStepsHandler = props => {
       );
     case 3:
       return (
-        <PublicationThirdStep
-          stageName={props.stageName}
-          selecteStageId={props.selecteStageId}
-          previousStageData={props.previousStageData}
-          publicationCollaborators={props.publicationCollaborators}
-          handlePublicationsToLink={props.handlePublicationsToLink}
-          publicationsToLink={props.publicationsToLink}
-          loading={props.loading}
-        />
+        (props.previousStageData && (
+          <PublicationThirdStep
+            stageName={props.stageName}
+            selecteStageId={props.selecteStageId}
+            previousStageData={props.previousStageData}
+            publicationCollaborators={props.publicationCollaborators}
+            handlePublicationsToLink={props.handlePublicationsToLink}
+            publicationsToLink={props.publicationsToLink}
+            loading={props.loading}
+          />
+        )) ||
+        null
       );
     default:
       return null;
