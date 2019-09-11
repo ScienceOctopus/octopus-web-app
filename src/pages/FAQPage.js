@@ -47,15 +47,15 @@ class FAQPage extends Component {
           To publish, click on the pencil icon and follow the steps to upload
           your manuscript or use the online editor.
         </p>
-          
+
         <h3>What about copyright?</h3>
         <p>When Octopus is out of beta-testing and ready for real-life use, you will be able
           to select a Creative Commons copyright label. This will ensure that you can
            retain your intellectual property rights as the author, but that others
           can use your work in the way that you want.
         </p>
-            
-            
+
+
         <h3>What is the rating system?</h3>
         <p>
           Every publication in Octopus can be rated by logged-in readers (i.e.
@@ -96,9 +96,9 @@ class FAQPage extends Component {
           In the future, yes. We are working to implement DOIs for each publication in Octopus,
           just like for any other kind of publication. At the moment, for beta testing, we are using our own unique IDs.
         </p>
-        
+
         <h3>If this is only a beta version, when will Octopus launch?</h3>
-        <p>This is our first major iteration of Octopus, and we are collating 
+        <p>This is our first major iteration of Octopus, and we are collating
         feedback whilst we add in the rest of the features we want for launch.
          We hope to launch fully in spring 2020. If you want to help, please
         email alex.freeman@maths.cam.ac.uk!
@@ -150,10 +150,11 @@ class FAQPage extends Component {
           For researchers in biomedical sciences, the EQUATOR guidelines on
           reporting should still be followed.
         </p>
-        
-        <p>You can format your own publications in the online editor within Octopus 
+
+        <p>You can format your own publications in the online editor within Octopus
         to be sure that you get it to look exactly as you want. No more enforced styles, limited words or figures/tables.
          And no more time/money wasted proof-reading and sending comments back to Editors.
+        </p>
 
         <h3>
           Someone has pointed out a really important issue in a review – can I
