@@ -42,31 +42,44 @@ class Header extends Component {
             <OctopusLogo style={styles.logo} className="logo" />
             <Trans>octopus</Trans>
           </LocalizedLink>
+
+          <LocalizedLink
+            to={WebURI.Explore}
+            className={
+              this.activeIfAt(
+                [WebURI.Explore,
+                WebURI.Search("")]
+              ) + "item"
+            }
+          >
+            <i className="ui copy outline alternate icon" />
+            All publications
+          </LocalizedLink>
+
+
+          <LocalizedLink
+            to={WebURI.Upload}
+            className={
+              this.activeIfAt(
+                [WebURI.Upload, WebURI.ProblemCreation],
+                false,
+              ) + "item"
+            }
+          >
+            <i className="ui pencil alternate icon" />
+            Publish your work
+          </LocalizedLink>
+
           <GlobalSearch
             className={this.activeIfAt(
               [
-                WebURI.Explore,
-                WebURI.Search(""),
-                WebURI.Problem,
-                WebURI.Publication,
+                // WebURI.Problem,
+                // WebURI.Publication,
               ],
               false,
             )}
           />
-          {loggedIn && (
-            <LocalizedLink
-              to={WebURI.Upload}
-              className={
-                this.activeIfAt(
-                  [WebURI.Upload, WebURI.ProblemCreation],
-                  false,
-                ) + "item"
-              }
-            >
-              <i className="ui pencil alternate icon" />
-              Publish your work
-            </LocalizedLink>
-          )}
+
           {loggedIn ? (
             <div className="right menu" id="octopus-navigation-login-items">
               <LocalizedLink

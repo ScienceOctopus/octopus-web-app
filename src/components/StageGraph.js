@@ -143,7 +143,7 @@ class StageGraph extends Component {
               >
                 <GraphMiddler>
                   <GraphHider
-                    className={(open ? "minus " : "plus") + " icon"}
+                    className={(open ? "angle up " : "angle down") + " icon"}
                   />
                 </GraphMiddler>
               </GraphButton>
