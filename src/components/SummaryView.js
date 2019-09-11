@@ -88,7 +88,7 @@ class SummaryView extends Component {
         <div className="column" style={{ textAlign: "center" }}>
           <p>
             {this.state.ratingsNames
-              ? this.state.ratingsNames.firstRating
+              ? this.state.ratingsNames.secondRating
               : "Size of data"}
           </p>
           <CustomRating
@@ -99,7 +99,7 @@ class SummaryView extends Component {
         <div className="column" style={{ textAlign: "right" }}>
           <p>
             {this.state.ratingsNames
-              ? this.state.ratingsNames.firstRating
+              ? this.state.ratingsNames.thirdRating
               : "Correct protocol"}
           </p>
           <CustomRating
