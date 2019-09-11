@@ -233,6 +233,8 @@ class PublicationModal extends React.Component {
       previousStageId
     ];
 
+    console.log(this.state.editorData);
+
     return (
       <div
         style={
@@ -295,7 +297,11 @@ class PublicationModal extends React.Component {
                 {this.state.stepNumber !== 3 ? (
                   <button
                     className="ui button"
-                    disabled={!this.state.publicationTitle}
+                    disabled={
+                      !this.state.publicationTitle.trim() ||
+                      !this.state.publicationSummary.trim() ||
+                      !this.state.editorData
+                    }
                     style={styles.nextStepButton}
                     onClick={this.handleStepNumber}
                   >
