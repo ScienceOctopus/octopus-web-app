@@ -60,6 +60,7 @@ const WebURI = {
     `https://orcid.org/oauth/authorize?state=${state}&client_id=${ORCID_OAUTH_CLIENT_ID}&response_type=code&scope=/authenticate&redirect_uri=${REDIRECT_URI}?return_path=${returnPath}`,
   Problem: "/problems",
   Publication: "/publications",
+  GitHub: "https://github.com/ScienceOctopus/octopus-web-app",
 };
 
 export const LocalizedLink = props => {

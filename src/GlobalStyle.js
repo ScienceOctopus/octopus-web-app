@@ -35,9 +35,7 @@ const ColourScheme = (() => {
 
   scheme.publication = new hsla(270, 0.68, 0.6);
   scheme.publicationHighlight = scheme.publication.withLightness(0.85);
-  scheme.publicationHighlightTransparent = scheme.publicationHighlight.withAlpha(
-    0,
-  );
+  scheme.publicationHighlightTransparent = scheme.publicationHighlight.withAlpha(0);
 
   scheme.review = new hsla(176, 0.56, 0.5);
   scheme.reviewHighlight = scheme.review.withLightness(0.85);

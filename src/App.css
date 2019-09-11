@@ -121,3 +121,30 @@ Also correct some visual issues after the scheme is applied, like text contrast.
   height: 100vh;
   overflow: hidden;
 }
+
+
+.ui.container, main.ui.main {
+  width: 100% !important;
+  max-width: 1800px;
+  padding: 0 10px;
+}
+
+.app {padding-bottom: 80px;}
+.ui.inverted.footer {margin-bottom: -80px}
+
+h1, h2, h3, h4, h5, .app, .ui.menu, .ui.header, .ui.button {
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
+.ui.menu .header.item {font-size: 1.3em; font-weight: 400}
+
+.ui.menu .header.item .logo {width: 2em}
+
+.text-white, a.text-white {color: white !important}
+
+#octopus-navigation {height: 50px}
+
+.ui.search .prompt {border-radius: 5px}
+
+
+.ui.icon.button, .ui.icon.buttons .button {padding: 15px}

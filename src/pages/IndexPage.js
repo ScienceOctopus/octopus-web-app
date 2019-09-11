@@ -11,22 +11,22 @@ class IndexPage extends Component {
     return (
       <div style={{ marginBottom: "-1rem" }}>
         <main
-          className="ui middle aligned two column centered stackable inverted octopus-theme background grid"
+          className="ui middle aligned two column centered stackable octopus-theme grid inverted background"
           style={styles.main}
         >
           <div className="seven wide column">
             <h1
               id="octopus-mobile-centered-header"
-              className="ui inverted header"
+              className="ui header inverted"
               style={styles.heading}
             >
               Built for scientists
             </h1>
-            <h2 id="octopus-mobile-centered-header" style={styles.subtitle}>
+            <h2 id="octopus-mobile-centered-header" class="text-white" style={styles.subtitle}>
               Octopus is the new way to publish your scientific ideas, findings
               and research.
             </h2>
-            <div style={styles.explanation}>
+            <div class="text-white" style={styles.explanation}>
               Designed to replace journals and papers, Octopus is free to use
               and gets your work out there much more quickly, to a wider
               audience and ensures you get maximum credit for the work you do,
@@ -35,53 +35,44 @@ class IndexPage extends Component {
             </div>
             <div className="ui hidden divider" />
             <div className="ui grid">
-              <div className="column" style={styles.explore}>
-                <LocalizedLink
-                  to={WebURI.Explore}
-                  className="ui octopus-theme explore large right labeled icon button"
-                >
-                  <i className="search icon" />
-                  Explore Science
-                </LocalizedLink>
-              </div>
-              <div className="column" style={styles.publish}>
-                <LinkOnlyIfAcquiredState
-                  className="ui octopus-theme publish large right labeled icon button"
-                  returnPath={WebURI.Upload}
-                >
-                  <i className="ui pencil alternate icon" />
-                  Publish your work
-                </LinkOnlyIfAcquiredState>
-              </div>
-              <div className="column" style={styles.more}>
-                <LocalizedLink
-                  to={WebURI.More}
-                  className="ui octopus-theme moar large right labeled icon button"
-                >
-                  <i className="exclamation icon" />
-                  Learn more
-                </LocalizedLink>
-              </div>
-              <div className="column" style={styles.faq}>
-                <LocalizedLink
-                  to={WebURI.FAQ}
-                  className="ui octopus-theme questionable large right labeled icon button"
-                >
-                  <i className="question icon" />
-                  FAQ
-                </LocalizedLink>
-              </div>
+              &nbsp; &nbsp; &nbsp;
+
+              <LocalizedLink
+                to={WebURI.More}
+                className="ui octopus-theme moar large right labeled icon button text-white"
+              >
+                <i className="exclamation icon" />
+                About
+              </LocalizedLink>
+
+              &nbsp; &nbsp; &nbsp;
+
+              <LocalizedLink
+                to={WebURI.FAQ}
+                className="ui octopus-theme moar large right labeled icon button text-white"
+              >
+                <i className="question icon" />
+                FAQ
+              </LocalizedLink>
+
+              &nbsp; &nbsp; &nbsp;
+
+              <a href={WebURI.GitHub}
+                className="ui octopus-theme moar large right labeled icon button text-white"
+                target="_blank">
+                <i className="github icon" />
+                GitHub
+              </a>
+
             </div>
           </div>
           <div className="seven wide column computer tablet only">
-            <LocalizedLink to={WebURI.Explore}>
-              <img
-                src={graph}
-                alt="Science Graph Preview"
-                className="ui fluid image"
-                style={styles.heroImage}
-              />
-            </LocalizedLink>
+            <img
+              src={graph}
+              alt="Science Graph Preview"
+              className="ui fluid image"
+              style={styles.heroImage}
+            />
           </div>
         </main>
         <Footer />
@@ -101,12 +92,10 @@ const styles = {
     lineHeight: "0.9em",
   },
   subtitle: {
-    color: "#fff",
     fontSize: "2em",
     marginTop: 0,
   },
   explanation: {
-    color: "white",
     lineHeight: "1.5em",
     fontSize: "1.4em",
   },
