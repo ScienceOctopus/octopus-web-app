@@ -11,13 +11,13 @@ class IndexPage extends Component {
     return (
       <div style={{ marginBottom: "-1rem" }}>
         <main
-          className="ui middle aligned two column centered stackable inverted octopus-theme background grid"
+          className="ui middle aligned two column centered stackable octopus-theme grid"
           style={styles.main}
         >
           <div className="seven wide column">
             <h1
               id="octopus-mobile-centered-header"
-              className="ui inverted header"
+              className="ui header"
               style={styles.heading}
             >
               Built for scientists
@@ -101,12 +101,10 @@ const styles = {
     lineHeight: "0.9em",
   },
   subtitle: {
-    color: "#fff",
     fontSize: "2em",
     marginTop: 0,
   },
   explanation: {
-    color: "white",
     lineHeight: "1.5em",
     fontSize: "1.4em",
   },

@@ -91,7 +91,7 @@ class StageGraph extends Component {
           }
           event.stopPropagation();
         }}
-        className="ui one column inverted octopus-theme background grid"
+        className="ui one column inverted octopus-theme grid"
       >
         <div className="column">
           <div className="ui container">

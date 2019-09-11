@@ -465,7 +465,7 @@ class SummaryView extends Component {
     return (
       <div>
         <div className="ui divider" />
-        <main className="ui main text container">
+        <main className="ui main text">
           <article>
             <h1 className="ui header">
               <StageTitle>

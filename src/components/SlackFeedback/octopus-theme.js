@@ -19,7 +19,7 @@ const rgba = (hex, opacity = 1) => {
 
 export default {
   fontFamily:
-    '-apple-system, BlinkMacSystemFont, Arial, Arial Unicode, "Helvetica Neue", Helvetica, "Hiragino Sans GB", "Microsoft YaHei", SimSun, sans-serif',
+    '"Helvetica Neue", Helvetica, Arial, Arial Unicode, sans-serif',
   colors: {
     border: "#d0d8e1",
     primary: "#0088ff",

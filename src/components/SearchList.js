@@ -340,7 +340,7 @@ class SearchList extends Component {
         </div>
         <div className="eleven wide tablet thirteen wide computer column">
           <div
-            className={`ui ${classes.loading} ${classes.placeholder} segment`}
+            className={`ui ${classes.loading} ${classes.placeholder}`}
           >
             {loading ? null : this.renderList(list)}
           </div>
