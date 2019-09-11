@@ -578,10 +578,20 @@ const getTagsByPublication = async (req, res) => {
 };
 
 const declineAuthorship = async (req, res) => {
+  const publication = await getAndValidatePublication(req.params.id, req);
+  if (!publication) {
+    console.log(`Couldn't find publication with ID: ${req.params.id}`);
+    return res.sendStatus(404);
+  }
+
   const removedNum = await db.deletePublicationCollaborator(
     req.params.id,
     getUserFromSession(req),
   );
+
+  if (removedNum === 0) {
+      return res.sendStatus(404);
+  }
 
   let allCollaborators = await db.selectCollaboratorsByPublication(
     req.params.id,
@@ -589,7 +599,7 @@ const declineAuthorship = async (req, res) => {
   if (allCollaborators.length === 0) {
     await db.deletePublication(req.params.id);
   }
-  const publication = await db.selectPublicationsByID(req.params.id);
+
   broadcast(`/publications/${req.params.id}`);
   broadcast(`/problems/${publication.problem}/publications`);
   broadcast(
@@ -603,7 +613,7 @@ const declineAuthorship = async (req, res) => {
     broadcast(`/users/${allCollaborators[i]}/signoffs`);
   }
 
-  res.sendStatus(removedNum ? 204 : 404);
+  res.sendStatus(204);
 };
 
 /*const postTagToPublication = async (req, res) => {

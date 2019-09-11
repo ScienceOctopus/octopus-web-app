@@ -424,17 +424,7 @@ class EditPublicationView extends Component {
   };
 
   handleDecline = () => {
-    Api()
-      .publication(this.state.publication.id)
-      .collaborators()
-      .count()
-      .then(currentCollaboratorsCount => {
-        /*if (currentCollaboratorsCount <= 1) {
-          this.presentDeleteWarning();
-        } else {*/
-        this.declineAuthorship();
-        //}
-      });
+    this.declineAuthorship();
   };
 
   renderSignoffInvitation = () => {
