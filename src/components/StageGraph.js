@@ -112,7 +112,7 @@ class StageGraph extends Component {
                   color: "var(--octopus-theme-problem)",
                 }}
               >
-                Area of research:
+                Problem:
               </span>
               {problem}
             </h3>

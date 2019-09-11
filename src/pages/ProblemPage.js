@@ -909,7 +909,7 @@ class ProblemPage extends Component {
                           <span
                             style={{ color: "var(--octopus-theme-problem)" }}
                           >
-                            Area of research:
+                            Problem:
                           </span>{" "}
                           <span style={{ fontWeight: "initial" }}>
                             {this.state.content.problem.title}

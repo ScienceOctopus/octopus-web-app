@@ -424,17 +424,7 @@ class EditPublicationView extends Component {
   };
 
   handleDecline = () => {
-    Api()
-      .publication(this.state.publication.id)
-      .collaborators()
-      .count()
-      .then(currentCollaboratorsCount => {
-        /*if (currentCollaboratorsCount <= 1) {
-          this.presentDeleteWarning();
-        } else {*/
-        this.declineAuthorship();
-        //}
-      });
+    this.declineAuthorship();
   };
 
   renderSignoffInvitation = () => {
@@ -619,7 +609,7 @@ class EditPublicationView extends Component {
     return (
       <div>
         <div className="ui divider" />
-        <main className="ui main text container">
+        <main className="ui main container">
           <article>
             <h1 className="ui header">
               <StageTitle>

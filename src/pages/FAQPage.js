@@ -45,8 +45,16 @@ class FAQPage extends Component {
 
         <p>
           To publish, click on the pencil icon and follow the steps to upload
-          your manuscript.
+          your manuscript or use the online editor.
         </p>
+
+        <h3>What about copyright?</h3>
+        <p>When Octopus is out of beta-testing and ready for real-life use, you will be able
+          to select a Creative Commons copyright label. This will ensure that you can
+           retain your intellectual property rights as the author, but that others
+          can use your work in the way that you want.
+        </p>
+
 
         <h3>What is the rating system?</h3>
         <p>
@@ -79,15 +87,22 @@ class FAQPage extends Component {
           data is collected by you or someone else or by many people: it’s you
           that published the hypothesis and you that gets the credit for that.
           Similarly, if you have published the data, that’s a publication
-          already under your belt. You can also publish an analysis – and so can
+          already under your belt. You can also publish an analysis of that data – and so can
           other people.
         </p>
 
         <h3>Does each publication get a DOI?</h3>
         <p>
-          Yes. We are working to implement DOIs for each publication in Octopus,
-          just like for any other kind of publication.
+          In the future, yes. We are working to implement DOIs for each publication in Octopus,
+          just like for any other kind of publication. At the moment, for beta testing, we are using our own unique IDs.
         </p>
+
+        <h3>If this is only a beta version, when will Octopus launch?</h3>
+        <p>This is our first major iteration of Octopus, and we are collating
+        feedback whilst we add in the rest of the features we want for launch.
+         We hope to launch fully in spring 2020. If you want to help, please
+        email alex.freeman@maths.cam.ac.uk!
+          </p>
 
         <h3>Why would I write a public review?</h3>
         <p>
@@ -112,12 +127,12 @@ class FAQPage extends Component {
         <h3>How do I format my publications?</h3>
         <p>
           Because each publication in Octopus is smaller than an old-fashioned
-          paper, you will no longer need to spend time writing an Abstract,
+          paper, you will no longer need to spend time writing an
           Introduction etc for each publication. What you will now publish as a
-          Problem will be the equivalent to a paper’s introduction. A Hypothesis
+          Problem will be roughly the equivalent to a traditional paper’s introduction. A Hypothesis
           directly following that will therefore no longer need to include all
-          the information in that, though may refer to other publications that
-          support the scientific basis for the hypothesis. Similarly, publish
+          the information in that Problem, though may refer to other publications that
+          support the scientific basis for the hypothesis. Similarly, publishing
           Results/Data will no longer require you to write out the Method,
           merely link to the published Method you followed, and add only
           relevant specific details (such as the dates of data collection, batch
@@ -136,13 +151,18 @@ class FAQPage extends Component {
           reporting should still be followed.
         </p>
 
+        <p>You can format your own publications in the online editor within Octopus
+        to be sure that you get it to look exactly as you want. No more enforced styles, limited words or figures/tables.
+         And no more time/money wasted proof-reading and sending comments back to Editors.
+        </p>
+
         <h3>
           Someone has pointed out a really important issue in a review – can I
           retract?
         </h3>
         <p>
           No need for retraction for an innocent oversight. You can reversion
-          your publication. The old version will still exist on file, but the
+          your publication (although this feature is not in the current beta prototype). The old version will still exist on file, but the
           new one will replace it. If a reviewer made such an important point,
           do consider offering them co-authorship, but at the minimum, add an
           acknowledgement.
@@ -151,8 +171,8 @@ class FAQPage extends Component {
         <h3>I think a publication should be retracted!</h3>
         <p>
           If you suspect plagiarism, copyright issues, ethical or scientific
-          misconduct then click on ‘rate this publication’ and use the Red Flag
-          system to raise your concerns. This will email the corresponding
+          misconduct then you will be able to click on ‘rate this publication’ and use the Red Flag
+          system to raise your concerns (again, a feature not currently in this beta prototype. This will email the corresponding
           author and you will enter a ‘dispute resolution’ centre. The
           publication will immediately be flagged so that it is clear to others
           that an issue has been raised. If the dispute is not quickly resolved,

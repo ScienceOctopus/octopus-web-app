@@ -347,20 +347,24 @@ const queries = {
     funding,
     conflict,
     review,
+    editorData,
     data,
     draft,
+    dataRepository,
   ) =>
     knex("publications")
       .insert({
-        problem: problem,
-        stage: stage,
-        title: title,
-        summary: summary,
-        funding: funding,
-        conflict: conflict,
-        review: review,
-        data: data,
-        draft: draft,
+        problem,
+        stage,
+        title,
+        summary,
+        funding,
+        conflict,
+        review,
+        editorData,
+        data,
+        draft,
+        dataRepository,
       })
       .returning("id"),
 
@@ -482,6 +486,11 @@ const queries = {
       });
   },
 
+  getRatingsNamesByStageId: stageId =>
+    knex("ratings")
+      .select()
+      .where("stageId", stageId),
+
   getRatingsByPublicationId: publicationId =>
     knex("publication_ratings")
       .select()
@@ -489,16 +498,16 @@ const queries = {
 
   insertPublicationRatings: (
     publicationId,
-    quality,
-    sizeOfDataset,
-    correctProtocol,
+    firstRating,
+    secondRating,
+    thirdRating,
     userId,
   ) =>
     knex("publication_ratings").insert({
       publicationId,
-      quality,
-      sizeOfDataset,
-      correctProtocol,
+      firstRating,
+      secondRating,
+      thirdRating,
       userId,
     }),
 

@@ -38,7 +38,7 @@ class UserSearch extends Component {
     super(props);
 
     this.state = { details: [], loading: false, input: "" };
-    this.handleChange = debounceChangeEvent(this.handleChange.bind(this), 150);
+    this.handleChange = debounceChangeEvent(this.handleChange.bind(this), 500);
     this.handleChangeContainer = this.handleChangeContainer.bind(this);
     this.handleBlur = this.handleBlur.bind(this);
   }
@@ -58,17 +58,18 @@ class UserSearch extends Component {
 
   async handleChange(event) {
     let users = await getUsers(event.target.value);
+
     if (!users) {
       return this.setState({ loading: false });
     }
 
     // Remove already added collaborators from search results
     let foundUsers = users.result.filter(el =>
-      this.props.excluded.some(f => f.orcid !== el["orcid-identifier"].path),
+      !this.props.excluded.some(f => f.orcid === el["orcid-identifier"].path),
     );
 
-    // Limit the results to 10
-    foundUsers.slice(0, 7);
+    // Limit the results to 7
+    foundUsers = foundUsers.slice(0, 7);
 
     // Get user details
     const details =
@@ -83,7 +84,7 @@ class UserSearch extends Component {
     const { name, emails } = user;
     let givenName, familyName, display_name, display_email;
 
-    if (name && name["given-names"] && name["family-name"]) {
+    if (name && (name["given-names"] || name["family-name"])) {
       givenName = name["given-names"] ? name["given-names"].value : "";
       familyName = name["family-name"] ? name["family-name"].value : "";
       display_name = `${givenName} ${familyName}`;

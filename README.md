@@ -3,8 +3,8 @@
 [![Build status][circle-img]][circle-url]
 [![beta.science-octopus.org][app-img]][app-url]
 
-[circle-img]: https://img.shields.io/circleci/project/github/octopus-hypothesis/octopus-web-app/master.svg
-[circle-url]: https://circleci.com/gh/octopus-hypothesis/octopus-web-app/tree/master
+[circle-img]: https://img.shields.io/circleci/project/github/ScienceOctopus/octopus-web-app/master.svg
+[circle-url]: https://circleci.com/gh/ScienceOctopus/octopus-web-app/tree/master
 
 [app-img]: https://img.shields.io/website-up-down-green-red/https/beta.science-octopus.org.svg?label=beta.science-octopus.org
 [app-url]: https://beta.science-octopus.org

@@ -14,6 +14,8 @@ class PublicationModal extends React.Component {
     this.state = {
       stepNumber: 1,
       publicationTitle: "",
+      publicationSummary: "",
+      dataRepository: "",
       publicationCollaborators: [],
       editorVisible: false,
       loading: false,
@@ -33,6 +35,10 @@ class PublicationModal extends React.Component {
       tagsIndex: 1,
     };
   }
+
+  handleEditorData = editorData => {
+    this.setState({ editorData });
+  };
 
   handlePublicationsToLink = publicationId => {
     const alreadyExists = this.state.publicationsToLink.includes(publicationId);
@@ -123,6 +129,18 @@ class PublicationModal extends React.Component {
     });
   };
 
+  handleSummaryChange = event => {
+    this.setState({
+      publicationSummary: event.target.value,
+    });
+  };
+
+  handleDataRepositoryChange = event => {
+    this.setState({
+      dataRepository: event.target.value,
+    });
+  };
+
   handleCollaborators = collaborator => {
     this.setState(state => {
       let collaborators = [...state.publicationCollaborators];
@@ -162,26 +180,24 @@ class PublicationModal extends React.Component {
   };
 
   handleSubmit = async () => {
-    console.log("we in");
     const problemId = this.props.stage.problem;
     const stageId = this.props.stage.id;
 
     const data = new FormData();
     data.set("title", this.state.publicationTitle);
-    data.set("summary", this.state.summary);
+    data.set("summary", this.state.publicationSummary);
+    data.set("dataRepository", this.state.dataRepository);
     data.set("funding", this.state.funding);
     data.set("tags", JSON.stringify(this.state.tags));
     data.set("conflict", this.state.conflict);
     data.set("user", global.session.user.id);
     data.set("review", this.state.isReview);
+    data.set("editorData", this.state.editorData);
     data.set("data", JSON.stringify([]));
-
-    if (this.state.publicationsToLink.length > 0) {
-      data.set(
-        "basedOn",
-        JSON.stringify(this.state.publicationsToLink.map(id => id)),
-      );
-    }
+    data.set(
+      "basedOn",
+      JSON.stringify(this.state.publicationsToLink.map(id => id)),
+    );
 
     data.append("file", this.state.selectedFile);
 
@@ -245,8 +261,7 @@ class PublicationModal extends React.Component {
               <div>
                 <h1 style={{ fontWeight: "bold" }}>
                   Add a new {this.props.stage.singular.toLowerCase()} - Step (
-                  {this.state.stepNumber}
-                  /3)
+                  {this.state.stepNumber}/{previousStageData ? 3 : 2})
                 </h1>
                 <AddPublicationStepsHandler
                   stepNumber={this.state.stepNumber}
@@ -254,7 +269,11 @@ class PublicationModal extends React.Component {
                   onFileSelect={this.handleFileSelect}
                   selectedFile={this.state.selectedFile}
                   publicationTitle={this.state.publicationTitle}
+                  publicationSummary={this.state.publicationSummary}
+                  dataRepository={this.state.dataRepository}
                   handleTitleChange={this.handleTitleChange}
+                  handleSummaryChange={this.handleSummaryChange}
+                  handleDataRepositoryChange={this.handleDataRepositoryChange}
                   handleCollaborators={this.handleCollaborators}
                   publicationCollaborators={this.state.publicationCollaborators}
                   selectedStageId={this.props.stage.id}
@@ -266,12 +285,17 @@ class PublicationModal extends React.Component {
                   loading={this.state.loading}
                   handlePublicationsToLink={this.handlePublicationsToLink}
                   publicationsToLink={this.state.publicationsToLink}
+                  handleEditorData={this.handleEditorData}
                 />
 
-                {this.state.stepNumber !== 3 ? (
+                {this.state.stepNumber !== (previousStageData ? 3 : 2) ? (
                   <button
                     className="ui button"
-                    disabled={!this.state.publicationTitle}
+                    disabled={
+                      !this.state.publicationTitle.trim() ||
+                      !this.state.publicationSummary.trim() ||
+                      !this.state.editorData
+                    }
                     style={styles.nextStepButton}
                     onClick={this.handleStepNumber}
                   >
@@ -280,7 +304,11 @@ class PublicationModal extends React.Component {
                 ) : (
                   <button
                     className="ui button"
-                    disabled={!this.state.publicationsToLink.length}
+                    disabled={
+                      previousStageData
+                        ? !this.state.publicationsToLink.length
+                        : false
+                    }
                     style={styles.nextStepButton}
                     onClick={this.handleSubmit}
                   >

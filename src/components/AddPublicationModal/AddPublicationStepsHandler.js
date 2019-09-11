@@ -12,11 +12,16 @@ const AddPublicationStepsHandler = props => {
           onFileSelect={props.onFileSelect}
           selectedFile={props.selectedFile}
           publicationTitle={props.publicationTitle}
+          publicationSummary={props.publicationSummary}
+          dataRepository={props.dataRepository}
           handleTitleChange={props.handleTitleChange}
+          handleSummaryChange={props.handleSummaryChange}
+          handleDataRepositoryChange={props.handleDataRepositoryChange}
           showEditor={props.showEditor}
           editorData={props.editorData}
           editorVisible={props.editorVisible}
           loading={props.loading}
+          handleEditorData={props.handleEditorData}
         />
       );
     case 2:
@@ -29,15 +34,18 @@ const AddPublicationStepsHandler = props => {
       );
     case 3:
       return (
-        <PublicationThirdStep
-          stageName={props.stageName}
-          selecteStageId={props.selecteStageId}
-          previousStageData={props.previousStageData}
-          publicationCollaborators={props.publicationCollaborators}
-          handlePublicationsToLink={props.handlePublicationsToLink}
-          publicationsToLink={props.publicationsToLink}
-          loading={props.loading}
-        />
+        (props.previousStageData && (
+          <PublicationThirdStep
+            stageName={props.stageName}
+            selecteStageId={props.selecteStageId}
+            previousStageData={props.previousStageData}
+            publicationCollaborators={props.publicationCollaborators}
+            handlePublicationsToLink={props.handlePublicationsToLink}
+            publicationsToLink={props.publicationsToLink}
+            loading={props.loading}
+          />
+        )) ||
+        null
       );
     default:
       return null;

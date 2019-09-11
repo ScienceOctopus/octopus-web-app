@@ -197,6 +197,8 @@ class Stage extends Component {
             textOverflow: "ellipsis",
           }}
         >
+          <div style={{ clear: "both" }} />
+
           <div
             className="ui placeholder"
             style={{
@@ -206,18 +208,7 @@ class Stage extends Component {
           >
             <div className="long line" style={{ backgroundColor: "initial" }} />
           </div>
-          <div style={{ clear: "both" }} />
-          <div
-            className="ui icon button octopus-theme publication disabled"
-            style={{
-              padding: "0.5rem",
-              position: "absolute",
-              top: "0.5rem",
-              right: "1.1rem",
-            }}
-          >
-            <i className="ui plus alternate icon" style={{ color: "white" }} />
-          </div>
+
           {pubsNumber}
         </h4>
       );
@@ -231,19 +222,17 @@ class Stage extends Component {
             textOverflow: "ellipsis",
           }}
         >
-          {this.props.stage.name}
           <div
             className="ui icon button octopus-theme publication"
-            style={{
-              padding: "0.5rem",
-              position: "absolute",
-              top: "0.5rem",
-              right: "1.1rem",
-            }}
+            style={{ padding: "0.5rem" }}
             onClick={this.setModalVisible(true)}
           >
-            <i className="ui plus alternate icon" style={{ color: "white" }} />
+            <i
+              className="ui pencil alternate icon"
+              style={{ color: "white" }}
+            />
           </div>
+          {this.props.stage.name}
           {pubsNumber}
         </h4>
       );
