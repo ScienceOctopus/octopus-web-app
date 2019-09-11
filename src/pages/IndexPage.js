@@ -11,22 +11,22 @@ class IndexPage extends Component {
     return (
       <div style={{ marginBottom: "-1rem" }}>
         <main
-          className="ui middle aligned two column centered stackable octopus-theme grid"
+          className="ui middle aligned two column centered stackable octopus-theme grid inverted background"
           style={styles.main}
         >
           <div className="seven wide column">
             <h1
               id="octopus-mobile-centered-header"
-              className="ui header"
+              className="ui header inverted"
               style={styles.heading}
             >
               Built for scientists
             </h1>
-            <h2 id="octopus-mobile-centered-header" style={styles.subtitle}>
+            <h2 id="octopus-mobile-centered-header" class="text-white" style={styles.subtitle}>
               Octopus is the new way to publish your scientific ideas, findings
               and research.
             </h2>
-            <div style={styles.explanation}>
+            <div class="text-white" style={styles.explanation}>
               Designed to replace journals and papers, Octopus is free to use
               and gets your work out there much more quickly, to a wider
               audience and ensures you get maximum credit for the work you do,
