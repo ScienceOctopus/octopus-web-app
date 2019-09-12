@@ -36,9 +36,7 @@ class PublicationModal extends React.Component {
     };
   }
 
-  handleEditorData = editorData => {
-    this.setState({ editorData });
-  };
+  handleEditorData = editorData => this.setState({ editorData });
 
   handlePublicationsToLink = publicationId => {
     const alreadyExists = this.state.publicationsToLink.includes(publicationId);
@@ -123,39 +121,32 @@ class PublicationModal extends React.Component {
       });
   }
 
-  handleTitleChange = event => {
+  handleTitleChange = event =>
     this.setState({
       publicationTitle: event.target.value,
     });
-  };
 
-  handleSummaryChange = event => {
+  handleSummaryChange = event =>
     this.setState({
       publicationSummary: event.target.value,
     });
-  };
 
-  handleDataRepositoryChange = event => {
+  handleDataRepositoryChange = event =>
     this.setState({
       dataRepository: event.target.value,
     });
-  };
 
-  handleCollaborators = collaborator => {
+  handleCollaborators = collaborator =>
     this.setState(state => {
-      let collaborators = [...state.publicationCollaborators];
-      collaborators.push(collaborator);
-      return { publicationCollaborators: collaborators };
+      let publicationCollaborators = [...state.publicationCollaborators];
+      publicationCollaborators.push(collaborator);
+      return { publicationCollaborators };
     });
-  };
 
-  showEditor = editorData => {
+  showEditor = editorData =>
     this.setState({ editorVisible: true, editorData: editorData });
-  };
 
-  updateLoading = loading => {
-    this.setState({ ...this.state, loading });
-  };
+  updateLoading = loading => this.setState({ ...this.state, loading });
 
   onClose = close => {
     this.setState({
@@ -197,6 +188,10 @@ class PublicationModal extends React.Component {
     data.set(
       "basedOn",
       JSON.stringify(this.state.publicationsToLink.map(id => id)),
+    );
+    data.set(
+      "publicationCollaborators",
+      JSON.stringify(this.state.publicationCollaborators),
     );
 
     data.append("file", this.state.selectedFile);

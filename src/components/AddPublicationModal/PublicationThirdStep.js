@@ -201,7 +201,6 @@ class PublicationThirdStep extends Component {
           onSelect={this.handleProblemSelect}
           onLoaded={this.handleProblemsLoaded}
           publications={this.state.publicationsList}
-          publicationCollaborators={this.props.publicationCollaborators}
           handlePublicationsToLink={this.props.handlePublicationsToLink}
           publicationsToLink={this.props.publicationsToLink}
         />

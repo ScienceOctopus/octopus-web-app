@@ -255,8 +255,6 @@ const postPublicationToProblemAndStage = async (req, res) => {
     }
   }
 
-  // console.log("req.body.editorData,", req.body.editorData);
-
   const publications = await db.insertPublication(
     req.params.id,
     req.params.stage,
@@ -270,12 +268,34 @@ const postPublicationToProblemAndStage = async (req, res) => {
     true,
     req.body.dataRepository,
   );
-
-  await db.insertPublicationCollaborator(
-    publications[0],
-    req.body.user,
-    "author",
+  const publicationCollaborators = JSON.parse(
+    req.body.publicationCollaborators,
   );
+
+  // check if publication has collaborators
+  if (publicationCollaborators && publicationCollaborators.length > 1) {
+    publicationCollaborators.forEach(async (collaborator, index) => {
+      const collaboratorId = collaborator.id ? collaborator.id : null;
+      const collaboratorRole = index === 0 ? "author" : "collaborator";
+
+      await db.insertPublicationCollaborator(
+        publications[0], // publication id
+        collaboratorId,
+        collaboratorRole,
+        collaborator.orcid,
+      );
+    });
+  } else {
+    // insert only the author
+    const authorId = req.body.user.id;
+    const authorOrcid = req.body.user.orcid;
+    await db.insertPublicationCollaborator(
+      publications[0], // publication id
+      authorId,
+      "author", // role
+      authorOrcid,
+    );
+  }
 
   if (JSON.parse(req.body.review) && !JSON.parse(req.body.isUserPublication)) {
     await db.insertPublicationRatings(

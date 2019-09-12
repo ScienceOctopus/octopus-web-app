@@ -601,7 +601,7 @@ const declineAuthorship = async (req, res) => {
   );
 
   if (removedNum === 0) {
-      return res.sendStatus(404);
+    return res.sendStatus(404);
   }
 
   let allCollaborators = await db.selectCollaboratorsByPublication(

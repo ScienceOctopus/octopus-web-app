@@ -4,7 +4,6 @@ import { withRouter } from "react-router-dom";
 import graph from "../assets/images/graph.png";
 import Footer from "../components/Footer";
 // import ProblemSelector from "../components/ProblemSelector";
-import LinkOnlyIfAcquiredState from "../components/LinkOnlyIfAcquiredState";
 
 class IndexPage extends Component {
   render() {
@@ -22,7 +21,11 @@ class IndexPage extends Component {
             >
               Built for scientists
             </h1>
-            <h2 id="octopus-mobile-centered-header" class="text-white" style={styles.subtitle}>
+            <h2
+              id="octopus-mobile-centered-header"
+              class="text-white"
+              style={styles.subtitle}
+            >
               Octopus is the new way to publish your scientific ideas, findings
               and research.
             </h2>
@@ -36,7 +39,6 @@ class IndexPage extends Component {
             <div className="ui hidden divider" />
             <div className="ui grid">
               &nbsp; &nbsp; &nbsp;
-
               <LocalizedLink
                 to={WebURI.More}
                 className="ui octopus-theme moar large right labeled icon button text-white"
@@ -44,9 +46,7 @@ class IndexPage extends Component {
                 <i className="exclamation icon" />
                 About
               </LocalizedLink>
-
               &nbsp; &nbsp; &nbsp;
-
               <LocalizedLink
                 to={WebURI.FAQ}
                 className="ui octopus-theme moar large right labeled icon button text-white"
@@ -54,16 +54,16 @@ class IndexPage extends Component {
                 <i className="question icon" />
                 FAQ
               </LocalizedLink>
-
               &nbsp; &nbsp; &nbsp;
-
-              <a href={WebURI.GitHub}
+              <a
+                href={WebURI.GitHub}
                 className="ui octopus-theme moar large right labeled icon button text-white"
-                target="_blank">
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <i className="github icon" />
                 GitHub
               </a>
-
             </div>
           </div>
           <div className="seven wide column computer tablet only">

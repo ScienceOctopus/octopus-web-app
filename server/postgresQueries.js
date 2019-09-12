@@ -409,11 +409,12 @@ const queries = {
       .where("id", publication)
       .where("revision", revision),
 
-  insertPublicationCollaborator: (publication, collaborator, role) =>
+  insertPublicationCollaborator: (publication, collaborator, role, orcid) =>
     knex("publication_collaborators").insert({
-      publication: publication,
+      publication,
       user: collaborator,
-      role: role,
+      role,
+      orcid,
     }),
 
   selectPublicationSignoffsForRevision: (publication, revision) =>
