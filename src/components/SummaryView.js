@@ -119,6 +119,40 @@ class SummaryView extends Component {
     );
   }
 
+  renderRatingButton() {
+    const { review, draft, problem, stage, id } = this.state.publication;
+
+    return (
+        <div
+          className="ui icon button octopus-theme review"
+          style={{
+            padding: "0.5rem",
+            margin: "-0.5rem 0.5rem -0.5rem 0",
+          }}
+          onClick={event => {
+              var url = generateLocalizedPath(
+                RouterURI.UploadToProblemStageReview,
+                {
+                  id: problem,
+                  stage,
+                  review: id,
+                },
+              );
+              window.location = url;
+          }}
+        >
+          <i
+            className="ui pencil alternate icon"
+            style={{
+              marginRight: "0.5em",
+              color: "black",
+            }}
+          />
+          Write a review
+        </div>
+    );
+  }
+
   static getContributions = collaborators => {
     return collaborators.reduce((map, collaborator) => {
       return map.set(collaborator.user, (map.get(collaborator.user) || 0) + 1);
@@ -503,6 +537,8 @@ class SummaryView extends Component {
           <sidebar>
             <h2>Ratings</h2>
             {this.renderRatings()}
+            <br /><br />
+            {this.renderRatingButton()}
           </sidebar>
 
           <article>
