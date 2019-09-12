@@ -152,6 +152,7 @@ class PublicationModal extends React.Component {
     this.setState({
       stepNumber: 1,
       publicationTitle: "",
+      publicationSummary: "",
       publicationCollaborators: [],
       editorVisible: false,
       loading: false,
