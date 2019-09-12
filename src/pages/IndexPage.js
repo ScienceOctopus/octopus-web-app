@@ -3,7 +3,7 @@ import WebURI, { LocalizedLink } from "../urls/WebsiteURIs";
 import { withRouter } from "react-router-dom";
 import graph from "../assets/images/graph.png";
 import Footer from "../components/Footer";
-// import ProblemSelector from "../components/ProblemSelector";
+import ProblemSelector from "../components/ProblemSelector";
 import LinkOnlyIfAcquiredState from "../components/LinkOnlyIfAcquiredState";
 
 class IndexPage extends Component {
@@ -35,35 +35,39 @@ class IndexPage extends Component {
             </div>
             <div className="ui hidden divider" />
             <div className="ui grid">
-              &nbsp; &nbsp; &nbsp;
 
-              <LocalizedLink
-                to={WebURI.More}
-                className="ui octopus-theme moar large right labeled icon button text-white"
-              >
-                <i className="exclamation icon" />
-                About
-              </LocalizedLink>
-
-              &nbsp; &nbsp; &nbsp;
-
-              <LocalizedLink
-                to={WebURI.FAQ}
-                className="ui octopus-theme moar large right labeled icon button text-white"
-              >
-                <i className="question icon" />
-                FAQ
-              </LocalizedLink>
-
-              &nbsp; &nbsp; &nbsp;
-
-              <a href={WebURI.GitHub}
-                className="ui octopus-theme moar large right labeled icon button text-white"
-                target="_blank">
-                <i className="github icon" />
-                GitHub
-              </a>
-
+              <div className="column" style={styles.explore}>
+                <LocalizedLink
+                  to={WebURI.Explore}
+                  className="ui octopus-theme explore large right labeled icon button">
+                  <i className="search icon" />
+                  Explore Science
+                </LocalizedLink>
+              </div>
+              <div className="column" style={styles.publish}>
+                <LinkOnlyIfAcquiredState
+                  className="ui octopus-theme publish large right labeled icon button"
+                  returnPath={WebURI.Upload}>
+                  <i className="ui pencil alternate icon" />
+                  Publish your work
+                </LinkOnlyIfAcquiredState>
+              </div>
+              <div className="column" style={styles.more}>
+                <LocalizedLink
+                  to={WebURI.More}
+                  className="ui octopus-theme moar large right labeled icon button">
+                  <i className="exclamation icon" />
+                  Learn more
+                </LocalizedLink>
+              </div>
+              <div className="column" style={styles.faq}>
+                <LocalizedLink
+                  to={WebURI.FAQ}
+                  className="ui octopus-theme questionable large right labeled icon button">
+                  <i className="question icon" />
+                  FAQ
+                </LocalizedLink>
+              </div>
             </div>
           </div>
           <div className="seven wide column computer tablet only">
