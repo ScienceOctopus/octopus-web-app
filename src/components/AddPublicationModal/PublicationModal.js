@@ -254,7 +254,7 @@ class PublicationModal extends React.Component {
                 <LogInRequiredPage />
               </div>
             ) : (
-              <div>
+              <div style={styles.presenterContainer}>
                 <h1 style={{ fontWeight: "bold" }}>
                   Add a new {this.props.stage.singular.toLowerCase()} - Step (
                   {this.state.stepNumber}/{previousStageData ? 3 : 2})
@@ -373,8 +373,8 @@ const styles = {
     right: 0,
     bottom: 0,
     marginTop: 40,
-    marginBottom: 20,
-    marginRight: 20,
+    marginBottom: 30,
+    marginRight: 30,
     padding: 5,
     color: "#2185d0",
     backgroundColor: "transparent",
@@ -386,6 +386,11 @@ const styles = {
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
+  },
+  presenterContainer: {
+    height: "100%",
+    overflowY: "auto",
+    overflowX: "hidden",
   },
 };
 
