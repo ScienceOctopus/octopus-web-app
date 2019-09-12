@@ -74,49 +74,47 @@ class SummaryView extends Component {
     }
     return (
       <div className="ui">
+        <p>
+          {this.state.ratingsNames
+            ? this.state.ratingsNames.firstRating
+            : "High Quality & Annotated"}
+        </p>
+        <CustomRating
+          readonly={true}
+          initialRating={this.state.firstRating}
+          emptySymbol={<i className="ratingIcon icon star outline" />}
+          fullSymbol={<i className="ratingIcon icon star" />}
+        />
 
-          <p>
-            {this.state.ratingsNames
-              ? this.state.ratingsNames.firstRating
-              : "High Quality & Annotated"}
-          </p>
-          <CustomRating
-            readonly={true}
-            initialRating={this.state.firstRating}
-            emptySymbol={<i className="ratingIcon icon star outline" />}
-            fullSymbol={<i className="ratingIcon icon star" />}
-          />
+        <br />
+        <br />
 
-          <br />
-          <br />
+        <p>
+          {this.state.ratingsNames
+            ? this.state.ratingsNames.secondRating
+            : "Size of data"}
+        </p>
+        <CustomRating
+          readonly={true}
+          initialRating={this.state.secondRating}
+          emptySymbol={<i className="ratingIcon icon star outline" />}
+          fullSymbol={<i className="ratingIcon icon star" />}
+        />
 
-          <p>
-            {this.state.ratingsNames
-              ? this.state.ratingsNames.secondRating
-              : "Size of data"}
-          </p>
-          <CustomRating
-            readonly={true}
-            initialRating={this.state.secondRating}
-            emptySymbol={<i className="ratingIcon icon star outline" />}
-            fullSymbol={<i className="ratingIcon icon star" />}
-          />
+        <br />
+        <br />
 
-          <br />
-          <br />
-
-          <p>
-            {this.state.ratingsNames
-              ? this.state.ratingsNames.thirdRating
-              : "Correct protocol"}
-          </p>
-          <CustomRating
-            readonly={true}
-            initialRating={this.state.thirdRating}
-            emptySymbol={<i className="ratingIcon icon star outline" />}
-            fullSymbol={<i className="ratingIcon icon star" />}
-          />
-
+        <p>
+          {this.state.ratingsNames
+            ? this.state.ratingsNames.thirdRating
+            : "Correct protocol"}
+        </p>
+        <CustomRating
+          readonly={true}
+          initialRating={this.state.thirdRating}
+          emptySymbol={<i className="ratingIcon icon star outline" />}
+          fullSymbol={<i className="ratingIcon icon star" />}
+        />
       </div>
     );
   }
@@ -502,7 +500,6 @@ class SummaryView extends Component {
       <div class="summaryView">
         <div className="ui divider" />
         <main className="ui main text">
-
           <sidebar>
             <h2>Ratings</h2>
             {this.renderRatings()}

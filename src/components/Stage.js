@@ -3,7 +3,6 @@ import { withRouter } from "react-router-dom";
 import styled from "styled-components";
 import Publication from "./Publication";
 import PublicationModal from "./AddPublicationModal/PublicationModal";
-import { generateLocalizedPath, RouterURI } from "../urls/WebsiteURIs";
 
 class Stage extends Component {
   constructor(props) {

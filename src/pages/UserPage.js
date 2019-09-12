@@ -457,7 +457,6 @@ class UserPage extends Component {
         ? user.name["family-name"].value
         : "";
       const display_name = `${givenName} ${familyName}`;
-      console.log("display_name 11", display_name);
       return display_name;
     }
     return "";
@@ -466,8 +465,6 @@ class UserPage extends Component {
   renderUserInfo() {
     const { user, loading } = this.state;
     const fullName = this.getFullName();
-
-    console.log("user", user);
 
     if (loading) {
       return (
@@ -490,6 +487,7 @@ class UserPage extends Component {
             <a
               href={WebURI.OrcidPage(user.name.path)}
               target="_blank"
+              rel="noopener noreferrer"
               style={{ fontWeight: "normal" }}
             >
               {user.name.path}
@@ -502,9 +500,6 @@ class UserPage extends Component {
   }
 
   render() {
-    console.log("this.state", this.state);
-    console.log("this.props", this.props);
-
     return (
       <div className="ui container main">
         {this.renderTitle()}

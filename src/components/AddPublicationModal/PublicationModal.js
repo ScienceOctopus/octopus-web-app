@@ -36,9 +36,7 @@ class PublicationModal extends React.Component {
     };
   }
 
-  handleEditorData = editorData => {
-    this.setState({ editorData });
-  };
+  handleEditorData = editorData => this.setState({ editorData });
 
   handlePublicationsToLink = publicationId => {
     const alreadyExists = this.state.publicationsToLink.includes(publicationId);
@@ -123,44 +121,38 @@ class PublicationModal extends React.Component {
       });
   }
 
-  handleTitleChange = event => {
+  handleTitleChange = event =>
     this.setState({
       publicationTitle: event.target.value,
     });
-  };
 
-  handleSummaryChange = event => {
+  handleSummaryChange = event =>
     this.setState({
       publicationSummary: event.target.value,
     });
-  };
 
-  handleDataRepositoryChange = event => {
+  handleDataRepositoryChange = event =>
     this.setState({
       dataRepository: event.target.value,
     });
-  };
 
-  handleCollaborators = collaborator => {
+  handleCollaborators = collaborator =>
     this.setState(state => {
-      let collaborators = [...state.publicationCollaborators];
-      collaborators.push(collaborator);
-      return { publicationCollaborators: collaborators };
+      let publicationCollaborators = [...state.publicationCollaborators];
+      publicationCollaborators.push(collaborator);
+      return { publicationCollaborators };
     });
-  };
 
-  showEditor = editorData => {
+  showEditor = editorData =>
     this.setState({ editorVisible: true, editorData: editorData });
-  };
 
-  updateLoading = loading => {
-    this.setState({ ...this.state, loading });
-  };
+  updateLoading = loading => this.setState({ ...this.state, loading });
 
   onClose = close => {
     this.setState({
       stepNumber: 1,
       publicationTitle: "",
+      publicationSummary: "",
       publicationCollaborators: [],
       editorVisible: false,
       loading: false,
@@ -197,6 +189,10 @@ class PublicationModal extends React.Component {
     data.set(
       "basedOn",
       JSON.stringify(this.state.publicationsToLink.map(id => id)),
+    );
+    data.set(
+      "publicationCollaborators",
+      JSON.stringify(this.state.publicationCollaborators),
     );
 
     data.append("file", this.state.selectedFile);
@@ -258,7 +254,7 @@ class PublicationModal extends React.Component {
                 <LogInRequiredPage />
               </div>
             ) : (
-              <div>
+              <div style={styles.presenterContainer}>
                 <h1 style={{ fontWeight: "bold" }}>
                   Add a new {this.props.stage.singular.toLowerCase()} - Step (
                   {this.state.stepNumber}/{previousStageData ? 3 : 2})
@@ -377,8 +373,8 @@ const styles = {
     right: 0,
     bottom: 0,
     marginTop: 40,
-    marginBottom: 20,
-    marginRight: 20,
+    marginBottom: 30,
+    marginRight: 30,
     padding: 5,
     color: "#2185d0",
     backgroundColor: "transparent",
@@ -390,6 +386,11 @@ const styles = {
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
+  },
+  presenterContainer: {
+    height: "100%",
+    overflowY: "auto",
+    overflowX: "hidden",
   },
 };
 

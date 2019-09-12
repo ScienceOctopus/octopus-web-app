@@ -4,44 +4,6 @@ import Api from "../../api";
 import CustomRating from "../CustomRating";
 
 class PublicationSearchTemplate extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      collaborators: [],
-    };
-  }
-
-  componentDidMount() {
-    this.fetchPublicationCollaborators();
-  }
-
-  fetchPublicationCollaborators() {
-    Api()
-      .publication(this.props.publication.id)
-      .collaborators()
-      .get()
-      .then(collaborators => {
-        this.setState({ collaborators: [] }, () => {
-          collaborators.forEach(collaborator => {
-            Api()
-              .user(collaborator.user)
-              .get()
-              .then(user => {
-                this.setState(state => {
-                  let augmented = state;
-                  augmented.collaborators = augmented.collaborators.filter(
-                    collaborator => collaborator.id !== user.id,
-                  );
-                  augmented.collaborators.push(user);
-                  return augmented;
-                });
-              })
-              .catch(err => console.log(err));
-          });
-        });
-      });
-  }
-
   checkIfLinked = (publicationId, publicationsToLink) => {
     const checkLink = publicationsToLink.find(
       publication => publication === publicationId,
@@ -55,18 +17,17 @@ class PublicationSearchTemplate extends Component {
   };
 
   render() {
-    const dateAdded = new Date(
-      this.props.publication.created_at,
-    ).toLocaleDateString("en-US");
+    const { publication } = this.props;
+    const dateAdded = new Date(publication.created_at).toLocaleDateString(
+      "en-US",
+    );
 
     const checked = this.checkIfLinked(
-      this.props.publication.id,
+      publication.id,
       this.props.publicationsToLink,
     );
 
-    const pubRating = this.props.publication.overAllRating
-      ? this.props.publication.overAllRating
-      : 0;
+    const pubRating = publication.overAllRating ? publication.overAllRating : 0;
 
     return (
       <div
@@ -78,26 +39,28 @@ class PublicationSearchTemplate extends Component {
         }
       >
         <div className="twelve wide column">
-          <div style={styles.title}>{this.props.publication.title}</div>
-          {this.state.collaborators.length > 0 && (
-            <div className="ui relaxed horizontal list">
-              {this.state.collaborators.map((collaborator, index) => (
-                <div
-                  key={index}
-                  className="item"
-                  style={styles.collaboratorsList}
-                >
-                  <a
-                    style={{ fontSize: 16 }}
-                    href={WebURI.OrcidPage(collaborator.orcid)}
+          <div style={styles.title}>{publication.title}</div>
+          {(publication.collaborators &&
+            publication.collaborators.length > 0 && (
+              <div className="ui relaxed horizontal list">
+                {publication.collaborators.map((collaborator, index) => (
+                  <div
+                    key={index}
+                    className="item"
+                    style={styles.collaboratorsList}
                   >
-                    {collaborator.display_name}
-                  </a>
-                  ,
-                </div>
-              ))}
-            </div>
-          )}
+                    <a
+                      style={{ fontSize: 16 }}
+                      href={WebURI.OrcidPage(collaborator.orcid)}
+                    >
+                      {collaborator.display_name}
+                    </a>
+                    ,
+                  </div>
+                ))}
+              </div>
+            )) ||
+            null}
 
           <div style={styles.sectionDate}>
             <b>Date added:</b>
@@ -109,7 +72,7 @@ class PublicationSearchTemplate extends Component {
           <p style={styles.extraItem}>
             <b>Data ID:</b>
             &nbsp;
-            {this.props.publication.id}
+            {publication.id}
           </p>
           <p style={styles.extraItem}>
             <b>Average rating:</b>

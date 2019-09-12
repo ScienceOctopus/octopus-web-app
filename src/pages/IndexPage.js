@@ -3,7 +3,7 @@ import WebURI, { LocalizedLink } from "../urls/WebsiteURIs";
 import { withRouter } from "react-router-dom";
 import graph from "../assets/images/graph.png";
 import Footer from "../components/Footer";
-import ProblemSelector from "../components/ProblemSelector";
+// import ProblemSelector from "../components/ProblemSelector";	
 import LinkOnlyIfAcquiredState from "../components/LinkOnlyIfAcquiredState";
 
 class IndexPage extends Component {
@@ -22,7 +22,11 @@ class IndexPage extends Component {
             >
               Built for scientists
             </h1>
-            <h2 id="octopus-mobile-centered-header" class="text-white" style={styles.subtitle}>
+            <h2
+              id="octopus-mobile-centered-header"
+              class="text-white"
+              style={styles.subtitle}
+            >
               Octopus is the new way to publish your scientific ideas, findings
               and research.
             </h2>
@@ -35,7 +39,6 @@ class IndexPage extends Component {
             </div>
             <div className="ui hidden divider" />
             <div className="ui grid">
-
               <div className="column" style={styles.explore}>
                 <LocalizedLink
                   to={WebURI.Explore}

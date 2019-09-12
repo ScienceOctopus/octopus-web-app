@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Latex from "react-latex";
 import CKEditor from "ckeditor4-react";
 
 const HandleEditor = props => {

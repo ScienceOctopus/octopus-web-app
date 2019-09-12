@@ -3,10 +3,6 @@ import WebURI from "../../urls/WebsiteURIs";
 import UserSearch from "../UserSearch";
 
 class PublicationSecondStep extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   componentDidMount() {
     this.props.handleCollaborators(global.session.user);
   }
