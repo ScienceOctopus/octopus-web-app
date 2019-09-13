@@ -29,6 +29,7 @@ class SummaryView extends Component {
       ratingsNames: undefined,
       userAlreadyRated: false,
       userAlreadySentCategoryReviews: false,
+      isCurrentUserPublication: false,
     };
 
     this.fetchPublicationData();
@@ -109,7 +110,11 @@ class SummaryView extends Component {
 
   renderRatings() {
     const { review, draft } = this.state.publication;
-    const { userAlreadySentCategoryReviews, ratingsNames } = this.state;
+    const {
+      userAlreadySentCategoryReviews,
+      isCurrentUserPublication,
+      ratingsNames,
+    } = this.state;
 
     if (review && !draft) {
       return (
@@ -132,7 +137,9 @@ class SummaryView extends Component {
         </p>
         <CustomRating
           readonly={
-            global.session.user && !userAlreadySentCategoryReviews
+            global.session.user &&
+            !userAlreadySentCategoryReviews &&
+            !isCurrentUserPublication
               ? false
               : true
           }
@@ -146,7 +153,9 @@ class SummaryView extends Component {
         <p>{ratingsNames ? ratingsNames.secondRating : "Size of data"}</p>
         <CustomRating
           readonly={
-            global.session.user && !userAlreadySentCategoryReviews
+            global.session.user &&
+            !userAlreadySentCategoryReviews &&
+            !isCurrentUserPublication
               ? false
               : true
           }
@@ -160,7 +169,9 @@ class SummaryView extends Component {
         <p>{ratingsNames ? ratingsNames.thirdRating : "Correct protocol"}</p>
         <CustomRating
           readonly={
-            global.session.user && !userAlreadySentCategoryReviews
+            global.session.user &&
+            !userAlreadySentCategoryReviews &&
+            !isCurrentUserPublication
               ? false
               : true
           }
@@ -261,7 +272,6 @@ class SummaryView extends Component {
           .get()
           .then(publication => {
             publication.data = JSON.parse(publication.data);
-
             this.setState(
               {
                 publication: publication,
@@ -362,13 +372,15 @@ class SummaryView extends Component {
                     .subscribe(SUMMARY_KEY)
                     .user(id)
                     .get()
-                    .then(user =>
+                    .then(user => {
                       this.setState(state => {
                         let users = state.users;
                         users.set(id, user);
                         return { users: users };
-                      }),
-                    );
+                      });
+                      if (global.session.user.id === id)
+                        this.setState({ isCurrentUserPublication: true });
+                    });
                 });
               },
             );
