@@ -126,7 +126,7 @@ Also correct some visual issues after the scheme is applied, like text contrast.
 .ui.container, main.ui.main {
   width: 100% !important;
   max-width: 1800px;
-  padding: 0 10px;
+  padding: 0 0 0 1rem;
 }
 
 .app {padding-bottom: 80px;}
@@ -153,6 +153,3 @@ h1, h2, h3, h4, h5, .app, .ui.menu, .ui.header, .ui.button {
 .summaryView sidebar {float: right; width: 300px}
 
 .ratingIcon {font-size: 1.4em !important; color: #fac56d}
-
-.segment {border: 1px solid #ccc !important }
-.summaryView .segment {border: 1px solid #ccc !important; box-shadow: none !important }
