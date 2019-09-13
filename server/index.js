@@ -44,8 +44,8 @@ global.subscriptions = new Map();
 // Can access anything in this folder
 // app.use(express.static("public"));
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ limit: "50mb", extended: true }));
+app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 app.use(cookieParser());
 
 app.ws("/api", wsConnectHandler);
