@@ -29,8 +29,8 @@ class PublicationSearchList extends Component {
   }
 
   componentDidMount() {
-    this.fetchPublicationCollaborators(this.props.publications);
     this.loadingComplete();
+    this.fetchPublicationCollaborators(this.props.publications);
   }
 
   componentDidUpdate(oldProps) {
@@ -62,9 +62,9 @@ class PublicationSearchList extends Component {
         .publication(publication.id)
         .collaborators()
         .get()
-        .then(collaborators => {
+        .then(async collaborators => {
           let collaboratorsNames = [];
-          collaborators.forEach(async collaborator => {
+          for (let collaborator of collaborators) {
             const details = await getDetails(collaborator.orcid);
             const { name } = details;
             let givenName, familyName, display_name;
@@ -79,11 +79,11 @@ class PublicationSearchList extends Component {
               collaboratorsNames.push(collaboratorData);
             }
             publication.collaborators = collaboratorsNames;
-          });
+          }
+          publicationsList.push(publication);
+          this.setState({ publications: publicationsList });
         });
-      publicationsList.push(publication);
     });
-    this.setState({ publications: publicationsList });
   }
 
   updatePublicationsList = publications => {

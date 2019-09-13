@@ -287,8 +287,8 @@ const postPublicationToProblemAndStage = async (req, res) => {
     });
   } else {
     // insert only the author
-    const authorId = req.body.user.id;
-    const authorOrcid = req.body.user.orcid;
+    const authorId = req.body.user;
+    const authorOrcid = req.body.publicationCollaborators[0].orcid;
     await db.insertPublicationCollaborator(
       publications[0], // publication id
       authorId,

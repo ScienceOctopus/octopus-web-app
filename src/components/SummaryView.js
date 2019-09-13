@@ -25,9 +25,11 @@ class SummaryView extends Component {
       secondRate: 0,
       thirdRate: 0,
       reviewRating: 0,
+      ratingsCounter: 0,
       ratingsNames: undefined,
       userAlreadyRated: false,
       userAlreadySentCategoryReviews: false,
+      isCurrentUserPublication: false,
     };
 
     this.fetchPublicationData();
@@ -108,7 +110,11 @@ class SummaryView extends Component {
 
   renderRatings() {
     const { review, draft } = this.state.publication;
-    const { userAlreadySentCategoryReviews, ratingsNames } = this.state;
+    const {
+      userAlreadySentCategoryReviews,
+      isCurrentUserPublication,
+      ratingsNames,
+    } = this.state;
 
     if (review && !draft) {
       return (
@@ -131,7 +137,9 @@ class SummaryView extends Component {
         </p>
         <CustomRating
           readonly={
-            global.session.user && !userAlreadySentCategoryReviews
+            global.session.user &&
+            !userAlreadySentCategoryReviews &&
+            !isCurrentUserPublication
               ? false
               : true
           }
@@ -145,7 +153,9 @@ class SummaryView extends Component {
         <p>{ratingsNames ? ratingsNames.secondRating : "Size of data"}</p>
         <CustomRating
           readonly={
-            global.session.user && !userAlreadySentCategoryReviews
+            global.session.user &&
+            !userAlreadySentCategoryReviews &&
+            !isCurrentUserPublication
               ? false
               : true
           }
@@ -159,7 +169,9 @@ class SummaryView extends Component {
         <p>{ratingsNames ? ratingsNames.thirdRating : "Correct protocol"}</p>
         <CustomRating
           readonly={
-            global.session.user && !userAlreadySentCategoryReviews
+            global.session.user &&
+            !userAlreadySentCategoryReviews &&
+            !isCurrentUserPublication
               ? false
               : true
           }
@@ -174,33 +186,33 @@ class SummaryView extends Component {
     const { review, draft, problem, stage, id } = this.state.publication;
 
     return (
-        <div
-          className="ui icon button octopus-theme review"
+      <div
+        className="ui icon button octopus-theme review"
+        style={{
+          padding: "0.5rem",
+          margin: "-0.5rem 0.5rem -0.5rem 0",
+        }}
+        onClick={event => {
+          var url = generateLocalizedPath(
+            RouterURI.UploadToProblemStageReview,
+            {
+              id: problem,
+              stage,
+              review: id,
+            },
+          );
+          window.location = url;
+        }}
+      >
+        <i
+          className="ui pencil alternate icon"
           style={{
-            padding: "0.5rem",
-            margin: "-0.5rem 0.5rem -0.5rem 0",
+            marginRight: "0.5em",
+            color: "black",
           }}
-          onClick={event => {
-              var url = generateLocalizedPath(
-                RouterURI.UploadToProblemStageReview,
-                {
-                  id: problem,
-                  stage,
-                  review: id,
-                },
-              );
-              window.location = url;
-          }}
-        >
-          <i
-            className="ui pencil alternate icon"
-            style={{
-              marginRight: "0.5em",
-              color: "black",
-            }}
-          />
-          Write a review
-        </div>
+        />
+        Write a review
+      </div>
     );
   }
 
@@ -260,7 +272,6 @@ class SummaryView extends Component {
           .get()
           .then(publication => {
             publication.data = JSON.parse(publication.data);
-
             this.setState(
               {
                 publication: publication,
@@ -321,6 +332,7 @@ class SummaryView extends Component {
               firstRating: Math.round(firstRating / counter),
               secondRating: Math.round(secondRating / counter),
               thirdRating: Math.round(thirdRating / counter),
+              ratingsCounter: counter,
               userAlreadySentCategoryReviews,
             });
           });
@@ -360,13 +372,15 @@ class SummaryView extends Component {
                     .subscribe(SUMMARY_KEY)
                     .user(id)
                     .get()
-                    .then(user =>
+                    .then(user => {
                       this.setState(state => {
                         let users = state.users;
                         users.set(id, user);
                         return { users: users };
-                      }),
-                    );
+                      });
+                      if (global.session.user.id === id)
+                        this.setState({ isCurrentUserPublication: true });
+                    });
                 });
               },
             );
@@ -595,9 +609,10 @@ class SummaryView extends Component {
         <div className="ui divider" />
         <main className="ui main text">
           <sidebar>
-            <h2>Ratings</h2>
+            <h2>Ratings ({this.state.ratingsCounter})</h2>
             {this.renderRatings()}
-            <br /><br />
+            <br />
+            <br />
             {this.renderRatingButton()}
           </sidebar>
 
