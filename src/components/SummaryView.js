@@ -21,8 +21,13 @@ class SummaryView extends Component {
       firstRating: 0,
       secondRating: 0,
       thirdRating: 0,
+      firstRate: 0,
+      secondRate: 0,
+      thirdRate: 0,
       reviewRating: 0,
       ratingsNames: undefined,
+      userAlreadyRated: false,
+      userAlreadySentCategoryReviews: false,
     };
 
     this.fetchPublicationData();
@@ -32,6 +37,51 @@ class SummaryView extends Component {
   componentWillUnmount() {
     Api().unsubscribeClass(SUMMARY_KEY);
   }
+
+  handleInsertRatings() {
+    const {
+      firstRate,
+      secondRate,
+      thirdRate,
+      userAlreadySentCategoryReviews,
+    } = this.state;
+
+    if (
+      firstRate !== 0 &&
+      secondRate !== 0 &&
+      thirdRate !== 0 &&
+      !userAlreadySentCategoryReviews
+    ) {
+      const data = {
+        firstRating: firstRate,
+        secondRating: secondRate,
+        thirdRating: thirdRate,
+        userId: global.session.user.id,
+      };
+
+      Api()
+        .subscribe(SUMMARY_KEY)
+        .publication(this.props.publicationId)
+        .publication_ratings()
+        .post(data)
+        .then(this.setState({ userAlreadySentCategoryReviews: true }));
+    }
+  }
+
+  handleFirstRating = firstRate =>
+    this.setState({ firstRate, firstRating: firstRate }, () =>
+      this.handleInsertRatings(),
+    );
+
+  handleSecondRating = secondRate =>
+    this.setState({ secondRate, secondRating: secondRate }, () =>
+      this.handleInsertRatings(),
+    );
+
+  handleThirdRating = thirdRate =>
+    this.setState({ thirdRate, thirdRating: thirdRate }, () =>
+      this.handleInsertRatings(),
+    );
 
   handleReviewRating() {
     const reviewRating = this.state.reviewRating + 1;
@@ -58,6 +108,8 @@ class SummaryView extends Component {
 
   renderRatings() {
     const { review, draft } = this.state.publication;
+    const { userAlreadySentCategoryReviews, ratingsNames } = this.state;
+
     if (review && !draft) {
       return (
         <div style={styles.reviewRatingContainer}>
@@ -75,45 +127,44 @@ class SummaryView extends Component {
     return (
       <div className="ui">
         <p>
-          {this.state.ratingsNames
-            ? this.state.ratingsNames.firstRating
-            : "High Quality & Annotated"}
+          {ratingsNames ? ratingsNames.firstRating : "High Quality & Annotated"}
         </p>
         <CustomRating
-          readonly={true}
-          initialRating={this.state.firstRating}
-          emptySymbol={<i className="ratingIcon icon star outline" />}
-          fullSymbol={<i className="ratingIcon icon star" />}
+          readonly={
+            global.session.user && !userAlreadySentCategoryReviews
+              ? false
+              : true
+          }
+          placeholderRating={this.state.firstRating}
+          onClick={this.handleFirstRating}
         />
 
         <br />
         <br />
 
-        <p>
-          {this.state.ratingsNames
-            ? this.state.ratingsNames.secondRating
-            : "Size of data"}
-        </p>
+        <p>{ratingsNames ? ratingsNames.secondRating : "Size of data"}</p>
         <CustomRating
-          readonly={true}
-          initialRating={this.state.secondRating}
-          emptySymbol={<i className="ratingIcon icon star outline" />}
-          fullSymbol={<i className="ratingIcon icon star" />}
+          readonly={
+            global.session.user && !userAlreadySentCategoryReviews
+              ? false
+              : true
+          }
+          placeholderRating={this.state.secondRating}
+          onClick={this.handleSecondRating}
         />
 
         <br />
         <br />
 
-        <p>
-          {this.state.ratingsNames
-            ? this.state.ratingsNames.thirdRating
-            : "Correct protocol"}
-        </p>
+        <p>{ratingsNames ? ratingsNames.thirdRating : "Correct protocol"}</p>
         <CustomRating
-          readonly={true}
-          initialRating={this.state.thirdRating}
-          emptySymbol={<i className="ratingIcon icon star outline" />}
-          fullSymbol={<i className="ratingIcon icon star" />}
+          readonly={
+            global.session.user && !userAlreadySentCategoryReviews
+              ? false
+              : true
+          }
+          placeholderRating={this.state.thirdRating}
+          onClick={this.handleThirdRating}
         />
       </div>
     );
@@ -252,16 +303,25 @@ class SummaryView extends Component {
             let secondRating = 0;
             let thirdRating = 0;
             let counter = 0;
+            let userAlreadySentCategoryReviews = false;
             ratings.forEach(rating => {
               counter++;
               firstRating = firstRating + rating.firstRating;
               secondRating = secondRating + rating.secondRating;
               thirdRating = thirdRating + rating.thirdRating;
+
+              if (
+                global.session &&
+                global.session.user &&
+                rating.userId === global.session.user.id
+              )
+                userAlreadySentCategoryReviews = true;
             });
             this.setState({
               firstRating: Math.round(firstRating / counter),
               secondRating: Math.round(secondRating / counter),
               thirdRating: Math.round(thirdRating / counter),
+              userAlreadySentCategoryReviews,
             });
           });
 
