@@ -1,18 +1,19 @@
-import React, { Component } from "react";
-import PDFImagePreviewRenderer from "./PDFImagePreviewRenderer";
+import React, { Component, useState, useEffect } from "react";
+import { withRouter } from "react-router-dom";
+import uniqueId from "lodash/uniqueId";
 import styled from "styled-components";
+import CKEditor from "ckeditor4-react";
+
+import PDFImagePreviewRenderer from "./PDFImagePreviewRenderer";
 import Api from "../api";
 import withState from "../withState";
 import FileUploadSelector from "./FileUploadSelector";
 import TitledForm from "./TitledForm";
 import TitledCheckbox from "./TitledCheckbox";
 import TagSelector from "./TagSelector";
-
-import uniqueId from "lodash/uniqueId";
 import Modal from "./Modal";
 import UserSearch from "./UserSearch";
 
-import { withRouter } from "react-router-dom";
 import { RouterURI, generateLocalizedPath } from "../urls/WebsiteURIs";
 
 const EDIT_KEY = "edit";
@@ -32,6 +33,7 @@ class EditPublicationView extends Component {
       tags: undefined,
       tagsIndex: 0,
       changed: false,
+      newEditorData: undefined,
     };
 
     this.fetchPublicationData();
@@ -61,6 +63,7 @@ class EditPublicationView extends Component {
               {
                 changed: false,
                 publication: publication,
+                editorData: publication.editorData,
               },
               () => {
                 Api()
@@ -229,7 +232,10 @@ class EditPublicationView extends Component {
     Api()
       .publication(this.state.publication.id)
       .requestSignoff()
-      .post({ revision: this.state.publication.revision })
+      .post({
+        revision: this.state.publication.revision,
+        editorData: this.state.editorData,
+      })
       .then();
   };
 
@@ -340,6 +346,7 @@ class EditPublicationView extends Component {
         funding: this.state.publication.funding,
         conflict: this.state.publication.conflict,
         data: JSON.stringify(ddata),
+        editorData: this.state.newEditorData,
       })
       .then();
   };
@@ -423,9 +430,9 @@ class EditPublicationView extends Component {
       );
   };
 
-  handleDecline = () => {
-    this.declineAuthorship();
-  };
+  handleDecline = () => this.declineAuthorship();
+
+  handleEditorData = newEditorData => this.setState({ newEditorData });
 
   renderSignoffInvitation = () => {
     if (this.state.publication.signoff_requested) {
@@ -543,6 +550,15 @@ class EditPublicationView extends Component {
             <textarea
               value={this.state.publication.summary}
               onChange={this.handleSummaryChange}
+            />
+          </div>
+          <div className="field">
+            <label>Editor Data</label>
+            <CKEditor
+              data={this.state.editorData}
+              onChange={event =>
+                this.handleEditorData(event.editor.document.$.body.innerHTML)
+              }
             />
           </div>
           <div className="field">

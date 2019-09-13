@@ -418,6 +418,22 @@ const postPublicationReviewRating = async (req, res) => {
   res.status(200).json(id);
 };
 
+const postPublicationRatings = async (req, res) => {
+  const publication = await getAndValidatePublication(req.params.id, req);
+  if (!publication) {
+    console.log(`Couldn't find publication with ID: ${req.params.id}`);
+    return res.sendStatus(404);
+  }
+  const id = await db.insertPublicationRatings(
+    req.params.id,
+    req.body.firstRating,
+    req.body.secondRating,
+    req.body.thirdRating,
+    req.body.userId,
+  );
+  res.status(200).json(id);
+};
+
 const postCollaboratorToPublication = async (req, res) => {
   const publication = await getAndValidatePublication(req.params.id, req);
   if (!publication) {
@@ -431,7 +447,7 @@ const postCollaboratorToPublication = async (req, res) => {
   }
 
   // TODO: Check that not already a collaborator
-
+  
   const id = await db.insertPublicationCollaborator(
     req.params.id,
     users[0].id,
@@ -739,6 +755,10 @@ router.get(
 router.post(
   "/:id(\\d+)/publication_review_rating",
   catchAsyncErrors(postPublicationReviewRating),
+);
+router.post(
+  "/:id(\\d+)/publication_ratings",
+  catchAsyncErrors(postPublicationRatings),
 );
 router.post(
   "/:id(\\d+)/request_signoff",

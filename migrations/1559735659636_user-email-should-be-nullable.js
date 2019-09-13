@@ -1,9 +1,9 @@
 exports.shorthands = undefined;
 
-exports.up = (pgm) => {
+exports.up = pgm => {
   pgm.alterColumn("users", "email", { notNull: false });
 };
 
-exports.down = (pgm) => {
+exports.down = pgm => {
   pgm.alterColumn("users", "email", { notNull: true });
 };

@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import WebURI from "../../urls/WebsiteURIs";
-import Api from "../../api";
 import CustomRating from "../CustomRating";
 
 class PublicationSearchTemplate extends Component {

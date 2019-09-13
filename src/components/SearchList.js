@@ -290,12 +290,12 @@ class SearchList extends Component {
               <div className="ui divider"></div>
               {this.renderFilter("Created", [
                 this.renderRadio(
-                  "First created",
+                  "Oldest to newest",
                   "down-created",
                   sort === "down-created",
                 ),
                 this.renderRadio(
-                  "Last created",
+                  "Newest to oldest",
                   "up-created",
                   sort === "up-created",
                 ),
@@ -304,12 +304,12 @@ class SearchList extends Component {
               <div className="ui divider"></div>
               {this.renderFilter("Updated", [
                 this.renderRadio(
-                  "First updated",
+                  "Oldest to newest",
                   "down-updated",
                   sort === "down-updated",
                 ),
                 this.renderRadio(
-                  "Last updated",
+                  "Newest to oldest",
                   "up-updated",
                   sort === "up-updated",
                 ),

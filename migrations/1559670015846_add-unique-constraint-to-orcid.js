@@ -1,11 +1,11 @@
 exports.shorthands = undefined;
 
-exports.up = (pgm) => {
+exports.up = pgm => {
   pgm.dropColumns("users", ["orcid"]);
-  pgm.addColumns("users", {orcid: { type: "text", unique: true }});
+  pgm.addColumns("users", { orcid: { type: "text", unique: true } });
 };
 
-exports.down = (pgm) => {
+exports.down = pgm => {
   pgm.dropColumns("users", ["orcid"]);
-  pgm.addColumns("users", {orcid: { type: "text", unique: false }});
+  pgm.addColumns("users", { orcid: { type: "text", unique: false } });
 };

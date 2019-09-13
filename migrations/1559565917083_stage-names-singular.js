@@ -1,6 +1,6 @@
 exports.shorthands = undefined;
 
-exports.up = (pgm) => {
+exports.up = pgm => {
   pgm.addColumns("stages", {
     singular: {
       type: "text",
@@ -11,6 +11,6 @@ exports.up = (pgm) => {
   pgm.alterColumn("stages", "singular", { default: null });
 };
 
-exports.down = (pgm) => {
+exports.down = pgm => {
   pgm.dropColumns("stages", ["singular"], { ifExists: true });
 };

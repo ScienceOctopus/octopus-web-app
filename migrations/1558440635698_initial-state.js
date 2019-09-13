@@ -131,7 +131,6 @@ exports.up = pgm => {
     id: "id",
     publication: {
       type: "integer",
-      notNull: true,
       references: "publications",
       onDelete: "cascade",
     },

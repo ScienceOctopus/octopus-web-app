@@ -9,7 +9,7 @@ exports.up = pgm => {
       unique: true,
     },
   });
-  
+
   pgm.createTable("publication_tags", {
     id: "id",
     publication: {
@@ -28,6 +28,6 @@ exports.up = pgm => {
 };
 
 exports.down = pgm => {
-  pgm.dropTable("publication_tags", {ifExists: true});
-  pgm.dropTable("tags", {ifExists: true});
-}
+  pgm.dropTable("publication_tags", { ifExists: true });
+  pgm.dropTable("tags", { ifExists: true });
+};
