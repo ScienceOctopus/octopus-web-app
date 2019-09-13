@@ -17,6 +17,7 @@ function initialise() {
   const s3Instance = new aws.S3();
 
   multerUpload = multer({
+    limits: { fieldSize: 25 * 1024 * 1024 },
     storage: multerS3({
       s3: s3Instance,
       bucket: "octopus-web-storage",
