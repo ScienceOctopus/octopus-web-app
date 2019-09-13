@@ -25,6 +25,7 @@ class SummaryView extends Component {
       secondRate: 0,
       thirdRate: 0,
       reviewRating: 0,
+      ratingsCounter: 0,
       ratingsNames: undefined,
       userAlreadyRated: false,
       userAlreadySentCategoryReviews: false,
@@ -174,33 +175,33 @@ class SummaryView extends Component {
     const { review, draft, problem, stage, id } = this.state.publication;
 
     return (
-        <div
-          className="ui icon button octopus-theme review"
+      <div
+        className="ui icon button octopus-theme review"
+        style={{
+          padding: "0.5rem",
+          margin: "-0.5rem 0.5rem -0.5rem 0",
+        }}
+        onClick={event => {
+          var url = generateLocalizedPath(
+            RouterURI.UploadToProblemStageReview,
+            {
+              id: problem,
+              stage,
+              review: id,
+            },
+          );
+          window.location = url;
+        }}
+      >
+        <i
+          className="ui pencil alternate icon"
           style={{
-            padding: "0.5rem",
-            margin: "-0.5rem 0.5rem -0.5rem 0",
+            marginRight: "0.5em",
+            color: "black",
           }}
-          onClick={event => {
-              var url = generateLocalizedPath(
-                RouterURI.UploadToProblemStageReview,
-                {
-                  id: problem,
-                  stage,
-                  review: id,
-                },
-              );
-              window.location = url;
-          }}
-        >
-          <i
-            className="ui pencil alternate icon"
-            style={{
-              marginRight: "0.5em",
-              color: "black",
-            }}
-          />
-          Write a review
-        </div>
+        />
+        Write a review
+      </div>
     );
   }
 
@@ -321,6 +322,7 @@ class SummaryView extends Component {
               firstRating: Math.round(firstRating / counter),
               secondRating: Math.round(secondRating / counter),
               thirdRating: Math.round(thirdRating / counter),
+              ratingsCounter: counter,
               userAlreadySentCategoryReviews,
             });
           });
@@ -595,9 +597,10 @@ class SummaryView extends Component {
         <div className="ui divider" />
         <main className="ui main text">
           <sidebar>
-            <h2>Ratings</h2>
+            <h2>Ratings ({this.state.ratingsCounter})</h2>
             {this.renderRatings()}
-            <br /><br />
+            <br />
+            <br />
             {this.renderRatingButton()}
           </sidebar>
 

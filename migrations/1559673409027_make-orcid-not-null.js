@@ -7,3 +7,4 @@ exports.up = pgm => {
 exports.down = pgm => {
   pgm.alterColumn("users", "orcid", { notNull: false });
 };
+Sorry for delay, I didn't expect some tasks to take that long.
